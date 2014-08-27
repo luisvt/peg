@@ -1,3 +1,7 @@
+Bug with character class [\-]
+
+========================================
+
 optimize lookahead expressions
 (_ch >= 48 && _ch <= 57 && _lookahead[_ch + 81])
 (_ch == 48 || _ch == 57) {

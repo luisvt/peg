@@ -48,7 +48,9 @@ Arithmetic grammar
 
 Source code of the generated parser for `arithmetic grammar`
 
-`peg general --comment --lookahead arithmetic.peg` 
+Such (as an arithmetic) grammars parsed faster with a memoization. 
+
+`peg general --comment --lookahead --memoize arithmetic.peg` 
 
 ```dart
 {{example/arithmetic_parser.dart}}

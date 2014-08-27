@@ -434,7 +434,14 @@ class ArithmeticParser {
   dynamic parse_SPACES() {
     // TERMINAL
     // SPACES <- WS*
-    var $$;  
+    var $$;      
+    var pos = _inputPos;    
+    if(pos <= _cachePos) {
+      $$ = _getFromCache(12);
+    }
+    if($$ != null) {
+      return $$[0];       
+    }  
     // WS*
     var testing0 = _testing; 
     for (var reps = []; ; ) {
@@ -457,13 +464,21 @@ class ArithmeticParser {
         break; 
       }
     }
+    _addToCache($$, pos, 12);
     return $$;
   }
   
   dynamic parse_Sentence() {
     // NONTERMINAL
     // Sentence <- SPACES Term (PLUS / MINUS) Sentence / Term
-    var $$;  
+    var $$;      
+    var pos = _inputPos;    
+    if(pos <= _cachePos) {
+      $$ = _getFromCache(1);
+    }
+    if($$ != null) {
+      return $$[0];       
+    }  
     while (true) {
       var ch0 = _ch;
       var pos0 = _inputPos;
@@ -545,13 +560,21 @@ class ArithmeticParser {
       }
       break;
     }
+    _addToCache($$, pos, 1);
     return $$;
   }
   
   dynamic parse_Term() {
     // NONTERMINAL
     // Term <- Atom (MUL / DIV) Term / Atom
-    var $$;  
+    var $$;      
+    var pos = _inputPos;    
+    if(pos <= _cachePos) {
+      $$ = _getFromCache(2);
+    }
+    if($$ != null) {
+      return $$[0];       
+    }  
     while (true) {
       var ch0 = _ch;
       var pos0 = _inputPos;
@@ -627,6 +650,7 @@ class ArithmeticParser {
       }
       break;
     }
+    _addToCache($$, pos, 2);
     return $$;
   }
   

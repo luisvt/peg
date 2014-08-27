@@ -44,7 +44,7 @@ dynamic {{NAME}}() {
   {{#FLAGS}}  
   {{#EXPRESSION}}
   $_ADD_TO_CACHE($_RESULT, pos, {{RULE_ID}});
-  {{#LEAVE}}      
+  {{#LEAVE}}        
   return $_RESULT;
 }
 ''';
@@ -187,6 +187,8 @@ dynamic {{NAME}}() {
     block.assign('#VARIABLES', _generateVariables());
     //block.assign('#FLAGS', _setFlag());
     block.assign('NAME', methodName);
+
+    var block2 = new TemplateBlock(_templateWithCache);
     block.assign('RULE_ID', _productionRule.id);
     return block.process();
   }
