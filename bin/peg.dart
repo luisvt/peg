@@ -67,8 +67,8 @@ class Program {
     if (!parser.success) {
       var column = parser.column;
       var line = parser.line;
-      var unexpected = parser.unexpected;
       var expected = parser.expected;
+      var unexpected = toPrintable(parser.unexpected);
       if (!expected.isEmpty) {
         var str = expected.join('\', \'');
         print(
@@ -143,26 +143,26 @@ class Program {
         for (var group in rule.expression.startCharacters.groups) {
           String end;
           String start;
-          if(group.end < 128) {
+          if (group.end < 128) {
             end = toPrintable(new String.fromCharCode(group.end));
           } else {
             end = toUnicode(group.end);
           }
 
-          if(group.start < 128) {
+          if (group.start < 128) {
             start = toPrintable(new String.fromCharCode(group.start));
           } else {
             start = toUnicode(group.start);
           }
 
-          if(group.start == group.end) {
+          if (group.start == group.end) {
             characters.add("[$start]");
           } else {
             characters.add("[$start-$end]");
           }
         }
 
-        if(!characters.isEmpty) {
+        if (!characters.isEmpty) {
           print('  ${characters.join()}');
         }
       }
