@@ -21,8 +21,7 @@ class MethodMatchRangesGenerator extends TemplateGenerator {
 
   static const String _TEMPLATE = "TEMPLATE";
 
-  static final String _template =
-      '''
+  static final String _template = '''
 String $NAME(List<int> ranges) {
   var length = ranges.length;
   for (var i = 0; i < length; i += 2) {

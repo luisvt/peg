@@ -11,8 +11,7 @@ class OneOrMoreExpressionGenerator extends UnaryExpressionGenerator {
 
   static const String _TEMPLATE = 'TEMPLATE';
 
-  static final String _template =
-      '''
+  static final String _template = '''
 {{#COMMENTS}}
 var {{TESTING}};
 for (var first = true, reps; ;) {  
@@ -36,8 +35,10 @@ for (var first = true, reps; ;) {
   }  
 }''';
 
-  OneOrMoreExpressionGenerator(Expression expression, ProductionRuleGenerator
-      productionRuleGenerator) : super(expression, productionRuleGenerator) {
+  OneOrMoreExpressionGenerator(Expression expression,
+      ProductionRuleGenerator productionRuleGenerator) : super(
+      expression,
+      productionRuleGenerator) {
     if (expression is! OneOrMoreExpression) {
       throw new StateError('Expression must be OneOrMoreExpression');
     }
@@ -47,8 +48,9 @@ for (var first = true, reps; ;) {
 
   List<String> generate() {
     var block = getTemplateBlock(_TEMPLATE);
-    var testing = productionRuleGenerator.allocateBlockVariable(
-        ExpressionGenerator.VARIABLE_TESTING);
+    var testing =
+        productionRuleGenerator.allocateBlockVariable(
+            ExpressionGenerator.VARIABLE_TESTING);
     if (productionRuleGenerator.comment) {
       block.assign('#COMMENTS', '// $_expression');
     }

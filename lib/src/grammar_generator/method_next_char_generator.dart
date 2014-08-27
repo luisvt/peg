@@ -18,8 +18,7 @@ class MethodNextCharGenerator extends TemplateGenerator {
 
   static const String _TEMPLATE = "TEMPLATE";
 
-  static final String _template =
-      '''
+  static final String _template = '''
 void $NAME([int count = 1]) {  
   $_SUCCESS = true;
   $_INPUT_POS += count; 

@@ -14,7 +14,7 @@ class ChoiceWithOptionalFinder extends UnifyingExpressionVisitor {
 
   Object visitOrderedChoice(OrderedChoiceExpression expression) {
     var expressions = expression.expressions;
-    if(expressions.length == 1) {
+    if (expressions.length == 1) {
       return null;
     }
 

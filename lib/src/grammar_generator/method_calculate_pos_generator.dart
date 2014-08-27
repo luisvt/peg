@@ -13,8 +13,7 @@ class MethodCalculatePosGenerator extends TemplateGenerator {
 
   static const String _TEMPLATE = "TEMPLATE";
 
-  static final String _template =
-      '''
+  static final String _template = '''
 void $NAME(int pos) {
   if (pos == null || pos < 0 || pos > $_INPUT_LEN) {
     return;

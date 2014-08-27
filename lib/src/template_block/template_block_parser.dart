@@ -4,8 +4,10 @@
 part of peg.template_block;
 class TemplateBlockParser {
   static const int EOF = -1;
-  static final List<bool> _lookahead = _unmap([0x7fffffff, 0x7fffffff, 0x7fffffff, 0x7fffc0ff, 0x1ff]);
-  // 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
+  static final List<bool> _lookahead =
+      _unmap([0x7fffffff, 0x7fffffff, 0x7fffffff, 0x7fffc0ff, 0x1ff]);
+
+      // 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
   static final List<bool> _mapping0 = _unmap([0x3ffffff, 0x7fffffe]);
   bool success;
   List _cache;
@@ -108,7 +110,7 @@ class TemplateBlockParser {
     }
     if (_inputPos > _failurePos) {
       _expected = [];
-     _failurePos = _inputPos;
+      _failurePos = _inputPos;
     }
     if (expected != null) {
       _expected.addAll(expected);
@@ -212,7 +214,7 @@ class TemplateBlockParser {
   String _matchMapping(int start, int end, List<bool> mapping) {
     success = _ch >= start && _ch <= end;
     if (success) {
-      if(mapping[_ch - start]) {
+      if (mapping[_ch - start]) {
         var result = _text[_inputPos++];
         if (_inputPos < _inputLen) {
           _ch = _text.codeUnitAt(_inputPos);
@@ -224,7 +226,7 @@ class TemplateBlockParser {
       success = false;
     }
     if (_inputPos > _testing) {
-       _failure();
+      _failure();
     }
     return null;
   }
@@ -253,7 +255,7 @@ class TemplateBlockParser {
           if (_inputPos < _inputLen) {
             _ch = _text.codeUnitAt(_inputPos);
           } else {
-             _ch = EOF;
+            _ch = EOF;
           }
           success = true;
           return result;
@@ -666,7 +668,8 @@ class TemplateBlockParser {
     var $$;
     // (singleLineKey / singleLinePart)+
     var testing0;
-    for (var first = true, reps; ;) {
+    for (var first = true,
+        reps; ; ) {
       while (true) {
         // singleLineKey
         $$ = parse_singleLineKey();
@@ -676,7 +679,7 @@ class TemplateBlockParser {
         break;
       }
       if (success) {
-       if (first) {
+        if (first) {
           first = false;
           reps = [$$];
           testing0 = _testing;
@@ -919,12 +922,14 @@ class TemplateBlockParser {
     _template = template;
     var result = parse_template();
     if (!success) {
-      if(!expected.isEmpty) {
+      if (!expected.isEmpty) {
         var str = expected.map((s) => toPrintable(s)).join('\', \'');
-        throw 'Parser error at ($line, $column): expected \'$str\' but found \'$unexpected\'';
+        throw
+            'Parser error at ($line, $column): expected \'$str\' but found \'$unexpected\'';
       } else {
-        if(!unexpected.isEmpty) {
-          throw 'Parser error at ($line, $column): unexpected "${toPrintable(unexpected)}"';
+        if (!unexpected.isEmpty) {
+          throw
+              'Parser error at ($line, $column): unexpected "${toPrintable(unexpected)}"';
         } else {
           throw 'Parser error at ($line, $column): unexpected end of file';
         }

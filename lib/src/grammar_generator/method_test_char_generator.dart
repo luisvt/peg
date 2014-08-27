@@ -5,8 +5,7 @@ class MethodTestCharGenerator extends TemplateGenerator {
 
   static const String _TEMPLATE = "TEMPLATE";
 
-  static final String _template =
-      '''
+  static final String _template = '''
 bool $NAME(int c, int flag) {
   if (c < 0 || c > 127) {
     return false;

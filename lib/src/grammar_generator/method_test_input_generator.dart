@@ -11,8 +11,7 @@ class MethodTestInputGenerator extends TemplateGenerator {
 
   static const String _TEMPLATE = "TEMPLATE";
 
-  static final String _template =
-      '''
+  static final String _template = '''
 bool $NAME(int flag) {
   if ($_INPUT_POS >= $_INPUT_LEN) {
     return false;

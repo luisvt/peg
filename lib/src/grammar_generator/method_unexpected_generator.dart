@@ -11,8 +11,7 @@ class MethodUnexpectedGenerator extends TemplateGenerator {
 
   static const String _TEMPLATE = "TEMPLATE";
 
-  static final String _template =
-      '''
+  static final String _template = '''
 String get $NAME {
   if ($_FAILURE_POS < 0 || $_FAILURE_POS >= $_INPUT_LEN) {
     return '';    

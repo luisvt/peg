@@ -15,8 +15,8 @@ class GrammarAnalyzer {
     var unresolvedRules = new UnresolvedRulesFinder().find(rules);
     for (var rule in unresolvedRules.keys) {
       var rules = unresolvedRules[rule].join(', ');
-      warnings.add('Warning: Found unresolved rule(s) in "${rule.name}": $rules'
-          );
+      warnings.add(
+          'Warning: Found unresolved rule(s) in "${rule.name}": $rules');
     }
 
     var leftRecursions = new LeftRecursionsFinder().find(rules);
@@ -34,8 +34,8 @@ class GrammarAnalyzer {
         }
 
         var rules = list.join(' -> ');
-        warnings.add('Warning: Found left recursive rule "${rule.name}": $rules'
-            );
+        warnings.add(
+            'Warning: Found left recursive rule "${rule.name}": $rules');
       }
     }
 
@@ -63,8 +63,7 @@ class GrammarAnalyzer {
         var expressions = container[key].join(", ");
         for (var expression in container[key]) {
           warnings.add(
-              'Warning: Found infinite loop in "${rule.name}": \"$key\" contains \"$expression\" which is able to not consume input'
-              );
+              'Warning: Found infinite loop in "${rule.name}": \"$key\" contains \"$expression\" which is able to not consume input');
         }
       }
     }

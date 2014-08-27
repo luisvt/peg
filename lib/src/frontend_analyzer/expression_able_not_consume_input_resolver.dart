@@ -99,7 +99,8 @@ class ExpressionAbleNotConsumeInputResolver extends ExpressionResolver {
 
   Object _applyData(Expression from, Expression to) {
     to.directAbleNotConsumeInputExpressions.add(from);
-    // to.directMayNotConsumeInputExpressions.addAll(from.directLeftExpressions);
+
+        // to.directMayNotConsumeInputExpressions.addAll(from.directLeftExpressions);
     to.allAbleNotConsumeInputExpressions.add(from);
     to.allAbleNotConsumeInputExpressions.addAll(from.allLeftExpressions);
     return null;

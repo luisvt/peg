@@ -11,8 +11,7 @@ class MethodFailureGenerator extends TemplateGenerator {
 
   static const String _TEMPLATE = "TEMPLATE";
 
-  static final String _template =
-      '''
+  static final String _template = '''
 void $NAME([List<String> expected]) {  
   if ($_FAILURE_POS > $_INPUT_POS) {
     return;

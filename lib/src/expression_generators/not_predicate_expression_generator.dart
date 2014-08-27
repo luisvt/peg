@@ -17,8 +17,7 @@ class NotPredicateExpressionGenerator extends UnaryExpressionGenerator {
 
   static const String _TEMPLATE = 'TEMPLATE';
 
-  static final String _template =
-      '''
+  static final String _template = '''
 {{#COMMENTS}}
 var {{CH}} = $_CH;
 var {{POS}} = $_INPUT_POS;
@@ -32,8 +31,10 @@ $_RESULT = null;
 $_SUCCESS = !$_SUCCESS;
 if (!$_SUCCESS && $_INPUT_POS > $_TESTING) $_FAILURE();''';
 
-  NotPredicateExpressionGenerator(Expression expression, ProductionRuleGenerator
-      productionRuleGenerator) : super(expression, productionRuleGenerator) {
+  NotPredicateExpressionGenerator(Expression expression,
+      ProductionRuleGenerator productionRuleGenerator) : super(
+      expression,
+      productionRuleGenerator) {
     if (expression is! NotPredicateExpression) {
       throw new StateError('Expression must be NotPredicateExpression');
     }
@@ -43,12 +44,13 @@ if (!$_SUCCESS && $_INPUT_POS > $_TESTING) $_FAILURE();''';
 
   List<String> generate() {
     var block = getTemplateBlock(_TEMPLATE);
-    var ch = productionRuleGenerator.allocateBlockVariable(
-        ExpressionGenerator.VARIABLE_CH);
-    var pos = productionRuleGenerator.allocateBlockVariable(
-        ExpressionGenerator.VARIABLE_POS);
-    var testing = productionRuleGenerator.allocateBlockVariable(
-        ExpressionGenerator.VARIABLE_TESTING);
+    var ch =
+        productionRuleGenerator.allocateBlockVariable(ExpressionGenerator.VARIABLE_CH);
+    var pos =
+        productionRuleGenerator.allocateBlockVariable(ExpressionGenerator.VARIABLE_POS);
+    var testing =
+        productionRuleGenerator.allocateBlockVariable(
+            ExpressionGenerator.VARIABLE_TESTING);
     block.assign('#EXPRESSION', _generators[0].generate());
     if (productionRuleGenerator.comment) {
       block.assign('#COMMENTS', '// $_expression');

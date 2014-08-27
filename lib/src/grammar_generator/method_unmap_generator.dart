@@ -5,8 +5,7 @@ class MethodUnmapGenerator extends TemplateGenerator {
 
   static const String _TEMPLATE = "TEMPLATE";
 
-  static final String _template =
-      '''
+  static final String _template = '''
 static List<bool> $NAME(List<int> mapping) {
   var length = mapping.length;
   var result = new List<bool>(length * 31);

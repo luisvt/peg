@@ -7,8 +7,7 @@ class MethodTraceGenerator extends TemplateGenerator {
 
   static const String _TEMPLATE = "TEMPLATE";
 
-  static final String _template =
-      '''
+  static final String _template = '''
 void $NAME(String rule, String prefix) {
   _calculatePos(_inputPos);
   var message = "\$prefix \$line, \$column: \$rule";

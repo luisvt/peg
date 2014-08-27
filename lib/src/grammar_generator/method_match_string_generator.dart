@@ -21,8 +21,7 @@ class MethodMatchStringGenerator extends TemplateGenerator {
 
   static const String _TEMPLATE = "TEMPLATE";
 
-  static final String _template =
-      '''
+  static final String _template = '''
 String $NAME(String string, List<String> expected) {
   $_SUCCESS = $_TEXT.startsWith(string, $_INPUT_POS);
   if ($_SUCCESS) {

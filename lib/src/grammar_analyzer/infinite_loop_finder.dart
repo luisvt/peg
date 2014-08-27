@@ -5,9 +5,9 @@ class InfiniteLoopFinder extends UnifyingExpressionVisitor {
 
   //
 
-  Map<ProductionRule, Map<Expression, List<Expression>>> find(List<ProductionRule>
-      rules) {
-    result = <ProductionRule, Map<Expression, List<Expression>>> {};
+  Map<ProductionRule, Map<Expression, List<Expression>>>
+      find(List<ProductionRule> rules) {
+    result = <ProductionRule, Map<Expression, List<Expression>>>{};
     for (var rule in rules) {
       rule.expression.accept(this);
     }
@@ -26,7 +26,7 @@ class InfiniteLoopFinder extends UnifyingExpressionVisitor {
   void _addExpression(ZeroOrMoreExpression expression) {
     var map = result[expression.owner];
     if (map == null) {
-      map = <Expression, List<Expression>> {};
+      map = <Expression, List<Expression>>{};
       map[expression] = <Expression>[];
       result[expression.owner] = map;
     }
@@ -46,7 +46,7 @@ class InfiniteLoopFinder extends UnifyingExpressionVisitor {
 
     for (var expression in expression.directAbleNotConsumeInputExpressions) {
       if (expression.directAbleNotConsumeInputExpressions.isEmpty) {
-        if(expression.isAbleNotConsumeInput) {
+        if (expression.isAbleNotConsumeInput) {
           endPoints.add(expression);
         }
       } else {

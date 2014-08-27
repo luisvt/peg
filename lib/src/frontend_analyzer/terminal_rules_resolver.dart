@@ -5,7 +5,7 @@ class TerminalRulesFinder {
     _reanalyze(rules);
     for (var rule in rules) {
       var expression = rule.expression;
-      if(expression.startsWithAny) {
+      if (expression.startsWithAny) {
         rule.isTerminal = false;
       }
     }

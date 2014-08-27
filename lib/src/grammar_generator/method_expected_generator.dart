@@ -7,8 +7,7 @@ class MethodExpectedGenerator extends TemplateGenerator {
 
   static const String _TEMPLATE = "TEMPLATE";
 
-  static final String _template =
-      '''
+  static final String _template = '''
 List<String> get $NAME {
   var set = new Set<String>();  
   set.addAll($_EXPECTED);

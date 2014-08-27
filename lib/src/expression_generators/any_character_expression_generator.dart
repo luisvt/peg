@@ -7,13 +7,14 @@ class AnyCharacterExpressionGenerator extends ExpressionGenerator {
 
   static const String _TEMPLATE = 'TEMPLATE';
 
-  static final String _template =
-      '''
+  static final String _template = '''
 {{#COMMENTS}}
 $_RESULT = $_MATCH_ANY();''';
 
-  AnyCharacterExpressionGenerator(Expression expression, ProductionRuleGenerator
-      productionRuleGenerator) : super(expression, productionRuleGenerator) {
+  AnyCharacterExpressionGenerator(Expression expression,
+      ProductionRuleGenerator productionRuleGenerator) : super(
+      expression,
+      productionRuleGenerator) {
     if (expression is! AnyCharacterExpression) {
       throw new StateError('Expression must be AnyCharacterExpression');
     }

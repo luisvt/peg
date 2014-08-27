@@ -13,13 +13,11 @@ class OrderedChoiceExpressionGenerator extends ListExpressionGenerator {
 
   static const String _TEMPLATE_SINGLE = 'TEMPLATE_SINGLE';
 
-  static final String _templateInner =
-      '''
+  static final String _templateInner = '''
 {{#EXPRESSION}}
 if ($_SUCCESS) break;''';
 
-  static final String _templateOuter =
-      '''
+  static final String _templateOuter = '''
 {{#COMMENTS}}
 while (true) {
   {{#EXPRESSIONS}}
@@ -34,8 +32,10 @@ while (true) {
 
   OrderedChoiceExpression _expression;
 
-  OrderedChoiceExpressionGenerator(Expression expression, ProductionRuleGenerator
-      productionRuleGenerator) : super(expression, productionRuleGenerator) {
+  OrderedChoiceExpressionGenerator(Expression expression,
+      ProductionRuleGenerator productionRuleGenerator) : super(
+      expression,
+      productionRuleGenerator) {
     if (expression is! OrderedChoiceExpression) {
       throw new StateError('Expression must be OrderedChoiceExpression');
     }

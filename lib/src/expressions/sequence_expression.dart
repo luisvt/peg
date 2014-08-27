@@ -3,8 +3,7 @@ part of peg.expressions;
 class SequenceExpression extends ListExpression {
   int _numberOfMayBeZero;
 
-  SequenceExpression(List<Expression> expressions) : super(
-      expressions) {
+  SequenceExpression(List<Expression> expressions) : super(expressions) {
     for (var expression in expressions) {
       if (expression == null || expression is! Expression) {
         throw new StateError('The expression list contains illegal expression');

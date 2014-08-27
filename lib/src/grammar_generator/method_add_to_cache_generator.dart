@@ -17,8 +17,7 @@ class MethodAddToCacheGenerator extends TemplateGenerator {
 
   static const String _TEMPLATE = "TEMPLATE";
 
-  static final String _template =
-      '''
+  static final String _template = '''
 void $NAME(dynamic result, int start, int id) {  
   var cached = $_CACHE[start];
   if (cached == null) {

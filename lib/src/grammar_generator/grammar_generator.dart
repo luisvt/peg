@@ -117,13 +117,21 @@ class GrammarGenerator extends TemplateGenerator {
 
   List<String> generate() {
     var constructors = [new ClassContructorGenerator(name).generate()];
+    var generators = <String, Generator>{};
+    var methods = [];
+    for (var rule in grammar.rules) {
+      var generator = new ProductionRuleGenerator(rule, this);
+      generators[generator.getMethodName()] = generator;
+    }
+
+    methods.addAll(_generateInSortOrder(generators));
+    generators.clear();
+
+    // Cache
     var size = (grammar.rules.length >> 5) + 1;
     if (size != size << 5) {
       size++;
     }
-
-    var generators = <String, Generator> {};
-    // Cache
     generators[MethodAddToCacheGenerator.NAME] = new MethodAddToCacheGenerator(
         size);
     generators[MethodGetFromCacheGenerator.NAME] =
@@ -141,8 +149,8 @@ class GrammarGenerator extends TemplateGenerator {
     generators[MethodMatchCharGenerator.NAME] = new MethodMatchCharGenerator();
     generators[MethodMatchMappingGenerator.NAME] =
         new MethodMatchMappingGenerator();
-    generators[MethodMatchRangeGenerator.NAME] = new MethodMatchRangeGenerator(
-        );
+    generators[MethodMatchRangeGenerator.NAME] =
+        new MethodMatchRangeGenerator();
     generators[MethodMatchRangesGenerator.NAME] =
         new MethodMatchRangesGenerator();
     generators[MethodMatchStringGenerator.NAME] =
@@ -158,8 +166,8 @@ class GrammarGenerator extends TemplateGenerator {
     // TODO: MethodTestInputGenerator use?
     generators[MethodTestInputGenerator.NAME] = new MethodTestInputGenerator();
     // Unexpected
-    generators[MethodUnexpectedGenerator.NAME] = new MethodUnexpectedGenerator(
-        );
+    generators[MethodUnexpectedGenerator.NAME] =
+        new MethodUnexpectedGenerator();
     // Utility
     generators[MethodUnmapGenerator.NAME] = new MethodUnmapGenerator();
     // Trace
@@ -175,12 +183,7 @@ class GrammarGenerator extends TemplateGenerator {
       generators[MethodTraceGenerator.NAME] = new MethodTraceGenerator(length);
     }
 
-    for (var rule in grammar.rules) {
-      var generator = new ProductionRuleGenerator(rule, this);
-      generators[generator.getMethodName()] = generator;
-    }
-
-    var methods = _generateInSortOrder(generators);
+    methods.addAll(_generateInSortOrder(generators));
     if (parserGenerator.grammar.members != null) {
       methods.add(Utils.codeToStrings(parserGenerator.grammar.members));
     }
@@ -192,8 +195,13 @@ class GrammarGenerator extends TemplateGenerator {
     // Properties
     var properties = _generateInSortOrder(generators);
     var variables = _generateVariables();
-    var classGenerator = new ClassGenerator(constructors: constructors, methods:
-        methods, name: name, properties: properties, variables: variables);
+    var classGenerator =
+        new ClassGenerator(
+            constructors: constructors,
+            methods: methods,
+            name: name,
+            properties: properties,
+            variables: variables);
     return classGenerator.generate();
   }
 
@@ -222,7 +230,7 @@ class GrammarGenerator extends TemplateGenerator {
 
     var startCharacters = expression.startCharacters;
     var characters = startCharacters.getIndexes().toList();
-    if(characters.length == 0) {
+    if (characters.length == 0) {
       return 0;
     }
 

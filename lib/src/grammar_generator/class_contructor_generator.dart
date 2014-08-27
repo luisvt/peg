@@ -9,8 +9,7 @@ class ClassContructorGenerator extends TemplateGenerator {
 
   static const String _TEMPLATE = "TEMPLATE";
 
-  static final String _template =
-      '''
+  static final String _template = '''
 {{CLASSNAME}}(String text) {
   if (text == null) {
     throw new ArgumentError('text: \$text');

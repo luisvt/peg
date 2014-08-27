@@ -21,8 +21,7 @@ class MethodMatchCharGenerator extends TemplateGenerator {
 
   static const String _TEMPLATE = "TEMPLATE";
 
-  static final String _template =
-      '''
+  static final String _template = '''
 String $NAME(int ch, List<String> expected) {
   $_SUCCESS = $_CH == ch;
   if ($_SUCCESS) {

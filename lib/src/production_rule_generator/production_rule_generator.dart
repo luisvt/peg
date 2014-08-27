@@ -29,8 +29,7 @@ class ProductionRuleGenerator extends TemplateGenerator {
 
   static const String PREFIX_PARSE = 'parse_';
 
-  static String _templateWithCache =
-      '''
+  static String _templateWithCache = '''
 dynamic {{NAME}}() {
   {{#COMMENTS}}
   {{#ENTER}}
@@ -50,8 +49,7 @@ dynamic {{NAME}}() {
 }
 ''';
 
-  static String _templateWithoutCache =
-      '''
+  static String _templateWithoutCache = '''
 dynamic {{NAME}}() {
   {{#COMMENTS}}
   {{#ENTER}}
@@ -79,8 +77,8 @@ dynamic {{NAME}}() {
 
   Map<String, int> _variables = new Map<String, int>();
 
-  ProductionRuleGenerator(ProductionRule productionRule, GrammarGenerator
-      grammarGenerator) {
+  ProductionRuleGenerator(ProductionRule productionRule,
+      GrammarGenerator grammarGenerator) {
     if (productionRule == null) {
       throw new ArgumentError('productionRule: $productionRule');
     }
@@ -93,7 +91,8 @@ dynamic {{NAME}}() {
     _memoize = grammarGenerator.parserGenerator.memoize;
     _productionRule = productionRule;
     _expressionGenerator = new OrderedChoiceExpressionGenerator(
-        productionRule.expression, this);
+        productionRule.expression,
+        this);
     _comment = grammarGenerator.parserGenerator.comment;
     addTemplate(_TEMPLATE_WITH_CACHE, _templateWithCache);
     addTemplate(_TEMPLATE_WITHOUT_CACHE, _templateWithoutCache);
@@ -180,7 +179,7 @@ dynamic {{NAME}}() {
       block.assign('#COMMENTS', '// $_productionRule');
     }
 
-    if(grammarGenerator.parserGenerator.trace) {
+    if (grammarGenerator.parserGenerator.trace) {
       _assignTraceVariables(block);
     }
 
@@ -201,7 +200,7 @@ dynamic {{NAME}}() {
       block.assign('#COMMENTS', '// $_productionRule');
     }
 
-    if(grammarGenerator.parserGenerator.trace) {
+    if (grammarGenerator.parserGenerator.trace) {
       _assignTraceVariables(block);
     }
 

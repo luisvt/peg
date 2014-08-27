@@ -6,7 +6,6 @@ import "package:file_utils/file_utils.dart";
 
 const String CHANGE_LOG = "tool/change.log";
 const String CHANGELOG_MD = "CHANGELOG.md";
-const String PEG_RAW_PEG = "tool/peg_raw.peg";
 const String PUBSPEC_YAML = "pubspec.yaml";
 const String README_MD = "README.md";
 const String README_MD_IN = "tool/README.md.in";
@@ -18,6 +17,11 @@ void main(List<String> args) {
   // Change directory to root
   FileUtils.chdir("..");
 
+  var filesUsedInReadMe = ["tool/README.md.in", "pubspec.yaml"];
+  filesUsedInReadMe.add("example/arithmetic_parser.dart");
+  filesUsedInReadMe.add("example/arithmetic.peg");
+  filesUsedInReadMe.add("tool/peg_raw.peg");
+
   file(CHANGELOG_MD, [CHANGE_LOG], (Target t, Map args) {
     writeChangelogMd();
   });
@@ -26,7 +30,7 @@ void main(List<String> args) {
     FileUtils.touch([t.name], create: true);
   });
 
-  file(README_MD, [README_MD_IN, PUBSPEC_YAML, PEG_RAW_PEG], (Target t, Map
+  file(README_MD, filesUsedInReadMe, (Target t, Map
       args) {
     var sources = t.sources.toList();
     var template = new File(sources.removeAt(0)).readAsStringSync();

@@ -35,37 +35,31 @@ class CharacterClassExpressionGenerator extends ExpressionGenerator {
 
   static const String _TEMPLATE_RANGES = 'TEMPLATE_RANGES';
 
-  static final String _templateAscii =
-      '''
+  static final String _templateAscii = '''
 {{#COMMENTS}}
 $_RESULT = $_MATCH_MAPPING({{MIN}}, {{MAX}}, {{MAPPING}});''';
 
-  static final String _templateAsciiAndNonAscii =
-      '''
+  static final String _templateAsciiAndNonAscii = '''
 {{#COMMENTS}}
 $_RESULT = $_MATCH_MAPPING({{MIN}}, {{MAX}}, {{MAPPING}});
 if (!$_SUCCESS) {
   $_RESULT = $_MATCH_RANGES({{RANGES}});
 }''';
 
-  static final String _templateCharacter =
-      '''
+  static final String _templateCharacter = '''
 {{#COMMENTS}}
 $_RESULT = $_MATCH_CHAR({{CHARACTER}}, {{EXPECTED}});''';
 
-  static final String _templateEmpty =
-      '''
+  static final String _templateEmpty = '''
 // {{#COMMENTS}}
 $_SUCCESS = true;
 $_RESULT = \'\';''';
 
-  static final String _templateRange =
-      '''
+  static final String _templateRange = '''
 {{#COMMENTS}}
 $_RESULT = $_MATCH_RANGE({{MIN}}, {{MAX}});''';
 
-  static final String _templateRanges =
-      '''
+  static final String _templateRanges = '''
 {{#COMMENTS}}
 $_RESULT = $_MATCH_RANGES({{RANGES}});''';
 
@@ -83,8 +77,10 @@ $_RESULT = $_MATCH_RANGES({{RANGES}});''';
 
   RangeList _singleRange;
 
-  CharacterClassExpressionGenerator(Expression expression, ProductionRuleGenerator
-      productionRuleGenerator) : super(expression, productionRuleGenerator) {
+  CharacterClassExpressionGenerator(Expression expression,
+      ProductionRuleGenerator productionRuleGenerator) : super(
+      expression,
+      productionRuleGenerator) {
     if (expression is! CharacterClassExpression) {
       throw new StateError('Expression must be CharacterClassExpression');
     }
@@ -181,8 +177,9 @@ $_RESULT = $_MATCH_RANGES({{RANGES}});''';
     }
 
     block.assign('CHARACTER', _singleCharacter);
-    block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(
-        _expression));
+    block.assign(
+        'EXPECTED',
+        ExpressionGenerator.getExpectedOnFailure(_expression));
     return block.process();
   }
 

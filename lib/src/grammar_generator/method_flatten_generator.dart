@@ -5,8 +5,7 @@ class MethodFlattenGenerator extends TemplateGenerator {
 
   static const String _TEMPLATE = "TEMPLATE";
 
-  static final String _template =
-      '''
+  static final String _template = '''
 List $NAME(dynamic value) {
   if (value is List) {
     var result = [];

@@ -35,3 +35,17 @@ In the future, will be added generator of an alternative PEG (a state machine ba
 ```
 {{tool/peg_raw.peg}}
 ```
+
+**Example**
+
+Arithmetic grammar
+
+```
+{{example/arithmetic.peg}}
+```
+
+Source code of the generated parser for `arithmetic grammar` 
+
+```dart
+{{example/arithmetic_parser.dart}}
+```

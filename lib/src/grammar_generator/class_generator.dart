@@ -3,8 +3,7 @@ part of peg.grammar_generator;
 class ClassGenerator extends TemplateGenerator {
   static const String _TEMPLATE = "TEMPLATE";
 
-  static final String _template =
-      '''
+  static final String _template = '''
 class {{CLASSNAME}} {
   {{#VARIABLES}}
   {{#CONSTRUCTORS}}
@@ -24,9 +23,9 @@ class {{CLASSNAME}} {
   dynamic variables;
 
 
-  
-      ClassGenerator({this.constructors, this.methods, this.name, this.properties, this.variables})
-      {
+
+  ClassGenerator({this.constructors, this.methods, this.name, this.properties,
+      this.variables}) {
     if (name == null || name.isEmpty) {
       throw new ArgumentError("name: $name");
     }

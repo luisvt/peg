@@ -23,49 +23,61 @@ abstract class ExpressionGenerator extends TemplateGenerator {
     }
 
     if (productionRuleGenerator == null) {
-      throw new ArgumentError('productionRuleGenerator: $productionRuleGenerator');
+      throw new ArgumentError(
+          'productionRuleGenerator: $productionRuleGenerator');
     }
 
     _expression = expression;
   }
 
-  ExpressionGenerator createGenerator(Expression
-      expression, ProductionRuleGenerator productionRuleGenerator) {
+  ExpressionGenerator createGenerator(Expression expression,
+      ProductionRuleGenerator productionRuleGenerator) {
     if (expression == null) {
       throw new ArgumentError('expression: $expression');
     }
 
     switch (expression.type) {
       case ExpressionTypes.AND_PREDICATE:
-        return new AndPredicateExpressionGenerator(expression,
+        return new AndPredicateExpressionGenerator(
+            expression,
             productionRuleGenerator);
       case ExpressionTypes.ANY_CHARACTER:
-        return new AnyCharacterExpressionGenerator(expression,
+        return new AnyCharacterExpressionGenerator(
+            expression,
             productionRuleGenerator);
       case ExpressionTypes.CHARACTER_CLASS:
-        return new CharacterClassExpressionGenerator(expression,
+        return new CharacterClassExpressionGenerator(
+            expression,
             productionRuleGenerator);
       case ExpressionTypes.LITERAL:
-        return new LiteralExpressionGenerator(expression, productionRuleGenerator);
+        return new LiteralExpressionGenerator(
+            expression,
+            productionRuleGenerator);
       case ExpressionTypes.NOT_PREDICATE:
-        return new NotPredicateExpressionGenerator(expression,
+        return new NotPredicateExpressionGenerator(
+            expression,
             productionRuleGenerator);
       case ExpressionTypes.ONE_OR_MORE:
-        return new OneOrMoreExpressionGenerator(expression, productionRuleGenerator
-            );
+        return new OneOrMoreExpressionGenerator(
+            expression,
+            productionRuleGenerator);
       case ExpressionTypes.OPTIONAL:
-        return new OptionalExpressionGenerator(expression, productionRuleGenerator
-            );
+        return new OptionalExpressionGenerator(
+            expression,
+            productionRuleGenerator);
       case ExpressionTypes.ORDERED_CHOICE:
-        return new OrderedChoiceExpressionGenerator(expression,
+        return new OrderedChoiceExpressionGenerator(
+            expression,
             productionRuleGenerator);
       case ExpressionTypes.RULE:
         return new RuleExpressionGenerator(expression, productionRuleGenerator);
       case ExpressionTypes.SEQUENCE:
-        return new SequenceExpressionGenerator(expression, productionRuleGenerator
-            );
+        return new SequenceExpressionGenerator(
+            expression,
+            productionRuleGenerator);
       case ExpressionTypes.ZERO_OR_MORE:
-        return new ZeroOrMoreExpressionGenerator(expression,
+        return new ZeroOrMoreExpressionGenerator(
+            expression,
             productionRuleGenerator);
       default:
         throw new StateError('Unknown expression type: ${expression.type}');

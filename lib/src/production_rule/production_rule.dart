@@ -19,7 +19,8 @@ class ProductionRule {
 
   ProductionRule parent;
 
-  static void addCalls(ProductionRule caller, ProductionRule callee, bool direct) {
+  static void addCalls(ProductionRule caller, ProductionRule callee,
+      bool direct) {
     if (caller == null) {
       throw new ArgumentError('caller: $caller');
     }

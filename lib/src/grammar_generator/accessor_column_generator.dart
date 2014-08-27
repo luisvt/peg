@@ -11,8 +11,7 @@ class AccessorColumnGenerator extends TemplateGenerator {
 
   static const String _TEMPLATE = "TEMPLATE";
 
-  static final String _template =
-      '''
+  static final String _template = '''
 int get $NAME {
   if ($_COLUMN == -1) {
     $_CALCULATE_POS($_FAILURE_POS);

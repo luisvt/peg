@@ -18,7 +18,7 @@ class CharacterClassExpression extends Expression {
       var range = ranges[i];
       var end = range[1];
       var start = range[0];
-      if(start > end) {
+      if (start > end) {
         start = end;
         end = range[0];
       }

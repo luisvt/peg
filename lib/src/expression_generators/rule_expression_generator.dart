@@ -32,8 +32,7 @@ class RuleExpressionGenerator extends ExpressionGenerator {
 $_RESULT = {{RULE}}();''';
 
   // Non optional rule with start characters in lookahead
-  static final String _templateLookahead =
-      '''
+  static final String _templateLookahead = '''
 {{#COMMENTS}}
 if ($_CH >= {{MIN}} && $_CH <= {{MAX}} && $_LOOKAHEAD[$_CH + {{POSITION}}]) {
   $_RESULT = {{RULE}}();
@@ -46,8 +45,7 @@ else {
 }''';
 
   // Non optional rule with one start character
-  static final String _templateOne =
-      '''
+  static final String _templateOne = '''
 {{#COMMENTS}}
 if ($_CH == {{CHARACTER}}) $_RESULT = {{RULE}}();
 else {  
@@ -58,8 +56,7 @@ else {
 }''';
 
   // Non optional rule with several start characters
-  static final String _templateSeveral =
-      '''
+  static final String _templateSeveral = '''
 {{#COMMENTS}}
 var {{SKIP}} = true;
 {{#SWITCH}}
@@ -71,8 +68,7 @@ else {
  if ($_INPUT_POS > $_TESTING) $_FAILURE({{EXPECTED}});  
 }''';
 
-  static final String _templateSwitch =
-      '''
+  static final String _templateSwitch = '''
 switch ($_CH) {
   {{#CASE}}
     {{SKIP}} = false;      
@@ -81,8 +77,10 @@ switch ($_CH) {
 
   RuleExpression _expression;
 
-  RuleExpressionGenerator(Expression expression, ProductionRuleGenerator
-      productionRuleGenerator) : super(expression, productionRuleGenerator) {
+  RuleExpressionGenerator(Expression expression,
+      ProductionRuleGenerator productionRuleGenerator) : super(
+      expression,
+      productionRuleGenerator) {
     if (expression is! RuleExpression) {
       throw new StateError('Expression must be RuleExpression');
     }
@@ -135,17 +133,17 @@ switch ($_CH) {
     var rule = _expression.rule;
     var ruleExpression = rule.expression;
     var lookaheadId = ruleExpression.lookaheadId;
-    var position =
-        grammarGenerator.getLookaheadPosition(lookaheadId);
+    var position = grammarGenerator.getLookaheadPosition(lookaheadId);
     var startCharacters = ruleExpression.startCharacters;
     block = getTemplateBlock(_TEMPLATE_LOOKAHEAD);
-    block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(
-        ruleExpression));
+    block.assign(
+        'EXPECTED',
+        ExpressionGenerator.getExpectedOnFailure(ruleExpression));
     if (productionRuleGenerator.comment) {
       block.assign('#COMMENTS', '// ${_expression.name}');
     }
 
-    if(grammarGenerator.parserGenerator.trace) {
+    if (grammarGenerator.parserGenerator.trace) {
       block.assign('#TRACE', _getTraceString());
     }
 
@@ -166,13 +164,14 @@ switch ($_CH) {
     var ruleExpression = rule.expression;
     var character = ruleExpression.startCharacters.start;
     block = getTemplateBlock(_TEMPLATE_ONE);
-    block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(
-        ruleExpression));
+    block.assign(
+        'EXPECTED',
+        ExpressionGenerator.getExpectedOnFailure(ruleExpression));
     if (productionRuleGenerator.comment) {
       block.assign('#COMMENTS', '// ${_expression.name}');
     }
 
-    if(grammarGenerator.parserGenerator.trace) {
+    if (grammarGenerator.parserGenerator.trace) {
       block.assign('#TRACE', _getTraceString());
     }
 
@@ -188,13 +187,15 @@ switch ($_CH) {
     var characters = [];
     var rule = _expression.rule;
     var ruleExpression = rule.expression;
-    var skip = productionRuleGenerator.allocateBlockVariable(
-        ExpressionGenerator.VARIABLE_SKIP);
+    var skip =
+        productionRuleGenerator.allocateBlockVariable(
+            ExpressionGenerator.VARIABLE_SKIP);
     var startCharacters = ruleExpression.startCharacters.getIndexes().toList();
     var length = startCharacters.length;
     block = getTemplateBlock(_TEMPLATE_SEVERAL);
-    block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(
-        ruleExpression));
+    block.assign(
+        'EXPECTED',
+        ExpressionGenerator.getExpectedOnFailure(ruleExpression));
     for (var i = 0; i < length; i++) {
       sblock.assign('#CASE', 'case ${startCharacters[i]}:');
     }
@@ -204,7 +205,7 @@ switch ($_CH) {
       block.assign('#COMMENTS', '// ${_expression.name}');
     }
 
-    if(grammarGenerator.parserGenerator.trace) {
+    if (grammarGenerator.parserGenerator.trace) {
       block.assign('#TRACE', _getTraceString());
     }
 

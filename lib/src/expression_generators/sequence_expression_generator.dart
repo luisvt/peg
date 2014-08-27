@@ -21,38 +21,33 @@ class SequenceExpressionGenerator extends ListExpressionGenerator {
 
   static const String _TEMPLATE_SINGLE = 'TEMPLATE_SINGLE';
 
-  static final String _templateAction =
-      '''
+  static final String _templateAction = '''
 if ($_SUCCESS) {    
   {{#VARIABLES}}
   {{#CODE}}    
 }''';
 
-  static final String _templateFirst =
-      '''
+  static final String _templateFirst = '''
 {{#EXPRESSION}}
 if (!$_SUCCESS) break;
 {{#ACTION}}
 var seq = new List({{COUNT}});
 seq[{{INDEX}}] = $_RESULT;''';
 
-  static final String _templateInner =
-      '''
+  static final String _templateInner = '''
 {{#EXPRESSION}}
 if (!$_SUCCESS) break;
 {{#ACTION}}
 seq[{{INDEX}}] = $_RESULT;''';
 
-  static final String _templateLast =
-      '''
+  static final String _templateLast = '''
 {{#EXPRESSION}}
 if (!$_SUCCESS) break;
 seq[{{INDEX}}] = $_RESULT;
 $_RESULT = seq;
 {{#ACTION}}''';
 
-  static final String _templateOuter =
-      '''
+  static final String _templateOuter = '''
 {{#COMMENTS}}
 var {{CH}} = $_CH;
 var {{POS}} = $_INPUT_POS;
@@ -71,8 +66,10 @@ if (!$_SUCCESS) {
 
   SequenceExpression _expression;
 
-  SequenceExpressionGenerator(Expression expression, ProductionRuleGenerator
-      productionRuleGenerator) : super(expression, productionRuleGenerator) {
+  SequenceExpressionGenerator(Expression expression,
+      ProductionRuleGenerator productionRuleGenerator) : super(
+      expression,
+      productionRuleGenerator) {
     if (expression is! SequenceExpression) {
       throw new StateError('Expression must be SequenceExpression');
     }
@@ -113,10 +110,10 @@ if (!$_SUCCESS) {
     var block = getTemplateBlock(_TEMPLATE_OUTER);
     var expressions = _expression.expressions;
     var length = expressions.length;
-    var ch = productionRuleGenerator.allocateBlockVariable(
-        ExpressionGenerator.VARIABLE_CH);
-    var pos = productionRuleGenerator.allocateBlockVariable(
-        ExpressionGenerator.VARIABLE_POS);
+    var ch =
+        productionRuleGenerator.allocateBlockVariable(ExpressionGenerator.VARIABLE_CH);
+    var pos =
+        productionRuleGenerator.allocateBlockVariable(ExpressionGenerator.VARIABLE_POS);
     for (var i = 0; i < length; i++) {
       TemplateBlock inner;
       var generator = _generators[i];

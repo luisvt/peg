@@ -23,8 +23,7 @@ class MethodGetFromCacheGenerator extends TemplateGenerator {
 
   static const String _TEMPLATE = "TEMPLATE";
 
-  static final String _template =
-      '''
+  static final String _template = '''
 dynamic $NAME(int id) {  
   var result = $_CACHE[$_INPUT_POS];
   if (result == null) {

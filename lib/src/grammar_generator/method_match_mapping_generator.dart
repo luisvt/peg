@@ -21,8 +21,7 @@ class MethodMatchMappingGenerator extends TemplateGenerator {
 
   static const String _TEMPLATE = "TEMPLATE";
 
-  static final String _template =
-      '''
+  static final String _template = '''
 String $NAME(int start, int end, List<bool> mapping) {
   $_SUCCESS = $_CH >= start && $_CH <= end;
   if ($_SUCCESS) {    
