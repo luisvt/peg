@@ -7,6 +7,8 @@ Version: {{VERSION}}
 
 Status: Experimental
 
+Latest version always can be found at https://github.com/mezoni/peg
+
 **Features:**
 
 - Generation of detailed comments
@@ -44,7 +46,9 @@ Arithmetic grammar
 {{example/arithmetic.peg}}
 ```
 
-Source code of the generated parser for `arithmetic grammar` 
+Source code of the generated parser for `arithmetic grammar`
+
+`peg general --comment --lookahead arithmetic.peg` 
 
 ```dart
 {{example/arithmetic_parser.dart}}

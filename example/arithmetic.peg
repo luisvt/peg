@@ -23,7 +23,7 @@ Expr <-
 
 Sentence <-
   SPACES Term (PLUS / MINUS) Sentence { $$ = _binop($2, $4, $3); }
-  / Term { $$ = $1; }
+  / Term
 
 Term <-
   Atom (MUL / DIV) Term { $$ = _binop($1, $3, $2); }
