@@ -1,0 +1,37 @@
+#peg
+==========
+
+{{DESCRIPTION}}
+
+Version: {{VERSION}}
+
+Status: Experimental
+
+**Features:**
+
+- Generation of detailed comments
+- Generated parsers has no dependencies
+- Grammar analytics
+- Grammar reporting
+- Grammar statistics
+- High quality generated source code
+- Lookahead mapping tables
+- Memoization
+- Possibility to trace parsing
+- Powerful error and mistakes detection
+- Printing grammar
+- Terminal and nonterminal symbol recognition
+
+In the future, will be added generator of an alternative PEG (a state machine based) parser.
+
+**Error detection**
+
+- Infinite loops
+- Left recursive rules
+- Optional expression in choices
+
+**Grammar**
+
+```
+{{tool/peg_raw.peg}}
+```

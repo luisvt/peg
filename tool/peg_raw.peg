@@ -1,38 +1,3 @@
-#peg
-==========
-
-PEG (Parsing expression grammar) parsers generator.
-
-Version: 0.0.1
-
-Status: Experimental
-
-**Features:**
-
-- Generation of detailed comments
-- Generated parsers has no dependencies
-- Grammar analytics
-- Grammar reporting
-- Grammar statistics
-- High quality generated source code
-- Lookahead mapping tables
-- Memoization
-- Possibility to trace parsing
-- Powerful error and mistakes detection
-- Printing grammar
-- Terminal and nonterminal symbol recognition
-
-In the future, will be added generator of an alternative PEG (a state machine based) parser.
-
-**Error detection**
-
-- Infinite loops
-- Left recursive rules
-- Optional expression in choices
-
-**Grammar**
-
-```
 Grammar <- SPACING Globals? Members? Definition+ EOF
 
 Globals <- "%{" GlobalsBody* "}%" SPACING
@@ -102,5 +67,3 @@ COMMENT <- "#" (!EOL .)* EOL
 SPACE <- " " / "\t" / EOL
 
 EOL <- "\r\n" / "\n" / "\r"
-
-```

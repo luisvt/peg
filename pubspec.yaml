@@ -1,0 +1,14 @@
+name: peg
+version: 0.0.1
+author: Andrew Mezoni <andrew.mezoni@gmail.com>
+description: PEG (Parsing expression grammar) parsers generator.
+homepage: https://github.com/mezoni/peg
+dependencies:
+  args: any
+  args_helper: any
+  build_tools: any
+  lists: any
+  path: any
+  strings: any
+  template_block: any
+  yaml: any

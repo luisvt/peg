@@ -1,0 +1,75 @@
+optimize lookahead expressions
+(_ch >= 48 && _ch <= 57 && _lookahead[_ch + 81])
+(_ch == 48 || _ch == 57) {
+(_ch == 48 || _ch == 57  || _ch == 59)
+(_ch >= 48 && _ch <= 57)
+(_ch >= 48 && _ch <= 57 || _ch >= 91 && _ch <= 93)
+
+========================================
+
+TEST: choice with optional expression
+
+========================================
+
+parse([int position = 0]) {
+  reset(position);
+  return parseXXXSTART_RULE();
+}
+
+========================================
+
+AND action:
+ & { $$ = true; }
+
+ ========================================
+
+ Improve "expected" names via:
+  _failure with flag?
+  subterminals
+
+========================================
+
+lookahead optional w/o action (return default values)
+
+========================================
+
+REFACTOR constructors
+
+========================================
+
+RENAME ? parsing rule => production rule
+
+========================================
+
+FLAG
+use in failure (sub terminals)
+use in memoization
+
+========================================
+
+Print
+ sort:
+   - none
+   - tree
+   - hierarchy
+ group:
+   nonterminals, terminals
+ detail: *short full
+
+sort 1:
+a <- b c d
+b <- b1
+b1 <-
+c <- c1
+c1 <-
+d <- d1
+d1 <-
+
+sort 2:
+a <- b c d
+b <- b1
+c <- c1
+d <- d1
+b1 <-
+c1 <-
+d1 <-

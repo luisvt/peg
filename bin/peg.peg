@@ -1,0 +1,164 @@
+%{
+import 'package:peg/expressions.dart';
+import 'package:peg/grammar.dart';
+import 'package:peg/production_rule.dart';
+
+int _escape(int c) {
+  switch (c) {
+    case 110:
+      return 10;      
+    case 114:
+      return 13;      
+    case 116:
+      return 9;      
+  }    
+  return c;
+}
+
+Expression _prefix(dynamic prefix, Expression expression, String action) {  
+  switch (prefix) {
+    case '&':
+     expression = new AndPredicateExpression(expression);
+     break;
+    case '!':
+     expression = new NotPredicateExpression(expression);
+     break;        
+  }
+  expression.action = action;
+  return expression;
+}
+
+Expression _suffix(String suffix, Expression expression) {
+  switch (suffix) {
+    case '?':
+      return new OptionalExpression(expression);
+    case '*':
+      return  new ZeroOrMoreExpression(expression);
+    case '+':
+      return new OneOrMoreExpression(expression);        
+  }
+  return expression;
+}
+
+}%
+
+Grammar <-
+  SPACING Globals? Members? Definition+ EOF { $$ = new Grammar($4, $2, $3); }
+
+Globals <-
+  '%{' GlobalsBody* '}%' SPACING { $$ = _flatten(["{", $2, "}", $4]).join(); }
+
+GlobalsBody <-
+  !'}%' . { $$ = $2; }
+
+Members <-
+  '{' ActionBody* '}' SPACING { $$ = _flatten([$1, $2, $3, $4]).join(); }
+  
+Action <-
+  '{' ActionBody* '}' SPACING { $$ = _flatten([$1, $2, $3, $4]).join(); }
+
+ActionBody <-
+  Action
+  / !'}' . { $$ = $2; }  
+
+Definition <-
+  IDENTIFIER LEFTARROW Expression { $$ = new ProductionRule($1, $3); }
+
+Expression <-
+  Sequence (SLASH Sequence { $$ = $2; })* { $$ = new OrderedChoiceExpression(_flatten([$1, $2])); }  
+
+Sequence <-
+  Prefix+ { $$ = new SequenceExpression($1); }
+  
+Prefix <-
+  (AND / NOT)? Suffix Action? { $$ = _prefix($1, $2, $3); }  
+  
+Suffix <-
+  Primary (QUESTION / STAR / PLUS)? { $$ = _suffix($2, $1); }  
+  
+Primary <-
+  IDENTIFIER !LEFTARROW   { $$ = new RuleExpression($1); }
+  / OPEN Expression CLOSE { $$ = $2; }
+  / Literal
+  / Class
+  / DOT                   { $$ = new AnyCharacterExpression(); }
+  
+Literal <-
+  '\'' (!'\'' Char { $$ = $2; } )* ['] SPACING { $$ = new LiteralExpression(new String.fromCharCodes($2)); } 
+  / '"' (!'"' Char { $$ = $2; })* ["] SPACING  { $$ = new LiteralExpression(new String.fromCharCodes($2)); }  
+  
+Class <-
+  '[' (!']' Range { $$ = $2; })* ']' SPACING { $$ = new CharacterClassExpression($2); }
+  
+Range <-
+  Char '-' Char { $$ = [$1, $3]; }
+  / Char        { $$ = [$1, $1]; }
+  
+Char <-
+  '\\' ["'\-\[-\]nrt] { $$ = _escape($2.codeUnitAt(0)); }  
+  / HEX_NUMBER
+  / !'\\' .           { $$ = $2.codeUnitAt(0); }
+  
+# Tokens
+
+EOF <-
+  !.
+
+IDENTIFIER <-
+  IDENT_START IDENT_CONT* SPACING { $$ = _flatten([$1, $2]).join(); }
+  
+IDENT_START <-
+  [a-zA-Z_]
+  
+IDENT_CONT <-
+  IDENT_START / [0-9]
+
+LEFTARROW <-
+  '<-' SPACING
+  
+SLASH <-
+  '/' SPACING
+  
+AND <-
+  '&' SPACING { $$ = $1; }
+  
+NOT <-
+  '!' SPACING { $$ = $1; }
+  
+QUESTION <-
+  '?' SPACING { $$ = $1; }
+  
+STAR <-
+  '*' SPACING { $$ = $1; }
+  
+PLUS <-
+  '+' SPACING { $$ = $1; }
+  
+OPEN <-
+  '(' SPACING
+  
+CLOSE <-
+  ')' SPACING
+  
+DOT <-
+  '.' SPACING
+
+HEX_NUMBER <-
+  '\\u' [0-9a-fA-F]+ { $$ = int.parse($2.join(), radix: 16); }
+  
+SPACING <-
+  (SPACE / COMMENT)*
+  
+COMMENT <-
+  '#' (!EOL .)* EOL
+  
+SPACE <-
+  ' '
+  / '\t'
+  / EOL
+ 
+EOL <-
+  '\r\n'
+  / '\n'
+  / '\r'
+  
