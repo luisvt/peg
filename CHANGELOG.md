@@ -1,5 +1,10 @@
+## 0.0.6
+
+- Fixed bug in the original peg grammar in `COMMENT`
+
 ## 0.0.3
 
+- Added an example of the usage of a simple `arithmetic` grammar
 - Added an example of the usage of a simple `arithmetic` grammar
 
 ## 0.0.2

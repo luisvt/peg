@@ -59,7 +59,7 @@ Suffix <- Primary (QUESTION / STAR / PLUS)?
 
 Primary <- IDENTIFIER !LEFTARROW / OPEN Expression CLOSE / Literal / Class / DOT
 
-Literal <- "\'" (!"\'" Char)* ['] SPACING / "\"" (!"\"" Char)* ["] SPACING
+Literal <- "\'" (!"\'" Char)* "\'" SPACING / "\"" (!"\"" Char)* "\"" SPACING
 
 Class <- "[" (!"]" Range)* "]" SPACING
 
@@ -99,12 +99,11 @@ HEX_NUMBER <- "\\u" [0-9A-Fa-f]+
 
 SPACING <- (SPACE / COMMENT)*
 
-COMMENT <- "#" (!EOL .)* EOL
+COMMENT <- "#" (!EOL .)* EOL?
 
-SPACE <- " " / "\t" / EOL
+SPACE <- [\t ] / EOL
 
-EOL <- "\r\n" / "\n" / "\r"
-
+EOL <- "\r\n" / [\n\r]
 ```
 
 **Example**

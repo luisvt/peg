@@ -84,8 +84,8 @@ Primary <-
   / DOT                   { $$ = new AnyCharacterExpression(); }
   
 Literal <-
-  '\'' (!'\'' Char { $$ = $2; } )* ['] SPACING { $$ = new LiteralExpression(new String.fromCharCodes($2)); } 
-  / '"' (!'"' Char { $$ = $2; })* ["] SPACING  { $$ = new LiteralExpression(new String.fromCharCodes($2)); }  
+  '\'' (!'\'' Char { $$ = $2; })* '\'' SPACING { $$ = new LiteralExpression(new String.fromCharCodes($2)); } 
+  / '"' (!'"' Char { $$ = $2; })* '"' SPACING  { $$ = new LiteralExpression(new String.fromCharCodes($2)); }  
   
 Class <-
   '[' (!']' Range { $$ = $2; })* ']' SPACING { $$ = new CharacterClassExpression($2); }
@@ -150,15 +150,13 @@ SPACING <-
   (SPACE / COMMENT)*
   
 COMMENT <-
-  '#' (!EOL .)* EOL
+  '#' (!EOL .)* EOL?
   
 SPACE <-
-  ' '
-  / '\t'
+  [ \t]  
   / EOL
  
 EOL <-
   '\r\n'
-  / '\n'
-  / '\r'
+  / [\n\r]
   

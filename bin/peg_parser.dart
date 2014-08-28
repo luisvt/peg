@@ -46,10 +46,14 @@ class PegParser {
   static final List<bool> _lookahead = _unmap([0x14800013, 0x7e000000, 0x7d0fffff, 0x38ffffff, 0x7f800010, 0x7f47ffff, 0x30fffff, 0x7ff80001, 0x7ff47fff, 0x1ffffff, 0x7fffffe, 0xffffffd]);
   // '\"', '\'', '-', '[', '\\', ']', 'n', 'r', 't'
   static final List<bool> _mapping0 = _unmap([0x821, 0x1c000000, 0x144000]);
+  // '\n', '\r'
+  static final List<bool> _mapping1 = _unmap([0x9]);
   // '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'a', 'b', 'c', 'd', 'e', 'f'
-  static final List<bool> _mapping1 = _unmap([0x7e03ff, 0xfc0000]);
+  static final List<bool> _mapping2 = _unmap([0x7e03ff, 0xfc0000]);
   // 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '_', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
-  static final List<bool> _mapping2 = _unmap([0x43ffffff, 0x7fffffe]);
+  static final List<bool> _mapping3 = _unmap([0x43ffffff, 0x7fffffe]);
+  // '\t', ' '
+  static final List<bool> _mapping4 = _unmap([0x800001]);
   bool success;
   List _cache;
   int _cachePos;
@@ -92,305 +96,6 @@ class PegParser {
     return _line;       
   } 
    
-  void _addToCache(dynamic result, int start, int id) {  
-    var cached = _cache[start];
-    if (cached == null) {
-      _cacheRule[start] = id;
-      _cache[start] = [result, _inputPos, success];
-    } else {    
-      var slot = start >> 5;
-      var r1 = (slot << 5) & 0x3fffffff;    
-      var mask = 1 << (start - r1);    
-      if ((_cacheState[slot] & mask) == 0) {
-        _cacheState[slot] |= mask;   
-        cached = [new List.filled(3, 0), new Map<int, List>()];
-        _cache[start] = cached;                                      
-      }
-      slot = id >> 5;
-      r1 = (slot << 5) & 0x3fffffff;    
-      mask = 1 << (id - r1);    
-      cached[0][slot] |= mask;
-      cached[1][id] = [result, _inputPos, success];      
-    }
-    if (_cachePos < start) {
-      _cachePos = start;
-    }    
-  }
-  
-  void _calculatePos(int pos) {
-    if (pos == null || pos < 0 || pos > _inputLen) {
-      return;
-    }
-    _line = 1;
-    _column = 1;
-    for (var i = 0; i < _inputLen && i < pos; i++) {
-      var c = _text.codeUnitAt(i);
-      if (c == 13) {
-        _line++;
-        _column = 1;
-        if (i + 1 < _inputLen && _text.codeUnitAt(i + 1) == 10) {
-          i++;
-        }
-      } else if (c == 10) {
-        _line++;
-        _column = 1;
-      } else {
-        _column++;
-      }
-    }
-  }
-  
-  void _failure([List<String> expected]) {  
-    if (_failurePos > _inputPos) {
-      return;
-    }
-    if (_inputPos > _failurePos) {    
-      _expected = [];
-     _failurePos = _inputPos;
-    }
-    if (expected != null) {
-      _expected.addAll(expected);
-    }  
-  }
-  
-  List _flatten(dynamic value) {
-    if (value is List) {
-      var result = [];
-      var length = value.length;
-      for (var i = 0; i < length; i++) {
-        var element = value[i];
-        if (element is Iterable) {
-          result.addAll(_flatten(element));
-        } else {
-          result.add(element);
-        }
-      }
-      return result;
-    } else if (value is Iterable) {
-      var result = [];
-      for (var element in value) {
-        if (element is! List) {
-          result.add(element);
-        } else {
-          result.addAll(_flatten(element));
-        }
-      }
-    }
-    return [value];
-  }
-  
-  dynamic _getFromCache(int id) {  
-    var result = _cache[_inputPos];
-    if (result == null) {
-      return null;
-    }    
-    var slot = _inputPos >> 5;
-    var r1 = (slot << 5) & 0x3fffffff;  
-    var mask = 1 << (_inputPos - r1);
-    if ((_cacheState[slot] & mask) == 0) {
-      if (_cacheRule[_inputPos] == id) {      
-        _inputPos = result[1];
-        success = result[2];      
-        if (_inputPos < _inputLen) {
-          _ch = _text.codeUnitAt(_inputPos);
-        } else {
-          _ch = EOF;
-        }      
-        return result;
-      } else {
-        return null;
-      }    
-    }
-    slot = id >> 5;
-    r1 = (slot << 5) & 0x3fffffff;  
-    mask = 1 << (id - r1);
-    if ((result[0][slot] & mask) == 0) {
-      return null;
-    }
-    var data = result[1][id];  
-    _inputPos = data[1];
-    success = data[2];
-    if (_inputPos < _inputLen) {
-      _ch = _text.codeUnitAt(_inputPos);
-    } else {
-      _ch = EOF;
-    }   
-    return data;  
-  }
-  
-  String _matchAny() {
-    success = _inputPos < _inputLen;
-    if (success) {
-      var result = _text[_inputPos++];
-      if (_inputPos < _inputLen) {
-        _ch = _text.codeUnitAt(_inputPos);
-      } else {
-        _ch = EOF;
-      }    
-      return result;
-    }
-    if (_inputPos > _testing) {
-      _failure();
-    }  
-    return null;  
-  }
-  
-  String _matchChar(int ch, List<String> expected) {
-    success = _ch == ch;
-    if (success) {
-      var result = _text[_inputPos++];
-      if (_inputPos < _inputLen) {
-        _ch = _text.codeUnitAt(_inputPos);
-      } else {
-        _ch = EOF;
-      }    
-      return result;
-    }
-    if (_inputPos > _testing) {
-      _failure(expected);
-    }  
-    return null;  
-  }
-  
-  String _matchMapping(int start, int end, List<bool> mapping) {
-    success = _ch >= start && _ch <= end;
-    if (success) {    
-      if(mapping[_ch - start]) {
-        var result = _text[_inputPos++];
-        if (_inputPos < _inputLen) {
-          _ch = _text.codeUnitAt(_inputPos);
-        } else {
-          _ch = EOF;
-        }      
-        return result;
-      }
-      success = false;
-    }
-    if (_inputPos > _testing) {
-       _failure();
-    }  
-    return null;  
-  }
-  
-  String _matchRange(int start, int end) {
-    success = _ch >= start && _ch <= end;
-    if (success) { 
-      var result = _text[_inputPos++];
-      if (_inputPos < _inputLen) {
-        _ch = _text.codeUnitAt(_inputPos);
-      } else {
-        _ch = EOF;
-      }  
-      return result;
-    }
-    if (_inputPos > _testing) {
-      _failure();
-    }  
-    return null;  
-  }
-  
-  String _matchRanges(List<int> ranges) {
-    var length = ranges.length;
-    for (var i = 0; i < length; i += 2) {
-      if (_ch <= ranges[i + 1]) {
-        if (_ch >= ranges[i]) {
-          var result = _text[_inputPos++];
-          if (_inputPos < _inputLen) {
-            _ch = _text.codeUnitAt(_inputPos);
-          } else {
-             _ch = EOF;
-          }
-          success = true;    
-          return result;
-        }      
-      } else break;  
-    }
-    if (_inputPos > _testing) {
-      _failure();
-    }
-    success = false;  
-    return null;  
-  }
-  
-  String _matchString(String string, List<String> expected) {
-    success = _text.startsWith(string, _inputPos);
-    if (success) {
-      _inputPos += string.length;      
-      if (_inputPos < _inputLen) {
-        _ch = _text.codeUnitAt(_inputPos);
-      } else {
-        _ch = EOF;
-      }    
-      return string;      
-    } 
-    if (_inputPos > _testing) {
-      _failure(expected);
-    }  
-    return null; 
-  }
-  
-  void _nextChar([int count = 1]) {  
-    success = true;
-    _inputPos += count; 
-    if (_inputPos < _inputLen) {
-      _ch = _text.codeUnitAt(_inputPos);
-    } else {
-      _ch = EOF;
-    }    
-  }
-  
-  bool _testChar(int c, int flag) {
-    if (c < 0 || c > 127) {
-      return false;
-    }    
-    int slot = (c & 0xff) >> 6;  
-    int mask = 1 << c - ((slot << 6) & 0x3fffffff);  
-    if ((flag & mask) != 0) {    
-      return true;
-    }
-    return false;           
-  }
-  
-  bool _testInput(int flag) {
-    if (_inputPos >= _inputLen) {
-      return false;
-    }
-    var c = _text.codeUnitAt(_inputPos);
-    if (c < 0 || c > 127) {
-      return false;
-    }    
-    int slot = (c & 0xff) >> 6;  
-    int mask = 1 << c - ((slot << 6) & 0x3fffffff);  
-    if ((flag & mask) != 0) {    
-      return true;
-    }
-    return false;           
-  }
-  
-  static List<bool> _unmap(List<int> mapping) {
-    var length = mapping.length;
-    var result = new List<bool>(length * 31);
-    var offset = 0;
-    for (var i = 0; i < length; i++) {
-      var v = mapping[i];
-      for (var j = 0; j < 31; j++) {
-        result[offset++] = v & (1 << j) == 0 ? false : true;
-      }
-    }
-    return result;
-  }
-  
-  List<String> get expected {
-    var set = new Set<String>();  
-    set.addAll(_expected);
-    if (set.contains(null)) {
-      set.clear();
-    }  
-    var result = set.toList();
-    result.sort(); 
-    return result;        
-  }
-  
   dynamic parse_AND() {
     // TERMINAL
     // AND <- "&" SPACING
@@ -565,7 +270,7 @@ class PegParser {
   
   dynamic parse_COMMENT() {
     // TERMINAL
-    // COMMENT <- "#" (!EOL .)* EOL
+    // COMMENT <- "#" (!EOL .)* EOL?
     var $$;  
     var ch0 = _ch;
     var pos0 = _inputPos;
@@ -594,7 +299,7 @@ class PegParser {
           else {
             success = false;  
             $$ = null;
-            if (_inputPos > _testing) _failure(const ["\\r\\n", "\\n", "\\r"]);  
+            if (_inputPos > _testing) _failure(const ["EOL"]);  
           }
           _ch = ch2;
           _inputPos = pos2; 
@@ -627,6 +332,9 @@ class PegParser {
       }
       if (!success) break;
       seq[1] = $$;
+      // EOL?
+      var testing2 = _testing;
+      _testing = _inputPos;
       // EOL
       if (_ch >= 10 && _ch <= 13 && _lookahead[_ch + -9]) {
         $$ = parse_EOL();
@@ -634,8 +342,10 @@ class PegParser {
       else {
         success = false;  
         $$ = null;
-        if (_inputPos > _testing) _failure(const ["\\r\\n", "\\n", "\\r"]);  
+        if (_inputPos > _testing) _failure(const ["EOL"]);  
       }
+      success = true; 
+      _testing = testing2;
       if (!success) break;
       seq[2] = $$;
       $$ = seq;
@@ -929,17 +639,14 @@ class PegParser {
   
   dynamic parse_EOL() {
     // TERMINAL
-    // EOL <- "\r\n" / "\n" / "\r"
+    // EOL <- "\r\n" / [\n\r]
     var $$;  
     while (true) {
       // "\r\n"
       $$ = _matchString('\r\n', const ["\\r\\n"]);
       if (success) break;
-      // "\n"
-      $$ = _matchString('\n', const ["\\n"]);
-      if (success) break;
-      // "\r"
-      $$ = _matchString('\r', const ["\\r"]);
+      // [\n\r]
+      $$ = _matchMapping(10, 13, _mapping1);
       break;
     }
     return $$;
@@ -1251,7 +958,7 @@ class PegParser {
       var testing0;
       for (var first = true, reps; ;) {  
         // [0-9A-Fa-f]  
-        $$ = _matchMapping(48, 102, _mapping1);  
+        $$ = _matchMapping(48, 102, _mapping2);  
         if (success) {
          if (first) {      
             first = false;
@@ -1382,7 +1089,7 @@ class PegParser {
     // IDENT_START <- [A-Z_a-z]
     var $$;  
     // [A-Z_a-z]
-    $$ = _matchMapping(65, 122, _mapping2);
+    $$ = _matchMapping(65, 122, _mapping3);
     return $$;
   }
   
@@ -1414,7 +1121,7 @@ class PegParser {
   
   dynamic parse_Literal() {
     // NONTERMINAL
-    // Literal <- "\'" (!"\'" Char)* ['] SPACING / "\"" (!"\"" Char)* ["] SPACING
+    // Literal <- "\'" (!"\'" Char)* "\'" SPACING / "\"" (!"\"" Char)* "\"" SPACING
     var $$;  
     while (true) {
       var ch0 = _ch;
@@ -1477,8 +1184,8 @@ class PegParser {
         }
         if (!success) break;
         seq[1] = $$;
-        // [']
-        $$ = _matchChar(39, const ["\'"]);
+        // "\'"
+        $$ = _matchString('\'', const ["\'"]);
         if (!success) break;
         seq[2] = $$;
         // SPACING
@@ -1491,7 +1198,7 @@ class PegParser {
           final $1 = seq[0];
           // (!"\'" Char)*
           final $2 = seq[1];
-          // [']
+          // "\'"
           final $3 = seq[2];
           // SPACING
           final $4 = seq[3];
@@ -1564,8 +1271,8 @@ class PegParser {
         }
         if (!success) break;
         seq[1] = $$;
-        // ["]
-        $$ = _matchChar(34, const ["\""]);
+        // "\""
+        $$ = _matchString('\"', const ["\""]);
         if (!success) break;
         seq[2] = $$;
         // SPACING
@@ -1578,7 +1285,7 @@ class PegParser {
           final $1 = seq[0];
           // (!"\"" Char)*
           final $2 = seq[1];
-          // ["]
+          // "\""
           final $3 = seq[2];
           // SPACING
           final $4 = seq[3];
@@ -2073,14 +1780,11 @@ class PegParser {
   
   dynamic parse_SPACE() {
     // TERMINAL
-    // SPACE <- " " / "\t" / EOL
+    // SPACE <- [\t ] / EOL
     var $$;  
     while (true) {
-      // " "
-      $$ = _matchString(' ', const [" "]);
-      if (success) break;
-      // "\t"
-      $$ = _matchString('\t', const ["\\t"]);
+      // [\t ]
+      $$ = _matchMapping(9, 32, _mapping4);
       if (success) break;
       // EOL
       if (_ch >= 10 && _ch <= 13 && _lookahead[_ch + -9]) {
@@ -2089,7 +1793,7 @@ class PegParser {
       else {
         success = false;  
         $$ = null;
-        if (_inputPos > _testing) _failure(const ["\\r\\n", "\\n", "\\r"]);  
+        if (_inputPos > _testing) _failure(const ["EOL"]);  
       }
       break;
     }
@@ -2112,7 +1816,7 @@ class PegParser {
         else {
           success = false;  
           $$ = null;
-          if (_inputPos > _testing) _failure(const [" ", "\\t", "\\r\\n", "\\n", "\\r"]);  
+          if (_inputPos > _testing) _failure(const ["SPACE"]);  
         }
         if (success) break;
         // COMMENT
@@ -2278,6 +1982,305 @@ class PegParser {
       _inputPos = pos0;
     }
     return $$;
+  }
+  
+  void _addToCache(dynamic result, int start, int id) {  
+    var cached = _cache[start];
+    if (cached == null) {
+      _cacheRule[start] = id;
+      _cache[start] = [result, _inputPos, success];
+    } else {    
+      var slot = start >> 5;
+      var r1 = (slot << 5) & 0x3fffffff;    
+      var mask = 1 << (start - r1);    
+      if ((_cacheState[slot] & mask) == 0) {
+        _cacheState[slot] |= mask;   
+        cached = [new List.filled(3, 0), new Map<int, List>()];
+        _cache[start] = cached;                                      
+      }
+      slot = id >> 5;
+      r1 = (slot << 5) & 0x3fffffff;    
+      mask = 1 << (id - r1);    
+      cached[0][slot] |= mask;
+      cached[1][id] = [result, _inputPos, success];      
+    }
+    if (_cachePos < start) {
+      _cachePos = start;
+    }    
+  }
+  
+  void _calculatePos(int pos) {
+    if (pos == null || pos < 0 || pos > _inputLen) {
+      return;
+    }
+    _line = 1;
+    _column = 1;
+    for (var i = 0; i < _inputLen && i < pos; i++) {
+      var c = _text.codeUnitAt(i);
+      if (c == 13) {
+        _line++;
+        _column = 1;
+        if (i + 1 < _inputLen && _text.codeUnitAt(i + 1) == 10) {
+          i++;
+        }
+      } else if (c == 10) {
+        _line++;
+        _column = 1;
+      } else {
+        _column++;
+      }
+    }
+  }
+  
+  void _failure([List<String> expected]) {  
+    if (_failurePos > _inputPos) {
+      return;
+    }
+    if (_inputPos > _failurePos) {    
+      _expected = [];
+     _failurePos = _inputPos;
+    }
+    if (expected != null) {
+      _expected.addAll(expected);
+    }  
+  }
+  
+  List _flatten(dynamic value) {
+    if (value is List) {
+      var result = [];
+      var length = value.length;
+      for (var i = 0; i < length; i++) {
+        var element = value[i];
+        if (element is Iterable) {
+          result.addAll(_flatten(element));
+        } else {
+          result.add(element);
+        }
+      }
+      return result;
+    } else if (value is Iterable) {
+      var result = [];
+      for (var element in value) {
+        if (element is! List) {
+          result.add(element);
+        } else {
+          result.addAll(_flatten(element));
+        }
+      }
+    }
+    return [value];
+  }
+  
+  dynamic _getFromCache(int id) {  
+    var result = _cache[_inputPos];
+    if (result == null) {
+      return null;
+    }    
+    var slot = _inputPos >> 5;
+    var r1 = (slot << 5) & 0x3fffffff;  
+    var mask = 1 << (_inputPos - r1);
+    if ((_cacheState[slot] & mask) == 0) {
+      if (_cacheRule[_inputPos] == id) {      
+        _inputPos = result[1];
+        success = result[2];      
+        if (_inputPos < _inputLen) {
+          _ch = _text.codeUnitAt(_inputPos);
+        } else {
+          _ch = EOF;
+        }      
+        return result;
+      } else {
+        return null;
+      }    
+    }
+    slot = id >> 5;
+    r1 = (slot << 5) & 0x3fffffff;  
+    mask = 1 << (id - r1);
+    if ((result[0][slot] & mask) == 0) {
+      return null;
+    }
+    var data = result[1][id];  
+    _inputPos = data[1];
+    success = data[2];
+    if (_inputPos < _inputLen) {
+      _ch = _text.codeUnitAt(_inputPos);
+    } else {
+      _ch = EOF;
+    }   
+    return data;  
+  }
+  
+  String _matchAny() {
+    success = _inputPos < _inputLen;
+    if (success) {
+      var result = _text[_inputPos++];
+      if (_inputPos < _inputLen) {
+        _ch = _text.codeUnitAt(_inputPos);
+      } else {
+        _ch = EOF;
+      }    
+      return result;
+    }
+    if (_inputPos > _testing) {
+      _failure();
+    }  
+    return null;  
+  }
+  
+  String _matchChar(int ch, List<String> expected) {
+    success = _ch == ch;
+    if (success) {
+      var result = _text[_inputPos++];
+      if (_inputPos < _inputLen) {
+        _ch = _text.codeUnitAt(_inputPos);
+      } else {
+        _ch = EOF;
+      }    
+      return result;
+    }
+    if (_inputPos > _testing) {
+      _failure(expected);
+    }  
+    return null;  
+  }
+  
+  String _matchMapping(int start, int end, List<bool> mapping) {
+    success = _ch >= start && _ch <= end;
+    if (success) {    
+      if(mapping[_ch - start]) {
+        var result = _text[_inputPos++];
+        if (_inputPos < _inputLen) {
+          _ch = _text.codeUnitAt(_inputPos);
+        } else {
+          _ch = EOF;
+        }      
+        return result;
+      }
+      success = false;
+    }
+    if (_inputPos > _testing) {
+       _failure();
+    }  
+    return null;  
+  }
+  
+  String _matchRange(int start, int end) {
+    success = _ch >= start && _ch <= end;
+    if (success) { 
+      var result = _text[_inputPos++];
+      if (_inputPos < _inputLen) {
+        _ch = _text.codeUnitAt(_inputPos);
+      } else {
+        _ch = EOF;
+      }  
+      return result;
+    }
+    if (_inputPos > _testing) {
+      _failure();
+    }  
+    return null;  
+  }
+  
+  String _matchRanges(List<int> ranges) {
+    var length = ranges.length;
+    for (var i = 0; i < length; i += 2) {
+      if (_ch <= ranges[i + 1]) {
+        if (_ch >= ranges[i]) {
+          var result = _text[_inputPos++];
+          if (_inputPos < _inputLen) {
+            _ch = _text.codeUnitAt(_inputPos);
+          } else {
+             _ch = EOF;
+          }
+          success = true;    
+          return result;
+        }      
+      } else break;  
+    }
+    if (_inputPos > _testing) {
+      _failure();
+    }
+    success = false;  
+    return null;  
+  }
+  
+  String _matchString(String string, List<String> expected) {
+    success = _text.startsWith(string, _inputPos);
+    if (success) {
+      _inputPos += string.length;      
+      if (_inputPos < _inputLen) {
+        _ch = _text.codeUnitAt(_inputPos);
+      } else {
+        _ch = EOF;
+      }    
+      return string;      
+    } 
+    if (_inputPos > _testing) {
+      _failure(expected);
+    }  
+    return null; 
+  }
+  
+  void _nextChar([int count = 1]) {  
+    success = true;
+    _inputPos += count; 
+    if (_inputPos < _inputLen) {
+      _ch = _text.codeUnitAt(_inputPos);
+    } else {
+      _ch = EOF;
+    }    
+  }
+  
+  bool _testChar(int c, int flag) {
+    if (c < 0 || c > 127) {
+      return false;
+    }    
+    int slot = (c & 0xff) >> 6;  
+    int mask = 1 << c - ((slot << 6) & 0x3fffffff);  
+    if ((flag & mask) != 0) {    
+      return true;
+    }
+    return false;           
+  }
+  
+  bool _testInput(int flag) {
+    if (_inputPos >= _inputLen) {
+      return false;
+    }
+    var c = _text.codeUnitAt(_inputPos);
+    if (c < 0 || c > 127) {
+      return false;
+    }    
+    int slot = (c & 0xff) >> 6;  
+    int mask = 1 << c - ((slot << 6) & 0x3fffffff);  
+    if ((flag & mask) != 0) {    
+      return true;
+    }
+    return false;           
+  }
+  
+  static List<bool> _unmap(List<int> mapping) {
+    var length = mapping.length;
+    var result = new List<bool>(length * 31);
+    var offset = 0;
+    for (var i = 0; i < length; i++) {
+      var v = mapping[i];
+      for (var j = 0; j < 31; j++) {
+        result[offset++] = v & (1 << j) == 0 ? false : true;
+      }
+    }
+    return result;
+  }
+  
+  List<String> get expected {
+    var set = new Set<String>();  
+    set.addAll(_expected);
+    if (set.contains(null)) {
+      set.clear();
+    }  
+    var result = set.toList();
+    result.sort(); 
+    return result;        
   }
   
   void reset(int pos) {
