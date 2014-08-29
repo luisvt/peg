@@ -10,7 +10,7 @@ class MethodTraceGenerator extends TemplateGenerator {
   static final String _template = '''
 void $NAME(String rule, String prefix) {
   _calculatePos(_inputPos);
-  var message = "\$prefix \$line, \$column: \$rule";
+  var message = "\$line, \$column:\$prefix \$rule";
   if (message.length > {{LENGTH}}) {
     message = message.substring(0, {{LENGTH}});
   } else {

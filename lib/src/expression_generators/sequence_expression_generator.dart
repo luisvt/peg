@@ -29,20 +29,20 @@ if ($_SUCCESS) {
 
   static final String _templateFirst = '''
 {{#EXPRESSION}}
-if (!$_SUCCESS) break;
+{{#BREAK}}
 {{#ACTION}}
 var seq = new List({{COUNT}});
 seq[{{INDEX}}] = $_RESULT;''';
 
   static final String _templateInner = '''
 {{#EXPRESSION}}
-if (!$_SUCCESS) break;
+{{#BREAK}}
 {{#ACTION}}
 seq[{{INDEX}}] = $_RESULT;''';
 
   static final String _templateLast = '''
 {{#EXPRESSION}}
-if (!$_SUCCESS) break;
+{{#BREAK}}
 seq[{{INDEX}}] = $_RESULT;
 $_RESULT = seq;
 {{#ACTION}}''';
@@ -130,6 +130,14 @@ if (!$_SUCCESS) {
       inner.assign('#EXPRESSION', generator.generate());
       inner.assign('#ACTION', _generateAction(expression));
       inner.assign('INDEX', i);
+      if (!generator.breakOnFailWasInserted()) {
+        inner.assign('#BREAK', 'if (!$_SUCCESS) break;');
+      } else {
+        //print("=======================");
+        //print("${_expression}: can break;");
+        //print("${generator._expression}: can break;");
+      }
+
       block.assign('#EXPRESSIONS', inner.process());
     }
 

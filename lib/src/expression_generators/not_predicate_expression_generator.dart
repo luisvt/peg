@@ -17,7 +17,7 @@ class NotPredicateExpressionGenerator extends UnaryExpressionGenerator {
 
   static const String _TEMPLATE = 'TEMPLATE';
 
-  static final String _template = '''
+  static final String _template_OLD = '''
 {{#COMMENTS}}
 var {{CH}} = $_CH;
 var {{POS}} = $_INPUT_POS;
@@ -31,6 +31,25 @@ $_RESULT = null;
 $_SUCCESS = !$_SUCCESS;
 if (!$_SUCCESS && $_INPUT_POS > $_TESTING) $_FAILURE();''';
 
+  static final String _template = '''
+{{#COMMENTS}}
+var {{CH}} = $_CH;
+var {{POS}} = $_INPUT_POS;
+var {{TESTING}} = $_TESTING; 
+$_TESTING = $_INPUT_LEN + 1;
+{{#EXPRESSION}}
+$_CH = {{CH}};
+$_INPUT_POS = {{POS}}; 
+$_TESTING = {{TESTING}};
+$_RESULT = null;
+$_SUCCESS = !$_SUCCESS;
+if (!$_SUCCESS) {
+  if ($_INPUT_POS > $_TESTING) $_FAILURE();
+  {{#BREAK}}
+}''';
+
+  bool _breakOnFailInserted;
+
   NotPredicateExpressionGenerator(Expression expression,
       ProductionRuleGenerator productionRuleGenerator) : super(
       expression,
@@ -40,6 +59,11 @@ if (!$_SUCCESS && $_INPUT_POS > $_TESTING) $_FAILURE();''';
     }
 
     addTemplate(_TEMPLATE, _template);
+    _breakOnFailInserted = false;
+  }
+
+  bool breakOnFailWasInserted() {
+    return _breakOnFailInserted;
   }
 
   List<String> generate() {
@@ -54,6 +78,11 @@ if (!$_SUCCESS && $_INPUT_POS > $_TESTING) $_FAILURE();''';
     block.assign('#EXPRESSION', _generators[0].generate());
     if (productionRuleGenerator.comment) {
       block.assign('#COMMENTS', '// $_expression');
+    }
+
+    if (canInserBreakOnFail()) {
+      block.assign('#BREAK', "break;");
+      _breakOnFailInserted = true;
     }
 
     block.assign('CH', ch);

@@ -3,7 +3,7 @@
 
 PEG (Parsing expression grammar) parsers generator.
 
-Version: 0.0.6
+Version: 0.0.7
 
 Status: Experimental
 
@@ -31,6 +31,31 @@ In the future, will be added generator of an alternative PEG (a state machine ba
 - Infinite loops
 - Left recursive rules
 - Optional expression in choices
+
+**Trace**
+
+Trace information are useful for diagnose the problems.
+
+Trace displayed in the following format:
+
+column, line:state rule padding code position
+
+Eg:
+
+```
+94, 8: F* OPEN    '-' Char { $$ = [$1, $3]; (2343)
+94, 8:  > Literal '-' Char { $$ = [$1, $3]; (2343)
+
+```
+
+States:
+
+- '  >' Enter
+- '  <' Leave success
+- ' F<' Leave failure
+- 'C <' Leave from cache success
+- 'CF<' Leave from cache failure
+- ' F*' Skip with failure
 
 **Grammar**
 
@@ -104,6 +129,7 @@ COMMENT <- "#" (!EOL .)* EOL?
 SPACE <- [\t ] / EOL
 
 EOL <- "\r\n" / [\n\r]
+
 ```
 
 **Example**

@@ -1,4 +1,18 @@
-Bug with character class [\-]
+Trace:
+
+Trace state
+column, line: state rule spaces code
+
+Eg
+88, 15:   <SPACE          Char { $$ = $2; })* '"' SPACING  { $$ = new Liter (2127)
+
+States:
+'  >' Enter
+'  <' Leave success
+' F<' Leave failure
+'C <' Leave from cache success
+'CF<' Leave from cache failure
+' F*' Skip with failure
 
 ========================================
 

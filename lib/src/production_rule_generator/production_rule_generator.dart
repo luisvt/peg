@@ -39,6 +39,7 @@ dynamic {{NAME}}() {
     $_RESULT = $_GET_FROM_CACHE({{RULE_ID}});
   }
   if($_RESULT != null) {
+    {{#LEAVE_CACHED}}
     return $_RESULT[0];       
   }  
   {{#FLAGS}}  
@@ -149,8 +150,28 @@ dynamic {{NAME}}() {
 
   void _assignTraceVariables(TemplateBlock block) {
     var name = _productionRule.name;
-    block.assign('#ENTER', "$_TRACE('$name', '>  ');");
-    block.assign('#LEAVE', "$_TRACE('$name', ' <' + ($_SUCCESS ? ' ' : '*'));");
+    block.assign(
+        '#ENTER',
+        "$_TRACE('$name', '${Trace.getTraceState(enter: true, success: true)}');");
+    var success = Trace.getTraceState(enter: false, success: true);
+    var failed = Trace.getTraceState(enter: false, success: false);
+    block.assign(
+        '#LEAVE',
+        "$_TRACE('$name', ($_SUCCESS ? '$success' : '$failed'));");
+  }
+
+  void _assignTraceVariablesWithCache(TemplateBlock block) {
+    var name = _productionRule.name;
+    block.assign(
+        '#ENTER',
+        "$_TRACE('$name', '${Trace.getTraceState(enter: true, success: true)}');");
+    var success =
+        Trace.getTraceState(cached: true, enter: false, success: true);
+    var failed =
+        Trace.getTraceState(cached: true, enter: false, success: false);
+    block.assign(
+        '#LEAVE_CACHE',
+        "$_TRACE('$name', ($_SUCCESS ? '$success' : '$failed'));");
   }
 
   List<String> _generateVariables() {

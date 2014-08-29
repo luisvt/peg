@@ -28,7 +28,12 @@ $_CH = {{CH}};
 $_INPUT_POS = {{POS}}; 
 $_TESTING = {{TESTING}};
 $_RESULT = null;
-if (!$_SUCCESS && $_INPUT_POS > $_TESTING) $_FAILURE();''';
+if (!$_SUCCESS) {
+  if ($_INPUT_POS > $_TESTING) $_FAILURE();
+  {{#BREAK}}
+}''';
+
+  bool _breakOnFailInserted;
 
   AndPredicateExpressionGenerator(Expression expression,
       ProductionRuleGenerator productionRuleGenerator) : super(
@@ -39,6 +44,11 @@ if (!$_SUCCESS && $_INPUT_POS > $_TESTING) $_FAILURE();''';
     }
 
     addTemplate(_TEMPLATE, _template);
+    _breakOnFailInserted = false;
+  }
+
+  bool breakOnFailWasInserted() {
+    return _breakOnFailInserted;
   }
 
   // TODO: Not tested
@@ -53,6 +63,11 @@ if (!$_SUCCESS && $_INPUT_POS > $_TESTING) $_FAILURE();''';
             ExpressionGenerator.VARIABLE_TESTING);
     if (productionRuleGenerator.comment) {
       block.assign('#COMMENTS', '// $_expression');
+    }
+
+    if (canInserBreakOnFail()) {
+      block.assign('#BREAK', "break;");
+      _breakOnFailInserted = true;
     }
 
     block.assign('CH', ch);

@@ -121,4 +121,37 @@ abstract class ExpressionGenerator extends TemplateGenerator {
 
     return Utils.toPrintable(string);
   }
+
+  bool breakOnFailWasInserted() {
+    return false;
+  }
+
+  bool canInserBreakOnFail() {
+    var parent = _expression.parent;
+    if (parent == null) {
+      return false;
+    }
+
+    if (parent is SequenceExpression) {
+      var expressions = parent.expressions;
+      var length = expressions.length;
+      if (length == 1) {
+        return false;
+      }
+
+      return true;
+    }
+
+    if (parent is OrderedChoiceExpression) {
+      var expressions = parent.expressions;
+      var length = expressions.length;
+      if (length == 1) {
+        return false;
+      }
+
+      return _expression != expressions.last;
+    }
+
+    return false;
+  }
 }

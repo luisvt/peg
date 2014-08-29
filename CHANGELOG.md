@@ -1,3 +1,7 @@
+## 0.0.7
+
+- Minor improvements in the expression generators (reduction of the `break` statements)
+
 ## 0.0.6
 
 - Fixed bug in the original peg grammar in `COMMENT`

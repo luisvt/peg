@@ -34,25 +34,25 @@ $_RESULT = {{RULE}}();''';
   // Non optional rule with start characters in lookahead
   static final String _templateLookahead = '''
 {{#COMMENTS}}
-if ($_CH >= {{MIN}} && $_CH <= {{MAX}} && $_LOOKAHEAD[$_CH + {{POSITION}}]) {
-  $_RESULT = {{RULE}}();
-}    
-else {
-  $_SUCCESS = false;  
-  $_RESULT = null;
+$_RESULT = null;
+$_SUCCESS = $_CH >= {{MIN}} && $_CH <= {{MAX}} && $_LOOKAHEAD[$_CH + {{POSITION}}];
+if ($_SUCCESS) $_RESULT = {{RULE}}();    
+if (!$_SUCCESS) {  
   {{#TRACE}}  
-  if ($_INPUT_POS > $_TESTING) $_FAILURE({{EXPECTED}});  
+  if ($_INPUT_POS > $_TESTING) $_FAILURE({{EXPECTED}});
+  {{#BREAK}}  
 }''';
 
   // Non optional rule with one start character
   static final String _templateOne = '''
 {{#COMMENTS}}
-if ($_CH == {{CHARACTER}}) $_RESULT = {{RULE}}();
-else {  
- $_SUCCESS = false;
- $_RESULT = null;
- {{#TRACE}}
- if ($_INPUT_POS > $_TESTING) $_FAILURE({{EXPECTED}});  
+$_RESULT = null;
+$_SUCCESS = $_CH == {{CHARACTER}};
+if ($_SUCCESS) $_RESULT = {{RULE}}();
+if (!$_SUCCESS) {
+  {{#TRACE}}
+  if ($_INPUT_POS > $_TESTING) $_FAILURE({{EXPECTED}});
+  {{#BREAK}}  
 }''';
 
   // Non optional rule with several start characters
@@ -62,10 +62,10 @@ var {{SKIP}} = true;
 {{#SWITCH}}
 if (!{{SKIP}}) $_RESULT = {{RULE}}();
 else {
- $_RESULT = null;
- $_SUCCESS = false;
- {{#TRACE}}
- if ($_INPUT_POS > $_TESTING) $_FAILURE({{EXPECTED}});  
+  $_RESULT = null;
+  $_SUCCESS = false;
+  {{#TRACE}}
+  if ($_INPUT_POS > $_TESTING) $_FAILURE({{EXPECTED}});  
 }''';
 
   static final String _templateSwitch = '''
@@ -76,6 +76,8 @@ switch ($_CH) {
 }''';
 
   RuleExpression _expression;
+
+  bool _breakOnFailInserted;
 
   RuleExpressionGenerator(Expression expression,
       ProductionRuleGenerator productionRuleGenerator) : super(
@@ -90,9 +92,15 @@ switch ($_CH) {
     addTemplate(_TEMPLATE_ONE, _templateOne);
     addTemplate(_TEMPLATE_SEVERAL, _templateSeveral);
     addTemplate(_TEMPLATE_SWITCH, _templateSwitch);
+    _breakOnFailInserted = false;
+  }
+
+  bool breakOnFailWasInserted() {
+    return _breakOnFailInserted;
   }
 
   List<String> generate() {
+    _breakOnFailInserted = false;
     var rule = _expression.rule;
     if (rule == null) {
       return _generate();
@@ -147,6 +155,11 @@ switch ($_CH) {
       block.assign('#TRACE', _getTraceString());
     }
 
+    if (canInserBreakOnFail()) {
+      block.assign('#BREAK', "break;");
+      _breakOnFailInserted = true;
+    }
+
     var end = startCharacters.end;
     var start = startCharacters.start;
     block.assign('MIN', start);
@@ -169,6 +182,11 @@ switch ($_CH) {
         ExpressionGenerator.getExpectedOnFailure(ruleExpression));
     if (productionRuleGenerator.comment) {
       block.assign('#COMMENTS', '// ${_expression.name}');
+    }
+
+    if (canInserBreakOnFail()) {
+      block.assign('#BREAK', "break;");
+      _breakOnFailInserted = true;
     }
 
     if (grammarGenerator.parserGenerator.trace) {
@@ -220,6 +238,7 @@ switch ($_CH) {
   }
 
   String _getTraceString() {
-    return "$_TRACE('${_expression.name}', '><*');";
+    var state = Trace.getTraceState(skip: true, success: false);
+    return "$_TRACE('${_expression.name}', '$state');";
   }
 }
