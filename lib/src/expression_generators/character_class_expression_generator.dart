@@ -3,11 +3,11 @@ part of peg.expression_generators;
 class CharacterClassExpressionGenerator extends ExpressionGenerator {
   static const String _CH = GrammarGenerator.VARIABLE_CH;
 
+  static const String _CUSROR = GrammarGenerator.VARIABLE_CURSOR;
+
   static const String _FAILURE = MethodFailureGenerator.NAME;
 
   static const String _INPUT_LEN = GrammarGenerator.VARIABLE_INPUT_LEN;
-
-  static const String _INPUT_POS = GrammarGenerator.VARIABLE_INPUT_POS;
 
   static const String _MATCH_CHAR = MethodMatchCharGenerator.NAME;
 

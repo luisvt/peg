@@ -202,7 +202,7 @@ commands:
         defaultsTo: false
         abbr: c
       lookahead:
-        help: Generate the mapping table for the lookahead the starting characters of the rules.
+        help: Increases the performance by reducing the number of invocations of production rules (looks ahead).
         isFlag: true
         defaultsTo: false
         abbr: l

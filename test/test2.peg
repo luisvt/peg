@@ -1,0 +1,8 @@
+poly <- SPACE TERM (PLUS TERM)* ";"
+TERM <- NAME NAME*
+NAME <- [a-z][a-z]* SPACE
+PLUS <- "+" SPACE
+SPACE <- [ ]*
+
+# Conflict with follow in name: [a-z]*
+# [a-z] in [a-z]* and [a-z] in name

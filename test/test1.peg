@@ -1,1 +1,10 @@
-x <- 'one' 'two'* 'zero' 
+Sum <- SPACE NUMBER (SIGN NUMBER)* ";"
+NUMBER <- REAL / INTEGER
+REAL <- DIGITS? "." DIGITS SPACE
+INTEGER <- DIGITS SPACE
+SIGN <- [+\-] SPACE
+DIGITS <- [0-9][0-9]*
+SPACE <- [ ]*
+
+# Conflicting alternatives in number: real / integer
+# [0-9] in digits and [0-9] in digits

@@ -1,11 +1,11 @@
 part of peg.grammar_generator;
 
 class ClassContructorGenerator extends TemplateGenerator {
+  static const String _INPUT = GrammarGenerator.VARIABLE_INPUT;
+
   static const String _INPUT_LEN = GrammarGenerator.VARIABLE_INPUT_LEN;
 
   static const String _RESET = MethodResetGenerator.NAME;
-
-  static const String _TEXT = GrammarGenerator.VARIABLE_TEXT;
 
   static const String _TEMPLATE = "TEMPLATE";
 
@@ -14,8 +14,8 @@ class ClassContructorGenerator extends TemplateGenerator {
   if (text == null) {
     throw new ArgumentError('text: \$text');
   }
-  $_TEXT = text;  
-  $_INPUT_LEN = $_TEXT.length;
+  $_INPUT = text;  
+  $_INPUT_LEN = $_INPUT.length;
   if ($_INPUT_LEN >= 0x3fffffe8 / 32) {
     throw new StateError('File size to big: \$$_INPUT_LEN');
   }  

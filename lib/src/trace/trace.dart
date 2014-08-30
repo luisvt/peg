@@ -6,7 +6,7 @@ class Trace {
     var s0 = cached ? "C" : " ";
     var s1 = success ? " " : 'F';
     var s2 = enter ? ">" : '<';
-    s2 = skip ? "*" : s2;
+    s2 = skip ? "S" : s2;
     return "$s0$s1$s2";
   }
 }

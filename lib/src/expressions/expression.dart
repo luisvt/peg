@@ -3,9 +3,11 @@ part of peg.expressions;
 abstract class Expression {
   static const int FLAG_ABLE_NOT_CONSUME_INPUT = 1;
 
-  static const int FLAG_OPTIONAL = 2;
+  static const int FLAG_HAS_ACTIONS = 2;
 
-  static const int FLAG_REPETITION = 4;
+  static const int FLAG_OPTIONAL = 4;
+
+  static const int FLAG_REPETITION = 8;
 
   static final GroupedRangeList<bool> asciiGroup =
       new GroupedRangeList<bool>(0, 127, true);
@@ -52,6 +54,10 @@ abstract class Expression {
   SparseBoolList startCharacters = new SparseBoolList();
 
   Expression previous;
+
+  bool get hasActions {
+    return (flag & FLAG_HAS_ACTIONS) != 0;
+  }
 
   bool get isAbleNotConsumeInput {
     return (flag & FLAG_ABLE_NOT_CONSUME_INPUT) != 0;

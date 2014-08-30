@@ -3,8 +3,6 @@ part of peg.grammar_analyzer;
 class InfiniteLoopFinder extends UnifyingExpressionVisitor {
   Map<ProductionRule, Map<Expression, List<Expression>>> result;
 
-  //
-
   Map<ProductionRule, Map<Expression, List<Expression>>>
       find(List<ProductionRule> rules) {
     result = <ProductionRule, Map<Expression, List<Expression>>>{};

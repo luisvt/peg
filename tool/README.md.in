@@ -48,19 +48,40 @@ Eg:
 
 ```
 
-States:
+State:
+
+Cache : Match : Direction
+
+Cache:
+ 
+- 'C' - Cache
+- ' ' - Not cache
+
+Match:
+ 
+- 'F' - Failed
+- ' ' - Succeed
+
+Direction:
+
+- '>' - Enter
+- '<' - Leave
+- 'S' - Skip (lookahead)
+
+Examples:
 
 - '  >' Enter
-- '  <' Leave success
-- ' F<' Leave failure
-- 'C <' Leave from cache success
-- 'CF<' Leave from cache failure
-- ' F*' Skip with failure
+- '  <' Leave, success
+- ' F<' Leave, failed
+- 'C <' Leave, succeed, uses cached result 
+- 'CF<' Leave, failed, uses cached result
+- '  S' Skip (lookahead), succeed
+- ' FS' Skip (lookahead), failed
 
 **Grammar**
 
 ```
-{{tool/peg_raw.peg}}
+{{bin/peg.peg.txt}}
 ```
 
 **Example**

@@ -1,3 +1,7 @@
+## 0.0.8
+
+- Medium improvements of performance by reducing restrictions on the prediction on optional rules without semantic actions
+
 ## 0.0.7
 
 - Minor improvements in the expression generators (reduction of the `break` statements)

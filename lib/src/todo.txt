@@ -1,18 +1,27 @@
-Trace:
+=======================================
+Test one optional
+Test one optional with trace
+Test lookahead optional
+Test lookahead optional with trace
 
-Trace state
-column, line: state rule spaces code
+=======================================
 
-Eg
-88, 15:   <SPACE          Char { $$ = $2; })* '"' SPACING  { $$ = new Liter (2127)
+Renaming
 
-States:
-'  >' Enter
-'  <' Leave success
-' F<' Leave failure
-'C <' Leave from cache success
-'CF<' Leave from cache failure
-' F*' Skip with failure
+Nullable
+MayAdvance
+MayFail
+
+=======================================
+
+Hide sub-terminals failure messages
+FLAG
+use in failure (sub terminals)
+use in memoization
+
+========================================
+
+Remove Utils.charToString() and other related to strings
 
 ========================================
 
@@ -59,12 +68,6 @@ RENAME ? parsing rule => production rule
 
 ========================================
 
-FLAG
-use in failure (sub terminals)
-use in memoization
-
-========================================
-
 Print
  sort:
    - none
@@ -91,3 +94,19 @@ d <- d1
 b1 <-
 c1 <-
 d1 <-
+
+=======================================
+
+Doc comments
+
+Eg.
+
+/**
+ * Parses the 'Grammar'.
+ *
+ * NONTERMINAL
+ * Grammar <- SPACING Globals? Members? Definition+ EOF
+ */
+ dynamic parse_Grammar() {
+ }
+

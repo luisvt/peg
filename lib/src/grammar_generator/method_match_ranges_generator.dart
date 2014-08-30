@@ -5,19 +5,19 @@ class MethodMatchRangesGenerator extends TemplateGenerator {
 
   static const String _CH = GrammarGenerator.VARIABLE_CH;
 
+  static const String _CURSOR = GrammarGenerator.VARIABLE_CURSOR;
+
   static const String _EOF = GrammarGenerator.CONSTANT_EOF;
 
   static const String _FAILURE = MethodFailureGenerator.NAME;
 
-  static const String _INPUT_LEN = GrammarGenerator.VARIABLE_INPUT_LEN;
+  static const String _INPUT = GrammarGenerator.VARIABLE_INPUT;
 
-  static const String _INPUT_POS = GrammarGenerator.VARIABLE_INPUT_POS;
+  static const String _INPUT_LEN = GrammarGenerator.VARIABLE_INPUT_LEN;
 
   static const String _SUCCESS = GrammarGenerator.VARIABLE_SUCCESS;
 
   static const String _TESTING = GrammarGenerator.VARIABLE_TESTING;
-
-  static const String _TEXT = GrammarGenerator.VARIABLE_TEXT;
 
   static const String _TEMPLATE = "TEMPLATE";
 
@@ -27,9 +27,9 @@ String $NAME(List<int> ranges) {
   for (var i = 0; i < length; i += 2) {
     if ($_CH <= ranges[i + 1]) {
       if ($_CH >= ranges[i]) {
-        var result = $_TEXT[$_INPUT_POS++];
-        if ($_INPUT_POS < $_INPUT_LEN) {
-          $_CH = $_TEXT.codeUnitAt($_INPUT_POS);
+        var result = $_INPUT[$_CURSOR++];
+        if ($_CURSOR < $_INPUT_LEN) {
+          $_CH = $_INPUT.codeUnitAt($_CURSOR);
         } else {
            $_CH = $_EOF;
         }
@@ -38,7 +38,7 @@ String $NAME(List<int> ranges) {
       }      
     } else break;  
   }
-  if ($_INPUT_POS > $_TESTING) {
+  if ($_CURSOR > $_TESTING) {
     $_FAILURE();
   }
   $_SUCCESS = false;  

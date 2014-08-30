@@ -1,7 +1,7 @@
 part of peg.expression_generators;
 
 class ZeroOrMoreExpressionGenerator extends UnaryExpressionGenerator {
-  static const String _INPUT_POS = GrammarGenerator.VARIABLE_INPUT_POS;
+  static const String _CURSOR = GrammarGenerator.VARIABLE_CURSOR;
 
   static const String _RESULT = ProductionRuleGenerator.VARIABLE_RESULT;
 
@@ -15,7 +15,7 @@ class ZeroOrMoreExpressionGenerator extends UnaryExpressionGenerator {
 {{#COMMENTS}}
 var {{TESTING}} = $_TESTING; 
 for (var reps = []; ; ) {
-  $_TESTING = $_INPUT_POS;
+  $_TESTING = $_CURSOR;
   {{#EXPRESSION}}
   if ($_SUCCESS) {  
     reps.add($_RESULT);

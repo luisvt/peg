@@ -3,11 +3,11 @@ part of peg.expression_generators;
 class AndPredicateExpressionGenerator extends UnaryExpressionGenerator {
   static const String _CH = GrammarGenerator.VARIABLE_CH;
 
+  static const String _CURSOR = GrammarGenerator.VARIABLE_CURSOR;
+
   static const String _FAILURE = MethodFailureGenerator.NAME;
 
   static const String _INPUT_LEN = GrammarGenerator.VARIABLE_INPUT_LEN;
-
-  static const String _INPUT_POS = GrammarGenerator.VARIABLE_INPUT_POS;
 
   static const String _RESULT = ProductionRuleGenerator.VARIABLE_RESULT;
 
@@ -20,16 +20,16 @@ class AndPredicateExpressionGenerator extends UnaryExpressionGenerator {
   static final String _template = '''
 {{#COMMENTS}}
 var {{CH}} = $_CH;
-var {{POS}} = $_INPUT_POS;
+var {{POS}} = $_CURSOR;
 var {{TESTING}} = $_TESTING;
 $_TESTING = $_INPUT_LEN + 1;
 {{#EXPRESSION}}
 $_CH = {{CH}};
-$_INPUT_POS = {{POS}}; 
+$_CURSOR = {{POS}}; 
 $_TESTING = {{TESTING}};
 $_RESULT = null;
 if (!$_SUCCESS) {
-  if ($_INPUT_POS > $_TESTING) $_FAILURE();
+  if ($_CURSOR > $_TESTING) $_FAILURE();
   {{#BREAK}}
 }''';
 

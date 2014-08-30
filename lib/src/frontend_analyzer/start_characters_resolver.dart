@@ -84,7 +84,7 @@ class StartCharactersResolver extends ExpressionResolver {
     if (rule != null) {
       var ruleExpression = rule.expression;
       ruleExpression.accept(this);
-      _applyData(rule.expression, expression);
+      _applyData(ruleExpression, expression);
     }
 
     return null;

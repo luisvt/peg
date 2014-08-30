@@ -28,11 +28,17 @@ class FrontendAnalyzer {
 
     new ExpectedLexemesResolver().resolve(rules);
     new TerminalRulesFinder().find(rules);
+    new ExpressionWithActionsResolver().resolve(rules);
 
     // Exprerimental
-    // var automaton = new AutomatonResolver();
-    // automaton.resolve(rules);
-    //_print(automaton.state0, new Set<ExpressionState>());
+    for (var rule in rules) {
+      if (rule.directCallers.length == 0) {
+        var resolver = new AutomatonResolver();
+        //resolver.resolve([rule]);
+        //_print(resolver.state0, new Set<ExpressionState>());
+        //print("==============");
+      }
+    }
   }
 
   void _print(ExpressionState state, Set<ExpressionState> reported) {
@@ -43,12 +49,12 @@ class FrontendAnalyzer {
     reported.add(state);
     var transitions = state.transitions;
     print("==============");
-    print("${state.owner}:");
-    for (var index in transitions.getIndexes()) {
-      var s = toPrintable(new String.fromCharCode(index));
-      var states = transitions[index];
-      print("$s ($index): ${states.elements}");
-      for (var state in states.elements) {
+    print("State: $state:");
+    for (var group in transitions.groups) {
+      var start = toPrintable(new String.fromCharCode(group.start));
+      var end = toPrintable(new String.fromCharCode(group.end));
+      print("  [$start-$end] => ${group.key}");
+      for (var state in group.key.elements) {
         _print(state, reported);
       }
     }

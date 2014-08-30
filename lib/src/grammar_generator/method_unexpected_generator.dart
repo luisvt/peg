@@ -5,9 +5,9 @@ class MethodUnexpectedGenerator extends TemplateGenerator {
 
   static const String _FAILURE_POS = GrammarGenerator.VARIABLE_FAILURE_POS;
 
-  static const String _INPUT_LEN = GrammarGenerator.VARIABLE_INPUT_LEN;
+  static const String _INPUT = GrammarGenerator.VARIABLE_INPUT;
 
-  static const String _TEXT = GrammarGenerator.VARIABLE_TEXT;
+  static const String _INPUT_LEN = GrammarGenerator.VARIABLE_INPUT_LEN;
 
   static const String _TEMPLATE = "TEMPLATE";
 
@@ -16,7 +16,7 @@ String get $NAME {
   if ($_FAILURE_POS < 0 || $_FAILURE_POS >= $_INPUT_LEN) {
     return '';    
   }
-  return $_TEXT[$_FAILURE_POS];      
+  return $_INPUT[$_FAILURE_POS];      
 }
 ''';
 

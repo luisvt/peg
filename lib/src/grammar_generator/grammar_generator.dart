@@ -17,15 +17,17 @@ class GrammarGenerator extends TemplateGenerator {
 
   static const String VARIABLE_COLUMN = "_column";
 
+  static const String VARIABLE_CURSOR = "_cursor";
+
   static const String VARIABLE_EXPECTED = "_expected";
 
   static const String VARIABLE_FAILURE_POS = "_failurePos";
 
   static const String VARIABLE_FLAG = "_flag";
 
-  static const String VARIABLE_INPUT_LEN = "_inputLen";
+  static const String VARIABLE_INPUT = "_input";
 
-  static const String VARIABLE_INPUT_POS = "_inputPos";
+  static const String VARIABLE_INPUT_LEN = "_inputLen";
 
   static const String VARIABLE_LINE = "_line";
 
@@ -40,8 +42,6 @@ class GrammarGenerator extends TemplateGenerator {
   static const String VARIABLE_SUCCESS = "success";
 
   static const String VARIABLE_TESTING = "_testing";
-
-  static const String VARIABLE_TEXT = "_text";
 
   static const String _UNMAP = MethodUnmapGenerator.NAME;
 
@@ -221,7 +221,9 @@ class GrammarGenerator extends TemplateGenerator {
 
     var expression = rule.expression;
     if (expression.isOptional) {
-      return 0;
+      if (expression.hasActions) {
+        return 0;
+      }
     }
 
     if (expression.startsWithAny || expression.startsWithNonAscii) {
@@ -312,14 +314,14 @@ class GrammarGenerator extends TemplateGenerator {
     strings.add('List<int> $VARIABLE_CACHE_STATE;');
     strings.add('int $VARIABLE_CH;');
     strings.add('int $VARIABLE_COLUMN;');
+    strings.add('int $VARIABLE_CURSOR;');
     strings.add('List<String> $VARIABLE_EXPECTED;');
     strings.add('int $VARIABLE_FAILURE_POS;');
     strings.add('int $VARIABLE_FLAG;');
     strings.add('int $VARIABLE_INPUT_LEN;');
-    strings.add('int $VARIABLE_INPUT_POS;');
     strings.add('int $VARIABLE_LINE;');
     strings.add('int $VARIABLE_TESTING;');
-    strings.add('String $VARIABLE_TEXT;');
+    strings.add('String $VARIABLE_INPUT;');
     strings.add('');
     return strings;
   }
@@ -331,7 +333,7 @@ class GrammarGenerator extends TemplateGenerator {
     var rules = grammar.rules;
     for (ProductionRule rule in rules) {
       var length = getLookaheadCharCount(rule);
-      if (length <= ParserGenerator.LOOKAHEAD_CHAR_COUNT) {
+      if (length == 0) {
         continue;
       }
 

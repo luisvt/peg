@@ -15,6 +15,8 @@ class MethodResetGenerator extends TemplateGenerator {
 
   static const String _COLUMN = GrammarGenerator.VARIABLE_COLUMN;
 
+  static const String _CURSOR = GrammarGenerator.VARIABLE_CURSOR;
+
   static const String _EXPECTED = GrammarGenerator.VARIABLE_EXPECTED;
 
   static const String _EOF = GrammarGenerator.CONSTANT_EOF;
@@ -23,19 +25,15 @@ class MethodResetGenerator extends TemplateGenerator {
 
   static const String _FLAG = GrammarGenerator.VARIABLE_FLAG;
 
+  static const String _INPUT = GrammarGenerator.VARIABLE_INPUT;
+
   static const String _INPUT_LEN = GrammarGenerator.VARIABLE_INPUT_LEN;
-
-  static const String _INPUT_POS = GrammarGenerator.VARIABLE_INPUT_POS;
-
-  static const String _INPUT_SUCCESS = GrammarGenerator.VARIABLE_SUCCESS;
 
   static const String _LINE = GrammarGenerator.VARIABLE_LINE;
 
   static const String _SUCCESS = GrammarGenerator.VARIABLE_SUCCESS;
 
   static const String _TESTING = GrammarGenerator.VARIABLE_TESTING;
-
-  static const String _TEXT = GrammarGenerator.VARIABLE_TEXT;
 
   static const String _TEMPLATE = "TEMPLATE";
 
@@ -57,11 +55,11 @@ void $NAME(int pos) {
   $_EXPECTED = [];
   $_FAILURE_POS = -1;
   $_FLAG = 0;  
-  $_INPUT_POS = pos;
+  $_CURSOR = pos;
   $_LINE = -1;    
   $_TESTING = -1;
   if (pos < $_INPUT_LEN) {
-    $_CH = $_TEXT.codeUnitAt(pos);
+    $_CH = $_INPUT.codeUnitAt(pos);
   }    
 }
 ''';

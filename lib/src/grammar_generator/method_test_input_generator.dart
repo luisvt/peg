@@ -3,20 +3,20 @@ part of peg.grammar_generator;
 class MethodTestInputGenerator extends TemplateGenerator {
   static const String NAME = "_testInput";
 
+  static const String _CURSOR = GrammarGenerator.VARIABLE_CURSOR;
+
+  static const String _INPUT = GrammarGenerator.VARIABLE_INPUT;
+
   static const String _INPUT_LEN = GrammarGenerator.VARIABLE_INPUT_LEN;
-
-  static const String _INPUT_POS = GrammarGenerator.VARIABLE_INPUT_POS;
-
-  static const String _TEXT = GrammarGenerator.VARIABLE_TEXT;
 
   static const String _TEMPLATE = "TEMPLATE";
 
   static final String _template = '''
 bool $NAME(int flag) {
-  if ($_INPUT_POS >= $_INPUT_LEN) {
+  if ($_CURSOR >= $_INPUT_LEN) {
     return false;
   }
-  var c = $_TEXT.codeUnitAt($_INPUT_POS);
+  var c = $_INPUT.codeUnitAt($_CURSOR);
   if (c < 0 || c > 127) {
     return false;
   }    

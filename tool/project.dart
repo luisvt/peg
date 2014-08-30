@@ -4,8 +4,12 @@ import "package:build_tools/build_tools.dart";
 import "package:build_tools/build_utils.dart";
 import "package:file_utils/file_utils.dart";
 
+const String ARITHMETIC_PARSER_DART = "example/arithmetic_parser.dart";
+const String ARITHMETIC_PEG = "example/arithmetic.peg";
 const String CHANGE_LOG = "tool/change.log";
 const String CHANGELOG_MD = "CHANGELOG.md";
+const String PEG_PEG = "bin/peg.peg";
+const String PEG_PEG_TEXT = "bin/peg.peg.txt";
 const String PUBSPEC_YAML = "pubspec.yaml";
 const String README_MD = "README.md";
 const String README_MD_IN = "tool/README.md.in";
@@ -18,9 +22,18 @@ void main(List<String> args) {
   FileUtils.chdir("..");
 
   var filesUsedInReadMe = ["tool/README.md.in", "pubspec.yaml"];
-  filesUsedInReadMe.add("example/arithmetic_parser.dart");
-  filesUsedInReadMe.add("example/arithmetic.peg");
-  filesUsedInReadMe.add("tool/peg_raw.peg");
+  filesUsedInReadMe.add(ARITHMETIC_PARSER_DART);
+  filesUsedInReadMe.add(ARITHMETIC_PEG);
+  filesUsedInReadMe.add(PEG_PEG_TEXT);
+
+  var generatedFiles = [];
+  generatedFiles.add(ARITHMETIC_PARSER_DART);
+  generatedFiles.add(CHANGELOG_MD);
+  generatedFiles.add(PEG_PEG_TEXT);
+  generatedFiles.add(README_MD);
+
+  // tool/peg_raw.peg
+  var dartSdk = FileUtils.fullpath(Platform.environment["DART_SDK"]);
 
   file(CHANGELOG_MD, [CHANGE_LOG], (Target t, Map args) {
     writeChangelogMd();
@@ -30,8 +43,7 @@ void main(List<String> args) {
     FileUtils.touch([t.name], create: true);
   });
 
-  file(README_MD, filesUsedInReadMe, (Target t, Map
-      args) {
+  file(README_MD, filesUsedInReadMe, (Target t, Map args) {
     var sources = t.sources.toList();
     var template = new File(sources.removeAt(0)).readAsStringSync();
     // Remove "pubspec.yaml"
@@ -46,7 +58,44 @@ void main(List<String> args) {
     new File(t.name).writeAsStringSync(template);
   });
 
+  rule("%.peg.txt", ["%.peg"], (Target t, Map args) {
+    return Process.run(
+        "$dartSdk/bin/dart",
+        ["bin/peg.dart", "print", t.sources.first]).then((result) {
+      if (result.exitCode != 0) {
+        print(result.stdout);
+        return result.exitCode;
+      }
+
+      var file = new File(t.name);
+      file.writeAsStringSync(result.stdout);
+    });
+  });
+
+  rule("%_parser.dart", ["%.peg"], (Target t, Map args) {
+    return Process.run(
+        "$dartSdk/bin/dart",
+        [
+            "bin/peg.dart",
+            "general",
+            "-c",
+            "-l",
+            "-m",
+            "-o",
+            t.name,
+            t.sources.first]).then((result) {
+      if (result.exitCode != 0) {
+        print(result.stdout);
+        return result.exitCode;
+      }
+    });
+  });
+
   target("default", ["git:status"], null, description: "git status");
+
+  target("clean", [], (Target t, Map args) {
+    FileUtils.rm(generatedFiles);
+  }, description: "clean output files");
 
   target("git:status", [], (Target t, Map args) {
     return exec("git", ["status", "--short"]);
@@ -56,8 +105,9 @@ void main(List<String> args) {
     return exec("git", ["add", "--all"]);
   }, description: "git add --all");
 
-  target("git:commit", [CHANGELOG_MD, README_MD, "git:add"], (Target t, Map
-      args) {
+  target("git:commit", generatedFiles.toList()
+      ..add("git:add")
+      ..toList(), (Target t, Map args) {
     var message = args["m"];
     if (message == null || message.isEmpty) {
       print("Please, specify the `commit` message with --m option");
@@ -66,6 +116,11 @@ void main(List<String> args) {
 
     return exec("git", ["commit", "-m", message]);
   }, description: "git commit, --m \"message\"");
+
+  before(["git:commit"], (Target t, Map args) {
+    // Clean auto generated files
+    FileUtils.rm(generatedFiles);
+  });
 
   after(["git:commit"], (Target t, Map args) {
     var version = incrementVersion(getVersion());
@@ -93,10 +148,18 @@ void main(List<String> args) {
     logChanges(message);
   }, description: "log changes, --m message", reusable: true);
 
-  target("prj:changelog", [CHANGELOG_MD], null, description:
-      "generate '$CHANGELOG_MD'", reusable: true);
+  target(
+      "prj:changelog",
+      [CHANGELOG_MD],
+      null,
+      description: "generate '$CHANGELOG_MD'",
+      reusable: true);
 
-  target("prj:readme", [README_MD], null, description: "generate '$README_MD'",
+  target(
+      "prj:readme",
+      [README_MD],
+      null,
+      description: "generate '$README_MD'",
       reusable: true);
 
   target("prj:version", [], (Target t, Map args) {
@@ -211,7 +274,7 @@ void writeChangelogMd() {
 
   var lines = log.readAsLinesSync();
   lines = lines.reversed.toList();
-  var versions = <String, List<String>> {};
+  var versions = <String, List<String>>{};
   for (var line in lines) {
     var index = line.indexOf(" ");
     if (index != -1) {

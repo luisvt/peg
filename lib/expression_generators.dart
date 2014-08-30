@@ -7,6 +7,7 @@ import 'package:peg/grammar_generator.dart';
 import 'package:peg/parser_generator.dart';
 import 'package:peg/production_rule_generator.dart';
 import 'package:peg/trace.dart';
+import 'package:strings/strings.dart';
 import 'package:template_block/template_block.dart';
 import 'package:peg/utils.dart';
 

@@ -18,6 +18,7 @@ part 'src/frontend_analyzer/expression_level_resolver.dart';
 part 'src/frontend_analyzer/expression_resolver.dart';
 part 'src/frontend_analyzer/expression_hierarchy_resolver.dart';
 part 'src/frontend_analyzer/expression_ownership_resolver.dart';
+part 'src/frontend_analyzer/expression_with_actions_resolver.dart';
 part 'src/frontend_analyzer/frontend_analyzer.dart';
 part 'src/frontend_analyzer/invocations_resolver.dart';
 part 'src/frontend_analyzer/left_expressions_resolver.dart';

@@ -44,20 +44,30 @@ class ExpressionStates {
     return false;
   }
 
+  ExpressionStates clone() {
+    return new ExpressionStates(elements);
+  }
+
+  void addAll(ExpressionStates states) {
+    elements.addAll(states.elements);
+  }
+
   toString() {
     return elements.toList().join(", ");
   }
 }
 
 class ExpressionState {
-  Expression owner;
+  final int id;
+
+  Expression expression;
 
   SparseList<ExpressionStates> transitions = new SparseList<ExpressionStates>();
 
-  ExpressionState([this.owner]);
+  ExpressionState(this.id, this.expression);
 
   int get hashCode {
-    return owner.hashCode;
+    return id.hashCode;
   }
 
   bool operator ==(other) {
@@ -67,11 +77,11 @@ class ExpressionState {
 
     var length = transitions.length;
     if (other is ExpressionState) {
-      if (owner == null) {
+      if (expression == null) {
         return false;
       }
 
-      return owner == other.owner;
+      return id == other.id;
     }
 
     return false;
@@ -126,30 +136,68 @@ class ExpressionState {
   }
 
   toString() {
-    return "owner: $owner";
+    return "$expression";
+  }
+}
+
+class Automaton {
+  SparseList<ExpressionState> alphabet;
+
+  ExpressionStates endStates;
+
+  ExpressionState start;
+
+  Automaton() {
+    alphabet = new SparseList<ExpressionState>();
+    endStates = new ExpressionStates();
   }
 }
 
 class AutomatonResolver extends ExpressionResolver {
-  // TODO: reset each pass
-  Set<ExpressionState> lastStates;
+  Automaton automaton;
 
-  ExpressionState state0;
+  Set<ExpressionState> endStates;
 
-  AutomatonResolver() {
-    lastStates = _newLastStates();
-    // TODO: set to first expression
-    state0 = new ExpressionState();
-    _addLastStates([state0]);
+  int id;
+
+  Map<Expression, ExpressionState> map;
+
+  void resolve(List<ProductionRule> rules) {
+    var rule = rules.first;
+    var expression = rule.expression;
+    id = 0;
+    map = new Map<Expression, ExpressionState>();
+    var state = _getAssociatedState(expression);
+    endStates = new Set<ExpressionState>();
+    automaton = new Automaton();
+    automaton.start = state;
+    endStates.add(state);
+    super.resolve([rules.first]);
+    automaton.endStates.elements.addAll(endStates);
+  }
+
+  Object visitAndPredicate(AndPredicateExpression expression) {
+    // TODO:
+    expression.expression.accept(this);
+    return null;
+  }
+
+  Object visitAnyCharacter(AnyCharacterExpression expression) {
+    // TODO:
+    if (level == 0) {
+      var state = _createState(expression);
+      _addSymbols(endStates, state, [Expression.unicodeGroup]);
+    }
+
+    return null;
   }
 
   Object visitCharacterClass(CharacterClassExpression expression) {
     if (level == 0) {
-      for (var range in expression.ranges.groups) {
-        var state = new ExpressionState(expression);
-        _addTransition(range, state);
-        _setLastStates([state]);
-      }
+      var state = _createState(expression);
+      _addSymbols(endStates, state, expression.ranges.groups);
+      endStates = new Set<ExpressionState>();
+      endStates.add(state);
     }
 
     return null;
@@ -164,24 +212,33 @@ class AutomatonResolver extends ExpressionResolver {
         var charCodes = string.codeUnits;
         var c = charCodes[0];
         var length = charCodes.length;
-        var state = new ExpressionState(expression);
-        _addTransition(new RangeList(c, c), state);
-        _setLastStates([state]);
+        var state = _createState(expression);
+        _addSymbols(endStates, state, [new RangeList(c, c)]);
+        endStates = new Set<ExpressionState>();
+        endStates.add(state);
       }
     }
 
     return null;
   }
 
+  Object visitNotPredicate(NotPredicateExpression expression) {
+    // TODO:
+    expression.expression.accept(this);
+    return null;
+  }
+
   Object visitOneOrMore(OneOrMoreExpression expression) {
     // TODO:
+    expression.expression.accept(this);
     return null;
   }
 
   Object visitOptional(OptionalExpression expression) {
-    var first = _cloneLastStates();
+    // TODO:
+    var savedStates = endStates;
     expression.expression.accept(this);
-    _addLastStates(first);
+    endStates.addAll(savedStates);
     return null;
   }
 
@@ -191,22 +248,32 @@ class AutomatonResolver extends ExpressionResolver {
     }
 
     processed.add(expression);
-    var first = _cloneLastStates();
-    var last = _newLastStates();
+    var savedStates = endStates;
+    var lastStates = new Set<ExpressionState>();
     for (var child in expression.expressions) {
-      lastStates = _newLastStates(first);
+      endStates = savedStates;
       child.accept(this);
-      last.addAll(lastStates);
+      lastStates.addAll(endStates);
     }
 
-    _setLastStates(last);
+    endStates = lastStates;
     processed.remove(expression);
+    return null;
+  }
+
+  Object visitRule(RuleExpression expression) {
+    // TODO:
+    var rule = expression.rule;
+    if (rule != null) {
+      var ruleExpression = rule.expression;
+      ruleExpression.accept(this);
+    }
+
     return null;
   }
 
   Object visitSequence(SequenceExpression expression) {
     for (var child in expression.expressions) {
-      // TODO: Insert actions
       child.accept(this);
     }
 
@@ -215,51 +282,45 @@ class AutomatonResolver extends ExpressionResolver {
 
   Object visitZeroOrMore(ZeroOrMoreExpression expression) {
     // TODO:
-    var first = _cloneLastStates();
+    var savedStates = endStates;
     expression.expression.accept(this);
-    _addTransitions(first, lastStates);
-    _addLastStates(first);
+    _addTransitions(savedStates, endStates);
+    endStates.addAll(savedStates);
     return null;
   }
 
-  void _addTransition(RangeList range, ExpressionState state) {
-    for (var last in lastStates) {
-      last.addTransition(range, state);
-    }
-  }
-
-  void _addTransitions(Iterable<ExpressionState> source,
-      Iterable<ExpressionState> destination) {
-    for (var original in source) {
-      for (var transition in original.transitions.groups) {
-        for (var state in destination) {
-          _addTransition(transition, state);
+  void _addTransitions(Iterable<ExpressionState> inputs,
+      Iterable<ExpressionState> outputs) {
+    for (var output in outputs) {
+      for (var transition in output.transitions.groups) {
+        for (var input in inputs) {
+          input.addTransition(transition, output);
         }
       }
     }
   }
 
-  void _addLastStates(Iterable<ExpressionState> states) {
-    lastStates.addAll(states);
+  void _addSymbols(Iterable<ExpressionState> inputs, ExpressionState state,
+      Iterable<RangeList> symbols) {
+    for (var input in inputs) {
+      for (var symbol in symbols) {
+        input.addTransition(symbol, state);
+      }
+    }
   }
 
-  Set<ExpressionState> _cloneLastStates() {
-    var states = new Set<ExpressionState>();
-    states.addAll(lastStates);
-    return states;
+  ExpressionState _createState(Expression expression) {
+    return new ExpressionState(id++, expression);
   }
 
-  Set<ExpressionState> _newLastStates([Set<ExpressionState> from]) {
-    var states = new Set<ExpressionState>();
-    if (from != null) {
-      states.addAll(from);
+  // TODO: remove
+  ExpressionState _getAssociatedState(Expression expression) {
+    var state = map[expression];
+    if (state == null) {
+      state = new ExpressionState(id++, expression);
+      map[expression] = state;
     }
 
-    return states;
-  }
-
-  void _setLastStates(Iterable<ExpressionState> states) {
-    lastStates = new Set<ExpressionState>();
-    lastStates.addAll(states);
+    return state;
   }
 }

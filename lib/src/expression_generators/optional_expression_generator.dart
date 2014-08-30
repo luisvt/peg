@@ -1,7 +1,7 @@
 part of peg.expression_generators;
 
 class OptionalExpressionGenerator extends UnaryExpressionGenerator {
-  static const String _INPUT_POS = GrammarGenerator.VARIABLE_INPUT_POS;
+  static const String _CURSOR = GrammarGenerator.VARIABLE_CURSOR;
 
   static const String _SUCCESS = GrammarGenerator.VARIABLE_SUCCESS;
 
@@ -12,7 +12,7 @@ class OptionalExpressionGenerator extends UnaryExpressionGenerator {
   static final String _template = '''
 {{#COMMENTS}}
 var {{TESTING}} = $_TESTING;
-$_TESTING = $_INPUT_POS;
+$_TESTING = $_CURSOR;
 {{#EXPRESSION}}
 $_SUCCESS = true; 
 $_TESTING = {{TESTING}};''';

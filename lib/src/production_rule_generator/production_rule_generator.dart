@@ -7,11 +7,11 @@ class ProductionRuleGenerator extends TemplateGenerator {
 
   static const String _CACHE_POS = GrammarGenerator.VARIABLE_CACHE_POS;
 
+  static const String _CURSOR = GrammarGenerator.VARIABLE_CURSOR;
+
   static const String _FLAG = GrammarGenerator.VARIABLE_FLAG;
 
   static const String _GET_FROM_CACHE = MethodGetFromCacheGenerator.NAME;
-
-  static const String _INPUT_POS = GrammarGenerator.VARIABLE_INPUT_POS;
 
   static const String _RESULT = VARIABLE_RESULT;
 
@@ -34,7 +34,7 @@ dynamic {{NAME}}() {
   {{#COMMENTS}}
   {{#ENTER}}
   {{#VARIABLES}}      
-  var pos = $_INPUT_POS;    
+  var pos = $_CURSOR;    
   if(pos <= $_CACHE_POS) {
     $_RESULT = $_GET_FROM_CACHE({{RULE_ID}});
   }

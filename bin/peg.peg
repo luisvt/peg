@@ -97,7 +97,7 @@ Range <-
 Char <-
   '\\' ["'\-\[-\]nrt] { $$ = _escape($2.codeUnitAt(0)); }  
   / HEX_NUMBER
-  / !'\\' .           { $$ = $2.codeUnitAt(0); }
+  / !'\\' !EOL .      { $$ = $3.codeUnitAt(0); }
   
 # Tokens
 
@@ -153,7 +153,7 @@ COMMENT <-
   '#' (!EOL .)* EOL?
   
 SPACE <-
-  [ \t]  
+  [ \t] 
   / EOL
  
 EOL <-

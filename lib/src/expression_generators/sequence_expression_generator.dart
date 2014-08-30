@@ -3,7 +3,7 @@ part of peg.expression_generators;
 class SequenceExpressionGenerator extends ListExpressionGenerator {
   static const String _CH = GrammarGenerator.VARIABLE_CH;
 
-  static const String _INPUT_POS = GrammarGenerator.VARIABLE_INPUT_POS;
+  static const String _CURSOR = GrammarGenerator.VARIABLE_CURSOR;
 
   static const String _RESULT = ProductionRuleGenerator.VARIABLE_RESULT;
 
@@ -31,8 +31,7 @@ if ($_SUCCESS) {
 {{#EXPRESSION}}
 {{#BREAK}}
 {{#ACTION}}
-var seq = new List({{COUNT}});
-seq[{{INDEX}}] = $_RESULT;''';
+var seq = new List({{COUNT}})..[{{INDEX}}] = $_RESULT;''';
 
   static final String _templateInner = '''
 {{#EXPRESSION}}
@@ -50,14 +49,14 @@ $_RESULT = seq;
   static final String _templateOuter = '''
 {{#COMMENTS}}
 var {{CH}} = $_CH;
-var {{POS}} = $_INPUT_POS;
+var {{POS}} = $_CURSOR;
 while (true) {  
   {{#EXPRESSIONS}}
   break;  
 }
 if (!$_SUCCESS) {
   $_CH = {{CH}};
-  $_INPUT_POS = {{POS}};
+  $_CURSOR = {{POS}};
 }''';
 
   static final String _templateSingle = '''
@@ -95,7 +94,7 @@ if (!$_SUCCESS) {
 
   List<String> _generateAction(Expression expression) {
     var action = expression.action;
-    if (action != null && !action.isEmpty) {
+    if (action != null) {
       var variables = _generateSemanticValues(expression);
       var block = getTemplateBlock(_TEMPLATE_ACTION);
       block.assign('#CODE', Utils.codeToStrings(action));

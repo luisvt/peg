@@ -11,7 +11,7 @@ class MethodAddToCacheGenerator extends TemplateGenerator {
 
   static const String _CACHE_STATE = GrammarGenerator.VARIABLE_CACHE_STATE;
 
-  static const String _INPUT_POS = GrammarGenerator.VARIABLE_INPUT_POS;
+  static const String _CURSOR = GrammarGenerator.VARIABLE_CURSOR;
 
   static const String _SUCCESS = GrammarGenerator.VARIABLE_SUCCESS;
 
@@ -22,7 +22,7 @@ void $NAME(dynamic result, int start, int id) {
   var cached = $_CACHE[start];
   if (cached == null) {
     $_CACHE_RULE[start] = id;
-    $_CACHE[start] = [result, $_INPUT_POS, $_SUCCESS];
+    $_CACHE[start] = [result, $_CURSOR, $_SUCCESS];
   } else {    
     var slot = start >> 5;
     var r1 = (slot << 5) & 0x3fffffff;    
@@ -36,7 +36,7 @@ void $NAME(dynamic result, int start, int id) {
     r1 = (slot << 5) & 0x3fffffff;    
     mask = 1 << (id - r1);    
     cached[0][slot] |= mask;
-    cached[1][id] = [result, $_INPUT_POS, $_SUCCESS];      
+    cached[1][id] = [result, $_CURSOR, $_SUCCESS];      
   }
   if ($_CACHE_POS < start) {
     $_CACHE_POS = start;

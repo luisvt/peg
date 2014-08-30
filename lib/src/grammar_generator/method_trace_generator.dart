@@ -3,13 +3,19 @@ part of peg.grammar_generator;
 class MethodTraceGenerator extends TemplateGenerator {
   static const String NAME = "_trace";
 
-  static const String _INPUT_POS = GrammarGenerator.VARIABLE_INPUT_POS;
+  static const String _CALCULATE_POS = MethodCalculatePosGenerator.NAME;
+
+  static const String _CURSOR = GrammarGenerator.VARIABLE_CURSOR;
+
+  static const String _INPUT = GrammarGenerator.VARIABLE_INPUT;
+
+  static const String _INPUT_LEN = GrammarGenerator.VARIABLE_INPUT_LEN;
 
   static const String _TEMPLATE = "TEMPLATE";
 
   static final String _template = '''
 void $NAME(String rule, String prefix) {
-  _calculatePos(_inputPos);
+  $_CALCULATE_POS($_CURSOR);
   var message = "\$line, \$column:\$prefix \$rule";
   if (message.length > {{LENGTH}}) {
     message = message.substring(0, {{LENGTH}});
@@ -17,12 +23,12 @@ void $NAME(String rule, String prefix) {
     message = message.padRight({{LENGTH}});
   }
 
-  var position = " (\$_inputPos)";
+  var position = " ($_CURSOR)";
   var rest = 80 - position.length + 2 - message.length;
   var source = <String>[];
-  for (var i = _inputPos; i < _inputLen; i++) {
-    var s = _text[i];
-    var c = _text.codeUnitAt(i);
+  for (var i = $_CURSOR; i < $_INPUT_LEN; i++) {
+    var s = $_INPUT[i];
+    var c = $_INPUT.codeUnitAt(i);
     switch (c) {
       case 9:
         s = "\\\\t";
