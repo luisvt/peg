@@ -4,10 +4,9 @@
 part of peg.template_block;
 class TemplateBlockParser {
   static const int EOF = -1;
-  static final List<bool> _lookahead =
-      _unmap([0x7fffffff, 0x7fffffff, 0x7fffffff, 0x7fffc0ff, 0x1ff]);
+  static final List<bool> _lookahead = _unmap([0x7fffffff, 0x7fffffff, 0x7fffffff, 0x7fffc0ff, 0x1ff]);
 
-      // 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
+  // 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
   static final List<bool> _mapping0 = _unmap([0x3ffffff, 0x7fffffe]);
   bool success;
   List _cache;
@@ -924,12 +923,10 @@ class TemplateBlockParser {
     if (!success) {
       if (!expected.isEmpty) {
         var str = expected.map((s) => toPrintable(s)).join('\', \'');
-        throw
-            'Parser error at ($line, $column): expected \'$str\' but found \'$unexpected\'';
+        throw 'Parser error at ($line, $column): expected \'$str\' but found \'$unexpected\'';
       } else {
         if (!unexpected.isEmpty) {
-          throw
-              'Parser error at ($line, $column): unexpected "${toPrintable(unexpected)}"';
+          throw 'Parser error at ($line, $column): unexpected "${toPrintable(unexpected)}"';
         } else {
           throw 'Parser error at ($line, $column): unexpected end of file';
         }

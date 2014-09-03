@@ -22,7 +22,6 @@ class ArithmeticParser {
   static final List<bool> _lookahead = _unmap([0x800013, 0x3ff01]);
   // '\t', '\n', '\r', ' '
   static final List<bool> _mapping0 = _unmap([0x800013]);
-  bool success;
   List _cache;
   int _cachePos;
   List<int> _cacheRule;
@@ -33,10 +32,12 @@ class ArithmeticParser {
   List<String> _expected;
   int _failurePos;
   int _flag;
+  String _input;
   int _inputLen;
   int _line;
+  List<int> _runes;
+  bool success;
   int _testing;
-  String _input;
   
   ArithmeticParser(String text) {
     if (text == null) {
@@ -44,6 +45,7 @@ class ArithmeticParser {
     }
     _input = text;  
     _inputLen = _input.length;
+    _runes = text.runes.toList(growable: false);
     if (_inputLen >= 0x3fffffe8 / 32) {
       throw new StateError('File size to big: $_inputLen');
     }  
@@ -68,6 +70,7 @@ class ArithmeticParser {
     // NONTERMINAL
     // Atom <- NUMBER / OPEN Sentence CLOSE
     var $$;  
+    // NUMBER / OPEN Sentence CLOSE
     while (true) {
       // NUMBER
       $$ = null;
@@ -78,8 +81,8 @@ class ArithmeticParser {
         if (_cursor > _testing) _failure(const ["NUMBER"]);
       }
       if (success) break;
-      var ch0 = _ch;
-      var pos0 = _cursor;
+      // OPEN Sentence CLOSE
+      var ch0 = _ch, pos0 = _cursor;
       while (true) {  
         // OPEN
         $$ = null;
@@ -136,8 +139,8 @@ class ArithmeticParser {
     // TERMINAL
     // CLOSE <- ")" SPACES
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // ")" SPACES
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // ")"
       $$ = _matchString(')', const [")"]);
@@ -164,8 +167,8 @@ class ArithmeticParser {
     // TERMINAL
     // DIV <- "/" SPACES
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // "/" SPACES
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "/"
       $$ = _matchString('/', const ["/"]);
@@ -200,9 +203,7 @@ class ArithmeticParser {
     // EOF <- !.
     var $$;  
     // !.
-    var ch0 = _ch;
-    var pos0 = _cursor;
-    var testing0 = _testing; 
+    var ch0 = _ch, pos0 = _cursor, testing0 = _testing; 
     _testing = _inputLen + 1;
     // .
     $$ = _matchAny();
@@ -211,9 +212,7 @@ class ArithmeticParser {
     _testing = testing0;
     $$ = null;
     success = !success;
-    if (!success) {
-      if (_cursor > _testing) _failure();
-    }
+    if (!success && _cursor > _testing) _failure();
     return $$;
   }
   
@@ -221,8 +220,8 @@ class ArithmeticParser {
     // NONTERMINAL
     // Expr <- Sentence EOF
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // Sentence EOF
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // Sentence
       $$ = null;
@@ -259,8 +258,8 @@ class ArithmeticParser {
     // TERMINAL
     // MINUS <- "-" SPACES
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // "-" SPACES
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "-"
       $$ = _matchString('-', const ["-"]);
@@ -294,8 +293,8 @@ class ArithmeticParser {
     // TERMINAL
     // MUL <- "*" SPACES
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // "*" SPACES
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "*"
       $$ = _matchString('*', const ["*"]);
@@ -329,8 +328,8 @@ class ArithmeticParser {
     // TERMINAL
     // NUMBER <- [0-9]+ SPACES
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // [0-9]+ SPACES
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // [0-9]+
       var testing0;
@@ -385,8 +384,8 @@ class ArithmeticParser {
     // TERMINAL
     // OPEN <- "(" SPACES
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // "(" SPACES
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "("
       $$ = _matchString('(', const ["("]);
@@ -413,8 +412,8 @@ class ArithmeticParser {
     // TERMINAL
     // PLUS <- "+" SPACES
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // "+" SPACES
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "+"
       $$ = _matchString('+', const ["+"]);
@@ -491,9 +490,10 @@ class ArithmeticParser {
     if($$ != null) {
       return $$[0];       
     }  
+    // SPACES Term (PLUS / MINUS) Sentence / Term
     while (true) {
-      var ch0 = _ch;
-      var pos0 = _cursor;
+      // SPACES Term (PLUS / MINUS) Sentence
+      var ch0 = _ch, pos0 = _cursor;
       while (true) {  
         // SPACES
         $$ = null;
@@ -512,6 +512,7 @@ class ArithmeticParser {
           break;  
         }
         seq[1] = $$;
+        // PLUS / MINUS
         while (true) {
           // PLUS
           $$ = null;
@@ -588,9 +589,10 @@ class ArithmeticParser {
     if($$ != null) {
       return $$[0];       
     }  
+    // Atom (MUL / DIV) Term / Atom
     while (true) {
-      var ch0 = _ch;
-      var pos0 = _cursor;
+      // Atom (MUL / DIV) Term
+      var ch0 = _ch, pos0 = _cursor;
       while (true) {  
         // Atom
         $$ = null;
@@ -602,6 +604,7 @@ class ArithmeticParser {
           break;  
         }
         var seq = new List(3)..[0] = $$;
+        // MUL / DIV
         while (true) {
           // MUL
           $$ = null;
@@ -669,6 +672,7 @@ class ArithmeticParser {
     // TERMINAL
     // WS <- [\t-\n\r ] / "\r\n"
     var $$;  
+    // [\t-\n\r ] / "\r\n"
     while (true) {
       // [\t-\n\r ]
       $$ = _matchMapping(9, 32, _mapping0);
@@ -712,11 +716,11 @@ class ArithmeticParser {
     _line = 1;
     _column = 1;
     for (var i = 0; i < _inputLen && i < pos; i++) {
-      var c = _input.codeUnitAt(i);
+      var c = _runes[i];
       if (c == 13) {
         _line++;
         _column = 1;
-        if (i + 1 < _inputLen && _input.codeUnitAt(i + 1) == 10) {
+        if (i + 1 < _inputLen && _runes[i + 1] == 10) {
           i++;
         }
       } else if (c == 10) {
@@ -780,7 +784,7 @@ class ArithmeticParser {
         _cursor = result[1];
         success = result[2];      
         if (_cursor < _inputLen) {
-          _ch = _input.codeUnitAt(_cursor);
+          _ch = _runes[_cursor];
         } else {
           _ch = EOF;
         }      
@@ -799,7 +803,7 @@ class ArithmeticParser {
     _cursor = data[1];
     success = data[2];
     if (_cursor < _inputLen) {
-      _ch = _input.codeUnitAt(_cursor);
+      _ch = _runes[_cursor];
     } else {
       _ch = EOF;
     }   
@@ -811,7 +815,7 @@ class ArithmeticParser {
     if (success) {
       var result = _input[_cursor++];
       if (_cursor < _inputLen) {
-        _ch = _input.codeUnitAt(_cursor);
+        _ch = _runes[_cursor];
       } else {
         _ch = EOF;
       }    
@@ -828,7 +832,7 @@ class ArithmeticParser {
     if (success) {
       var result = _input[_cursor++];
       if (_cursor < _inputLen) {
-        _ch = _input.codeUnitAt(_cursor);
+        _ch = _runes[_cursor];
       } else {
         _ch = EOF;
       }    
@@ -846,7 +850,7 @@ class ArithmeticParser {
       if(mapping[_ch - start]) {
         var result = _input[_cursor++];
         if (_cursor < _inputLen) {
-          _ch = _input.codeUnitAt(_cursor);
+          _ch = _runes[_cursor];
         } else {
           _ch = EOF;
         }      
@@ -865,7 +869,7 @@ class ArithmeticParser {
     if (success) { 
       var result = _input[_cursor++];
       if (_cursor < _inputLen) {
-        _ch = _input.codeUnitAt(_cursor);
+        _ch = _runes[_cursor];
       } else {
         _ch = EOF;
       }  
@@ -884,7 +888,7 @@ class ArithmeticParser {
         if (_ch >= ranges[i]) {
           var result = _input[_cursor++];
           if (_cursor < _inputLen) {
-            _ch = _input.codeUnitAt(_cursor);
+            _ch = _runes[_cursor];
           } else {
              _ch = EOF;
           }
@@ -905,7 +909,7 @@ class ArithmeticParser {
     if (success) {
       _cursor += string.length;      
       if (_cursor < _inputLen) {
-        _ch = _input.codeUnitAt(_cursor);
+        _ch = _runes[_cursor];
       } else {
         _ch = EOF;
       }    
@@ -921,7 +925,7 @@ class ArithmeticParser {
     success = true;
     _cursor += count; 
     if (_cursor < _inputLen) {
-      _ch = _input.codeUnitAt(_cursor);
+      _ch = _runes[_cursor];
     } else {
       _ch = EOF;
     }    
@@ -943,7 +947,7 @@ class ArithmeticParser {
     if (_cursor >= _inputLen) {
       return false;
     }
-    var c = _input.codeUnitAt(_cursor);
+    var c = _runes[_cursor];
     if (c < 0 || c > 127) {
       return false;
     }    
@@ -985,8 +989,8 @@ class ArithmeticParser {
     }
     if (pos < 0 || pos > _inputLen) {
       throw new RangeError('pos');
-    }
-    success = true;    
+    }      
+    _cursor = pos;
     _cache = new List(_inputLen + 1);
     _cachePos = -1;
     _cacheRule = new List(_inputLen + 1);
@@ -996,11 +1000,11 @@ class ArithmeticParser {
     _expected = [];
     _failurePos = -1;
     _flag = 0;  
-    _cursor = pos;
-    _line = -1;    
+    _line = -1;
+    success = true;    
     _testing = -1;
-    if (pos < _inputLen) {
-      _ch = _input.codeUnitAt(pos);
+    if (_cursor < _inputLen) {
+      _ch = _runes[_cursor];
     }    
   }
   

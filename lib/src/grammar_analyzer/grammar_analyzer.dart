@@ -15,8 +15,7 @@ class GrammarAnalyzer {
     var unresolvedRules = new UnresolvedRulesFinder().find(rules);
     for (var rule in unresolvedRules.keys) {
       var rules = unresolvedRules[rule].join(', ');
-      warnings.add(
-          'Warning: Found unresolved rule(s) in "${rule.name}": $rules');
+      warnings.add('Warning: Found unresolved rule(s) in "${rule.name}": $rules');
     }
 
     var leftRecursions = new LeftRecursionsFinder().find(rules);
@@ -34,8 +33,7 @@ class GrammarAnalyzer {
         }
 
         var rules = list.join(' -> ');
-        warnings.add(
-            'Warning: Found left recursive rule "${rule.name}": $rules');
+        warnings.add('Warning: Found left recursive rule "${rule.name}": $rules');
       }
     }
 
@@ -62,8 +60,7 @@ class GrammarAnalyzer {
       for (var key in container.keys) {
         var expressions = container[key].join(", ");
         for (var expression in container[key]) {
-          warnings.add(
-              'Warning: Found infinite loop in "${rule.name}": \"$key\" contains \"$expression\" which is able to not consume input');
+          warnings.add('Warning: Found infinite loop in "${rule.name}": \"$key\" contains \"$expression\" which is able to not consume input');
         }
       }
     }
@@ -71,14 +68,12 @@ class GrammarAnalyzer {
     var optionalInChoices = new ChoiceWithOptionalFinder().find(rules);
     for (var rule in optionalInChoices.keys) {
       var expression = optionalInChoices[rule].join(", ");
-      warnings.add(
-          'Warning: Found optional expression in choice in "${rule.name}": $expression');
+      warnings.add('Warning: Found optional expression in choice in "${rule.name}": $expression');
     }
 
     var unconventionalNames = new UnconventionalNamesFinder().find(rules);
     for (var rule in unconventionalNames) {
-      warnings.add(
-          'Warning: Found terminal symbol "${rule.name}" with lower case name.');
+      warnings.add('Warning: Found terminal symbol "${rule.name}" with lower case name.');
     }
 
     return warnings;

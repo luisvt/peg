@@ -2,8 +2,7 @@ part of peg.frontend_analyzer;
 
 // TODO: In development
 class ExpressionStates {
-  LinkedHashSet<ExpressionState> elements =
-      new LinkedHashSet<ExpressionState>();
+  LinkedHashSet<ExpressionState> elements = new LinkedHashSet<ExpressionState>();
 
   ExpressionStates([Iterable<ExpressionState> elements]) {
     if (elements != null) {
@@ -98,10 +97,7 @@ class ExpressionState {
       }
 
       states.elements.add(state);
-      group = new GroupedRangeList<ExpressionStates>(
-          group.start,
-          group.end,
-          states);
+      group = new GroupedRangeList<ExpressionStates>(group.start, group.end, states);
       transitions.addGroup(group);
     }
   }
@@ -110,23 +106,20 @@ class ExpressionState {
     var groups = transitions.getGroups(range).toList();
     var length = groups.length;
     if (length == 0) {
-      return [
-          new GroupedRangeList<ExpressionStates>(range.start, range.end, null)];
+      return [new GroupedRangeList<ExpressionStates>(range.start, range.end, null)];
     }
 
     var first = groups.first;
     if (range.start > first.start) {
       groups[0] = first.intersection(range);
     } else if (range.start < first.start) {
-      var insertion =
-          new GroupedRangeList<ExpressionStates>(range.start, first.start - 1, null);
+      var insertion = new GroupedRangeList<ExpressionStates>(range.start, first.start - 1, null);
       groups.insert(0, insertion);
     }
 
     var last = groups.last;
     if (range.end > last.end) {
-      var addition =
-          new GroupedRangeList<ExpressionStates>(last.end + 1, range.end, null);
+      var addition = new GroupedRangeList<ExpressionStates>(last.end + 1, range.end, null);
       groups.add(addition);
     } else if (range.end < last.end) {
       groups[groups.length - 1] = last.intersection(range);
@@ -289,8 +282,7 @@ class AutomatonResolver extends ExpressionResolver {
     return null;
   }
 
-  void _addTransitions(Iterable<ExpressionState> inputs,
-      Iterable<ExpressionState> outputs) {
+  void _addTransitions(Iterable<ExpressionState> inputs, Iterable<ExpressionState> outputs) {
     for (var output in outputs) {
       for (var transition in output.transitions.groups) {
         for (var input in inputs) {
@@ -300,8 +292,7 @@ class AutomatonResolver extends ExpressionResolver {
     }
   }
 
-  void _addSymbols(Iterable<ExpressionState> inputs, ExpressionState state,
-      Iterable<RangeList> symbols) {
+  void _addSymbols(Iterable<ExpressionState> inputs, ExpressionState state, Iterable<RangeList> symbols) {
     for (var input in inputs) {
       for (var symbol in symbols) {
         input.addTransition(symbol, state);

@@ -5,7 +5,7 @@ class LiteralExpressionGenerator extends ExpressionGenerator {
 
   static const String _RESULT = ProductionRuleGenerator.VARIABLE_RESULT;
 
-  static const String _SUCCESS = GrammarGenerator.VARIABLE_SUCCESS;
+  static const String _SUCCESS = ParserClassGenerator.VARIABLE_SUCCESS;
 
   static const String _TEMPLATE = 'TEMPLATE';
 
@@ -22,10 +22,7 @@ $_RESULT = $_MATCH_STRING('{{LITERAL}}', {{EXPECTED}});''';
 
   LiteralExpression _expression;
 
-  LiteralExpressionGenerator(Expression expression,
-      ProductionRuleGenerator productionRuleGenerator) : super(
-      expression,
-      productionRuleGenerator) {
+  LiteralExpressionGenerator(Expression expression, ProductionRuleGenerator productionRuleGenerator) : super(expression, productionRuleGenerator) {
     if (expression is! LiteralExpression) {
       throw new StateError('Expression must be LiteralExpression');
     }
@@ -64,9 +61,7 @@ $_RESULT = $_MATCH_STRING('{{LITERAL}}', {{EXPECTED}});''';
       literal.add(Utils.charToString(charCode));
     }
 
-    block.assign(
-        'EXPECTED',
-        ExpressionGenerator.getExpectedOnFailure(_expression));
+    block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(_expression));
     block.assign('LITERAL', literal.join());
     return block.process();
   }

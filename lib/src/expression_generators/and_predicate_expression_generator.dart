@@ -1,49 +1,56 @@
 part of peg.expression_generators;
 
 class AndPredicateExpressionGenerator extends UnaryExpressionGenerator {
-  static const String _CH = GrammarGenerator.VARIABLE_CH;
+  static const String _CH = ParserClassGenerator.VARIABLE_CH;
 
-  static const String _CURSOR = GrammarGenerator.VARIABLE_CURSOR;
+  static const String _CURSOR = ParserClassGenerator.VARIABLE_CURSOR;
 
   static const String _FAILURE = MethodFailureGenerator.NAME;
 
-  static const String _INPUT_LEN = GrammarGenerator.VARIABLE_INPUT_LEN;
+  static const String _INPUT_LEN = ParserClassGenerator.VARIABLE_INPUT_LEN;
 
   static const String _RESULT = ProductionRuleGenerator.VARIABLE_RESULT;
 
-  static const String _SUCCESS = GrammarGenerator.VARIABLE_SUCCESS;
+  static const String _SUCCESS = ParserClassGenerator.VARIABLE_SUCCESS;
 
-  static const String _TESTING = GrammarGenerator.VARIABLE_TESTING;
+  static const String _TESTING = ParserClassGenerator.VARIABLE_TESTING;
 
   static const String _TEMPLATE = 'TEMPLATE';
 
+  static const String _TEMPLATE_PROLOG = 'TEMPLATE_PROLOG';
+
+  static const String _TEMPLATE_PROLOG_BREAK = 'TEMPLATE_PROLOG_BREAK';
+
   static final String _template = '''
 {{#COMMENTS}}
-var {{CH}} = $_CH;
-var {{POS}} = $_CURSOR;
-var {{TESTING}} = $_TESTING;
+var {{CH}} = $_CH, {{POS}} = $_CURSOR, {{TESTING}} = $_TESTING;
 $_TESTING = $_INPUT_LEN + 1;
 {{#EXPRESSION}}
 $_CH = {{CH}};
 $_CURSOR = {{POS}}; 
 $_TESTING = {{TESTING}};
 $_RESULT = null;
+{{#PROLOG}}''';
+
+  static final String _templateProlog = '''
+if (!$_SUCCESS && $_CURSOR > $_TESTING) $_FAILURE();''';
+
+  static final String _templatePrologBreak = '''
 if (!$_SUCCESS) {
   if ($_CURSOR > $_TESTING) $_FAILURE();
-  {{#BREAK}}
+  break;
 }''';
 
   bool _breakOnFailInserted;
 
-  AndPredicateExpressionGenerator(Expression expression,
-      ProductionRuleGenerator productionRuleGenerator) : super(
-      expression,
-      productionRuleGenerator) {
+  AndPredicateExpressionGenerator(Expression expression, ProductionRuleGenerator productionRuleGenerator) : super(expression, productionRuleGenerator) {
     if (expression is! AndPredicateExpression) {
       throw new StateError('Expression must be AndPredicateExpression');
     }
 
     addTemplate(_TEMPLATE, _template);
+    addTemplate(_TEMPLATE_PROLOG, _templateProlog);
+    addTemplate(_TEMPLATE_PROLOG_BREAK, _templatePrologBreak);
     _breakOnFailInserted = false;
   }
 
@@ -54,20 +61,20 @@ if (!$_SUCCESS) {
   // TODO: Not tested
   List<String> generate() {
     var block = getTemplateBlock(_TEMPLATE);
-    var ch =
-        productionRuleGenerator.allocateBlockVariable(ExpressionGenerator.VARIABLE_CH);
-    var pos =
-        productionRuleGenerator.allocateBlockVariable(ExpressionGenerator.VARIABLE_POS);
-    var testing =
-        productionRuleGenerator.allocateBlockVariable(
-            ExpressionGenerator.VARIABLE_TESTING);
+    var ch = productionRuleGenerator.allocateBlockVariable(ExpressionGenerator.VARIABLE_CH);
+    var pos = productionRuleGenerator.allocateBlockVariable(ExpressionGenerator.VARIABLE_POS);
+    var testing = productionRuleGenerator.allocateBlockVariable(ExpressionGenerator.VARIABLE_TESTING);
     if (productionRuleGenerator.comment) {
       block.assign('#COMMENTS', '// $_expression');
     }
 
     if (canInserBreakOnFail()) {
-      block.assign('#BREAK', "break;");
       _breakOnFailInserted = true;
+      var prolog = getTemplateBlock(_TEMPLATE_PROLOG_BREAK);
+      block.assign('#PROLOG', prolog.process());
+    } else {
+      var prolog = getTemplateBlock(_TEMPLATE_PROLOG);
+      block.assign('#PROLOG', prolog.process());
     }
 
     block.assign('CH', ch);

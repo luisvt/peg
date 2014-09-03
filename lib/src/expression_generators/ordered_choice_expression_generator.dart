@@ -3,7 +3,7 @@ part of peg.expression_generators;
 class OrderedChoiceExpressionGenerator extends ListExpressionGenerator {
   static const String _RESULT = ProductionRuleGenerator.VARIABLE_RESULT;
 
-  static const String _SUCCESS = GrammarGenerator.VARIABLE_SUCCESS;
+  static const String _SUCCESS = ParserClassGenerator.VARIABLE_SUCCESS;
 
   static const String _TEMPLATE_INNER = 'TEMPLATE_INNER';
 
@@ -32,10 +32,7 @@ while (true) {
 
   OrderedChoiceExpression _expression;
 
-  OrderedChoiceExpressionGenerator(Expression expression,
-      ProductionRuleGenerator productionRuleGenerator) : super(
-      expression,
-      productionRuleGenerator) {
+  OrderedChoiceExpressionGenerator(Expression expression, ProductionRuleGenerator productionRuleGenerator) : super(expression, productionRuleGenerator) {
     if (expression is! OrderedChoiceExpression) {
       throw new StateError('Expression must be OrderedChoiceExpression');
     }
@@ -71,6 +68,10 @@ while (true) {
 
       inner.assign('#EXPRESSION', generator.generate());
       block.assign('#EXPRESSIONS', inner.process());
+    }
+
+    if (productionRuleGenerator.comment) {
+      block.assign('#COMMENTS', '// $_expression');
     }
 
     return block.process();

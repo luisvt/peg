@@ -1,11 +1,11 @@
 part of peg.expression_generators;
 
 class OptionalExpressionGenerator extends UnaryExpressionGenerator {
-  static const String _CURSOR = GrammarGenerator.VARIABLE_CURSOR;
+  static const String _CURSOR = ParserClassGenerator.VARIABLE_CURSOR;
 
-  static const String _SUCCESS = GrammarGenerator.VARIABLE_SUCCESS;
+  static const String _SUCCESS = ParserClassGenerator.VARIABLE_SUCCESS;
 
-  static const String _TESTING = GrammarGenerator.VARIABLE_TESTING;
+  static const String _TESTING = ParserClassGenerator.VARIABLE_TESTING;
 
   static const String _TEMPLATE = 'TEMPLATE';
 
@@ -17,10 +17,7 @@ $_TESTING = $_CURSOR;
 $_SUCCESS = true; 
 $_TESTING = {{TESTING}};''';
 
-  OptionalExpressionGenerator(Expression expression,
-      ProductionRuleGenerator productionRuleGenerator) : super(
-      expression,
-      productionRuleGenerator) {
+  OptionalExpressionGenerator(Expression expression, ProductionRuleGenerator productionRuleGenerator) : super(expression, productionRuleGenerator) {
     if (expression is! OptionalExpression) {
       throw new StateError('Expression must be OptionalExpression');
     }
@@ -30,9 +27,7 @@ $_TESTING = {{TESTING}};''';
 
   List<String> generate() {
     var block = getTemplateBlock(_TEMPLATE);
-    var testing =
-        productionRuleGenerator.allocateBlockVariable(
-            ExpressionGenerator.VARIABLE_TESTING);
+    var testing = productionRuleGenerator.allocateBlockVariable(ExpressionGenerator.VARIABLE_TESTING);
     if (productionRuleGenerator.comment) {
       block.assign('#COMMENTS', '// $_expression');
     }

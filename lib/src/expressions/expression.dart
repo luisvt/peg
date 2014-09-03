@@ -9,14 +9,11 @@ abstract class Expression {
 
   static const int FLAG_REPETITION = 8;
 
-  static final GroupedRangeList<bool> asciiGroup =
-      new GroupedRangeList<bool>(0, 127, true);
+  static final GroupedRangeList<bool> asciiGroup = new GroupedRangeList<bool>(0, 127, true);
 
-  static final GroupedRangeList<bool> nonAsciiGroup =
-      new GroupedRangeList<bool>(128, 1114111, true);
+  static final GroupedRangeList<bool> nonAsciiGroup = new GroupedRangeList<bool>(128, 1114111, true);
 
-  static final GroupedRangeList<bool> unicodeGroup =
-      new GroupedRangeList<bool>(0, 1114111, true);
+  static final GroupedRangeList<bool> unicodeGroup = new GroupedRangeList<bool>(0, 1114111, true);
 
   String action;
 

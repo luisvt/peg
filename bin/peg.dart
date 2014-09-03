@@ -4,6 +4,7 @@ import 'package:path/path.dart' as path;
 import 'package:peg/grammar.dart';
 import 'package:peg/grammar_analyzer.dart';
 import 'package:peg/grammar_reporter.dart';
+import 'package:peg/interpreter_generator.dart';
 import 'package:peg/parser_generator.dart';
 import 'package:strings/strings.dart';
 import "package:yaml/yaml.dart" as yaml;
@@ -15,8 +16,7 @@ void main(List<String> arguments) {
 }
 
 class Program {
-  void generalCommand(String filename, {bool comment, bool lookahead, bool
-      memoize, String name, String output, bool trace}) {
+  void generalCommand(String filename, {bool comment, bool lookahead, bool memoize, String name, String output, bool trace}) {
     var basename = path.basenameWithoutExtension(filename);
     if (output == null || output.isEmpty) {
       output = underscore(basename) + '_parser.dart';
@@ -28,10 +28,32 @@ class Program {
 
     var parser = _getParser(filename);
     var grammar = _parseGrammar(parser);
-    var generator = new ParserGenerator(name, grammar, comment: comment,
-        lookahead: lookahead, memoize: memoize, trace: trace);
+    var generator = new ParserGenerator(name, grammar, comment: comment, lookahead: lookahead, memoize: memoize, trace: trace);
     var genarated = generator.generate();
     new File(output).writeAsStringSync(genarated.join('\n'));
+  }
+
+  void interpretCommand(String filename, {bool comment, bool memoize, String name, String output}) {
+    print("Not implemented yet.");
+    if (true) {
+      //return;
+    }
+
+    var basename = path.basenameWithoutExtension(filename);
+    if (output == null || output.isEmpty) {
+      output = underscore(basename) + '_parser.dart';
+    }
+
+    if (name == null || name.isEmpty) {
+      name = camelize(basename) + 'Parser';
+    }
+
+    var parser = _getParser(filename);
+    var grammar = _parseGrammar(parser);
+    var generator = new InterpreterGenerator(name, grammar, comment: comment, memoize: memoize);
+    var genarated = generator.generate();
+    print(genarated.join('\n'));
+    // new File(output).writeAsStringSync(genarated.join('\n'));
   }
 
   void printCommand(String filename) {
@@ -71,9 +93,7 @@ class Program {
       var unexpected = toPrintable(parser.unexpected);
       if (!expected.isEmpty) {
         var str = expected.join('\', \'');
-        print(
-            'Parser error at ($line, $column): expected \'$str\' but found \'$unexpected\''
-            );
+        print('Parser error at ($line, $column): expected \'$str\' but found \'$unexpected\'');
       } else {
         if (!unexpected.isEmpty) {
           print('Parser error at ($line, $column): unexpected "$unexpected"');
@@ -188,8 +208,7 @@ class Program {
   }
 }
 
-var _configuration =
-    '''
+var _configuration = '''
 name: peg
 description: PEG (Parsing expression grammar) parser generator.
 commands:
@@ -222,6 +241,30 @@ commands:
         isFlag: true
         defaultsTo: false
         abbr: t                       
+    rest:
+      allowMultiple: false
+      help: PEG grammar file
+      name: grammar
+      required: true
+  interpret:
+    description: Generate a parser based on the interpreter with a virtual machine.
+    options:
+      comment:
+        help: Generate the comments for each instruction.
+        isFlag: true
+        defaultsTo: false
+        abbr: c
+      memoize:
+        help: Memoize the intermediate results of all mutually recursive production rules.
+        isFlag: true
+        defaultsTo: false
+        abbr: m
+      name:
+        help: The class name of the generated parser.
+        abbr: n
+      output:
+        help: The output file name.
+        abbr: o
     rest:
       allowMultiple: false
       help: PEG grammar file

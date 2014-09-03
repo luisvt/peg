@@ -30,6 +30,8 @@ Expression _prefix(dynamic prefix, Expression expression, String action) {
   return expression;
 }
 
+int _runeAt(String string, int index) => string.runes.toList()[index];
+
 Expression _suffix(String suffix, Expression expression) {
   switch (suffix) {
     case '?':
@@ -54,7 +56,6 @@ class PegParser {
   static final List<bool> _mapping3 = _unmap([0x43ffffff, 0x7fffffe]);
   // '\t', ' '
   static final List<bool> _mapping4 = _unmap([0x800001]);
-  bool success;
   List _cache;
   int _cachePos;
   List<int> _cacheRule;
@@ -65,10 +66,12 @@ class PegParser {
   List<String> _expected;
   int _failurePos;
   int _flag;
+  String _input;
   int _inputLen;
   int _line;
+  List<int> _runes;
+  bool success;
   int _testing;
-  String _input;
   
   PegParser(String text) {
     if (text == null) {
@@ -76,6 +79,7 @@ class PegParser {
     }
     _input = text;  
     _inputLen = _input.length;
+    _runes = text.runes.toList(growable: false);
     if (_inputLen >= 0x3fffffe8 / 32) {
       throw new StateError('File size to big: $_inputLen');
     }  
@@ -100,8 +104,8 @@ class PegParser {
     // TERMINAL
     // AND <- "&" SPACING
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // "&" SPACING
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "&"
       $$ = _matchString('&', const ["&"]);
@@ -135,8 +139,8 @@ class PegParser {
     // NONTERMINAL
     // Action <- "{" ActionBody* "}" SPACING
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // "{" ActionBody* "}" SPACING
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "{"
       $$ = _matchString('{', const ["{"]);
@@ -195,6 +199,7 @@ class PegParser {
     // NONTERMINAL
     // ActionBody <- Action / !"}" .
     var $$;  
+    // Action / !"}" .
     while (true) {
       // Action
       $$ = null;
@@ -205,13 +210,11 @@ class PegParser {
         if (_cursor > _testing) _failure(const ["{"]);
       }
       if (success) break;
-      var ch0 = _ch;
-      var pos0 = _cursor;
+      // !"}" .
+      var ch0 = _ch, pos0 = _cursor;
       while (true) {  
         // !"}"
-        var ch1 = _ch;
-        var pos1 = _cursor;
-        var testing0 = _testing; 
+        var ch1 = _ch, pos1 = _cursor, testing0 = _testing; 
         _testing = _inputLen + 1;
         // "}"
         $$ = _matchString('}', const ["}"]);
@@ -252,8 +255,8 @@ class PegParser {
     // TERMINAL
     // CLOSE <- ")" SPACING
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // ")" SPACING
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // ")"
       $$ = _matchString(')', const [")"]);
@@ -280,8 +283,8 @@ class PegParser {
     // TERMINAL
     // COMMENT <- "#" (!EOL .)* EOL?
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // "#" (!EOL .)* EOL?
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "#"
       $$ = _matchString('#', const ["#"]);
@@ -291,13 +294,11 @@ class PegParser {
       var testing0 = _testing; 
       for (var reps = []; ; ) {
         _testing = _cursor;
-        var ch1 = _ch;
-        var pos1 = _cursor;
+        // !EOL .
+        var ch1 = _ch, pos1 = _cursor;
         while (true) {  
           // !EOL
-          var ch2 = _ch;
-          var pos2 = _cursor;
-          var testing1 = _testing; 
+          var ch2 = _ch, pos2 = _cursor, testing1 = _testing; 
           _testing = _inputLen + 1;
           // EOL
           $$ = null;
@@ -368,9 +369,10 @@ class PegParser {
     // NONTERMINAL
     // Char <- "\\" ["'\-\[-\]nrt] / HEX_NUMBER / !"\\" !EOL .
     var $$;  
+    // "\\" ["'\-\[-\]nrt] / HEX_NUMBER / !"\\" !EOL .
     while (true) {
-      var ch0 = _ch;
-      var pos0 = _cursor;
+      // "\\" ["'\-\[-\]nrt]
+      var ch0 = _ch, pos0 = _cursor;
       while (true) {  
         // "\\"
         $$ = _matchString('\\', const ["\\"]);
@@ -386,7 +388,7 @@ class PegParser {
           final $1 = seq[0];
           // ["'\-\[-\]nrt]
           final $2 = seq[1];
-          $$ = _escape($2.codeUnitAt(0));    
+          $$ = _escape(_runeAt($2, 0));    
         }
         break;  
       }
@@ -404,13 +406,11 @@ class PegParser {
         if (_cursor > _testing) _failure(const ["\\u"]);
       }
       if (success) break;
-      var ch1 = _ch;
-      var pos1 = _cursor;
+      // !"\\" !EOL .
+      var ch1 = _ch, pos1 = _cursor;
       while (true) {  
         // !"\\"
-        var ch2 = _ch;
-        var pos2 = _cursor;
-        var testing0 = _testing; 
+        var ch2 = _ch, pos2 = _cursor, testing0 = _testing; 
         _testing = _inputLen + 1;
         // "\\"
         $$ = _matchString('\\', const ["\\"]);
@@ -425,9 +425,7 @@ class PegParser {
         }
         var seq = new List(3)..[0] = $$;
         // !EOL
-        var ch3 = _ch;
-        var pos3 = _cursor;
-        var testing1 = _testing; 
+        var ch3 = _ch, pos3 = _cursor, testing1 = _testing; 
         _testing = _inputLen + 1;
         // EOL
         $$ = null;
@@ -459,7 +457,7 @@ class PegParser {
           final $2 = seq[1];
           // .
           final $3 = seq[2];
-          $$ = $3.codeUnitAt(0);    
+          $$ = _runeAt($3, 0);    
         }
         break;  
       }
@@ -476,8 +474,8 @@ class PegParser {
     // NONTERMINAL
     // Class <- "[" (!"]" Range)* "]" SPACING
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // "[" (!"]" Range)* "]" SPACING
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "["
       $$ = _matchString('[', const ["["]);
@@ -487,13 +485,11 @@ class PegParser {
       var testing0 = _testing; 
       for (var reps = []; ; ) {
         _testing = _cursor;
-        var ch1 = _ch;
-        var pos1 = _cursor;
+        // !"]" Range
+        var ch1 = _ch, pos1 = _cursor;
         while (true) {  
           // !"]"
-          var ch2 = _ch;
-          var pos2 = _cursor;
-          var testing1 = _testing; 
+          var ch2 = _ch, pos2 = _cursor, testing1 = _testing; 
           _testing = _inputLen + 1;
           // "]"
           $$ = _matchString(']', const ["]"]);
@@ -572,8 +568,8 @@ class PegParser {
     // TERMINAL
     // DOT <- "." SPACING
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // "." SPACING
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "."
       $$ = _matchString('.', const ["."]);
@@ -600,8 +596,8 @@ class PegParser {
     // NONTERMINAL
     // Definition <- IDENTIFIER LEFTARROW Expression
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // IDENTIFIER LEFTARROW Expression
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // IDENTIFIER
       $$ = null;
@@ -657,9 +653,7 @@ class PegParser {
     // EOF <- !.
     var $$;  
     // !.
-    var ch0 = _ch;
-    var pos0 = _cursor;
-    var testing0 = _testing; 
+    var ch0 = _ch, pos0 = _cursor, testing0 = _testing; 
     _testing = _inputLen + 1;
     // .
     $$ = _matchAny();
@@ -668,9 +662,7 @@ class PegParser {
     _testing = testing0;
     $$ = null;
     success = !success;
-    if (!success) {
-      if (_cursor > _testing) _failure();
-    }
+    if (!success && _cursor > _testing) _failure();
     return $$;
   }
   
@@ -678,6 +670,7 @@ class PegParser {
     // TERMINAL
     // EOL <- "\r\n" / [\n\r]
     var $$;  
+    // "\r\n" / [\n\r]
     while (true) {
       // "\r\n"
       $$ = _matchString('\r\n', const ["\\r\\n"]);
@@ -693,8 +686,8 @@ class PegParser {
     // NONTERMINAL
     // Expression <- Sequence (SLASH Sequence)*
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // Sequence (SLASH Sequence)*
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // Sequence
       $$ = null;
@@ -710,8 +703,8 @@ class PegParser {
       var testing0 = _testing; 
       for (var reps = []; ; ) {
         _testing = _cursor;
-        var ch1 = _ch;
-        var pos1 = _cursor;
+        // SLASH Sequence
+        var ch1 = _ch, pos1 = _cursor;
         while (true) {  
           // SLASH
           $$ = null;
@@ -779,8 +772,8 @@ class PegParser {
     // NONTERMINAL
     // Globals <- "%{" GlobalsBody* "}%" SPACING
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // "%{" GlobalsBody* "}%" SPACING
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "%{"
       $$ = _matchString('%{', const ["%{"]);
@@ -839,13 +832,11 @@ class PegParser {
     // NONTERMINAL
     // GlobalsBody <- !"}%" .
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // !"}%" .
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // !"}%"
-      var ch1 = _ch;
-      var pos1 = _cursor;
-      var testing0 = _testing; 
+      var ch1 = _ch, pos1 = _cursor, testing0 = _testing; 
       _testing = _inputLen + 1;
       // "}%"
       $$ = _matchString('}%', const ["}%"]);
@@ -884,8 +875,8 @@ class PegParser {
     // NONTERMINAL
     // Grammar <- SPACING Globals? Members? Definition+ EOF
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // SPACING Globals? Members? Definition+ EOF
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // SPACING
       $$ = null;
@@ -986,8 +977,8 @@ class PegParser {
     // TERMINAL
     // HEX_NUMBER <- "\\u" [0-9A-Fa-f]+
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // "\\u" [0-9A-Fa-f]+
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "\\u"
       $$ = _matchString('\\u', const ["\\u"]);
@@ -1039,8 +1030,8 @@ class PegParser {
     // TERMINAL
     // IDENTIFIER <- IDENT_START IDENT_CONT* SPACING
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // IDENT_START IDENT_CONT* SPACING
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // IDENT_START
       $$ = null;
@@ -1105,6 +1096,7 @@ class PegParser {
     // TERMINAL
     // IDENT_CONT <- IDENT_START / [0-9]
     var $$;  
+    // IDENT_START / [0-9]
     while (true) {
       // IDENT_START
       $$ = null;
@@ -1135,8 +1127,8 @@ class PegParser {
     // TERMINAL
     // LEFTARROW <- "<-" SPACING
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // "<-" SPACING
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "<-"
       $$ = _matchString('<-', const ["<-"]);
@@ -1163,9 +1155,10 @@ class PegParser {
     // NONTERMINAL
     // Literal <- "\'" (!"\'" Char)* "\'" SPACING / "\"" (!"\"" Char)* "\"" SPACING
     var $$;  
+    // "\'" (!"\'" Char)* "\'" SPACING / "\"" (!"\"" Char)* "\"" SPACING
     while (true) {
-      var ch0 = _ch;
-      var pos0 = _cursor;
+      // "\'" (!"\'" Char)* "\'" SPACING
+      var ch0 = _ch, pos0 = _cursor;
       while (true) {  
         // "\'"
         $$ = _matchString('\'', const ["\'"]);
@@ -1175,13 +1168,11 @@ class PegParser {
         var testing0 = _testing; 
         for (var reps = []; ; ) {
           _testing = _cursor;
-          var ch1 = _ch;
-          var pos1 = _cursor;
+          // !"\'" Char
+          var ch1 = _ch, pos1 = _cursor;
           while (true) {  
             // !"\'"
-            var ch2 = _ch;
-            var pos2 = _cursor;
-            var testing1 = _testing; 
+            var ch2 = _ch, pos2 = _cursor, testing1 = _testing; 
             _testing = _inputLen + 1;
             // "\'"
             $$ = _matchString('\'', const ["\'"]);
@@ -1254,8 +1245,8 @@ class PegParser {
         _cursor = pos0;
       }
       if (success) break;
-      var ch3 = _ch;
-      var pos3 = _cursor;
+      // "\"" (!"\"" Char)* "\"" SPACING
+      var ch3 = _ch, pos3 = _cursor;
       while (true) {  
         // "\""
         $$ = _matchString('\"', const ["\""]);
@@ -1265,13 +1256,11 @@ class PegParser {
         var testing2 = _testing; 
         for (var reps = []; ; ) {
           _testing = _cursor;
-          var ch4 = _ch;
-          var pos4 = _cursor;
+          // !"\"" Char
+          var ch4 = _ch, pos4 = _cursor;
           while (true) {  
             // !"\""
-            var ch5 = _ch;
-            var pos5 = _cursor;
-            var testing3 = _testing; 
+            var ch5 = _ch, pos5 = _cursor, testing3 = _testing; 
             _testing = _inputLen + 1;
             // "\""
             $$ = _matchString('\"', const ["\""]);
@@ -1352,8 +1341,8 @@ class PegParser {
     // NONTERMINAL
     // Members <- "{" ActionBody* "}" SPACING
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // "{" ActionBody* "}" SPACING
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "{"
       $$ = _matchString('{', const ["{"]);
@@ -1412,8 +1401,8 @@ class PegParser {
     // TERMINAL
     // NOT <- "!" SPACING
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // "!" SPACING
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "!"
       $$ = _matchString('!', const ["!"]);
@@ -1447,8 +1436,8 @@ class PegParser {
     // TERMINAL
     // OPEN <- "(" SPACING
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // "(" SPACING
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "("
       $$ = _matchString('(', const ["("]);
@@ -1475,8 +1464,8 @@ class PegParser {
     // TERMINAL
     // PLUS <- "+" SPACING
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // "+" SPACING
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "+"
       $$ = _matchString('+', const ["+"]);
@@ -1510,12 +1499,13 @@ class PegParser {
     // NONTERMINAL
     // Prefix <- (AND / NOT)? Suffix Action?
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // (AND / NOT)? Suffix Action?
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // (AND / NOT)?
       var testing0 = _testing;
       _testing = _cursor;
+      // AND / NOT
       while (true) {
         // AND
         $$ = null;
@@ -1588,9 +1578,10 @@ class PegParser {
     // NONTERMINAL
     // Primary <- IDENTIFIER !LEFTARROW / OPEN Expression CLOSE / Literal / Class / DOT
     var $$;  
+    // IDENTIFIER !LEFTARROW / OPEN Expression CLOSE / Literal / Class / DOT
     while (true) {
-      var ch0 = _ch;
-      var pos0 = _cursor;
+      // IDENTIFIER !LEFTARROW
+      var ch0 = _ch, pos0 = _cursor;
       while (true) {  
         // IDENTIFIER
         $$ = null;
@@ -1603,9 +1594,7 @@ class PegParser {
         }
         var seq = new List(2)..[0] = $$;
         // !LEFTARROW
-        var ch1 = _ch;
-        var pos1 = _cursor;
-        var testing0 = _testing; 
+        var ch1 = _ch, pos1 = _cursor, testing0 = _testing; 
         _testing = _inputLen + 1;
         // LEFTARROW
         $$ = null;
@@ -1640,8 +1629,8 @@ class PegParser {
         _cursor = pos0;
       }
       if (success) break;
-      var ch2 = _ch;
-      var pos2 = _cursor;
+      // OPEN Expression CLOSE
+      var ch2 = _ch, pos2 = _cursor;
       while (true) {  
         // OPEN
         $$ = null;
@@ -1730,8 +1719,8 @@ class PegParser {
     // TERMINAL
     // QUESTION <- "?" SPACING
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // "?" SPACING
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "?"
       $$ = _matchString('?', const ["?"]);
@@ -1765,9 +1754,10 @@ class PegParser {
     // NONTERMINAL
     // Range <- Char "-" Char / Char
     var $$;  
+    // Char "-" Char / Char
     while (true) {
-      var ch0 = _ch;
-      var pos0 = _cursor;
+      // Char "-" Char
+      var ch0 = _ch, pos0 = _cursor;
       while (true) {  
         // Char
         $$ = parse_Char();
@@ -1814,8 +1804,8 @@ class PegParser {
     // TERMINAL
     // SLASH <- "/" SPACING
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // "/" SPACING
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "/"
       $$ = _matchString('/', const ["/"]);
@@ -1842,6 +1832,7 @@ class PegParser {
     // TERMINAL
     // SPACE <- [\t ] / EOL
     var $$;  
+    // [\t ] / EOL
     while (true) {
       // [\t ]
       $$ = _matchMapping(9, 32, _mapping4);
@@ -1867,6 +1858,7 @@ class PegParser {
     var testing0 = _testing; 
     for (var reps = []; ; ) {
       _testing = _cursor;
+      // SPACE / COMMENT
       while (true) {
         // SPACE
         $$ = null;
@@ -1903,8 +1895,8 @@ class PegParser {
     // TERMINAL
     // STAR <- "*" SPACING
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // "*" SPACING
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "*"
       $$ = _matchString('*', const ["*"]);
@@ -1979,8 +1971,8 @@ class PegParser {
     // NONTERMINAL
     // Suffix <- Primary (QUESTION / STAR / PLUS)?
     var $$;  
-    var ch0 = _ch;
-    var pos0 = _cursor;
+    // Primary (QUESTION / STAR / PLUS)?
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // Primary
       $$ = null;
@@ -1995,6 +1987,7 @@ class PegParser {
       // (QUESTION / STAR / PLUS)?
       var testing0 = _testing;
       _testing = _cursor;
+      // QUESTION / STAR / PLUS
       while (true) {
         // QUESTION
         $$ = null;
@@ -2077,11 +2070,11 @@ class PegParser {
     _line = 1;
     _column = 1;
     for (var i = 0; i < _inputLen && i < pos; i++) {
-      var c = _input.codeUnitAt(i);
+      var c = _runes[i];
       if (c == 13) {
         _line++;
         _column = 1;
-        if (i + 1 < _inputLen && _input.codeUnitAt(i + 1) == 10) {
+        if (i + 1 < _inputLen && _runes[i + 1] == 10) {
           i++;
         }
       } else if (c == 10) {
@@ -2145,7 +2138,7 @@ class PegParser {
         _cursor = result[1];
         success = result[2];      
         if (_cursor < _inputLen) {
-          _ch = _input.codeUnitAt(_cursor);
+          _ch = _runes[_cursor];
         } else {
           _ch = EOF;
         }      
@@ -2164,7 +2157,7 @@ class PegParser {
     _cursor = data[1];
     success = data[2];
     if (_cursor < _inputLen) {
-      _ch = _input.codeUnitAt(_cursor);
+      _ch = _runes[_cursor];
     } else {
       _ch = EOF;
     }   
@@ -2176,7 +2169,7 @@ class PegParser {
     if (success) {
       var result = _input[_cursor++];
       if (_cursor < _inputLen) {
-        _ch = _input.codeUnitAt(_cursor);
+        _ch = _runes[_cursor];
       } else {
         _ch = EOF;
       }    
@@ -2193,7 +2186,7 @@ class PegParser {
     if (success) {
       var result = _input[_cursor++];
       if (_cursor < _inputLen) {
-        _ch = _input.codeUnitAt(_cursor);
+        _ch = _runes[_cursor];
       } else {
         _ch = EOF;
       }    
@@ -2211,7 +2204,7 @@ class PegParser {
       if(mapping[_ch - start]) {
         var result = _input[_cursor++];
         if (_cursor < _inputLen) {
-          _ch = _input.codeUnitAt(_cursor);
+          _ch = _runes[_cursor];
         } else {
           _ch = EOF;
         }      
@@ -2230,7 +2223,7 @@ class PegParser {
     if (success) { 
       var result = _input[_cursor++];
       if (_cursor < _inputLen) {
-        _ch = _input.codeUnitAt(_cursor);
+        _ch = _runes[_cursor];
       } else {
         _ch = EOF;
       }  
@@ -2249,7 +2242,7 @@ class PegParser {
         if (_ch >= ranges[i]) {
           var result = _input[_cursor++];
           if (_cursor < _inputLen) {
-            _ch = _input.codeUnitAt(_cursor);
+            _ch = _runes[_cursor];
           } else {
              _ch = EOF;
           }
@@ -2270,7 +2263,7 @@ class PegParser {
     if (success) {
       _cursor += string.length;      
       if (_cursor < _inputLen) {
-        _ch = _input.codeUnitAt(_cursor);
+        _ch = _runes[_cursor];
       } else {
         _ch = EOF;
       }    
@@ -2286,7 +2279,7 @@ class PegParser {
     success = true;
     _cursor += count; 
     if (_cursor < _inputLen) {
-      _ch = _input.codeUnitAt(_cursor);
+      _ch = _runes[_cursor];
     } else {
       _ch = EOF;
     }    
@@ -2308,7 +2301,7 @@ class PegParser {
     if (_cursor >= _inputLen) {
       return false;
     }
-    var c = _input.codeUnitAt(_cursor);
+    var c = _runes[_cursor];
     if (c < 0 || c > 127) {
       return false;
     }    
@@ -2350,8 +2343,8 @@ class PegParser {
     }
     if (pos < 0 || pos > _inputLen) {
       throw new RangeError('pos');
-    }
-    success = true;    
+    }      
+    _cursor = pos;
     _cache = new List(_inputLen + 1);
     _cachePos = -1;
     _cacheRule = new List(_inputLen + 1);
@@ -2361,11 +2354,11 @@ class PegParser {
     _expected = [];
     _failurePos = -1;
     _flag = 0;  
-    _cursor = pos;
-    _line = -1;    
+    _line = -1;
+    success = true;    
     _testing = -1;
-    if (pos < _inputLen) {
-      _ch = _input.codeUnitAt(pos);
+    if (_cursor < _inputLen) {
+      _ch = _runes[_cursor];
     }    
   }
   

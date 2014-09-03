@@ -1,17 +1,11 @@
 part of peg.expression_generators;
 
 abstract class UnaryExpressionGenerator extends ExpressionGenerator {
-  UnaryExpressionGenerator(Expression expression,
-      ProductionRuleGenerator productionRuleGenerator) : super(
-      expression,
-      productionRuleGenerator) {
+  UnaryExpressionGenerator(Expression expression, ProductionRuleGenerator productionRuleGenerator) : super(expression, productionRuleGenerator) {
     if (expression is! UnaryExpression) {
       throw new StateError('Expression must be UnaryExpression');
     }
 
-    _generators.add(
-        createGenerator(
-            (expression as UnaryExpression).expression,
-            productionRuleGenerator));
+    _generators.add(createGenerator((expression as UnaryExpression).expression, productionRuleGenerator));
   }
 }

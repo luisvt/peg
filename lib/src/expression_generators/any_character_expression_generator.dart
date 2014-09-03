@@ -11,10 +11,7 @@ class AnyCharacterExpressionGenerator extends ExpressionGenerator {
 {{#COMMENTS}}
 $_RESULT = $_MATCH_ANY();''';
 
-  AnyCharacterExpressionGenerator(Expression expression,
-      ProductionRuleGenerator productionRuleGenerator) : super(
-      expression,
-      productionRuleGenerator) {
+  AnyCharacterExpressionGenerator(Expression expression, ProductionRuleGenerator productionRuleGenerator) : super(expression, productionRuleGenerator) {
     if (expression is! AnyCharacterExpression) {
       throw new StateError('Expression must be AnyCharacterExpression');
     }

@@ -32,7 +32,6 @@ void main(List<String> args) {
   generatedFiles.add(PEG_PEG_TEXT);
   generatedFiles.add(README_MD);
 
-  // tool/peg_raw.peg
   var dartSdk = FileUtils.fullpath(Platform.environment["DART_SDK"]);
 
   file(CHANGELOG_MD, [CHANGE_LOG], (Target t, Map args) {
@@ -92,10 +91,6 @@ void main(List<String> args) {
   });
 
   target("default", ["git:status"], null, description: "git status");
-
-  target("clean", [], (Target t, Map args) {
-    FileUtils.rm(generatedFiles);
-  }, description: "clean output files");
 
   target("git:status", [], (Target t, Map args) {
     return exec("git", ["status", "--short"]);

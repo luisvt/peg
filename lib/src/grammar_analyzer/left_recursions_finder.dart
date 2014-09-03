@@ -37,8 +37,7 @@ class LeftRecursionsFinder extends UnifyingExpressionVisitor {
     return result;
   }
 
-  void _findPath(ProductionRule from, ProductionRule to,
-      List<List<String>> paths, List<String> path, Set<ProductionRule> processed) {
+  void _findPath(ProductionRule from, ProductionRule to, List<List<String>> paths, List<String> path, Set<ProductionRule> processed) {
     if (processed.contains(from)) {
       return;
     }
@@ -54,8 +53,7 @@ class LeftRecursionsFinder extends UnifyingExpressionVisitor {
     for (var expression in fromExpression.directLeftExpressions) {
       if (expression is RuleExpression) {
         var expressionRule = expression.rule;
-        if (expression.allLeftExpressions.contains(toExpression) &&
-            expressionRule != null) {
+        if (expression.allLeftExpressions.contains(toExpression) && expressionRule != null) {
           rules.add(expressionRule);
         }
       }
@@ -81,9 +79,7 @@ class LeftRecursionsFinder extends UnifyingExpressionVisitor {
     }
   }
 
-  List _findRecursion(ProductionRule rule, RuleExpression expression,
-      List<RuleExpression> processed, Map<ProductionRule,
-      List<RuleExpression>> leftRules) {
+  List _findRecursion(ProductionRule rule, RuleExpression expression, List<RuleExpression> processed, Map<ProductionRule, List<RuleExpression>> leftRules) {
     if (expression.rule == rule) {
       return [expression];
     }

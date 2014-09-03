@@ -61,8 +61,7 @@ class ExpressionAbleNotConsumeInputResolver extends ExpressionResolver {
     if (rule != null) {
       var ruleExpression = rule.expression;
       ruleExpression.accept(this);
-      expression.flag |= rule.expression.flag &
-          Expression.FLAG_ABLE_NOT_CONSUME_INPUT;
+      expression.flag |= rule.expression.flag & Expression.FLAG_ABLE_NOT_CONSUME_INPUT;
       _applyData(ruleExpression, expression);
     }
 
@@ -100,7 +99,7 @@ class ExpressionAbleNotConsumeInputResolver extends ExpressionResolver {
   Object _applyData(Expression from, Expression to) {
     to.directAbleNotConsumeInputExpressions.add(from);
 
-        // to.directMayNotConsumeInputExpressions.addAll(from.directLeftExpressions);
+    // to.directMayNotConsumeInputExpressions.addAll(from.directLeftExpressions);
     to.allAbleNotConsumeInputExpressions.add(from);
     to.allAbleNotConsumeInputExpressions.addAll(from.allLeftExpressions);
     return null;

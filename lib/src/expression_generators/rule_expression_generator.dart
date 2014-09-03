@@ -1,21 +1,21 @@
 part of peg.expression_generators;
 
 class RuleExpressionGenerator extends ExpressionGenerator {
-  static const String _CH = GrammarGenerator.VARIABLE_CH;
+  static const String _CH = ParserClassGenerator.VARIABLE_CH;
 
-  static const String _CURSOR = GrammarGenerator.VARIABLE_CURSOR;
+  static const String _CURSOR = ParserClassGenerator.VARIABLE_CURSOR;
 
   static const String _FAILURE = MethodFailureGenerator.NAME;
 
-  static const String _LOOKAHEAD = GrammarGenerator.VARIABLE_LOOKAHEAD;
+  static const String _LOOKAHEAD = ParserClassGenerator.VARIABLE_LOOKAHEAD;
 
   static const String _TRACE = MethodTraceGenerator.NAME;
 
   static const String _RESULT = ProductionRuleGenerator.VARIABLE_RESULT;
 
-  static const String _SUCCESS = GrammarGenerator.VARIABLE_SUCCESS;
+  static const String _SUCCESS = ParserClassGenerator.VARIABLE_SUCCESS;
 
-  static const String _TESTING = GrammarGenerator.VARIABLE_TESTING;
+  static const String _TESTING = ParserClassGenerator.VARIABLE_TESTING;
 
   static const String _TEMPLATE = 'TEMPLATE';
 
@@ -25,8 +25,7 @@ class RuleExpressionGenerator extends ExpressionGenerator {
 
   static const String _TEMPLATE_LOOKAHEAD = 'TEMPLATE_LOOKAHEAD';
 
-  static const String _TEMPLATE_LOOKAHEAD_OPTIONAL =
-      'TEMPLATE_LOOKAHEAD_OPTIONAL';
+  static const String _TEMPLATE_LOOKAHEAD_OPTIONAL = 'TEMPLATE_LOOKAHEAD_OPTIONAL';
 
   static const String _TEMPLATE_ONE = '_TEMPLATE_ONE';
 
@@ -96,10 +95,7 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
 
   bool _breakOnFailInserted;
 
-  RuleExpressionGenerator(Expression expression,
-      ProductionRuleGenerator productionRuleGenerator) : super(
-      expression,
-      productionRuleGenerator) {
+  RuleExpressionGenerator(Expression expression, ProductionRuleGenerator productionRuleGenerator) : super(expression, productionRuleGenerator) {
     if (expression is! RuleExpression) {
       throw new StateError('Expression must be RuleExpression');
     }
@@ -171,9 +167,7 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
     var position = grammarGenerator.getLookaheadPosition(lookaheadId);
     var startCharacters = ruleExpression.startCharacters;
     block = getTemplateBlock(_TEMPLATE_LOOKAHEAD);
-    block.assign(
-        'EXPECTED',
-        ExpressionGenerator.getExpectedOnFailure(ruleExpression));
+    block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(ruleExpression));
     if (productionRuleGenerator.comment) {
       var name = _expression.name;
       block.assign('#COMMENTS', '// ${_expression.name}');
@@ -238,9 +232,7 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
     var character = ruleExpression.startCharacters.start;
     var trace = grammarGenerator.parserGenerator.trace;
     block = getTemplateBlock(_TEMPLATE_ONE);
-    block.assign(
-        'EXPECTED',
-        ExpressionGenerator.getExpectedOnFailure(ruleExpression));
+    block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(ruleExpression));
     if (productionRuleGenerator.comment) {
       var name = _expression.name;
       var printable = toPrintable(new String.fromCharCode(character));
@@ -299,9 +291,7 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
     if (productionRuleGenerator.grammarGenerator.parserGenerator.trace) {
       elseBlock = getTemplateBlock(_TEMPLATE_ELSE_TRACE);
       var state = Trace.getTraceState(skip: true, success: true);
-      elseBlock.assign(
-          "#TRACE",
-          "$_TRACE('${_expression.name}', '$state');");
+      elseBlock.assign("#TRACE", "$_TRACE('${_expression.name}', '$state');");
     } else {
       elseBlock = getTemplateBlock(_TEMPLATE_ELSE);
     }

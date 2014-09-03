@@ -1,13 +1,13 @@
 part of peg.expression_generators;
 
 class SequenceExpressionGenerator extends ListExpressionGenerator {
-  static const String _CH = GrammarGenerator.VARIABLE_CH;
+  static const String _CH = ParserClassGenerator.VARIABLE_CH;
 
-  static const String _CURSOR = GrammarGenerator.VARIABLE_CURSOR;
+  static const String _CURSOR = ParserClassGenerator.VARIABLE_CURSOR;
 
   static const String _RESULT = ProductionRuleGenerator.VARIABLE_RESULT;
 
-  static const String _SUCCESS = GrammarGenerator.VARIABLE_SUCCESS;
+  static const String _SUCCESS = ParserClassGenerator.VARIABLE_SUCCESS;
 
   static const String _TEMPLATE_ACTION = 'TEMPLATE_ACTION';
 
@@ -48,8 +48,7 @@ $_RESULT = seq;
 
   static final String _templateOuter = '''
 {{#COMMENTS}}
-var {{CH}} = $_CH;
-var {{POS}} = $_CURSOR;
+var {{CH}} = $_CH, {{POS}} = $_CURSOR;
 while (true) {  
   {{#EXPRESSIONS}}
   break;  
@@ -65,10 +64,7 @@ if (!$_SUCCESS) {
 
   SequenceExpression _expression;
 
-  SequenceExpressionGenerator(Expression expression,
-      ProductionRuleGenerator productionRuleGenerator) : super(
-      expression,
-      productionRuleGenerator) {
+  SequenceExpressionGenerator(Expression expression, ProductionRuleGenerator productionRuleGenerator) : super(expression, productionRuleGenerator) {
     if (expression is! SequenceExpression) {
       throw new StateError('Expression must be SequenceExpression');
     }
@@ -109,10 +105,8 @@ if (!$_SUCCESS) {
     var block = getTemplateBlock(_TEMPLATE_OUTER);
     var expressions = _expression.expressions;
     var length = expressions.length;
-    var ch =
-        productionRuleGenerator.allocateBlockVariable(ExpressionGenerator.VARIABLE_CH);
-    var pos =
-        productionRuleGenerator.allocateBlockVariable(ExpressionGenerator.VARIABLE_POS);
+    var ch = productionRuleGenerator.allocateBlockVariable(ExpressionGenerator.VARIABLE_CH);
+    var pos = productionRuleGenerator.allocateBlockVariable(ExpressionGenerator.VARIABLE_POS);
     for (var i = 0; i < length; i++) {
       TemplateBlock inner;
       var generator = _generators[i];
@@ -138,6 +132,10 @@ if (!$_SUCCESS) {
       }
 
       block.assign('#EXPRESSIONS', inner.process());
+    }
+
+    if (productionRuleGenerator.comment) {
+      block.assign('#COMMENTS', '// $_expression');
     }
 
     block.assign('CH', ch);

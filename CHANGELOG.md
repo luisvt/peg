@@ -1,3 +1,8 @@
+## 0.0.9
+
+- Fixed bugs (the character code units are not an Unicode characters)
+- Parser now supports the Unicode characters (uses 32-bit runes instead of 16-bit code units) 
+
 ## 0.0.8
 
 - Medium improvements of performance by reducing restrictions on the prediction on optional rules without semantic actions

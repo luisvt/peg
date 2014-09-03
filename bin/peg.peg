@@ -28,6 +28,8 @@ Expression _prefix(dynamic prefix, Expression expression, String action) {
   return expression;
 }
 
+int _runeAt(String string, int index) => string.runes.toList()[index];
+
 Expression _suffix(String suffix, Expression expression) {
   switch (suffix) {
     case '?':
@@ -95,9 +97,9 @@ Range <-
   / Char        { $$ = [$1, $1]; }
   
 Char <-
-  '\\' ["'\-\[-\]nrt] { $$ = _escape($2.codeUnitAt(0)); }  
+  '\\' ["'\-\[-\]nrt] { $$ = _escape(_runeAt($2, 0)); }  
   / HEX_NUMBER
-  / !'\\' !EOL .      { $$ = $3.codeUnitAt(0); }
+  / !'\\' !EOL .      { $$ = _runeAt($3, 0); }
   
 # Tokens
 

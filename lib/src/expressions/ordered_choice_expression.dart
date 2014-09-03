@@ -6,8 +6,7 @@ class OrderedChoiceExpression extends ListExpression {
   OrderedChoiceExpression(List<Expression> expressions) : super(expressions) {
     for (var expression in expressions) {
       if (expression is! SequenceExpression) {
-        throw new StateError(
-            'The expression list contains illegal expression.');
+        throw new StateError('The expression list contains illegal expression.');
       }
     }
   }

@@ -5,17 +5,17 @@ class ProductionRuleGenerator extends TemplateGenerator {
 
   static const String _ADD_TO_CACHE = MethodAddToCacheGenerator.NAME;
 
-  static const String _CACHE_POS = GrammarGenerator.VARIABLE_CACHE_POS;
+  static const String _CACHE_POS = ParserClassGenerator.VARIABLE_CACHE_POS;
 
-  static const String _CURSOR = GrammarGenerator.VARIABLE_CURSOR;
+  static const String _CURSOR = ParserClassGenerator.VARIABLE_CURSOR;
 
-  static const String _FLAG = GrammarGenerator.VARIABLE_FLAG;
+  static const String _FLAG = ParserClassGenerator.VARIABLE_FLAG;
 
   static const String _GET_FROM_CACHE = MethodGetFromCacheGenerator.NAME;
 
   static const String _RESULT = VARIABLE_RESULT;
 
-  static const String _SUCCESS = GrammarGenerator.VARIABLE_SUCCESS;
+  static const String _SUCCESS = ParserClassGenerator.VARIABLE_SUCCESS;
 
   static const String _TRACE = MethodTraceGenerator.NAME;
 
@@ -70,7 +70,7 @@ dynamic {{NAME}}() {
 
   List<Generator> generators = [];
 
-  GrammarGenerator _grammarGenerator;
+  ParserClassGenerator _grammarGenerator;
 
   bool _memoize;
 
@@ -78,8 +78,7 @@ dynamic {{NAME}}() {
 
   Map<String, int> _variables = new Map<String, int>();
 
-  ProductionRuleGenerator(ProductionRule productionRule,
-      GrammarGenerator grammarGenerator) {
+  ProductionRuleGenerator(ProductionRule productionRule, ParserClassGenerator grammarGenerator) {
     if (productionRule == null) {
       throw new ArgumentError('productionRule: $productionRule');
     }
@@ -91,9 +90,7 @@ dynamic {{NAME}}() {
     _grammarGenerator = grammarGenerator;
     _memoize = grammarGenerator.parserGenerator.memoize;
     _productionRule = productionRule;
-    _expressionGenerator = new OrderedChoiceExpressionGenerator(
-        productionRule.expression,
-        this);
+    _expressionGenerator = new OrderedChoiceExpressionGenerator(productionRule.expression, this);
     _comment = grammarGenerator.parserGenerator.comment;
     addTemplate(_TEMPLATE_WITH_CACHE, _templateWithCache);
     addTemplate(_TEMPLATE_WITHOUT_CACHE, _templateWithoutCache);
@@ -103,7 +100,7 @@ dynamic {{NAME}}() {
     return _comment;
   }
 
-  GrammarGenerator get grammarGenerator {
+  ParserClassGenerator get grammarGenerator {
     return _grammarGenerator;
   }
 
@@ -150,28 +147,18 @@ dynamic {{NAME}}() {
 
   void _assignTraceVariables(TemplateBlock block) {
     var name = _productionRule.name;
-    block.assign(
-        '#ENTER',
-        "$_TRACE('$name', '${Trace.getTraceState(enter: true, success: true)}');");
+    block.assign('#ENTER', "$_TRACE('$name', '${Trace.getTraceState(enter: true, success: true)}');");
     var success = Trace.getTraceState(enter: false, success: true);
     var failed = Trace.getTraceState(enter: false, success: false);
-    block.assign(
-        '#LEAVE',
-        "$_TRACE('$name', ($_SUCCESS ? '$success' : '$failed'));");
+    block.assign('#LEAVE', "$_TRACE('$name', ($_SUCCESS ? '$success' : '$failed'));");
   }
 
   void _assignTraceVariablesWithCache(TemplateBlock block) {
     var name = _productionRule.name;
-    block.assign(
-        '#ENTER',
-        "$_TRACE('$name', '${Trace.getTraceState(enter: true, success: true)}');");
-    var success =
-        Trace.getTraceState(cached: true, enter: false, success: true);
-    var failed =
-        Trace.getTraceState(cached: true, enter: false, success: false);
-    block.assign(
-        '#LEAVE_CACHE',
-        "$_TRACE('$name', ($_SUCCESS ? '$success' : '$failed'));");
+    block.assign('#ENTER', "$_TRACE('$name', '${Trace.getTraceState(enter: true, success: true)}');");
+    var success = Trace.getTraceState(cached: true, enter: false, success: true);
+    var failed = Trace.getTraceState(cached: true, enter: false, success: false);
+    block.assign('#LEAVE_CACHE', "$_TRACE('$name', ($_SUCCESS ? '$success' : '$failed'));");
   }
 
   List<String> _generateVariables() {
@@ -239,7 +226,7 @@ dynamic {{NAME}}() {
     var set = 0;
     var strings = [];
     if (_productionRule.isTerminal) {
-      set |= GrammarGenerator.FLAG_TOKENIZATION;
+      set |= ParserClassGenerator.FLAG_TOKENIZATION;
     }
 
     if (reset != 0) {

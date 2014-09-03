@@ -1,8 +1,6 @@
 =======================================
-Test one optional
-Test one optional with trace
-Test lookahead optional
-Test lookahead optional with trace
+
+Optimize instruction transformer
 
 =======================================
 
