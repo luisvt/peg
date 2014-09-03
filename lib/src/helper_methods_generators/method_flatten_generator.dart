@@ -1,4 +1,4 @@
-part of peg.grammar_generator;
+part of peg.helper_methods_generators;
 
 class MethodFlattenGenerator extends TemplateGenerator {
   static const String NAME = "_flatten";

@@ -1,6 +1,6 @@
 library peg.instruction_decoder_generators;
 
-import "package:peg/generator.dart";
+import "package:peg/generators.dart";
 import "package:peg/instructions.dart";
 import "package:peg/interpreter_class_generator.dart";
 import "package:peg/state_machine_generator.dart";

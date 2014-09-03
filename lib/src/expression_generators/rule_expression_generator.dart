@@ -122,12 +122,12 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
       return _generate();
     }
 
-    var grammarGenerator = productionRuleGenerator.grammarGenerator;
-    if (!grammarGenerator.parserGenerator.lookahead) {
+    var parserClassGenerator = productionRuleGenerator.parserClassGenerator;
+    if (!parserClassGenerator.parserGenerator.lookahead) {
       return _generate();
     }
 
-    var length = grammarGenerator.getLookaheadCharCount(rule);
+    var length = parserClassGenerator.getLookaheadCharCount(rule);
     var expression = rule.expression;
     if (length == 0) {
       return _generate();
@@ -160,11 +160,11 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
 
   List<String> _generateLookahead() {
     TemplateBlock block;
-    var grammarGenerator = productionRuleGenerator.grammarGenerator;
+    var parserClassGenerator = productionRuleGenerator.parserClassGenerator;
     var rule = _expression.rule;
     var ruleExpression = rule.expression;
     var lookaheadId = ruleExpression.lookaheadId;
-    var position = grammarGenerator.getLookaheadPosition(lookaheadId);
+    var position = parserClassGenerator.getLookaheadPosition(lookaheadId);
     var startCharacters = ruleExpression.startCharacters;
     block = getTemplateBlock(_TEMPLATE_LOOKAHEAD);
     block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(ruleExpression));
@@ -174,7 +174,7 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
       block.assign('#LOOKAHEAD_COMMENTS', '// Lookahead ($name)');
     }
 
-    if (grammarGenerator.parserGenerator.trace) {
+    if (parserClassGenerator.parserGenerator.trace) {
       block.assign('#TRACE', _getTraceString());
     }
 
@@ -195,11 +195,11 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
 
   List<String> _generateLookaheadOptional() {
     TemplateBlock block;
-    var grammarGenerator = productionRuleGenerator.grammarGenerator;
+    var parserClassGenerator = productionRuleGenerator.parserClassGenerator;
     var rule = _expression.rule;
     var ruleExpression = rule.expression;
     var lookaheadId = ruleExpression.lookaheadId;
-    var position = grammarGenerator.getLookaheadPosition(lookaheadId);
+    var position = parserClassGenerator.getLookaheadPosition(lookaheadId);
     var startCharacters = ruleExpression.startCharacters;
     block = getTemplateBlock(_TEMPLATE_LOOKAHEAD_OPTIONAL);
     if (productionRuleGenerator.comment) {
@@ -226,11 +226,11 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
 
   List<String> _generateOne() {
     TemplateBlock block;
-    var grammarGenerator = productionRuleGenerator.grammarGenerator;
+    var parserClassGenerator = productionRuleGenerator.parserClassGenerator;
     var rule = _expression.rule;
     var ruleExpression = rule.expression;
     var character = ruleExpression.startCharacters.start;
-    var trace = grammarGenerator.parserGenerator.trace;
+    var trace = parserClassGenerator.parserGenerator.trace;
     block = getTemplateBlock(_TEMPLATE_ONE);
     block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(ruleExpression));
     if (productionRuleGenerator.comment) {
@@ -259,11 +259,11 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
 
   List<String> _generateOneOptional() {
     TemplateBlock block;
-    var grammarGenerator = productionRuleGenerator.grammarGenerator;
+    var parserClassGenerator = productionRuleGenerator.parserClassGenerator;
     var rule = _expression.rule;
     var ruleExpression = rule.expression;
     var character = ruleExpression.startCharacters.start;
-    var trace = grammarGenerator.parserGenerator.trace;
+    var trace = parserClassGenerator.parserGenerator.trace;
     block = getTemplateBlock(_TEMPLATE_ONE_OPTIONAL);
     if (productionRuleGenerator.comment) {
       var printable = toPrintable(new String.fromCharCode(character));
@@ -288,7 +288,7 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
   List<String> _generateProlog() {
     var block = getTemplateBlock(_TEMPLATE_PROLOG);
     TemplateBlock elseBlock;
-    if (productionRuleGenerator.grammarGenerator.parserGenerator.trace) {
+    if (productionRuleGenerator.parserClassGenerator.parserGenerator.trace) {
       elseBlock = getTemplateBlock(_TEMPLATE_ELSE_TRACE);
       var state = Trace.getTraceState(skip: true, success: true);
       elseBlock.assign("#TRACE", "$_TRACE('${_expression.name}', '$state');");

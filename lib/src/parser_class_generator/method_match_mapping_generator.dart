@@ -11,8 +11,6 @@ class MethodMatchMappingGenerator extends TemplateGenerator {
 
   static const String _FAILURE = MethodFailureGenerator.NAME;
 
-  static const String _INPUT = ParserClassGenerator.VARIABLE_INPUT;
-
   static const String _INPUT_LEN = ParserClassGenerator.VARIABLE_INPUT_LEN;
 
   static const String _RUNES = ParserClassGenerator.VARIABLE_RUNES;
@@ -28,8 +26,8 @@ String $NAME(int start, int end, List<bool> mapping) {
   $_SUCCESS = $_CH >= start && $_CH <= end;
   if ($_SUCCESS) {    
     if(mapping[$_CH - start]) {
-      var result = $_INPUT[$_CURSOR++];
-      if ($_CURSOR < $_INPUT_LEN) {
+      var result = new String.fromCharCode($_CH);
+      if (++$_CURSOR < $_INPUT_LEN) {
         $_CH = $_RUNES[$_CURSOR];
       } else {
         $_CH = $_EOF;

@@ -3,7 +3,7 @@
 
 PEG (Parsing expression grammar) parsers generator.
 
-Version: 0.0.9
+Version: 0.0.10
 
 Status: Experimental
 
@@ -257,6 +257,8 @@ class ArithmeticParser {
   static final List<bool> _lookahead = _unmap([0x800013, 0x3ff01]);
   // '\t', '\n', '\r', ' '
   static final List<bool> _mapping0 = _unmap([0x800013]);
+  // "\r\n"
+  static final List<int> _strings0 = <int>[13, 10];
   List _cache;
   int _cachePos;
   List<int> _cacheRule;
@@ -267,7 +269,6 @@ class ArithmeticParser {
   List<String> _expected;
   int _failurePos;
   int _flag;
-  String _input;
   int _inputLen;
   int _line;
   List<int> _runes;
@@ -277,10 +278,9 @@ class ArithmeticParser {
   ArithmeticParser(String text) {
     if (text == null) {
       throw new ArgumentError('text: $text');
-    }
-    _input = text;  
-    _inputLen = _input.length;
-    _runes = text.runes.toList(growable: false);
+    }    
+    _runes = _toRunes(text);
+    _inputLen = _runes.length;
     if (_inputLen >= 0x3fffffe8 / 32) {
       throw new StateError('File size to big: $_inputLen');
     }  
@@ -378,7 +378,7 @@ class ArithmeticParser {
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // ")"
-      $$ = _matchString(')', const [")"]);
+      $$ = _matchChar(41, ')', const [")"]);
       if (!success) break;
       var seq = new List(2)..[0] = $$;
       // SPACES
@@ -406,7 +406,7 @@ class ArithmeticParser {
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "/"
-      $$ = _matchString('/', const ["/"]);
+      $$ = _matchChar(47, '/', const ["/"]);
       if (!success) break;
       var seq = new List(2)..[0] = $$;
       // SPACES
@@ -497,7 +497,7 @@ class ArithmeticParser {
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "-"
-      $$ = _matchString('-', const ["-"]);
+      $$ = _matchChar(45, '-', const ["-"]);
       if (!success) break;
       var seq = new List(2)..[0] = $$;
       // SPACES
@@ -532,7 +532,7 @@ class ArithmeticParser {
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "*"
-      $$ = _matchString('*', const ["*"]);
+      $$ = _matchChar(42, '*', const ["*"]);
       if (!success) break;
       var seq = new List(2)..[0] = $$;
       // SPACES
@@ -623,7 +623,7 @@ class ArithmeticParser {
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "("
-      $$ = _matchString('(', const ["("]);
+      $$ = _matchChar(40, '(', const ["("]);
       if (!success) break;
       var seq = new List(2)..[0] = $$;
       // SPACES
@@ -651,7 +651,7 @@ class ArithmeticParser {
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "+"
-      $$ = _matchString('+', const ["+"]);
+      $$ = _matchChar(43, '+', const ["+"]);
       if (!success) break;
       var seq = new List(2)..[0] = $$;
       // SPACES
@@ -913,7 +913,7 @@ class ArithmeticParser {
       $$ = _matchMapping(9, 32, _mapping0);
       if (success) break;
       // "\r\n"
-      $$ = _matchString('\r\n', const ["\\r\\n"]);
+      $$ = _matchString(_strings0, '\r\n', const ["\\r\\n"]);
       break;
     }
     return $$;
@@ -1048,8 +1048,8 @@ class ArithmeticParser {
   String _matchAny() {
     success = _cursor < _inputLen;
     if (success) {
-      var result = _input[_cursor++];
-      if (_cursor < _inputLen) {
+      var result = new String.fromCharCode(_ch);
+      if (++_cursor < _inputLen) {
         _ch = _runes[_cursor];
       } else {
         _ch = EOF;
@@ -1062,11 +1062,11 @@ class ArithmeticParser {
     return null;  
   }
   
-  String _matchChar(int ch, List<String> expected) {
+  String _matchChar(int ch, String string, List<String> expected) {
     success = _ch == ch;
     if (success) {
-      var result = _input[_cursor++];
-      if (_cursor < _inputLen) {
+      var result = string;  
+      if (++_cursor < _inputLen) {
         _ch = _runes[_cursor];
       } else {
         _ch = EOF;
@@ -1083,8 +1083,8 @@ class ArithmeticParser {
     success = _ch >= start && _ch <= end;
     if (success) {    
       if(mapping[_ch - start]) {
-        var result = _input[_cursor++];
-        if (_cursor < _inputLen) {
+        var result = new String.fromCharCode(_ch);
+        if (++_cursor < _inputLen) {
           _ch = _runes[_cursor];
         } else {
           _ch = EOF;
@@ -1101,9 +1101,9 @@ class ArithmeticParser {
   
   String _matchRange(int start, int end) {
     success = _ch >= start && _ch <= end;
-    if (success) { 
-      var result = _input[_cursor++];
-      if (_cursor < _inputLen) {
+    if (success) {
+      var result = new String.fromCharCode(_ch);    
+      if (++_cursor < _inputLen) {
         _ch = _runes[_cursor];
       } else {
         _ch = EOF;
@@ -1121,8 +1121,8 @@ class ArithmeticParser {
     for (var i = 0; i < length; i += 2) {
       if (_ch <= ranges[i + 1]) {
         if (_ch >= ranges[i]) {
-          var result = _input[_cursor++];
-          if (_cursor < _inputLen) {
+          var result = new String.fromCharCode(_ch);  
+          if (++_cursor < _inputLen) {
             _ch = _runes[_cursor];
           } else {
              _ch = EOF;
@@ -1139,10 +1139,21 @@ class ArithmeticParser {
     return null;  
   }
   
-  String _matchString(String string, List<String> expected) {
-    success = _input.startsWith(string, _cursor);
+  String _matchString(List<int> runes, String string, List<String> expected) {
+    var length = runes.length;  
+    success = true;  
+    if (_cursor + length < _inputLen) {
+      for (var i = 0; i < length; i++) {
+        if (runes[i] != _runes[_cursor + i]) {
+          success = false;
+          break;
+        }
+      }
+    } else {
+      success = false;
+    }  
     if (success) {
-      _cursor += string.length;      
+      _cursor += length;      
       if (_cursor < _inputLen) {
         _ch = _runes[_cursor];
       } else {
@@ -1164,6 +1175,11 @@ class ArithmeticParser {
     } else {
       _ch = EOF;
     }    
+  }
+  
+  int _runeAt(String string, int index) {
+    // TODO: Optimize _runeAt()
+    return string.runes.toList(growable: false)[index];
   }
   
   bool _testChar(int c, int flag) {
@@ -1192,6 +1208,40 @@ class ArithmeticParser {
       return true;
     }
     return false;           
+  }
+  
+  List<int> _toRunes(String string) {
+    if (string == null) {
+      throw new ArgumentError("string: $string");
+    }
+  
+    var length = string.length;
+    if (length == 0) {
+      return const <int>[];
+    }
+  
+    var runes = <int>[];
+    runes.length = length;
+    var i = 0;
+    var pos = 0;
+    for ( ; i < length; pos++) {
+      var start = string.codeUnitAt(i);
+      i++;
+      if ((start & 0xFC00) == 0xD800 && i < length) {
+        var end = string.codeUnitAt(i);
+        if ((end & 0xFC00) == 0xDC00) {
+          runes[pos] = (0x10000 + ((start & 0x3FF) << 10) + (end & 0x3FF));
+          i++;
+        } else {
+          runes[pos] = start;
+        }
+      } else {
+        runes[pos] = start;
+      }
+    }
+  
+    runes.length = pos;
+    return runes;
   }
   
   static List<bool> _unmap(List<int> mapping) {
@@ -1247,7 +1297,7 @@ class ArithmeticParser {
     if (_failurePos < 0 || _failurePos >= _inputLen) {
       return '';    
     }
-    return _input[_failurePos];      
+    return new String.fromCharCode(_runes[_failurePos]);  
   }
   
 }

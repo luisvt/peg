@@ -2,7 +2,7 @@ library peg.expression_generators;
 
 import 'package:lists/lists.dart';
 import 'package:peg/expressions.dart';
-import 'package:peg/generator.dart';
+import 'package:peg/generators.dart';
 import 'package:peg/parser_class_generator.dart';
 import 'package:peg/parser_generator.dart';
 import 'package:peg/production_rule_generator.dart';

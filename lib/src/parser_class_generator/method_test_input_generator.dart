@@ -5,8 +5,6 @@ class MethodTestInputGenerator extends TemplateGenerator {
 
   static const String _CURSOR = ParserClassGenerator.VARIABLE_CURSOR;
 
-  static const String _INPUT = ParserClassGenerator.VARIABLE_INPUT;
-
   static const String _INPUT_LEN = ParserClassGenerator.VARIABLE_INPUT_LEN;
 
   static const String _RUNES = ParserClassGenerator.VARIABLE_RUNES;

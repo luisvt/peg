@@ -2,7 +2,7 @@ library peg.interpreter_class_generator;
 
 import "package:lists/lists.dart";
 import "package:peg/class_generator.dart";
-import "package:peg/generator.dart";
+import "package:peg/generators.dart";
 import "package:peg/grammar.dart";
 import "package:peg/instruction_from_expression_transformer.dart";
 import "package:peg/instructions.dart";

@@ -28,8 +28,6 @@ Expression _prefix(dynamic prefix, Expression expression, String action) {
   return expression;
 }
 
-int _runeAt(String string, int index) => string.runes.toList()[index];
-
 Expression _suffix(String suffix, Expression expression) {
   switch (suffix) {
     case '?':

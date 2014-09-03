@@ -1,3 +1,7 @@
+## 0.0.10
+
+- Bug fixes for the full support of the Unicode characters  
+
 ## 0.0.9
 
 - Fixed bugs (the character code units are not an Unicode characters)

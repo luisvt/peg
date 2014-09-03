@@ -1,4 +1,4 @@
-library peg.generator;
+library peg.generators;
 
 import 'package:template_block/template_block.dart';
 

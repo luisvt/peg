@@ -5,6 +5,8 @@ class InterpreterClassGenerator {
 
   static const String VARIABLE_INPUT_LEN = "_inputLen";
 
+  static const String VARIABLE_RUNES = "_runes";
+
   final Grammar grammar;
 
   final String name;

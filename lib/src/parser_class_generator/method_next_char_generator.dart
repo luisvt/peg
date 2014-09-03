@@ -10,8 +10,6 @@ class MethodNextCharGenerator extends TemplateGenerator {
 
   static const String _EOF = ParserClassGenerator.CONSTANT_EOF;
 
-  static const String _INPUT = ParserClassGenerator.VARIABLE_INPUT;
-
   static const String _INPUT_LEN = ParserClassGenerator.VARIABLE_INPUT_LEN;
 
   static const String _RUNES = ParserClassGenerator.VARIABLE_RUNES;

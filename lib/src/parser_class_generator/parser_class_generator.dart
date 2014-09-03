@@ -25,8 +25,6 @@ class ParserClassGenerator extends TemplateGenerator {
 
   static const String VARIABLE_FLAG = "_flag";
 
-  static const String VARIABLE_INPUT = "_input";
-
   static const String VARIABLE_INPUT_LEN = "_inputLen";
 
   static const String VARIABLE_LINE = "_line";
@@ -40,6 +38,8 @@ class ParserClassGenerator extends TemplateGenerator {
   static const String VARIABLE_RANGES = "_ranges";
 
   static const String VARIABLE_RUNES = "_runes";
+
+  static const String VARIABLE_STRINGS = "_strings";
 
   static const String VARIABLE_SUCCESS = "success";
 
@@ -62,6 +62,8 @@ class ParserClassGenerator extends TemplateGenerator {
   List<SparseBoolList> _mappings = [];
 
   List<SparseBoolList> _ranges = [];
+
+  List<String> _strings = [];
 
   ParserClassGenerator(this.name, this.grammar, this.parserGenerator) {
     if (name == null) {
@@ -110,11 +112,34 @@ class ParserClassGenerator extends TemplateGenerator {
 
   String addRanges(SparseBoolList ranges) {
     if (ranges == null) {
-      throw new ArgumentError('$VARIABLE_RANGES: $ranges');
+      throw new ArgumentError('ranges: $ranges');
     }
 
     _ranges.add(ranges);
     return '$VARIABLE_RANGES${_ranges.length - 1}';
+  }
+
+  String addString(String string) {
+    if (string == null) {
+      throw new ArgumentError('string: $string');
+    }
+
+    var length = _strings.length;
+    var found = false;
+    var i = 0;
+    for(; i < length; i++) {
+      if(string == _strings[i]) {
+        found = true;
+        break;
+      }
+    }
+
+    if(!found) {
+      i = length;
+      _strings.add(string);
+    }
+
+    return '$VARIABLE_STRINGS${i}';
   }
 
   List<String> generate() {
@@ -176,6 +201,10 @@ class ParserClassGenerator extends TemplateGenerator {
 
       generators[MethodTraceGenerator.NAME] = new MethodTraceGenerator(length);
     }
+
+    // Helper methods
+    generators[MethodRuneAtGenerator.NAME] = new MethodRuneAtGenerator();
+    generators[MethodToRunesGenerator.NAME] = new MethodToRunesGenerator();
 
     methods.addAll(_generateInSortOrder(generators));
     if (parserGenerator.grammar.members != null) {
@@ -292,6 +321,19 @@ class ParserClassGenerator extends TemplateGenerator {
       }
     }
 
+    if (!_strings.isEmpty) {
+      var length = _strings.length;
+      for (var i = 0; i < length; i++) {
+        var string = _strings[i];
+        var list = string.runes.toList();
+        if (parserGenerator.comment) {
+          strings.add('// "${toPrintable(string)}"');
+        }
+
+        strings.add('static final List<int> $VARIABLE_STRINGS$i = <int>[${list.join(', ')}];');
+      }
+    }
+
     strings.add('List $VARIABLE_CACHE;');
     strings.add('int $VARIABLE_CACHE_POS;');
     strings.add('List<int> $VARIABLE_CACHE_RULE;');
@@ -302,7 +344,6 @@ class ParserClassGenerator extends TemplateGenerator {
     strings.add('List<String> $VARIABLE_EXPECTED;');
     strings.add('int $VARIABLE_FAILURE_POS;');
     strings.add('int $VARIABLE_FLAG;');
-    strings.add('String $VARIABLE_INPUT;');
     strings.add('int $VARIABLE_INPUT_LEN;');
     strings.add('int $VARIABLE_LINE;');
     strings.add('List<int> $VARIABLE_RUNES;');

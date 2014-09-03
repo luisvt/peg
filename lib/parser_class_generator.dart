@@ -1,9 +1,11 @@
 library peg.grammar_generator;
 
 import 'package:lists/lists.dart';
+import 'package:strings/strings.dart';
 import 'package:peg/class_generator.dart';
-import 'package:peg/generator.dart';
+import 'package:peg/generators.dart';
 import 'package:peg/grammar.dart';
+import 'package:peg/helper_methods_generators.dart';
 import 'package:peg/parser_generator.dart';
 import 'package:peg/production_rule.dart';
 import 'package:peg/production_rule_generator.dart';
@@ -17,7 +19,6 @@ part 'src/parser_class_generator/method_add_to_cache_generator.dart';
 part 'src/parser_class_generator/method_calculate_pos_generator.dart';
 part 'src/parser_class_generator/method_expected_generator.dart';
 part 'src/parser_class_generator/method_failure_generator.dart';
-part 'src/parser_class_generator/method_flatten_generator.dart';
 part 'src/parser_class_generator/method_get_from_cache_generator.dart';
 part 'src/parser_class_generator/method_match_any_generator.dart';
 part 'src/parser_class_generator/method_match_char_generator.dart';

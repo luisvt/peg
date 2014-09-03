@@ -48,7 +48,7 @@ if (!$_SUCCESS) {
 
   static final String _templateCharacter = '''
 {{#COMMENTS}}
-$_RESULT = $_MATCH_CHAR({{CHARACTER}}, {{EXPECTED}});''';
+$_RESULT = $_MATCH_CHAR({{RUNE}}, '{{STRING}}', {{EXPECTED}});''';
 
   static final String _templateEmpty = '''
 // {{#COMMENTS}}
@@ -141,7 +141,7 @@ $_RESULT = $_MATCH_RANGES({{RANGES}});''';
 
   List<String> _generateAscii() {
     var block = getTemplateBlock(_TEMPLATE_ASCII);
-    var range = productionRuleGenerator.grammarGenerator.addMapping(_ascii);
+    var range = productionRuleGenerator.parserClassGenerator.addMapping(_ascii);
     if (productionRuleGenerator.comment) {
       block.assign('#COMMENTS', '// $_expression');
     }
@@ -154,8 +154,9 @@ $_RESULT = $_MATCH_RANGES({{RANGES}});''';
 
   List<String> _generateAsciiAndNonAscii() {
     var block = getTemplateBlock(_TEMPLATE_ASCII_NON_ASCII);
-    var mapping = productionRuleGenerator.grammarGenerator.addMapping(_ascii);
-    var ranges = productionRuleGenerator.grammarGenerator.addRanges(_nonAscii);
+    var parserClassGenerator = productionRuleGenerator.parserClassGenerator;
+    var mapping = parserClassGenerator.addMapping(_ascii);
+    var ranges = parserClassGenerator.addRanges(_nonAscii);
     if (productionRuleGenerator.comment) {
       block.assign('#COMMENTS', '// $_expression');
     }
@@ -173,7 +174,9 @@ $_RESULT = $_MATCH_RANGES({{RANGES}});''';
       block.assign('#COMMENTS', '// $_expression');
     }
 
-    block.assign('CHARACTER', _singleCharacter);
+    var string = Utils.charToString(_singleCharacter);
+    block.assign('RUNE', _singleCharacter);
+    block.assign('STRING', _singleCharacter);
     block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(_expression));
     return block.process();
   }
@@ -200,7 +203,7 @@ $_RESULT = $_MATCH_RANGES({{RANGES}});''';
 
   List<String> _generateRanges() {
     var block = getTemplateBlock(_TEMPLATE_RANGES);
-    var ranges = productionRuleGenerator.grammarGenerator.addRanges(_nonAscii);
+    var ranges = productionRuleGenerator.parserClassGenerator.addRanges(_nonAscii);
     if (productionRuleGenerator.comment) {
       block.assign('#COMMENTS', '// $_expression');
     }

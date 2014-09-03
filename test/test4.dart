@@ -5,6 +5,12 @@ import 'package:peg/expressions.dart';
 import 'package:peg/grammar.dart';
 import 'package:peg/production_rule.dart';
 
+void main() {
+  var text = " A <- [a-z]'";
+  var parser = new PegParser(text);
+  parser.parse_Grammar();
+}
+
 int _escape(int c) {
   switch (c) {
     case 110:
@@ -15,12 +21,6 @@ int _escape(int c) {
       return 9;
   }
   return c;
-}
-
-void main() {
-  var text = " A <- [a-z]'";
-  var parser = new PegParser(text);
-  parser.parse_Grammar();
 }
 
 Expression _prefix(dynamic prefix, Expression expression, String action) {
@@ -35,6 +35,8 @@ Expression _prefix(dynamic prefix, Expression expression, String action) {
   expression.action = action;
   return expression;
 }
+
+int _runeAt(String string, int index) => string.runes.toList()[index];
 
 Expression _suffix(String suffix, Expression expression) {
   switch (suffix) {
@@ -1335,7 +1337,7 @@ class PegParser {
             $$ = input[cursor++];
             success = true;
             if (cursor < inputLen) {
-              ch = input[cursor];
+              ch = input.codeUnitAt(cursor);
             } else {
               ch = -1;
             }
@@ -1360,7 +1362,7 @@ class PegParser {
                 if (c <= data[ranges + 1]) {
                   $$ = input[cursor++];
                   if (cursor < inputLen) {
-                    ch = input[cursor];
+                    ch = input.codeUnitAt(cursor);
                   } else {
                     ch = -1;
                   }
@@ -1385,7 +1387,7 @@ class PegParser {
               $$ = c;
               cursor++;
               if (cursor < inputLen) {
-                ch = input[cursor];
+                ch = input.codeUnitAt(cursor);
               } else {
                 ch = -1;
               }
@@ -1409,7 +1411,7 @@ class PegParser {
             $$ = string;
             success = true;
             if (cursor < inputLen) {
-              ch = input[cursor];
+              ch = input.codeUnitAt(cursor);
             } else {
               ch = -1;
             }

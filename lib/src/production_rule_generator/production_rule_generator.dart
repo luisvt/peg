@@ -70,7 +70,7 @@ dynamic {{NAME}}() {
 
   List<Generator> generators = [];
 
-  ParserClassGenerator _grammarGenerator;
+  ParserClassGenerator _parserClassGenerator;
 
   bool _memoize;
 
@@ -87,7 +87,7 @@ dynamic {{NAME}}() {
       throw new ArgumentError('grammar: $grammarGenerator');
     }
 
-    _grammarGenerator = grammarGenerator;
+    _parserClassGenerator = grammarGenerator;
     _memoize = grammarGenerator.parserGenerator.memoize;
     _productionRule = productionRule;
     _expressionGenerator = new OrderedChoiceExpressionGenerator(productionRule.expression, this);
@@ -100,8 +100,8 @@ dynamic {{NAME}}() {
     return _comment;
   }
 
-  ParserClassGenerator get grammarGenerator {
-    return _grammarGenerator;
+  ParserClassGenerator get parserClassGenerator {
+    return _parserClassGenerator;
   }
 
   String allocateVariable(String name) {
@@ -187,7 +187,7 @@ dynamic {{NAME}}() {
       block.assign('#COMMENTS', '// $_productionRule');
     }
 
-    if (grammarGenerator.parserGenerator.trace) {
+    if (parserClassGenerator.parserGenerator.trace) {
       _assignTraceVariables(block);
     }
 
@@ -210,7 +210,7 @@ dynamic {{NAME}}() {
       block.assign('#COMMENTS', '// $_productionRule');
     }
 
-    if (grammarGenerator.parserGenerator.trace) {
+    if (parserClassGenerator.parserGenerator.trace) {
       _assignTraceVariables(block);
     }
 

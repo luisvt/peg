@@ -11,8 +11,6 @@ class MethodMatchCharGenerator extends TemplateGenerator {
 
   static const String _FAILURE = MethodFailureGenerator.NAME;
 
-  static const String _INPUT = ParserClassGenerator.VARIABLE_INPUT;
-
   static const String _INPUT_LEN = ParserClassGenerator.VARIABLE_INPUT_LEN;
 
   static const String _RUNES = ParserClassGenerator.VARIABLE_RUNES;
@@ -24,11 +22,11 @@ class MethodMatchCharGenerator extends TemplateGenerator {
   static const String _TEMPLATE = "TEMPLATE";
 
   static final String _template = '''
-String $NAME(int ch, List<String> expected) {
+String $NAME(int ch, String string, List<String> expected) {
   $_SUCCESS = $_CH == ch;
   if ($_SUCCESS) {
-    var result = $_INPUT[$_CURSOR++];
-    if ($_CURSOR < $_INPUT_LEN) {
+    var result = string;  
+    if (++$_CURSOR < $_INPUT_LEN) {
       $_CH = $_RUNES[$_CURSOR];
     } else {
       $_CH = $_EOF;

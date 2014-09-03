@@ -5,8 +5,6 @@ class MethodCalculatePosGenerator extends TemplateGenerator {
 
   static const String _COLUMN = ParserClassGenerator.VARIABLE_COLUMN;
 
-  static const String _INPUT = ParserClassGenerator.VARIABLE_INPUT;
-
   static const String _INPUT_LEN = ParserClassGenerator.VARIABLE_INPUT_LEN;
 
   static const String _LINE = ParserClassGenerator.VARIABLE_LINE;

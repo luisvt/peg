@@ -1,4 +1,4 @@
-part of peg.generator;
+part of peg.generators;
 
 abstract class TemplateGenerator extends Generator {
   static Map<String, String> _templates = {};

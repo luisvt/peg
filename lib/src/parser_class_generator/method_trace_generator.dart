@@ -7,9 +7,9 @@ class MethodTraceGenerator extends TemplateGenerator {
 
   static const String _CURSOR = ParserClassGenerator.VARIABLE_CURSOR;
 
-  static const String _INPUT = ParserClassGenerator.VARIABLE_INPUT;
-
   static const String _INPUT_LEN = ParserClassGenerator.VARIABLE_INPUT_LEN;
+
+  static const String _RUNES = ParserClassGenerator.VARIABLE_RUNES;
 
   static const String _TEMPLATE = "TEMPLATE";
 
@@ -23,12 +23,12 @@ void $NAME(String rule, String prefix) {
     message = message.padRight({{LENGTH}});
   }
 
-  var position = " ($_CURSOR)";
+  var position = " (\$$_CURSOR)";
   var rest = 80 - position.length + 2 - message.length;
   var source = <String>[];
-  for (var i = $_CURSOR; i < $_INPUT_LEN; i++) {
-    var s = $_INPUT[i];
-    var c = $_INPUT.codeUnitAt(i);
+  for (var i = $_CURSOR; i < $_INPUT_LEN; i++) {    
+    var c = $_RUNES[i];
+    var s = new String.fromCharCode(c);    
     switch (c) {
       case 9:
         s = "\\\\t";

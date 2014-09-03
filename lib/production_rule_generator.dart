@@ -1,7 +1,7 @@
 library peg.production_rule_generator;
 
 import 'package:peg/expression_generators.dart';
-import 'package:peg/generator.dart';
+import 'package:peg/generators.dart';
 import 'package:peg/parser_class_generator.dart';
 import 'package:peg/production_rule.dart';
 import 'package:peg/trace.dart';

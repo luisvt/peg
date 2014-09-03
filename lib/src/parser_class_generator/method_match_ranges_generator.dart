@@ -11,8 +11,6 @@ class MethodMatchRangesGenerator extends TemplateGenerator {
 
   static const String _FAILURE = MethodFailureGenerator.NAME;
 
-  static const String _INPUT = ParserClassGenerator.VARIABLE_INPUT;
-
   static const String _INPUT_LEN = ParserClassGenerator.VARIABLE_INPUT_LEN;
 
   static const String _RUNES = ParserClassGenerator.VARIABLE_RUNES;
@@ -29,8 +27,8 @@ String $NAME(List<int> ranges) {
   for (var i = 0; i < length; i += 2) {
     if ($_CH <= ranges[i + 1]) {
       if ($_CH >= ranges[i]) {
-        var result = $_INPUT[$_CURSOR++];
-        if ($_CURSOR < $_INPUT_LEN) {
+        var result = new String.fromCharCode($_CH);  
+        if (++$_CURSOR < $_INPUT_LEN) {
           $_CH = $_RUNES[$_CURSOR];
         } else {
            $_CH = $_EOF;
