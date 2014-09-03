@@ -3,6 +3,8 @@ part of peg.grammar_generator;
 class MethodMatchRangeGenerator extends TemplateGenerator {
   static const String NAME = "_matchRange";
 
+  static const String _ASCII = ParserClassGenerator.VARIABLE_ASCII;
+
   static const String _CH = ParserClassGenerator.VARIABLE_CH;
 
   static const String _CURSOR = ParserClassGenerator.VARIABLE_CURSOR;
@@ -25,7 +27,12 @@ class MethodMatchRangeGenerator extends TemplateGenerator {
 String $NAME(int start, int end) {
   $_SUCCESS = $_CH >= start && $_CH <= end;
   if ($_SUCCESS) {
-    var result = new String.fromCharCode($_CH);    
+    String result;
+    if ($_CH < 128) {
+      result = $_ASCII[$_CH];  
+    } else {
+      result = new String.fromCharCode($_CH);
+    }        
     if (++$_CURSOR < $_INPUT_LEN) {
       $_CH = $_RUNES[$_CURSOR];
     } else {

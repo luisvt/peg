@@ -8,7 +8,7 @@ class MethodRuneAtGenerator extends TemplateGenerator {
   static final String _template = '''
 int $NAME(String string, int index) {
   // TODO: Optimize $NAME()
-  return string.runes.toList(growable: false)[index];
+  return _toRunes(string)[index];
 }
 ''';
 

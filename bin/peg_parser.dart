@@ -43,6 +43,7 @@ Expression _suffix(String suffix, Expression expression) {
 }
 class PegParser {
   static const int EOF = -1;
+  static final List<String> _ascii = new List<String>.generate(128, (c) => new String.fromCharCode(c));
   static final List<bool> _lookahead = _unmap([0x14800013, 0x7e000000, 0x7d0fffff, 0x38ffffff, 0x7f800010, 0x7f47ffff, 0x30fffff, 0x7ff80001, 0x7ff47fff, 0x1ffffff, 0x7fffffe, 0xffffffd]);
   // '\"', '\'', '-', '[', '\\', ']', 'n', 'r', 't'
   static final List<bool> _mapping0 = _unmap([0x821, 0x1c000000, 0x144000]);
@@ -2173,7 +2174,12 @@ class PegParser {
   String _matchAny() {
     success = _cursor < _inputLen;
     if (success) {
-      var result = new String.fromCharCode(_ch);
+      String result;
+      if (_ch < 128) {
+        result = _ascii[_ch];  
+      } else {
+        result = new String.fromCharCode(_ch);
+      }    
       if (++_cursor < _inputLen) {
         _ch = _runes[_cursor];
       } else {
@@ -2208,7 +2214,12 @@ class PegParser {
     success = _ch >= start && _ch <= end;
     if (success) {    
       if(mapping[_ch - start]) {
-        var result = new String.fromCharCode(_ch);
+        String result;
+        if (_ch < 128) {
+          result = _ascii[_ch];  
+        } else {
+          result = new String.fromCharCode(_ch);
+        }     
         if (++_cursor < _inputLen) {
           _ch = _runes[_cursor];
         } else {
@@ -2227,7 +2238,12 @@ class PegParser {
   String _matchRange(int start, int end) {
     success = _ch >= start && _ch <= end;
     if (success) {
-      var result = new String.fromCharCode(_ch);    
+      String result;
+      if (_ch < 128) {
+        result = _ascii[_ch];  
+      } else {
+        result = new String.fromCharCode(_ch);
+      }        
       if (++_cursor < _inputLen) {
         _ch = _runes[_cursor];
       } else {
@@ -2246,7 +2262,12 @@ class PegParser {
     for (var i = 0; i < length; i += 2) {
       if (_ch <= ranges[i + 1]) {
         if (_ch >= ranges[i]) {
-          var result = new String.fromCharCode(_ch);  
+          String result;
+          if (_ch < 128) {
+            result = _ascii[_ch];  
+          } else {
+            result = new String.fromCharCode(_ch);
+          }          
           if (++_cursor < _inputLen) {
             _ch = _runes[_cursor];
           } else {
@@ -2304,7 +2325,7 @@ class PegParser {
   
   int _runeAt(String string, int index) {
     // TODO: Optimize _runeAt()
-    return string.runes.toList(growable: false)[index];
+    return _toRunes(string)[index];
   }
   
   bool _testChar(int c, int flag) {

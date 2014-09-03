@@ -3,7 +3,7 @@
 
 PEG (Parsing expression grammar) parsers generator.
 
-Version: 0.0.10
+Version: 0.0.11
 
 Status: Experimental
 
@@ -254,6 +254,7 @@ num _binop(num left, num right, String op) {
 }
 class ArithmeticParser {
   static const int EOF = -1;
+  static final List<String> _ascii = new List<String>.generate(128, (c) => new String.fromCharCode(c));
   static final List<bool> _lookahead = _unmap([0x800013, 0x3ff01]);
   // '\t', '\n', '\r', ' '
   static final List<bool> _mapping0 = _unmap([0x800013]);
@@ -1048,7 +1049,12 @@ class ArithmeticParser {
   String _matchAny() {
     success = _cursor < _inputLen;
     if (success) {
-      var result = new String.fromCharCode(_ch);
+      String result;
+      if (_ch < 128) {
+        result = _ascii[_ch];  
+      } else {
+        result = new String.fromCharCode(_ch);
+      }    
       if (++_cursor < _inputLen) {
         _ch = _runes[_cursor];
       } else {
@@ -1083,7 +1089,12 @@ class ArithmeticParser {
     success = _ch >= start && _ch <= end;
     if (success) {    
       if(mapping[_ch - start]) {
-        var result = new String.fromCharCode(_ch);
+        String result;
+        if (_ch < 128) {
+          result = _ascii[_ch];  
+        } else {
+          result = new String.fromCharCode(_ch);
+        }     
         if (++_cursor < _inputLen) {
           _ch = _runes[_cursor];
         } else {
@@ -1102,7 +1113,12 @@ class ArithmeticParser {
   String _matchRange(int start, int end) {
     success = _ch >= start && _ch <= end;
     if (success) {
-      var result = new String.fromCharCode(_ch);    
+      String result;
+      if (_ch < 128) {
+        result = _ascii[_ch];  
+      } else {
+        result = new String.fromCharCode(_ch);
+      }        
       if (++_cursor < _inputLen) {
         _ch = _runes[_cursor];
       } else {
@@ -1121,7 +1137,12 @@ class ArithmeticParser {
     for (var i = 0; i < length; i += 2) {
       if (_ch <= ranges[i + 1]) {
         if (_ch >= ranges[i]) {
-          var result = new String.fromCharCode(_ch);  
+          String result;
+          if (_ch < 128) {
+            result = _ascii[_ch];  
+          } else {
+            result = new String.fromCharCode(_ch);
+          }          
           if (++_cursor < _inputLen) {
             _ch = _runes[_cursor];
           } else {
@@ -1179,7 +1200,7 @@ class ArithmeticParser {
   
   int _runeAt(String string, int index) {
     // TODO: Optimize _runeAt()
-    return string.runes.toList(growable: false)[index];
+    return _toRunes(string)[index];
   }
   
   bool _testChar(int c, int flag) {

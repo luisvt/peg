@@ -1,6 +1,10 @@
+## 0.0.11
+
+- Restored the previous performance (which has been decreased due to the support of the Unicode characters) through the addition of a pre-generated ASCII strings table.  
+
 ## 0.0.10
 
-- Bug fixes for the full support of the Unicode characters  
+- Bug fixes for the full support of the Unicode characters
 
 ## 0.0.9
 

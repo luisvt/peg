@@ -5,6 +5,8 @@ class ParserClassGenerator extends TemplateGenerator {
 
   static const String CONSTANT_EOF = "EOF";
 
+  static const String VARIABLE_ASCII = "_ascii";
+
   static const String VARIABLE_CACHE = "_cache";
 
   static const String VARIABLE_CACHE_POS = "_cachePos";
@@ -271,6 +273,8 @@ class ParserClassGenerator extends TemplateGenerator {
   List<String> _generateVariables() {
     var strings = [];
     strings.add('static const int $CONSTANT_EOF = -1;');
+    strings.add('static final List<String> _ascii = new List<String>.generate(128, (c) => new String.fromCharCode(c));');
+    //
     if (!_lookaheadTable.isEmpty) {
       var packed = _pack(_lookaheadTable);
       var hex = packed.map((e) => "0x" + e.toRadixString(16));
