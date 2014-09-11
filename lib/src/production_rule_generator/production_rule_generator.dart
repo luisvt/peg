@@ -5,17 +5,17 @@ class ProductionRuleGenerator extends TemplateGenerator {
 
   static const String _ADD_TO_CACHE = MethodAddToCacheGenerator.NAME;
 
-  static const String _CACHE_POS = ParserClassGenerator.VARIABLE_CACHE_POS;
+  static const String _CACHE_POS = GeneralParserClassGenerator.VARIABLE_CACHE_POS;
 
-  static const String _CURSOR = ParserClassGenerator.VARIABLE_CURSOR;
+  static const String _CURSOR = GeneralParserClassGenerator.VARIABLE_CURSOR;
 
-  static const String _FLAG = ParserClassGenerator.VARIABLE_FLAG;
+  static const String _FLAG = GeneralParserClassGenerator.VARIABLE_FLAG;
 
   static const String _GET_FROM_CACHE = MethodGetFromCacheGenerator.NAME;
 
   static const String _RESULT = VARIABLE_RESULT;
 
-  static const String _SUCCESS = ParserClassGenerator.VARIABLE_SUCCESS;
+  static const String _SUCCESS = GeneralParserClassGenerator.VARIABLE_SUCCESS;
 
   static const String _TRACE = MethodTraceGenerator.NAME;
 
@@ -70,7 +70,7 @@ dynamic {{NAME}}() {
 
   List<Generator> generators = [];
 
-  ParserClassGenerator _parserClassGenerator;
+  GeneralParserClassGenerator _parserClassGenerator;
 
   bool _memoize;
 
@@ -78,20 +78,20 @@ dynamic {{NAME}}() {
 
   Map<String, int> _variables = new Map<String, int>();
 
-  ProductionRuleGenerator(ProductionRule productionRule, ParserClassGenerator grammarGenerator) {
+  ProductionRuleGenerator(ProductionRule productionRule, GeneralParserClassGenerator parserClassGenerator) {
     if (productionRule == null) {
       throw new ArgumentError('productionRule: $productionRule');
     }
 
-    if (grammarGenerator == null) {
-      throw new ArgumentError('grammar: $grammarGenerator');
+    if (parserClassGenerator == null) {
+      throw new ArgumentError('parserClassGenerator: $parserClassGenerator');
     }
 
-    _parserClassGenerator = grammarGenerator;
-    _memoize = grammarGenerator.parserGenerator.memoize;
+    _parserClassGenerator = parserClassGenerator;
+    _memoize = parserClassGenerator.parserGenerator.memoize;
     _productionRule = productionRule;
     _expressionGenerator = new OrderedChoiceExpressionGenerator(productionRule.expression, this);
-    _comment = grammarGenerator.parserGenerator.comment;
+    _comment = parserClassGenerator.parserGenerator.comment;
     addTemplate(_TEMPLATE_WITH_CACHE, _templateWithCache);
     addTemplate(_TEMPLATE_WITHOUT_CACHE, _templateWithoutCache);
   }
@@ -100,7 +100,7 @@ dynamic {{NAME}}() {
     return _comment;
   }
 
-  ParserClassGenerator get parserClassGenerator {
+  GeneralParserClassGenerator get parserClassGenerator {
     return _parserClassGenerator;
   }
 
@@ -226,7 +226,7 @@ dynamic {{NAME}}() {
     var set = 0;
     var strings = [];
     if (_productionRule.isTerminal) {
-      set |= ParserClassGenerator.FLAG_TOKENIZATION;
+      set |= GeneralParserClassGenerator.FLAG_TOKENIZATION;
     }
 
     if (reset != 0) {

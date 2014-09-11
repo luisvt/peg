@@ -1,13 +1,13 @@
 part of peg.expression_generators;
 
 class CharacterClassExpressionGenerator extends ExpressionGenerator {
-  static const String _CH = ParserClassGenerator.VARIABLE_CH;
+  static const String _CH = GeneralParserClassGenerator.VARIABLE_CH;
 
-  static const String _CUSROR = ParserClassGenerator.VARIABLE_CURSOR;
+  static const String _CUSROR = GeneralParserClassGenerator.VARIABLE_CURSOR;
 
   static const String _FAILURE = MethodFailureGenerator.NAME;
 
-  static const String _INPUT_LEN = ParserClassGenerator.VARIABLE_INPUT_LEN;
+  static const String _INPUT_LEN = GeneralParserClassGenerator.VARIABLE_INPUT_LEN;
 
   static const String _MATCH_CHAR = MethodMatchCharGenerator.NAME;
 
@@ -19,9 +19,9 @@ class CharacterClassExpressionGenerator extends ExpressionGenerator {
 
   static const String _RESULT = ProductionRuleGenerator.VARIABLE_RESULT;
 
-  static const String _SUCCESS = ParserClassGenerator.VARIABLE_SUCCESS;
+  static const String _SUCCESS = GeneralParserClassGenerator.VARIABLE_SUCCESS;
 
-  static const String _TESTING = ParserClassGenerator.VARIABLE_TESTING;
+  static const String _TESTING = GeneralParserClassGenerator.VARIABLE_TESTING;
 
   static const String _TEMPLATE_ASCII = 'TEMPLATE_ASCII';
 

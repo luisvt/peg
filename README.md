@@ -3,9 +3,18 @@
 
 PEG (Parsing expression grammar) parsers generator.
 
-Version: 0.0.11
+Version: 0.0.12
 
 Status: Experimental
+
+!!!NEW FEATURE!!!
+
+New parser generator available: intruction interpreter parser.
+
+**Advantages:**
+
+ - Less source code size of the generated parser
+ - The same performance (it will be much better with an upcoming optimizers)
 
 Latest version always can be found at https://github.com/mezoni/peg
 
@@ -19,12 +28,10 @@ Latest version always can be found at https://github.com/mezoni/peg
 - High quality generated source code
 - Lookahead mapping tables
 - Memoization
-- Possibility to trace parsing
+- Possibility to trace parsing 
 - Powerful error and mistakes detection
 - Printing grammar
 - Terminal and nonterminal symbol recognition
-
-In the future, will be added generator of an alternative PEG (a state machine based) parser.
 
 **Error detection**
 
@@ -383,7 +390,7 @@ class ArithmeticParser {
       if (!success) break;
       var seq = new List(2)..[0] = $$;
       // SPACES
-      $$ = null;
+      $$ = [];
       success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
       // Lookahead (SPACES is optional)
       if (success) $$ = parse_SPACES();
@@ -411,7 +418,7 @@ class ArithmeticParser {
       if (!success) break;
       var seq = new List(2)..[0] = $$;
       // SPACES
-      $$ = null;
+      $$ = [];
       success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
       // Lookahead (SPACES is optional)
       if (success) $$ = parse_SPACES();
@@ -448,7 +455,6 @@ class ArithmeticParser {
     _testing = testing0;
     $$ = null;
     success = !success;
-    if (!success && _cursor > _testing) _failure();
     return $$;
   }
   
@@ -502,7 +508,7 @@ class ArithmeticParser {
       if (!success) break;
       var seq = new List(2)..[0] = $$;
       // SPACES
-      $$ = null;
+      $$ = [];
       success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
       // Lookahead (SPACES is optional)
       if (success) $$ = parse_SPACES();
@@ -537,7 +543,7 @@ class ArithmeticParser {
       if (!success) break;
       var seq = new List(2)..[0] = $$;
       // SPACES
-      $$ = null;
+      $$ = [];
       success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
       // Lookahead (SPACES is optional)
       if (success) $$ = parse_SPACES();
@@ -593,7 +599,7 @@ class ArithmeticParser {
       if (!success) break;
       var seq = new List(2)..[0] = $$;
       // SPACES
-      $$ = null;
+      $$ = [];
       success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
       // Lookahead (SPACES is optional)
       if (success) $$ = parse_SPACES();
@@ -628,7 +634,7 @@ class ArithmeticParser {
       if (!success) break;
       var seq = new List(2)..[0] = $$;
       // SPACES
-      $$ = null;
+      $$ = [];
       success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
       // Lookahead (SPACES is optional)
       if (success) $$ = parse_SPACES();
@@ -656,7 +662,7 @@ class ArithmeticParser {
       if (!success) break;
       var seq = new List(2)..[0] = $$;
       // SPACES
-      $$ = null;
+      $$ = [];
       success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
       // Lookahead (SPACES is optional)
       if (success) $$ = parse_SPACES();
@@ -732,7 +738,7 @@ class ArithmeticParser {
       var ch0 = _ch, pos0 = _cursor;
       while (true) {  
         // SPACES
-        $$ = null;
+        $$ = [];
         success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
         // Lookahead (SPACES is optional)
         if (success) $$ = parse_SPACES();
@@ -1198,11 +1204,6 @@ class ArithmeticParser {
     }    
   }
   
-  int _runeAt(String string, int index) {
-    // TODO: Optimize _runeAt()
-    return _toRunes(string)[index];
-  }
-  
   bool _testChar(int c, int flag) {
     if (c < 0 || c > 127) {
       return false;
@@ -1229,6 +1230,31 @@ class ArithmeticParser {
       return true;
     }
     return false;           
+  }
+  
+  int _toRune(String string) {
+    if (string == null) {
+      throw new ArgumentError("string: $string");
+    }
+  
+    var length = string.length;
+    if (length == 0) {
+      throw new StateError("An empty string contains no elements.");
+    }
+  
+    var start = string.codeUnitAt(0);
+    if (length == 1) {
+      return start;
+    }
+  
+    if ((start & 0xFC00) == 0xD800) {
+      var end = string.codeUnitAt(1);
+      if ((end & 0xFC00) == 0xDC00) {
+        return (0x10000 + ((start & 0x3FF) << 10) + (end & 0x3FF));
+      }
+    }
+  
+    return start;
   }
   
   List<int> _toRunes(String string) {

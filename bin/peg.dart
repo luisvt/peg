@@ -4,8 +4,8 @@ import 'package:path/path.dart' as path;
 import 'package:peg/grammar.dart';
 import 'package:peg/grammar_analyzer.dart';
 import 'package:peg/grammar_reporter.dart';
-import 'package:peg/interpreter_generator.dart';
-import 'package:peg/parser_generator.dart';
+import 'package:peg/general_parser_generator.dart';
+import 'package:peg/interpreter_parser_generator.dart';
 import 'package:strings/strings.dart';
 import "package:yaml/yaml.dart" as yaml;
 import 'peg_parser.dart';
@@ -28,17 +28,12 @@ class Program {
 
     var parser = _getParser(filename);
     var grammar = _parseGrammar(parser);
-    var generator = new ParserGenerator(name, grammar, comment: comment, lookahead: lookahead, memoize: memoize, trace: trace);
+    var generator = new GeneralParserGenerator(name, grammar, comment: comment, lookahead: lookahead, memoize: memoize, trace: trace);
     var genarated = generator.generate();
     new File(output).writeAsStringSync(genarated.join('\n'));
   }
 
-  void interpretCommand(String filename, {bool comment, bool memoize, String name, String output}) {
-    print("Not implemented yet.");
-    if (true) {
-      //return;
-    }
-
+  void interpretCommand(String filename, {bool memoize, String name, String output}) {
     var basename = path.basenameWithoutExtension(filename);
     if (output == null || output.isEmpty) {
       output = underscore(basename) + '_parser.dart';
@@ -50,10 +45,9 @@ class Program {
 
     var parser = _getParser(filename);
     var grammar = _parseGrammar(parser);
-    var generator = new InterpreterGenerator(name, grammar, comment: comment, memoize: memoize);
+    var generator = new InterpreterParserGenerator(name, grammar, memoize: memoize);
     var genarated = generator.generate();
-    print(genarated.join('\n'));
-    // new File(output).writeAsStringSync(genarated.join('\n'));
+    new File(output).writeAsStringSync(genarated.join('\n'));
   }
 
   void printCommand(String filename) {
@@ -249,11 +243,6 @@ commands:
   interpret:
     description: Generate a parser based on the interpreter with a virtual machine.
     options:
-      comment:
-        help: Generate the comments for each instruction.
-        isFlag: true
-        defaultsTo: false
-        abbr: c
       memoize:
         help: Memoize the intermediate results of all mutually recursive production rules.
         isFlag: true

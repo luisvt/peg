@@ -2,12 +2,14 @@ part of peg.expressions;
 
 abstract class Expression {
   static const int FLAG_ABLE_NOT_CONSUME_INPUT = 1;
+  
+  static const int FLAG_ALWAYS_SUCCESS = 2;
+  
+  static const int FLAG_ALWAYS_ZERO_OR_MORE = 4;
 
-  static const int FLAG_HAS_ACTIONS = 2;
+  static const int FLAG_HAS_ACTIONS = 8;  
 
-  static const int FLAG_OPTIONAL = 4;
-
-  static const int FLAG_REPETITION = 8;
+  static const int FLAG_REPETITION = 16;  
 
   static final GroupedRangeList<bool> asciiGroup = new GroupedRangeList<bool>(0, 127, true);
 
@@ -59,9 +61,13 @@ abstract class Expression {
   bool get isAbleNotConsumeInput {
     return (flag & FLAG_ABLE_NOT_CONSUME_INPUT) != 0;
   }
-
-  bool get isOptional {
-    return (flag & FLAG_OPTIONAL) != 0;
+  
+  bool get isAlwaysSuccess {
+    return (flag & FLAG_ALWAYS_SUCCESS) != 0;
+  }
+  
+  bool get isAlwaysZeroOrMore {
+    return (flag & FLAG_ALWAYS_ZERO_OR_MORE) != 0;
   }
 
   bool get isRepetition {

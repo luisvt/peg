@@ -1,3 +1,8 @@
+## 0.0.12
+
+- Added new parser generator: interpreter parser
+- Minor bug fixes
+
 ## 0.0.11
 
 - Restored the previous performance (which has been decreased due to the support of the Unicode characters) through the addition of a pre-generated ASCII strings table.  

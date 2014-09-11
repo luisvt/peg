@@ -1,11 +1,11 @@
 part of peg.expression_generators;
 
 class OptionalExpressionGenerator extends UnaryExpressionGenerator {
-  static const String _CURSOR = ParserClassGenerator.VARIABLE_CURSOR;
+  static const String _CURSOR = GeneralParserClassGenerator.VARIABLE_CURSOR;
 
-  static const String _SUCCESS = ParserClassGenerator.VARIABLE_SUCCESS;
+  static const String _SUCCESS = GeneralParserClassGenerator.VARIABLE_SUCCESS;
 
-  static const String _TESTING = ParserClassGenerator.VARIABLE_TESTING;
+  static const String _TESTING = GeneralParserClassGenerator.VARIABLE_TESTING;
 
   static const String _TEMPLATE = 'TEMPLATE';
 

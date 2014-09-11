@@ -1,3 +1,3 @@
 library peg.trace;
 
-part 'src/trace/trace.dart';
+part "src/trace/trace.dart";

@@ -96,7 +96,7 @@ class StartCharactersResolver extends ExpressionResolver {
       child.accept(this);
       if (!skip) {
         _applyData(child, expression);
-        if (!child.isOptional) {
+        if (!child.isAlwaysSuccess) {
           skip = true;
         }
       }

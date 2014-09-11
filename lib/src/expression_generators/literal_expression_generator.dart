@@ -7,7 +7,7 @@ class LiteralExpressionGenerator extends ExpressionGenerator {
 
   static const String _RESULT = ProductionRuleGenerator.VARIABLE_RESULT;
 
-  static const String _SUCCESS = ParserClassGenerator.VARIABLE_SUCCESS;
+  static const String _SUCCESS = GeneralParserClassGenerator.VARIABLE_SUCCESS;
 
   static const String _TEMPLATE_CHARACTER = 'TEMPLATE_CHARACTER';
 

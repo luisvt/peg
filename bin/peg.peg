@@ -28,6 +28,8 @@ Expression _prefix(dynamic prefix, Expression expression, String action) {
   return expression;
 }
 
+dynamic _spacing(s) => s == null ? '' : s;
+
 Expression _suffix(String suffix, Expression expression) {
   switch (suffix) {
     case '?':
@@ -46,16 +48,16 @@ Grammar <-
   SPACING Globals? Members? Definition+ EOF { $$ = new Grammar($4, $2, $3); }
 
 Globals <-
-  '%{' GlobalsBody* '}%' SPACING { $$ = _flatten(["{", $2, "}", $4]).join(); }
+  '%{' GlobalsBody* '}%' SPACING { $$ = _flatten(["{", $2, "}", _spacing($4)]).join(); }
 
 GlobalsBody <-
   !'}%' . { $$ = $2; }
 
 Members <-
-  '{' ActionBody* '}' SPACING { $$ = _flatten([$1, $2, $3, $4]).join(); }
+  '{' ActionBody* '}' SPACING { $$ = _flatten([$1, $2, $3, _spacing($4)]).join(); }
   
 Action <-
-  '{' ActionBody* '}' SPACING { $$ = _flatten([$1, $2, $3, $4]).join(); }
+  '{' ActionBody* '}' SPACING { $$ = _flatten([$1, $2, $3, _spacing($4)]).join(); }
 
 ActionBody <-
   Action
@@ -95,9 +97,9 @@ Range <-
   / Char        { $$ = [$1, $1]; }
   
 Char <-
-  '\\' ["'\-\[-\]nrt] { $$ = _escape(_runeAt($2, 0)); }  
+  '\\' ["'\-\[-\]nrt] { $$ = _escape($2.codeUnitAt(0)); }  
   / HEX_NUMBER
-  / !'\\' !EOL .      { $$ = _runeAt($3, 0); }
+  / !'\\' !EOL .      { $$ = _toRune($3); }
   
 # Tokens
 

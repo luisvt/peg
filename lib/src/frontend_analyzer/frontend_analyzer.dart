@@ -14,7 +14,8 @@ class FrontendAnalyzer {
       rule.expression.accept(new ExpressionOwnershipResolver());
     }
 
-    new OptionalExpressionsResolver().resolve(rules);
+    new AlwaysSuccessExpressionsResolver().resolve(rules);
+    new AlwaysZeroOrMoreExpressionsResolver().resolve(rules);
     new RepetitionExpressionsResolver().resolve(rules);
     new ExpressionAbleNotConsumeInputResolver().resolve(rules);
     new LeftExpressionsResolver().resolve(rules);
