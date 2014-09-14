@@ -1,11 +1,14 @@
-part of peg.grammar_analyzer;
+part of peg.frontend_analyzer;
 
 class StartingRulesFinder {
   List<ProductionRule> find(List<ProductionRule> rules) {
     var result = new List<ProductionRule>();
     for (var rule in rules) {
-      if (rule.isStartingRule) {
+      if (rule.directCallers.length == 0) {
+        rule.isStartingRule = true;
         result.add(rule);
+      } else {
+        rule.isStartingRule = false;
       }
     }
 

@@ -37,13 +37,13 @@ class CharacterClassExpressionGenerator extends ExpressionGenerator {
 
   static final String _templateAscii = '''
 {{#COMMENTS}}
-$_RESULT = $_MATCH_MAPPING({{MIN}}, {{MAX}}, {{MAPPING}});''';
+$_RESULT = $_MATCH_MAPPING({{MIN}}, {{MAX}}, {{MAPPING}}, {{EXPECTED}});''';
 
   static final String _templateAsciiAndNonAscii = '''
 {{#COMMENTS}}
-$_RESULT = $_MATCH_MAPPING({{MIN}}, {{MAX}}, {{MAPPING}});
+$_RESULT = $_MATCH_MAPPING({{MIN}}, {{MAX}}, {{MAPPING}}, {{EXPECTED}});
 if (!$_SUCCESS) {
-  $_RESULT = $_MATCH_RANGES({{RANGES}});
+  $_RESULT = $_MATCH_RANGES({{RANGES}}, {{EXPECTED}});
 }''';
 
   static final String _templateCharacter = '''
@@ -57,11 +57,11 @@ $_RESULT = \'\';''';
 
   static final String _templateRange = '''
 {{#COMMENTS}}
-$_RESULT = $_MATCH_RANGE({{MIN}}, {{MAX}});''';
+$_RESULT = $_MATCH_RANGE({{MIN}}, {{MAX}}, {{EXPECTED}});''';
 
   static final String _templateRanges = '''
 {{#COMMENTS}}
-$_RESULT = $_MATCH_RANGES({{RANGES}});''';
+$_RESULT = $_MATCH_RANGES({{RANGES}}, {{EXPECTED}});''';
 
   SparseBoolList _ascii;
 
@@ -146,6 +146,7 @@ $_RESULT = $_MATCH_RANGES({{RANGES}});''';
       block.assign('#COMMENTS', '// $_expression');
     }
 
+    block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(_expression));
     block.assign('MAX', _ascii.end);
     block.assign('MAPPING', range);
     block.assign('MIN', _ascii.start);
@@ -161,6 +162,7 @@ $_RESULT = $_MATCH_RANGES({{RANGES}});''';
       block.assign('#COMMENTS', '// $_expression');
     }
 
+    block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(_expression));
     block.assign('MAX', _ascii.end);
     block.assign('MIN', _ascii.start);
     block.assign('MAPPING', mapping);
@@ -187,6 +189,7 @@ $_RESULT = $_MATCH_RANGES({{RANGES}});''';
       block.assign('#COMMENTS', '// $_expression');
     }
 
+    block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(_expression));
     return block.process();
   }
 
@@ -196,6 +199,7 @@ $_RESULT = $_MATCH_RANGES({{RANGES}});''';
       block.assign('#COMMENTS', '// $_expression');
     }
 
+    block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(_expression));
     block.assign('MAX', _singleRange.end);
     block.assign('MIN', _singleRange.start);
     return block.process();
@@ -208,6 +212,7 @@ $_RESULT = $_MATCH_RANGES({{RANGES}});''';
       block.assign('#COMMENTS', '// $_expression');
     }
 
+    block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(_expression));
     block.assign('RANGES', ranges);
     return block.process();
   }

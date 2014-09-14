@@ -96,8 +96,24 @@ dynamic {{NAME}}() {
     addTemplate(_TEMPLATE_WITHOUT_CACHE, _templateWithoutCache);
   }
 
+  static String getMethodName(ProductionRule productionRule) {
+    if (productionRule == null) {
+      throw new ArgumentError("productionRule: $productionRule");
+    }
+
+    if (!productionRule.isStartingRule) {
+      return '_${PREFIX_PARSE}${productionRule.name}';
+    }
+
+    return '${PREFIX_PARSE}${productionRule.name}';
+  }
+
   bool get comment {
     return _comment;
+  }
+
+  String get name {
+    return getMethodName(_productionRule);
   }
 
   GeneralParserClassGenerator get parserClassGenerator {
@@ -141,10 +157,6 @@ dynamic {{NAME}}() {
     }
   }
 
-  String getMethodName() {
-    return '${PREFIX_PARSE}${_productionRule.name}';
-  }
-
   void _assignTraceVariables(TemplateBlock block) {
     var name = _productionRule.name;
     block.assign('#ENTER', "$_TRACE('$name', '${Trace.getTraceState(enter: true, success: true)}');");
@@ -180,7 +192,7 @@ dynamic {{NAME}}() {
 
   List<String> _generateWithCache() {
     var block = getTemplateBlock(_TEMPLATE_WITH_CACHE);
-    var methodName = getMethodName();
+    var methodName = getMethodName(_productionRule);
     if (comment) {
       var lexical = _productionRule.isTerminal ? 'TERMINAL' : 'NONTERMINAL';
       block.assign('#COMMENTS', '// $lexical');
@@ -203,7 +215,7 @@ dynamic {{NAME}}() {
 
   List<String> _generateWithoutCache() {
     var block = getTemplateBlock(_TEMPLATE_WITHOUT_CACHE);
-    var methodName = getMethodName();
+    var methodName = getMethodName(_productionRule);
     if (comment) {
       var lexical = _productionRule.isTerminal ? 'TERMINAL' : 'NONTERMINAL';
       block.assign('#COMMENTS', '// $lexical');

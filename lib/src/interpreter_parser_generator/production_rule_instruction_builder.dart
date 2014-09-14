@@ -1,17 +1,12 @@
 part of peg.interpreter_parser_generator;
 
 class ProductionRuleInstructionBuilder {
-  final bool trace;
 
   final ProductionRule productionRule;
 
-  ProductionRuleInstructionBuilder(this.productionRule, {this.trace: false}) {
+  ProductionRuleInstructionBuilder(this.productionRule) {
     if (productionRule == null) {
       new ArgumentError("productionRule: $productionRule");
-    }
-
-    if (trace == null) {
-      throw new ArgumentError("trace: $trace");
     }
   }
 

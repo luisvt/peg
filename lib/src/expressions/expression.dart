@@ -2,14 +2,12 @@ part of peg.expressions;
 
 abstract class Expression {
   static const int FLAG_ABLE_NOT_CONSUME_INPUT = 1;
-  
-  static const int FLAG_ALWAYS_SUCCESS = 2;
-  
-  static const int FLAG_ALWAYS_ZERO_OR_MORE = 4;
 
-  static const int FLAG_HAS_ACTIONS = 8;  
+  static const int FLAG_IS_OPTIONAL = 2;
 
-  static const int FLAG_REPETITION = 16;  
+  static const int FLAG_HAS_ACTIONS = 4;
+
+  static const int FLAG_REPETITION = 8;
 
   static final GroupedRangeList<bool> asciiGroup = new GroupedRangeList<bool>(0, 127, true);
 
@@ -31,11 +29,11 @@ abstract class Expression {
 
   Set<Expression> directRightExpressions = new Set<Expression>();
 
-  Set<String> expectedLexemes = new Set<String>();
+  Set<String> expected = new Set<String>();
 
   int flag = 0;
 
-  // TODO: remove
+  // TODO: remove and reimplement all associated
   int level = 0;
 
   Expression next;
@@ -45,9 +43,6 @@ abstract class Expression {
   Expression parent;
 
   int positionInSequence = 0;
-
-  // TODO: remove 'sematicValue'
-  String semanticValue;
 
   // TODO: rename
   SparseBoolList startCharacters = new SparseBoolList();
@@ -61,18 +56,16 @@ abstract class Expression {
   bool get isAbleNotConsumeInput {
     return (flag & FLAG_ABLE_NOT_CONSUME_INPUT) != 0;
   }
-  
-  bool get isAlwaysSuccess {
-    return (flag & FLAG_ALWAYS_SUCCESS) != 0;
-  }
-  
-  bool get isAlwaysZeroOrMore {
-    return (flag & FLAG_ALWAYS_ZERO_OR_MORE) != 0;
+
+  bool get isOptional {
+    return (flag & FLAG_IS_OPTIONAL) != 0;
   }
 
   bool get isRepetition {
     return (flag & FLAG_REPETITION) != 0;
   }
+
+  ExpressionState state;
 
   bool get startsWithAny {
     if (startCharacters.isEmpty) {

@@ -1,6 +1,6 @@
 part of peg.frontend_analyzer;
 
-class AlwaysSuccessExpressionsResolver extends ExpressionResolver {
+class OptionalExpressionsResolver extends ExpressionResolver {
   Object visitAndPredicate(AndPredicateExpression expression) {
     _visitChild(expression);
     return null;
@@ -18,7 +18,7 @@ class AlwaysSuccessExpressionsResolver extends ExpressionResolver {
 
   Object visitOptional(OptionalExpression expression) {
     expression.expression.accept(this);
-    expression.flag |= Expression.FLAG_ALWAYS_SUCCESS;
+    expression.flag |= Expression.FLAG_IS_OPTIONAL;
     return null;
   }
 
@@ -30,7 +30,7 @@ class AlwaysSuccessExpressionsResolver extends ExpressionResolver {
     processed.add(expression);
     for (var child in expression.expressions) {
       child.accept(this);
-      expression.flag |= child.flag & Expression.FLAG_ALWAYS_SUCCESS;
+      expression.flag |= child.flag & Expression.FLAG_IS_OPTIONAL;
     }
 
     processed.remove(expression);
@@ -42,7 +42,7 @@ class AlwaysSuccessExpressionsResolver extends ExpressionResolver {
     if (rule != null) {
       var ruleExpression = rule.expression;
       ruleExpression.accept(this);
-      expression.flag |= ruleExpression.flag & Expression.FLAG_ALWAYS_SUCCESS;
+      expression.flag |= ruleExpression.flag & Expression.FLAG_IS_OPTIONAL;
     }
 
     return null;
@@ -54,13 +54,13 @@ class AlwaysSuccessExpressionsResolver extends ExpressionResolver {
     for (var child in expression.expressions) {
       length++;
       child.accept(this);
-      if (child.isAlwaysSuccess) {
+      if (child.isOptional) {
         count++;
       }
     }
 
     if (count == length) {
-      expression.flag |= Expression.FLAG_ALWAYS_SUCCESS;
+      expression.flag |= Expression.FLAG_IS_OPTIONAL;
     }
 
     return null;
@@ -68,14 +68,14 @@ class AlwaysSuccessExpressionsResolver extends ExpressionResolver {
 
   Object visitZeroOrMore(ZeroOrMoreExpression expression) {
     expression.expression.accept(this);
-    expression.flag |= Expression.FLAG_ALWAYS_SUCCESS;
+    expression.flag |= Expression.FLAG_IS_OPTIONAL;
     return null;
   }
 
   Object _visitChild(UnaryExpression expression) {
     var child = expression.expression;
     expression.expression.accept(this);
-    expression.flag |= child.flag & Expression.FLAG_ALWAYS_SUCCESS;
+    expression.flag |= child.flag & Expression.FLAG_IS_OPTIONAL;
     return null;
   }
 }

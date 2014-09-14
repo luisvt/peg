@@ -62,7 +62,7 @@ if (!$_SUCCESS) {
   // Optional rule with start characters in lookahead
   static final String _templateLookaheadOptional = '''
 {{#COMMENTS}}
-$_RESULT = {{RESULT}};
+$_RESULT = null;
 $_SUCCESS = $_CH >= {{MIN}} && $_CH <= {{MAX}} && $_LOOKAHEAD[$_CH + {{POSITION}}];
 {{#PROLOG}}''';
 
@@ -82,7 +82,7 @@ if (!$_SUCCESS) {
   // Optional rule with one start character
   static final String _templateOneOptional = '''
 {{#COMMENTS}}
-$_RESULT = {{RESULT}};
+$_RESULT = null;
 $_SUCCESS = $_CH == {{CHARACTER}}; {{COMMENT_CHARACTER}}
 {{#PROLOG}}''';
 
@@ -132,14 +132,14 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
     if (length == 0) {
       return _generate();
     } else if (length == 1) {
-      if (!expression.isAlwaysSuccess) {
+      if (!expression.isOptional) {
         return _generateOne();
       } else {
         return _generateOneOptional();
       }
 
     } else {
-      if (!expression.isAlwaysSuccess) {
+      if (!expression.isOptional) {
         return _generateLookahead();
       } else {
         return _generateLookaheadOptional();
@@ -219,7 +219,6 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
     var start = startCharacters.start;
     block.assign('MIN', start);
     block.assign('MAX', end);
-    block.assign('RESULT', _getProposedResult());
     block.assign('POSITION', position - start);
     //block.assign('LOOKAHEAD_ID', lookaheadId * 2);
     return block.process();
@@ -283,7 +282,6 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
 
     block.assign('#PROLOG', _generateProlog());
     block.assign('CHARACTER', character);
-    block.assign('RESULT', _getProposedResult());
     return block.process();
   }
 
@@ -309,15 +307,12 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
   }
 
   String _getProductionRuleName() {
-    return '${ProductionRuleGenerator.PREFIX_PARSE}${_expression.name}';
-  }
-
-  String _getProposedResult() {
-    if (_expression.isAlwaysZeroOrMore) {
-      return "[]";
-    } else {
-      return "null";
+    var productionRule = _expression.rule;
+    if (productionRule == null) {
+      return '${ProductionRuleGenerator.PREFIX_PARSE}${_expression.name}';
     }
+
+    return ProductionRuleGenerator.getMethodName(productionRule);
   }
 
   String _getTraceString() {

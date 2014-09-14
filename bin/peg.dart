@@ -191,7 +191,17 @@ class Program {
     print('--------------------------------');
     print('Terminals:');
     for (var rule in reporter.terminals) {
-      print('  ${rule.name}');
+      if (rule.isMasterTerminal) {
+        print('  ${rule.name}');
+      }
+    }
+
+    print('--------------------------------');
+    print('Subterminals:');
+    for (var rule in reporter.terminals) {
+      if (rule.isSlaveTerminal) {
+        print('  ${rule.name}');
+      }
     }
 
     print('--------------------------------');

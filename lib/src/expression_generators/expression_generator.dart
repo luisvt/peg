@@ -62,10 +62,26 @@ abstract class ExpressionGenerator extends TemplateGenerator {
     }
   }
 
-  // TODO: Use this widely for improve "expectation"
   static String getExpectedOnFailure(Expression expression) {
     var result = [];
-    var lexemes = expression.expectedLexemes;
+    var terminals = expression.owner.expected;
+    if (!terminals.contains(null)) {
+      for (var lexeme in terminals) {
+        result.add("\"${toPrintableString(lexeme)}\"");
+      }
+    }
+
+    if (result.length > 0) {
+      return "const [${result.join(", ")}]";
+    }
+
+    return "null";
+  }
+
+  // TODO: Use this widely for improve "expectation"
+  static String getExpectedOnFailure2(Expression expression) {
+    var result = [];
+    var lexemes = expression.expected;
     if (!lexemes.contains(null)) {
       for (var lexeme in lexemes) {
         result.add("\"${toPrintableString(lexeme)}\"");

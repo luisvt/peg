@@ -150,7 +150,7 @@ class GeneralParserClassGenerator extends TemplateGenerator {
     var methods = [];
     for (var rule in grammar.rules) {
       var generator = new ProductionRuleGenerator(rule, this);
-      generators[generator.getMethodName()] = generator;
+      generators[generator.name] = generator;
     }
 
     methods.addAll(_generateInSortOrder(generators));
@@ -239,7 +239,7 @@ class GeneralParserClassGenerator extends TemplateGenerator {
     }
 
     var expression = rule.expression;
-    if (expression.isAlwaysSuccess) {
+    if (expression.isOptional) {
       if (expression.hasActions) {
         return 0;
       }

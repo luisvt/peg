@@ -44,765 +44,2401 @@ Expression _suffix(String suffix, Expression expression) {
   return expression;
 }
 class PegParser {
+  static const int EOF = -1;
   static final List<String> _ascii = new List<String>.generate(128, (c) => new String.fromCharCode(c));
+  static final List<bool> _lookahead = _unmap([0x14800013, 0x7e000000, 0x7d0fffff, 0x38ffffff, 0x7f800010, 0x7f47ffff, 0x30fffff, 0x7ff80001, 0x7ff47fff, 0x1ffffff, 0x7fffffe, 0xffffffd]);
+  // '\"', '\'', '-', '[', '\\', ']', 'n', 'r', 't'
+  static final List<bool> _mapping0 = _unmap([0x821, 0x1c000000, 0x144000]);
+  // '\n', '\r'
+  static final List<bool> _mapping1 = _unmap([0x9]);
+  // '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'a', 'b', 'c', 'd', 'e', 'f'
+  static final List<bool> _mapping2 = _unmap([0x7e03ff, 0xfc0000]);
+  // 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '_', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
+  static final List<bool> _mapping3 = _unmap([0x43ffffff, 0x7fffffe]);
+  // '\t', ' '
+  static final List<bool> _mapping4 = _unmap([0x800001]);
+  // "\r\n"
+  static final List<int> _strings0 = <int>[13, 10];
+  // "%{"
+  static final List<int> _strings1 = <int>[37, 123];
+  // "}%"
+  static final List<int> _strings2 = <int>[125, 37];
+  // "\u"
+  static final List<int> _strings3 = <int>[92, 117];
+  // "<-"
+  static final List<int> _strings4 = <int>[60, 45];
   List _cache;
   int _cachePos;
   List<int> _cacheRule;
   List<int> _cacheState;
   int _ch;
-  List<int> _code = [10, 423, 9, 420, 12, 418, 11, 8, 10, 56, 9, 53, 13, 51, 14, 16, 9, 48, 13, 30, 11, 22, 10, 28, 9, 25, 13, 5, 3, 0, 13, 23, 11, 34, 10, 21, 9, 18, 13, 9, 5, 7, 13, 16, 3, 11, 13, 46, 11, 50, 10, 44, 9, 41, 12, 39, 2, 32, 14, 60, 9, 36, 12, 34, 6, 66, 11, 36, 1, 8, 71, 11, 36, 8, 75, 11, 77, 10, 76, 9, 73, 12, 71, 5, 58, 14, 87, 11, 89, 10, 67, 9, 64, 12, 62, 6, 97, 5, 60, 1, 5, 69, 11, 10, 8, 106, 11, 108, 10, 109, 9, 106, 12, 104, 2, 78, 14, 118, 11, 120, 10, 100, 9, 97, 13, 91, 11, 128, 10, 89, 9, 86, 12, 84, 2, 80, 14, 138, 11, 122, 2, 82, 11, 10, 12, 95, 6, 148, 2, 93, 1, 2, 102, 11, 10, 7, 157, 11, 159, 10, 409, 9, 406, 12, 404, 11, 167, 10, 142, 9, 139, 12, 137, 11, 175, 10, 123, 9, 120, 13, 118, 3, 111, 14, 185, 11, 187, 10, 135, 9, 132, 13, 125, 11, 177, 13, 130, 3, 127, 11, 10, 11, 203, 10, 151, 9, 148, 12, 146, 5, 144, 11, 10, 11, 215, 10, 402, 9, 399, 12, 397, 11, 223, 10, 381, 9, 378, 13, 376, 7, 231, 11, 233, 10, 374, 9, 371, 12, 369, 8, 241, 9, 175, 13, 162, 11, 247, 10, 160, 9, 157, 12, 155, 2, 153, 11, 10, 13, 173, 11, 261, 10, 171, 9, 168, 12, 166, 2, 164, 11, 10, 11, 273, 10, 367, 9, 364, 12, 362, 11, 281, 10, 324, 9, 321, 12, 178, 11, 169, 6, 291, 11, 205, 12, 198, 11, 297, 10, 187, 9, 184, 12, 182, 2, 180, 11, 10, 11, 217, 11, 311, 10, 196, 9, 193, 12, 191, 2, 189, 11, 10, 13, 277, 11, 325, 10, 275, 9, 272, 12, 257, 2, 200, 14, 335, 9, 252, 12, 250, 6, 341, 2, 202, 11, 345, 10, 248, 9, 245, 12, 221, 2, 204, 3, 206, 13, 239, 11, 359, 10, 237, 9, 234, 12, 232, 5, 223, 7, 369, 3, 225, 12, 243, 6, 375, 2, 241, 6, 379, 11, 36, 1, 2, 255, 11, 10, 12, 270, 2, 259, 14, 392, 9, 265, 12, 263, 6, 398, 2, 261, 11, 347, 2, 268, 11, 10, 13, 308, 11, 410, 10, 306, 9, 303, 12, 301, 2, 279, 14, 420, 9, 296, 12, 294, 6, 426, 2, 281, 11, 430, 10, 292, 9, 289, 12, 285, 11, 347, 2, 283, 11, 347, 13, 287, 11, 347, 2, 299, 11, 10, 13, 319, 11, 454, 10, 317, 9, 314, 12, 312, 2, 310, 11, 10, 8, 466, 9, 359, 13, 335, 11, 472, 10, 333, 9, 330, 12, 328, 2, 326, 11, 10, 13, 346, 11, 486, 10, 344, 9, 341, 12, 339, 2, 337, 11, 10, 13, 357, 11, 500, 10, 355, 9, 352, 12, 350, 2, 348, 11, 10, 8, 512, 11, 130, 14, 516, 9, 394, 12, 392, 11, 522, 10, 390, 9, 387, 12, 385, 2, 383, 11, 10, 11, 225, 11, 536, 10, 416, 9, 413, 13, 411, 6, 544, 1];
   int _column;
   int _cursor;
-  List _data = [2, 9, 9, 32, 32, 0, 28, [13, 10], "\r\n", 0, 40, 2, 10, 10, 13, 13, 0, 44, 0, [38, 42], [[0, 1114111, [38, 42]]], 36, 34, 0, 32, 0, [26, 30], [[0, 1114111, [26, 30]]], 24, 33, 0, 20, 35, "#", 0, [64, 68], 0, [62], [[0, 1114111, [62]]], 0, [56, 58, 69], 0, [54], [[0, 1114111, [54]]], 52, 32, 0, 48, 0, [18, 46], [[0, 1114111, [18, 46]]], 0, 14, 3, [12], [[0, 1114111, [12]]], 10, 31, [37, 123], "%{", [125, 37], "}%", 2, [95, 99], 0, [93], [[0, 1114111, [93]]], 91, 2, [125, 37], "}%", 8, [83, 85, 100, 102], 0, [81], [[0, 1114111, [81]]], 79, 1, 123, "{", 123, "{", 125, "}", 8, [134, 136, 140, 142], 0, [132], [[0, 1114111, [132]]], 130, 4, 0, 126, 125, "}", 2, [146, 150], 0, [124, 144], [[0, 1114111, [124, 144]]], 122, 5, 125, "}", 8, [114, 116, 151, 153], 0, [112], [[0, 1114111, [112]]], 110, 3, 3, 65, 90, 95, 95, 97, 122, 0, 181, 0, [179], [[0, 1114111, [179]]], 177, 18, 0, 193, 1, 48, 57, 0, 197, 0, [191, 195], [[0, 1114111, [191, 195]]], 189, 19, 4, [173, 183, 199], 0, [171], [[0, 1114111, [171]]], 169, 17, [60, 45], "<-", 0, [209, 211], 0, [207], [[0, 1114111, [207]]], 205, 20, 38, "&", 2, [253, 255], 0, [251], [[0, 1114111, [251]]], 249, 22, 0, 245, 33, "!", 2, [267, 269], 0, [265], [[0, 1114111, [265]]], 263, 23, 0, 259, 0, [243, 257], [[0, 1114111, [243, 257]]], 2, [287, 289], 40, "(", 0, [303, 305], 0, [301], [[0, 1114111, [301]]], 299, 27, 41, ")", 0, [317, 319], 0, [315], [[0, 1114111, [315]]], 313, 28, 4, [295, 307, 309], 39, "\'", 39, "\'", 92, "\\", 7, 34, 34, 39, 39, 45, 45, 91, 93, 110, 110, 114, 114, 116, 116, 2, [351, 353], [92, 117], "\\u", 3, 48, 57, 65, 70, 97, 102, 2, [365, 367], 0, [363], [[0, 1114111, [363]]], 361, 30, 0, 357, 92, "\\", 4, [373, 377, 381], 0, [349, 355, 371], [[0, 1114111, [349, 355, 371]]], 347, 15, 2, [339, 343], 0, [337], [[0, 1114111, [337]]], 39, "\'", 8, [331, 333, 382, 384], 34, "\"", 34, "\"", 2, [396, 400], 0, [394], [[0, 1114111, [394]]], 34, "\"", 8, [388, 390, 402, 404], 0, [329, 386], [[0, 1114111, [329, 386]]], 327, 12, 0, 323, 91, "[", 93, "]", 45, "-", 4, [436, 438, 440], 1, 444, 0, [434, 442], [[0, 1114111, [434, 442]]], 432, 14, 2, [424, 428], 0, [422], [[0, 1114111, [422]]], 93, "]", 8, [416, 418, 446, 448], 0, [414], [[0, 1114111, [414]]], 412, 13, 0, 408, 46, ".", 0, [460, 462], 0, [458], [[0, 1114111, [458]]], 456, 29, 1, 452, 0, [285, 293, 321, 406, 450], [[0, 1114111, [285, 293, 321, 406, 450]]], 283, 11, 63, "?", 2, [478, 480], 0, [476], [[0, 1114111, [476]]], 474, 24, 0, 470, 42, "*", 2, [492, 494], 0, [490], [[0, 1114111, [490]]], 488, 25, 0, 484, 43, "+", 2, [506, 508], 0, [504], [[0, 1114111, [504]]], 502, 26, 0, 498, 0, [468, 482, 496], [[0, 1114111, [468, 482, 496]]], 2, [279, 464], 0, [277], [[0, 1114111, [277]]], 275, 10, 4, [239, 271, 510], 0, [237], [[0, 1114111, [237]]], 235, 9, 1, 229, 0, [227], [[0, 1114111, [227]]], 225, 8, 47, "/", 0, [528, 530], 0, [526], [[0, 1114111, [526]]], 524, 21, 2, [520, 532], 0, [518], [[0, 1114111, [518]]], 2, [221, 514], 0, [219], [[0, 1114111, [219]]], 217, 7, 4, [165, 201, 213], 0, [163], [[0, 1114111, [163]]], 161, 6, 0, 542, 0, [540], [[0, 1114111, [540]]], 538, 16, 16, [6, 73, 104, 155, 534], 0, [4], [[0, 1114111, [4]]], 2, 0];
   List<String> _expected;
   int _failurePos;
   int _flag;
   int _inputLen;
   int _line;
-  Object _result;
   List<int> _runes;
-  int _testing;
   bool success;
-
+  int _testing;
+  
   PegParser(String text) {
     if (text == null) {
       throw new ArgumentError('text: $text');
-    }
-    _runes = _toRunes(text);    
-    _inputLen = _runes.length;  
+    }    
+    _runes = _toRunes(text);
+    _inputLen = _runes.length;
     if (_inputLen >= 0x3fffffe8 / 32) {
       throw new StateError('File size to big: $_inputLen');
-    }
-    reset(0);      
+    }  
+    reset(0);    
   }
   
-  dynamic parse_Grammar() {  
-    _decode(0);  
-    return _result;  
-  }  
-    
-  dynamic _action(int cp, v) {  
-    var $$ = _result;  
-    switch (cp) {  
-      case 99:  
-        final $1 = v[0], $2 = v[1];  
-        $$ = $2;  
-        return $$;  
-      case 102:  
-        final $1 = v[0], $2 = v[1], $3 = v[2], $4 = v[3];  
-        $$ = _flatten(["{", $2, "}", _spacing($4)]).join();  
-        return $$;  
-      case 142:  
-        final $1 = v[0], $2 = v[1], $3 = v[2], $4 = v[3];  
-        $$ = _flatten([$1, $2, $3, _spacing($4)]).join();  
-        return $$;  
-      case 150:  
-        final $1 = v[0], $2 = v[1];  
-        $$ = $2;  
-        return $$;  
-      case 153:  
-        final $1 = v[0], $2 = v[1], $3 = v[2], $4 = v[3];  
-        $$ = _flatten([$1, $2, $3, _spacing($4)]).join();  
-        return $$;  
-      case 199:  
-        final $1 = v[0], $2 = v[1], $3 = v[2];  
-        $$ = _flatten([$1, $2]).join();  
-        return $$;  
-      case 255:  
-        final $1 = v[0], $2 = v[1];  
-        $$ = $1;  
-        return $$;  
-      case 269:  
-        final $1 = v[0], $2 = v[1];  
-        $$ = $1;  
-        return $$;  
-      case 289:  
-        final $1 = v[0], $2 = v[1];  
-        $$ = new RuleExpression($1);  
-        return $$;  
-      case 309:  
-        final $1 = v[0], $2 = v[1], $3 = v[2];  
-        $$ = $2;  
-        return $$;  
-      case 353:  
-        final $1 = v[0], $2 = v[1];  
-        $$ = _escape($2.codeUnitAt(0));  
-        return $$;  
-      case 367:  
-        final $1 = v[0], $2 = v[1];  
-        $$ = int.parse($2.join(), radix: 16);  
-        return $$;  
-      case 381:  
-        final $1 = v[0], $2 = v[1], $3 = v[2];  
-        $$ = _toRune($3);  
-        return $$;  
-      case 343:  
-        final $1 = v[0], $2 = v[1];  
-        $$ = $2;  
-        return $$;  
-      case 384:  
-        final $1 = v[0], $2 = v[1], $3 = v[2], $4 = v[3];  
-        $$ = new LiteralExpression(new String.fromCharCodes($2));  
-        return $$;  
-      case 400:  
-        final $1 = v[0], $2 = v[1];  
-        $$ = $2;  
-        return $$;  
-      case 404:  
-        final $1 = v[0], $2 = v[1], $3 = v[2], $4 = v[3];  
-        $$ = new LiteralExpression(new String.fromCharCodes($2));  
-        return $$;  
-      case 440:  
-        final $1 = v[0], $2 = v[1], $3 = v[2];  
-        $$ = [$1, $3];  
-        return $$;  
-      case 444:  
-        final $1 = v;    
-        $$ = [$1, $1];  
-        return $$;  
-      case 428:  
-        final $1 = v[0], $2 = v[1];  
-        $$ = $2;  
-        return $$;  
-      case 448:  
-        final $1 = v[0], $2 = v[1], $3 = v[2], $4 = v[3];  
-        $$ = new CharacterClassExpression($2);  
-        return $$;  
-      case 452:  
-        final $1 = v;    
-        $$ = new AnyCharacterExpression();  
-        return $$;  
-      case 480:  
-        final $1 = v[0], $2 = v[1];  
-        $$ = $1;  
-        return $$;  
-      case 494:  
-        final $1 = v[0], $2 = v[1];  
-        $$ = $1;  
-        return $$;  
-      case 508:  
-        final $1 = v[0], $2 = v[1];  
-        $$ = $1;  
-        return $$;  
-      case 464:  
-        final $1 = v[0], $2 = v[1];  
-        $$ = _suffix($2, $1);  
-        return $$;  
-      case 510:  
-        final $1 = v[0], $2 = v[1], $3 = v[2];  
-        $$ = _prefix($1, $2, $3);  
-        return $$;  
-      case 229:  
-        final $1 = v;    
-        $$ = new SequenceExpression($1);  
-        return $$;  
-      case 532:  
-        final $1 = v[0], $2 = v[1];  
-        $$ = $2;  
-        return $$;  
-      case 514:  
-        final $1 = v[0], $2 = v[1];  
-        $$ = new OrderedChoiceExpression(_flatten([$1, $2]));  
-        return $$;  
-      case 213:  
-        final $1 = v[0], $2 = v[1], $3 = v[2];  
-        $$ = new ProductionRule($1, $3);  
-        return $$;  
-      case 534:  
-        final $1 = v[0], $2 = v[1], $3 = v[2], $4 = v[3], $5 = v[4];  
-        $$ = new Grammar($4, $2, $3);  
-        return $$;  
-    }  
-    throw new StateError("Instruction at address '$cp' nas no semantic action.");    
-  }  
-    
-  void _addToCache(dynamic result, int start, int id) {    
-    var cached = _cache[start];  
-    if (cached == null) {  
-      _cacheRule[start] = id;  
-      _cache[start] = [result, _cursor, success];  
-    } else {      
-      var slot = start >> 5;  
-      var r1 = (slot << 5) & 0x3fffffff;      
-      var mask = 1 << (start - r1);      
-      if ((_cacheState[slot] & mask) == 0) {  
-        _cacheState[slot] |= mask;     
-        cached = [new List.filled(3, 0), new Map<int, List>()];  
-        _cache[start] = cached;                                        
-      }  
-      slot = id >> 5;  
-      r1 = (slot << 5) & 0x3fffffff;      
-      mask = 1 << (id - r1);      
-      cached[0][slot] |= mask;  
-      cached[1][id] = [result, _cursor, success];        
-    }  
-    if (_cachePos < start) {  
-      _cachePos = start;  
-    }      
-  }  
-    
-  void _andPredicate(int cp) {  
-    var ch = _ch;  
-    var cursor = _cursor;  
-    var testing = _testing;  
-    _testing = _inputLen + 1;  
-    _decode(_code[cp + 1]);  
-    _testing = testing;  
-    _cursor = cursor;  
-    _ch = ch;     
-  }  
-    
-  void _anyCharacter(int cp) {  
-    success = _cursor < _inputLen;  
-    if (success) {    
-      if (_ch < 128) {  
-        _result = _ascii[_ch];  
-      } else {  
-        _result = new String.fromCharCode(_ch);  
-      }  
-      _cursor++;  
-      if (_cursor < _inputLen) {      
-        _ch = _runes[_cursor];      
-      } else {      
-        _ch = -1;      
-      }      
-    } else {  
-      _result = null;          
-      if (_cursor > _testing && _cursor > _failurePos) {      
-        _expected = [];  
-        _failurePos = _cursor;  
-      }  
-    }  
-  }  
-    
-  void _calculatePos(int pos) {  
-    if (pos == null || pos < 0 || pos > _inputLen) {  
-      return;  
-    }  
-    _line = 1;  
-    _column = 1;  
-    for (var i = 0; i < _inputLen && i < pos; i++) {  
-      var c = _runes[i];  
-      if (c == 13) {  
-        _line++;  
-        _column = 1;  
-        if (i + 1 < _inputLen && _runes[i + 1] == 10) {  
-          i++;  
-        }  
-      } else if (c == 10) {  
-        _line++;  
-        _column = 1;  
-      } else {  
-        _column++;  
-      }  
-    }  
-  }  
-    
-  void _character(int cp) {  
-    var offset = _code[cp + 1];  
-    _result = _data[offset + 1];  
-    success = _cursor < _inputLen;  
-    if (success && _ch == _data[offset + 0]) {    
-      _cursor++;  
-      if (_cursor < _inputLen) {  
-        _ch = _runes[_cursor];  
-      } else {  
-        _ch = -1;  
-      }  
-    } else {  
-      success = false;  
-      if (_cursor > _testing && _cursor >= _failurePos) {  
-        if (_cursor > _failurePos) {      
-          _expected = [];  
-          _failurePos = _cursor;  
-        }  
-        _expected.add(_result);    
-      }  
-    }  
-  }  
-    
-  void _characterClass(int cp) {  
-    var offset = _code[cp + 1];  
-    success = _cursor < _inputLen;  
-    if (success) {      
-      int length = _data[offset + 0];   
-      int ranges = offset + 1;  
-      for (var i = 0; i < length; i++, ranges += 2) {  
-        if (_ch >= _data[ranges + 0]) {  
-          if (_ch <= _data[ranges + 1]) {          
-            if (_ch < 128) {  
-              _result = _ascii[_ch];  
-            } else {  
-              _result = new String.fromCharCode(_ch);  
-            }  
-            _cursor++;  
-            if (_cursor < _inputLen) {  
-              _ch = _runes[_cursor];  
-            } else {  
-              _ch = -1;  
-            }  
-            return;  
-          }  
-        } else {      
-          break;  
-        }  
-      }  
-      success = false;  
-    }  
-    _result = null;  
-    if (_cursor > _testing && _cursor > _failurePos) {        
-      _expected = [];    
-      _failurePos = _cursor;    
-    }    
-  }  
-    
-  void _decode(int cp) {  
-    var op = _code[cp];  
-    switch (op) {  
-      case 0:  
-        return _andPredicate(cp);  
-      case 1:  
-        return _anyCharacter(cp);  
-      case 3:  
-        return _characterClass(cp);  
-      case 2:  
-        return _character(cp);  
-      case 4:  
-        return _empty(cp);  
-      case 5:  
-        return _literal(cp);  
-      case 6:  
-        return _notPredicate(cp);  
-      case 7:  
-        return _oneOrMore(cp);  
-      case 8:  
-        return _optional(cp);  
-      case 9:  
-        return _orderedChoice(cp);  
-      case 10:  
-        return _productionRule(cp);  
-      case 11:  
-        return _rule(cp);  
-      case 12:  
-        return _sequence(cp);  
-      case 13:  
-        return _sequenceElement(cp);  
-      case 14:  
-        return _zeroOrMore(cp);  
-    }  
-    throw new StateError("Illegal instruction op");      
-  }  
-    
-  void _empty(int cp) {  
-    _result = "";  
-    success = true;  
-  }  
-    
-  List _flatten(dynamic value) {  
-    if (value is List) {  
-      var result = [];  
-      var length = value.length;  
-      for (var i = 0; i < length; i++) {  
-        var element = value[i];  
-        if (element is Iterable) {  
-          result.addAll(_flatten(element));  
-        } else {  
-          result.add(element);  
-        }  
-      }  
-      return result;  
-    } else if (value is Iterable) {  
-      var result = [];  
-      for (var element in value) {  
-        if (element is! List) {  
-          result.add(element);  
-        } else {  
-          result.addAll(_flatten(element));  
-        }  
-      }  
-    }  
-    return [value];  
-  }  
-    
-  dynamic _getFromCache(int id) {    
-    var result = _cache[_cursor];  
-    if (result == null) {  
-      return null;  
-    }      
-    var slot = _cursor >> 5;  
-    var r1 = (slot << 5) & 0x3fffffff;    
-    var mask = 1 << (_cursor - r1);  
-    if ((_cacheState[slot] & mask) == 0) {  
-      if (_cacheRule[_cursor] == id) {        
-        _cursor = result[1];  
-        success = result[2];        
-        if (_cursor < _inputLen) {  
-          _ch = _runes[_cursor];  
-        } else {  
-          _ch = -1;  
-        }        
-        return result;  
-      } else {  
-        return null;  
-      }      
-    }  
-    slot = id >> 5;  
-    r1 = (slot << 5) & 0x3fffffff;    
-    mask = 1 << (id - r1);  
-    if ((result[0][slot] & mask) == 0) {  
-      return null;  
-    }  
-    var data = result[1][id];    
-    _cursor = data[1];  
-    success = data[2];  
-    if (_cursor < _inputLen) {  
-      _ch = _runes[_cursor];  
-    } else {  
-      _ch = -1;  
-    }     
-    return data;    
-  }  
-    
-  void _literal(int cp) {  
-    var offset = _code[cp + 1];  
-    List<int> runes = _data[offset + 0];  
-    var length = runes.length;  
-    _result = _data[offset + 1];  
-    success = _cursor + length <= _inputLen;  
-    if (success) {  
-      for (var i = 0; i < length; i++) {  
-        if (runes[i] != _runes[_cursor + i]) {  
-          success = false;  
-          break;  
-        }  
-      }  
-      if (success) {  
-        _cursor += length;          
-        if (_cursor < _inputLen) {  
-          _ch = _runes[_cursor];  
-        } else {  
-          _ch = -1;  
-        }  
-        return;  
-      }  
-    }  
-    // TODO: failure  
-    if (_cursor > _testing && _cursor >= _failurePos) {    
-      if (_cursor > _failurePos) {        
-        _expected = [];    
-        _failurePos = _cursor;    
-      }    
-      _expected.add(_result);      
-    }    
-  }  
-    
-  void _notPredicate(int cp) {  
-    var ch = _ch;  
-    var cursor = _cursor;  
-    var testing = _testing;  
-    _testing = _inputLen + 1;  
-    _decode(_code[cp + 1]);  
-    _testing = testing;  
-    _cursor = cursor;  
-    _ch = ch;  
-    success = !success;     
-  }  
-    
-  void _oneOrMore(int cp) {  
-    cp = _code[cp + 1];      
-    _decode(cp);  
-    if (!success) {      
-      return;    
-    }    
-    var elements = [_result];  
-    var testing = _testing;    
-    while(true) {  
-      _testing = _inputLen + 1;  
-      _decode(cp);  
-      if (!success) {  
-        break;  
-      }  
-      elements.add(_result);       
-    }  
-    _testing = testing;  
-    _result = elements;  
-    success = true;    
-  }  
-    
-  void _optional(int cp) {  
-    _decode(_code[cp + 1]);  
-    success = true;  
-  }  
-    
-  void _orderedChoice(int cp) {  
-    var offset = _code[cp + 1];     
-    List transitions = _data[offset + 2];    
-    List<int> instructions;    
-    for (var i = 0; i < transitions.length; i++) {  
-      List transition = transitions[i];  
-      if (_ch >= transition[0]) {  
-        if (_ch <= transition[1]) {        
-          instructions = transition[2];           
-          break;  
-        }  
-      } else {  
-        break;  
-      }  
-    }    
-    if (instructions == null) {  
-      if(_ch == -1) {        
-        instructions = _data[offset + 1];  
-      } else {  
-        var flag = _data[offset + 0];  
-        if (flag & 1 != 0) {  
-          if (flag & 2 != 0) {  
-             _result = [];  
-          } else {  
-             _result = null;  
-          }          
-          success = true;        
-        } else {  
-          _result = null;  
-          success = false;  
-        }  
-        // TODO: failure  
-        // TODO: !!!Expectations!!!  
-        if (_cursor > _testing && _cursor > _failurePos) {      
-          _expected = [];  
-          _failurePos = _cursor;  
-        }  
-        return;  
-      }  
-    }  
-    var index = 0;  
-    var count = instructions.length - 1;  
+  int get column { 
+    if (_column == -1) { 
+      _calculatePos(_failurePos); 
+    } 
+    return _column;       
+  } 
+   
+  int get line { 
+    if (_line == -1) { 
+      _calculatePos(_failurePos); 
+    } 
+    return _line;       
+  } 
+   
+  dynamic _parse_AND() {
+    // TERMINAL
+    // AND <- "&" SPACING
+    var $$;  
+    // "&" SPACING
+    var ch0 = _ch, pos0 = _cursor;
     while (true) {  
-      _decode(instructions[index++]);  
+      // "&"
+      $$ = _matchChar(38, '&', const ["&"]);
+      if (!success) break;
+      var seq = new List(2)..[0] = $$;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
+      seq[1] = $$;
+      $$ = seq;
+      if (success) {    
+        // "&"
+        final $1 = seq[0];
+        // SPACING
+        final $2 = seq[1];
+        $$ = $1;    
+      }
+      break;  
+    }
+    if (!success) {
+      _ch = ch0;
+      _cursor = pos0;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_Action() {
+    // NONTERMINAL
+    // Action <- "{" ActionBody* "}" SPACING
+    var $$;  
+    // "{" ActionBody* "}" SPACING
+    var ch0 = _ch, pos0 = _cursor;
+    while (true) {  
+      // "{"
+      $$ = _matchChar(123, '{', const ["{"]);
+      if (!success) break;
+      var seq = new List(4)..[0] = $$;
+      // ActionBody*
+      var testing0 = _testing; 
+      for (var reps = []; ; ) {
+        _testing = _cursor;
+        // ActionBody
+        $$ = _parse_ActionBody();
+        if (success) {  
+          reps.add($$);
+        } else {
+          success = true;
+          _testing = testing0;
+          $$ = reps;
+          break; 
+        }
+      }
+      if (!success) break;
+      seq[1] = $$;
+      // "}"
+      $$ = _matchChar(125, '}', const ["{"]);
+      if (!success) break;
+      seq[2] = $$;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
+      seq[3] = $$;
+      $$ = seq;
+      if (success) {    
+        // "{"
+        final $1 = seq[0];
+        // ActionBody*
+        final $2 = seq[1];
+        // "}"
+        final $3 = seq[2];
+        // SPACING
+        final $4 = seq[3];
+        $$ = _flatten([$1, $2, $3, _spacing($4)]).join();    
+      }
+      break;  
+    }
+    if (!success) {
+      _ch = ch0;
+      _cursor = pos0;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_ActionBody() {
+    // NONTERMINAL
+    // ActionBody <- Action / !"}" .
+    var $$;  
+    // Action / !"}" .
+    while (true) {
+      // Action
+      $$ = null;
+      success = _ch == 123; // '{'
+      // Lookahead (Action)
+      if (success) $$ = _parse_Action();
+      if (!success) {
+        if (_cursor > _testing) _failure(const ["{"]);
+      }
+      if (success) break;
+      // !"}" .
+      var ch0 = _ch, pos0 = _cursor;
+      while (true) {  
+        // !"}"
+        var ch1 = _ch, pos1 = _cursor, testing0 = _testing; 
+        _testing = _inputLen + 1;
+        // "}"
+        $$ = _matchChar(125, '}', const ["{"]);
+        _ch = ch1;
+        _cursor = pos1; 
+        _testing = testing0;
+        $$ = null;
+        success = !success;
+        if (!success) break;
+        var seq = new List(2)..[0] = $$;
+        // .
+        $$ = _matchAny(const ["{"]);
+        if (!success) break;
+        seq[1] = $$;
+        $$ = seq;
+        if (success) {    
+          // !"}"
+          final $1 = seq[0];
+          // .
+          final $2 = seq[1];
+          $$ = $2;    
+        }
+        break;  
+      }
+      if (!success) {
+        _ch = ch0;
+        _cursor = pos0;
+      }
+      break;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_CLOSE() {
+    // TERMINAL
+    // CLOSE <- ")" SPACING
+    var $$;  
+    // ")" SPACING
+    var ch0 = _ch, pos0 = _cursor;
+    while (true) {  
+      // ")"
+      $$ = _matchChar(41, ')', const [")"]);
+      if (!success) break;
+      var seq = new List(2)..[0] = $$;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
+      seq[1] = $$;
+      $$ = seq;
+      break;  
+    }
+    if (!success) {
+      _ch = ch0;
+      _cursor = pos0;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_COMMENT() {
+    // TERMINAL
+    // COMMENT <- "#" (!EOL .)* EOL?
+    var $$;  
+    // "#" (!EOL .)* EOL?
+    var ch0 = _ch, pos0 = _cursor;
+    while (true) {  
+      // "#"
+      $$ = _matchChar(35, '#', const ["SPACING"]);
+      if (!success) break;
+      var seq = new List(3)..[0] = $$;
+      // (!EOL .)*
+      var testing0 = _testing; 
+      for (var reps = []; ; ) {
+        _testing = _cursor;
+        // !EOL .
+        var ch1 = _ch, pos1 = _cursor;
+        while (true) {  
+          // !EOL
+          var ch2 = _ch, pos2 = _cursor, testing1 = _testing; 
+          _testing = _inputLen + 1;
+          // EOL
+          $$ = null;
+          success = _ch >= 10 && _ch <= 13 && _lookahead[_ch + -9];
+          // Lookahead (EOL)
+          if (success) $$ = _parse_EOL();    
+          if (!success) {  
+            if (_cursor > _testing) _failure(const ["EOL"]);
+          }
+          _ch = ch2;
+          _cursor = pos2; 
+          _testing = testing1;
+          $$ = null;
+          success = !success;
+          if (!success) break;
+          var seq = new List(2)..[0] = $$;
+          // .
+          $$ = _matchAny(const ["SPACING"]);
+          if (!success) break;
+          seq[1] = $$;
+          $$ = seq;
+          break;  
+        }
+        if (!success) {
+          _ch = ch1;
+          _cursor = pos1;
+        }
+        if (success) {  
+          reps.add($$);
+        } else {
+          success = true;
+          _testing = testing0;
+          $$ = reps;
+          break; 
+        }
+      }
+      if (!success) break;
+      seq[1] = $$;
+      // EOL?
+      var testing2 = _testing;
+      _testing = _cursor;
+      // EOL
+      $$ = null;
+      success = _ch >= 10 && _ch <= 13 && _lookahead[_ch + -9];
+      // Lookahead (EOL)
+      if (success) $$ = _parse_EOL();    
+      if (!success) {  
+        if (_cursor > _testing) _failure(const ["EOL"]);
+      }
+      success = true; 
+      _testing = testing2;
+      if (!success) break;
+      seq[2] = $$;
+      $$ = seq;
+      break;  
+    }
+    if (!success) {
+      _ch = ch0;
+      _cursor = pos0;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_Char() {
+    // NONTERMINAL
+    // Char <- "\\" ["'\-\[-\]nrt] / HEX_NUMBER / !"\\" !EOL .
+    var $$;  
+    // "\\" ["'\-\[-\]nrt] / HEX_NUMBER / !"\\" !EOL .
+    while (true) {
+      // "\\" ["'\-\[-\]nrt]
+      var ch0 = _ch, pos0 = _cursor;
+      while (true) {  
+        // "\\"
+        $$ = _matchChar(92, '\\', const ["\\", "\\u"]);
+        if (!success) break;
+        var seq = new List(2)..[0] = $$;
+        // ["'\-\[-\]nrt]
+        $$ = _matchMapping(34, 116, _mapping0, const ["\\", "\\u"]);
+        if (!success) break;
+        seq[1] = $$;
+        $$ = seq;
+        if (success) {    
+          // "\\"
+          final $1 = seq[0];
+          // ["'\-\[-\]nrt]
+          final $2 = seq[1];
+          $$ = _escape($2.codeUnitAt(0));    
+        }
+        break;  
+      }
+      if (!success) {
+        _ch = ch0;
+        _cursor = pos0;
+      }
+      if (success) break;
+      // HEX_NUMBER
+      $$ = null;
+      success = _ch == 92; // '\'
+      // Lookahead (HEX_NUMBER)
+      if (success) $$ = _parse_HEX_NUMBER();
+      if (!success) {
+        if (_cursor > _testing) _failure(const ["\\u"]);
+      }
+      if (success) break;
+      // !"\\" !EOL .
+      var ch1 = _ch, pos1 = _cursor;
+      while (true) {  
+        // !"\\"
+        var ch2 = _ch, pos2 = _cursor, testing0 = _testing; 
+        _testing = _inputLen + 1;
+        // "\\"
+        $$ = _matchChar(92, '\\', const ["\\", "\\u"]);
+        _ch = ch2;
+        _cursor = pos2; 
+        _testing = testing0;
+        $$ = null;
+        success = !success;
+        if (!success) break;
+        var seq = new List(3)..[0] = $$;
+        // !EOL
+        var ch3 = _ch, pos3 = _cursor, testing1 = _testing; 
+        _testing = _inputLen + 1;
+        // EOL
+        $$ = null;
+        success = _ch >= 10 && _ch <= 13 && _lookahead[_ch + -9];
+        // Lookahead (EOL)
+        if (success) $$ = _parse_EOL();    
+        if (!success) {  
+          if (_cursor > _testing) _failure(const ["EOL"]);
+        }
+        _ch = ch3;
+        _cursor = pos3; 
+        _testing = testing1;
+        $$ = null;
+        success = !success;
+        if (!success) break;
+        seq[1] = $$;
+        // .
+        $$ = _matchAny(const ["\\", "\\u"]);
+        if (!success) break;
+        seq[2] = $$;
+        $$ = seq;
+        if (success) {    
+          // !"\\"
+          final $1 = seq[0];
+          // !EOL
+          final $2 = seq[1];
+          // .
+          final $3 = seq[2];
+          $$ = _toRune($3);    
+        }
+        break;  
+      }
+      if (!success) {
+        _ch = ch1;
+        _cursor = pos1;
+      }
+      break;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_Class() {
+    // NONTERMINAL
+    // Class <- "[" (!"]" Range)* "]" SPACING
+    var $$;  
+    // "[" (!"]" Range)* "]" SPACING
+    var ch0 = _ch, pos0 = _cursor;
+    while (true) {  
+      // "["
+      $$ = _matchChar(91, '[', const ["["]);
+      if (!success) break;
+      var seq = new List(4)..[0] = $$;
+      // (!"]" Range)*
+      var testing0 = _testing; 
+      for (var reps = []; ; ) {
+        _testing = _cursor;
+        // !"]" Range
+        var ch1 = _ch, pos1 = _cursor;
+        while (true) {  
+          // !"]"
+          var ch2 = _ch, pos2 = _cursor, testing1 = _testing; 
+          _testing = _inputLen + 1;
+          // "]"
+          $$ = _matchChar(93, ']', const ["["]);
+          _ch = ch2;
+          _cursor = pos2; 
+          _testing = testing1;
+          $$ = null;
+          success = !success;
+          if (!success) break;
+          var seq = new List(2)..[0] = $$;
+          // Range
+          $$ = _parse_Range();
+          if (!success) break;
+          seq[1] = $$;
+          $$ = seq;
+          if (success) {    
+            // !"]"
+            final $1 = seq[0];
+            // Range
+            final $2 = seq[1];
+            $$ = $2;    
+          }
+          break;  
+        }
+        if (!success) {
+          _ch = ch1;
+          _cursor = pos1;
+        }
+        if (success) {  
+          reps.add($$);
+        } else {
+          success = true;
+          _testing = testing0;
+          $$ = reps;
+          break; 
+        }
+      }
+      if (!success) break;
+      seq[1] = $$;
+      // "]"
+      $$ = _matchChar(93, ']', const ["["]);
+      if (!success) break;
+      seq[2] = $$;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
+      seq[3] = $$;
+      $$ = seq;
+      if (success) {    
+        // "["
+        final $1 = seq[0];
+        // (!"]" Range)*
+        final $2 = seq[1];
+        // "]"
+        final $3 = seq[2];
+        // SPACING
+        final $4 = seq[3];
+        $$ = new CharacterClassExpression($2);    
+      }
+      break;  
+    }
+    if (!success) {
+      _ch = ch0;
+      _cursor = pos0;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_DOT() {
+    // TERMINAL
+    // DOT <- "." SPACING
+    var $$;  
+    // "." SPACING
+    var ch0 = _ch, pos0 = _cursor;
+    while (true) {  
+      // "."
+      $$ = _matchChar(46, '.', const ["."]);
+      if (!success) break;
+      var seq = new List(2)..[0] = $$;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
+      seq[1] = $$;
+      $$ = seq;
+      break;  
+    }
+    if (!success) {
+      _ch = ch0;
+      _cursor = pos0;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_Definition() {
+    // NONTERMINAL
+    // Definition <- IDENTIFIER LEFTARROW Expression
+    var $$;  
+    // IDENTIFIER LEFTARROW Expression
+    var ch0 = _ch, pos0 = _cursor;
+    while (true) {  
+      // IDENTIFIER
+      $$ = null;
+      success = _ch >= 65 && _ch <= 122 && _lookahead[_ch + -9];
+      // Lookahead (IDENTIFIER)
+      if (success) $$ = _parse_IDENTIFIER();    
+      if (!success) {  
+        if (_cursor > _testing) _failure(const ["IDENTIFIER"]);
+        break;  
+      }
+      var seq = new List(3)..[0] = $$;
+      // LEFTARROW
+      $$ = null;
+      success = _ch == 60; // '<'
+      // Lookahead (LEFTARROW)
+      if (success) $$ = _parse_LEFTARROW();
+      if (!success) {
+        if (_cursor > _testing) _failure(const ["<-"]);
+        break;  
+      }
+      seq[1] = $$;
+      // Expression
+      $$ = null;
+      success = _ch >= 33 && _ch <= 122 && _lookahead[_ch + 82];
+      // Lookahead (Expression)
+      if (success) $$ = _parse_Expression();    
+      if (!success) {  
+        if (_cursor > _testing) _failure(const ["IDENTIFIER", "(", "\'", "\"", "[", "."]);
+        break;  
+      }
+      seq[2] = $$;
+      $$ = seq;
+      if (success) {    
+        // IDENTIFIER
+        final $1 = seq[0];
+        // LEFTARROW
+        final $2 = seq[1];
+        // Expression
+        final $3 = seq[2];
+        $$ = new ProductionRule($1, $3);    
+      }
+      break;  
+    }
+    if (!success) {
+      _ch = ch0;
+      _cursor = pos0;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_EOF() {
+    // TERMINAL
+    // EOF <- !.
+    var $$;  
+    // !.
+    var ch0 = _ch, pos0 = _cursor, testing0 = _testing; 
+    _testing = _inputLen + 1;
+    // .
+    $$ = _matchAny(const ["EOF"]);
+    _ch = ch0;
+    _cursor = pos0; 
+    _testing = testing0;
+    $$ = null;
+    success = !success;
+    return $$;
+  }
+  
+  dynamic _parse_EOL() {
+    // TERMINAL
+    // EOL <- "\r\n" / [\n\r]
+    var $$;  
+    // "\r\n" / [\n\r]
+    while (true) {
+      // "\r\n"
+      $$ = _matchString(_strings0, '\r\n', const ["EOL"]);
+      if (success) break;
+      // [\n\r]
+      $$ = _matchMapping(10, 13, _mapping1, const ["EOL"]);
+      break;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_Expression() {
+    // NONTERMINAL
+    // Expression <- Sequence (SLASH Sequence)*
+    var $$;  
+    // Sequence (SLASH Sequence)*
+    var ch0 = _ch, pos0 = _cursor;
+    while (true) {  
+      // Sequence
+      $$ = null;
+      success = _ch >= 33 && _ch <= 122 && _lookahead[_ch + 82];
+      // Lookahead (Sequence)
+      if (success) $$ = _parse_Sequence();    
+      if (!success) {  
+        if (_cursor > _testing) _failure(const ["IDENTIFIER", "(", "\'", "\"", "[", "."]);
+        break;  
+      }
+      var seq = new List(2)..[0] = $$;
+      // (SLASH Sequence)*
+      var testing0 = _testing; 
+      for (var reps = []; ; ) {
+        _testing = _cursor;
+        // SLASH Sequence
+        var ch1 = _ch, pos1 = _cursor;
+        while (true) {  
+          // SLASH
+          $$ = null;
+          success = _ch == 47; // '/'
+          // Lookahead (SLASH)
+          if (success) $$ = _parse_SLASH();
+          if (!success) {
+            if (_cursor > _testing) _failure(const ["/"]);
+            break;  
+          }
+          var seq = new List(2)..[0] = $$;
+          // Sequence
+          $$ = null;
+          success = _ch >= 33 && _ch <= 122 && _lookahead[_ch + 82];
+          // Lookahead (Sequence)
+          if (success) $$ = _parse_Sequence();    
+          if (!success) {  
+            if (_cursor > _testing) _failure(const ["IDENTIFIER", "(", "\'", "\"", "[", "."]);
+            break;  
+          }
+          seq[1] = $$;
+          $$ = seq;
+          if (success) {    
+            // SLASH
+            final $1 = seq[0];
+            // Sequence
+            final $2 = seq[1];
+            $$ = $2;    
+          }
+          break;  
+        }
+        if (!success) {
+          _ch = ch1;
+          _cursor = pos1;
+        }
+        if (success) {  
+          reps.add($$);
+        } else {
+          success = true;
+          _testing = testing0;
+          $$ = reps;
+          break; 
+        }
+      }
+      if (!success) break;
+      seq[1] = $$;
+      $$ = seq;
+      if (success) {    
+        // Sequence
+        final $1 = seq[0];
+        // (SLASH Sequence)*
+        final $2 = seq[1];
+        $$ = new OrderedChoiceExpression(_flatten([$1, $2]));    
+      }
+      break;  
+    }
+    if (!success) {
+      _ch = ch0;
+      _cursor = pos0;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_Globals() {
+    // NONTERMINAL
+    // Globals <- "%{" GlobalsBody* "}%" SPACING
+    var $$;  
+    // "%{" GlobalsBody* "}%" SPACING
+    var ch0 = _ch, pos0 = _cursor;
+    while (true) {  
+      // "%{"
+      $$ = _matchString(_strings1, '%{', const ["%{"]);
+      if (!success) break;
+      var seq = new List(4)..[0] = $$;
+      // GlobalsBody*
+      var testing0 = _testing; 
+      for (var reps = []; ; ) {
+        _testing = _cursor;
+        // GlobalsBody
+        $$ = _parse_GlobalsBody();
+        if (success) {  
+          reps.add($$);
+        } else {
+          success = true;
+          _testing = testing0;
+          $$ = reps;
+          break; 
+        }
+      }
+      if (!success) break;
+      seq[1] = $$;
+      // "}%"
+      $$ = _matchString(_strings2, '}%', const ["%{"]);
+      if (!success) break;
+      seq[2] = $$;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
+      seq[3] = $$;
+      $$ = seq;
+      if (success) {    
+        // "%{"
+        final $1 = seq[0];
+        // GlobalsBody*
+        final $2 = seq[1];
+        // "}%"
+        final $3 = seq[2];
+        // SPACING
+        final $4 = seq[3];
+        $$ = _flatten(["{", $2, "}", _spacing($4)]).join();    
+      }
+      break;  
+    }
+    if (!success) {
+      _ch = ch0;
+      _cursor = pos0;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_GlobalsBody() {
+    // NONTERMINAL
+    // GlobalsBody <- !"}%" .
+    var $$;  
+    // !"}%" .
+    var ch0 = _ch, pos0 = _cursor;
+    while (true) {  
+      // !"}%"
+      var ch1 = _ch, pos1 = _cursor, testing0 = _testing; 
+      _testing = _inputLen + 1;
+      // "}%"
+      $$ = _matchString(_strings2, '}%', null);
+      _ch = ch1;
+      _cursor = pos1; 
+      _testing = testing0;
+      $$ = null;
+      success = !success;
+      if (!success) break;
+      var seq = new List(2)..[0] = $$;
+      // .
+      $$ = _matchAny(null);
+      if (!success) break;
+      seq[1] = $$;
+      $$ = seq;
+      if (success) {    
+        // !"}%"
+        final $1 = seq[0];
+        // .
+        final $2 = seq[1];
+        $$ = $2;    
+      }
+      break;  
+    }
+    if (!success) {
+      _ch = ch0;
+      _cursor = pos0;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_HEX_NUMBER() {
+    // TERMINAL
+    // HEX_NUMBER <- "\\u" [0-9A-Fa-f]+
+    var $$;  
+    // "\\u" [0-9A-Fa-f]+
+    var ch0 = _ch, pos0 = _cursor;
+    while (true) {  
+      // "\\u"
+      $$ = _matchString(_strings3, '\\u', const ["\\u"]);
+      if (!success) break;
+      var seq = new List(2)..[0] = $$;
+      // [0-9A-Fa-f]+
+      var testing0;
+      for (var first = true, reps; ;) {  
+        // [0-9A-Fa-f]  
+        $$ = _matchMapping(48, 102, _mapping2, const ["\\u"]);  
+        if (success) {
+         if (first) {      
+            first = false;
+            reps = [$$];
+            testing0 = _testing;                  
+          } else {
+            reps.add($$);
+          }
+          _testing = _cursor;   
+        } else {
+          success = !first;
+          if (success) {      
+            _testing = testing0;
+            $$ = reps;      
+          } else $$ = null;
+          break;
+        }  
+      }
+      if (!success) break;
+      seq[1] = $$;
+      $$ = seq;
+      if (success) {    
+        // "\\u"
+        final $1 = seq[0];
+        // [0-9A-Fa-f]+
+        final $2 = seq[1];
+        $$ = int.parse($2.join(), radix: 16);    
+      }
+      break;  
+    }
+    if (!success) {
+      _ch = ch0;
+      _cursor = pos0;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_IDENTIFIER() {
+    // TERMINAL
+    // IDENTIFIER <- IDENT_START IDENT_CONT* SPACING
+    var $$;  
+    // IDENT_START IDENT_CONT* SPACING
+    var ch0 = _ch, pos0 = _cursor;
+    while (true) {  
+      // IDENT_START
+      $$ = null;
+      success = _ch >= 65 && _ch <= 122 && _lookahead[_ch + -9];
+      // Lookahead (IDENT_START)
+      if (success) $$ = _parse_IDENT_START();    
+      if (!success) {  
+        if (_cursor > _testing) _failure(null);
+        break;  
+      }
+      var seq = new List(3)..[0] = $$;
+      // IDENT_CONT*
+      var testing0 = _testing; 
+      for (var reps = []; ; ) {
+        _testing = _cursor;
+        // IDENT_CONT
+        $$ = null;
+        success = _ch >= 48 && _ch <= 122 && _lookahead[_ch + 246];
+        // Lookahead (IDENT_CONT)
+        if (success) $$ = _parse_IDENT_CONT();    
+        if (!success) {  
+          if (_cursor > _testing) _failure(const ["IDENTIFIER"]);
+        }
+        if (success) {  
+          reps.add($$);
+        } else {
+          success = true;
+          _testing = testing0;
+          $$ = reps;
+          break; 
+        }
+      }
+      if (!success) break;
+      seq[1] = $$;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
+      seq[2] = $$;
+      $$ = seq;
+      if (success) {    
+        // IDENT_START
+        final $1 = seq[0];
+        // IDENT_CONT*
+        final $2 = seq[1];
+        // SPACING
+        final $3 = seq[2];
+        $$ = _flatten([$1, $2]).join();    
+      }
+      break;  
+    }
+    if (!success) {
+      _ch = ch0;
+      _cursor = pos0;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_IDENT_CONT() {
+    // TERMINAL
+    // IDENT_CONT <- IDENT_START / [0-9]
+    var $$;  
+    // IDENT_START / [0-9]
+    while (true) {
+      // IDENT_START
+      $$ = null;
+      success = _ch >= 65 && _ch <= 122 && _lookahead[_ch + -9];
+      // Lookahead (IDENT_START)
+      if (success) $$ = _parse_IDENT_START();    
+      if (!success) {  
+        if (_cursor > _testing) _failure(null);
+      }
+      if (success) break;
+      // [0-9]
+      $$ = _matchRange(48, 57, const ["IDENTIFIER"]);
+      break;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_IDENT_START() {
+    // TERMINAL
+    // IDENT_START <- [A-Z_a-z]
+    var $$;  
+    // [A-Z_a-z]
+    $$ = _matchMapping(65, 122, _mapping3, null);
+    return $$;
+  }
+  
+  dynamic _parse_LEFTARROW() {
+    // TERMINAL
+    // LEFTARROW <- "<-" SPACING
+    var $$;  
+    // "<-" SPACING
+    var ch0 = _ch, pos0 = _cursor;
+    while (true) {  
+      // "<-"
+      $$ = _matchString(_strings4, '<-', const ["<-"]);
+      if (!success) break;
+      var seq = new List(2)..[0] = $$;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
+      seq[1] = $$;
+      $$ = seq;
+      break;  
+    }
+    if (!success) {
+      _ch = ch0;
+      _cursor = pos0;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_Literal() {
+    // NONTERMINAL
+    // Literal <- "\'" (!"\'" Char)* "\'" SPACING / "\"" (!"\"" Char)* "\"" SPACING
+    var $$;  
+    // "\'" (!"\'" Char)* "\'" SPACING / "\"" (!"\"" Char)* "\"" SPACING
+    while (true) {
+      // "\'" (!"\'" Char)* "\'" SPACING
+      var ch0 = _ch, pos0 = _cursor;
+      while (true) {  
+        // "\'"
+        $$ = _matchChar(39, '\'', const ["\'", "\""]);
+        if (!success) break;
+        var seq = new List(4)..[0] = $$;
+        // (!"\'" Char)*
+        var testing0 = _testing; 
+        for (var reps = []; ; ) {
+          _testing = _cursor;
+          // !"\'" Char
+          var ch1 = _ch, pos1 = _cursor;
+          while (true) {  
+            // !"\'"
+            var ch2 = _ch, pos2 = _cursor, testing1 = _testing; 
+            _testing = _inputLen + 1;
+            // "\'"
+            $$ = _matchChar(39, '\'', const ["\'", "\""]);
+            _ch = ch2;
+            _cursor = pos2; 
+            _testing = testing1;
+            $$ = null;
+            success = !success;
+            if (!success) break;
+            var seq = new List(2)..[0] = $$;
+            // Char
+            $$ = _parse_Char();
+            if (!success) break;
+            seq[1] = $$;
+            $$ = seq;
+            if (success) {    
+              // !"\'"
+              final $1 = seq[0];
+              // Char
+              final $2 = seq[1];
+              $$ = $2;    
+            }
+            break;  
+          }
+          if (!success) {
+            _ch = ch1;
+            _cursor = pos1;
+          }
+          if (success) {  
+            reps.add($$);
+          } else {
+            success = true;
+            _testing = testing0;
+            $$ = reps;
+            break; 
+          }
+        }
+        if (!success) break;
+        seq[1] = $$;
+        // "\'"
+        $$ = _matchChar(39, '\'', const ["\'", "\""]);
+        if (!success) break;
+        seq[2] = $$;
+        // SPACING
+        $$ = null;
+        success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+        // Lookahead (SPACING is optional)
+        if (success) $$ = _parse_SPACING();
+        else success = true;
+        seq[3] = $$;
+        $$ = seq;
+        if (success) {    
+          // "\'"
+          final $1 = seq[0];
+          // (!"\'" Char)*
+          final $2 = seq[1];
+          // "\'"
+          final $3 = seq[2];
+          // SPACING
+          final $4 = seq[3];
+          $$ = new LiteralExpression(new String.fromCharCodes($2));    
+        }
+        break;  
+      }
+      if (!success) {
+        _ch = ch0;
+        _cursor = pos0;
+      }
+      if (success) break;
+      // "\"" (!"\"" Char)* "\"" SPACING
+      var ch3 = _ch, pos3 = _cursor;
+      while (true) {  
+        // "\""
+        $$ = _matchChar(34, '\"', const ["\'", "\""]);
+        if (!success) break;
+        var seq = new List(4)..[0] = $$;
+        // (!"\"" Char)*
+        var testing2 = _testing; 
+        for (var reps = []; ; ) {
+          _testing = _cursor;
+          // !"\"" Char
+          var ch4 = _ch, pos4 = _cursor;
+          while (true) {  
+            // !"\""
+            var ch5 = _ch, pos5 = _cursor, testing3 = _testing; 
+            _testing = _inputLen + 1;
+            // "\""
+            $$ = _matchChar(34, '\"', const ["\'", "\""]);
+            _ch = ch5;
+            _cursor = pos5; 
+            _testing = testing3;
+            $$ = null;
+            success = !success;
+            if (!success) break;
+            var seq = new List(2)..[0] = $$;
+            // Char
+            $$ = _parse_Char();
+            if (!success) break;
+            seq[1] = $$;
+            $$ = seq;
+            if (success) {    
+              // !"\""
+              final $1 = seq[0];
+              // Char
+              final $2 = seq[1];
+              $$ = $2;    
+            }
+            break;  
+          }
+          if (!success) {
+            _ch = ch4;
+            _cursor = pos4;
+          }
+          if (success) {  
+            reps.add($$);
+          } else {
+            success = true;
+            _testing = testing2;
+            $$ = reps;
+            break; 
+          }
+        }
+        if (!success) break;
+        seq[1] = $$;
+        // "\""
+        $$ = _matchChar(34, '\"', const ["\'", "\""]);
+        if (!success) break;
+        seq[2] = $$;
+        // SPACING
+        $$ = null;
+        success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+        // Lookahead (SPACING is optional)
+        if (success) $$ = _parse_SPACING();
+        else success = true;
+        seq[3] = $$;
+        $$ = seq;
+        if (success) {    
+          // "\""
+          final $1 = seq[0];
+          // (!"\"" Char)*
+          final $2 = seq[1];
+          // "\""
+          final $3 = seq[2];
+          // SPACING
+          final $4 = seq[3];
+          $$ = new LiteralExpression(new String.fromCharCodes($2));    
+        }
+        break;  
+      }
+      if (!success) {
+        _ch = ch3;
+        _cursor = pos3;
+      }
+      break;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_Members() {
+    // NONTERMINAL
+    // Members <- "{" ActionBody* "}" SPACING
+    var $$;  
+    // "{" ActionBody* "}" SPACING
+    var ch0 = _ch, pos0 = _cursor;
+    while (true) {  
+      // "{"
+      $$ = _matchChar(123, '{', const ["{"]);
+      if (!success) break;
+      var seq = new List(4)..[0] = $$;
+      // ActionBody*
+      var testing0 = _testing; 
+      for (var reps = []; ; ) {
+        _testing = _cursor;
+        // ActionBody
+        $$ = _parse_ActionBody();
+        if (success) {  
+          reps.add($$);
+        } else {
+          success = true;
+          _testing = testing0;
+          $$ = reps;
+          break; 
+        }
+      }
+      if (!success) break;
+      seq[1] = $$;
+      // "}"
+      $$ = _matchChar(125, '}', const ["{"]);
+      if (!success) break;
+      seq[2] = $$;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
+      seq[3] = $$;
+      $$ = seq;
+      if (success) {    
+        // "{"
+        final $1 = seq[0];
+        // ActionBody*
+        final $2 = seq[1];
+        // "}"
+        final $3 = seq[2];
+        // SPACING
+        final $4 = seq[3];
+        $$ = _flatten([$1, $2, $3, _spacing($4)]).join();    
+      }
+      break;  
+    }
+    if (!success) {
+      _ch = ch0;
+      _cursor = pos0;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_NOT() {
+    // TERMINAL
+    // NOT <- "!" SPACING
+    var $$;  
+    // "!" SPACING
+    var ch0 = _ch, pos0 = _cursor;
+    while (true) {  
+      // "!"
+      $$ = _matchChar(33, '!', const ["!"]);
+      if (!success) break;
+      var seq = new List(2)..[0] = $$;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
+      seq[1] = $$;
+      $$ = seq;
+      if (success) {    
+        // "!"
+        final $1 = seq[0];
+        // SPACING
+        final $2 = seq[1];
+        $$ = $1;    
+      }
+      break;  
+    }
+    if (!success) {
+      _ch = ch0;
+      _cursor = pos0;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_OPEN() {
+    // TERMINAL
+    // OPEN <- "(" SPACING
+    var $$;  
+    // "(" SPACING
+    var ch0 = _ch, pos0 = _cursor;
+    while (true) {  
+      // "("
+      $$ = _matchChar(40, '(', const ["("]);
+      if (!success) break;
+      var seq = new List(2)..[0] = $$;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
+      seq[1] = $$;
+      $$ = seq;
+      break;  
+    }
+    if (!success) {
+      _ch = ch0;
+      _cursor = pos0;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_PLUS() {
+    // TERMINAL
+    // PLUS <- "+" SPACING
+    var $$;  
+    // "+" SPACING
+    var ch0 = _ch, pos0 = _cursor;
+    while (true) {  
+      // "+"
+      $$ = _matchChar(43, '+', const ["+"]);
+      if (!success) break;
+      var seq = new List(2)..[0] = $$;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
+      seq[1] = $$;
+      $$ = seq;
+      if (success) {    
+        // "+"
+        final $1 = seq[0];
+        // SPACING
+        final $2 = seq[1];
+        $$ = $1;    
+      }
+      break;  
+    }
+    if (!success) {
+      _ch = ch0;
+      _cursor = pos0;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_Prefix() {
+    // NONTERMINAL
+    // Prefix <- (AND / NOT)? Suffix Action?
+    var $$;  
+    // (AND / NOT)? Suffix Action?
+    var ch0 = _ch, pos0 = _cursor;
+    while (true) {  
+      // (AND / NOT)?
+      var testing0 = _testing;
+      _testing = _cursor;
+      // AND / NOT
+      while (true) {
+        // AND
+        $$ = null;
+        success = _ch == 38; // '&'
+        // Lookahead (AND)
+        if (success) $$ = _parse_AND();
+        if (!success) {
+          if (_cursor > _testing) _failure(const ["&"]);
+        }
+        if (success) break;
+        // NOT
+        $$ = null;
+        success = _ch == 33; // '!'
+        // Lookahead (NOT)
+        if (success) $$ = _parse_NOT();
+        if (!success) {
+          if (_cursor > _testing) _failure(const ["!"]);
+        }
+        break;
+      }
+      success = true; 
+      _testing = testing0;
+      if (!success) break;
+      var seq = new List(3)..[0] = $$;
+      // Suffix
+      $$ = null;
+      success = _ch >= 34 && _ch <= 122 && _lookahead[_ch + 171];
+      // Lookahead (Suffix)
+      if (success) $$ = _parse_Suffix();    
+      if (!success) {  
+        if (_cursor > _testing) _failure(const ["IDENTIFIER", "(", "\'", "\"", "[", "."]);
+        break;  
+      }
+      seq[1] = $$;
+      // Action?
+      var testing1 = _testing;
+      _testing = _cursor;
+      // Action
+      $$ = null;
+      success = _ch == 123; // '{'
+      // Lookahead (Action)
+      if (success) $$ = _parse_Action();
+      if (!success) {
+        if (_cursor > _testing) _failure(const ["{"]);
+      }
+      success = true; 
+      _testing = testing1;
+      if (!success) break;
+      seq[2] = $$;
+      $$ = seq;
+      if (success) {    
+        // (AND / NOT)?
+        final $1 = seq[0];
+        // Suffix
+        final $2 = seq[1];
+        // Action?
+        final $3 = seq[2];
+        $$ = _prefix($1, $2, $3);    
+      }
+      break;  
+    }
+    if (!success) {
+      _ch = ch0;
+      _cursor = pos0;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_Primary() {
+    // NONTERMINAL
+    // Primary <- IDENTIFIER !LEFTARROW / OPEN Expression CLOSE / Literal / Class / DOT
+    var $$;  
+    // IDENTIFIER !LEFTARROW / OPEN Expression CLOSE / Literal / Class / DOT
+    while (true) {
+      // IDENTIFIER !LEFTARROW
+      var ch0 = _ch, pos0 = _cursor;
+      while (true) {  
+        // IDENTIFIER
+        $$ = null;
+        success = _ch >= 65 && _ch <= 122 && _lookahead[_ch + -9];
+        // Lookahead (IDENTIFIER)
+        if (success) $$ = _parse_IDENTIFIER();    
+        if (!success) {  
+          if (_cursor > _testing) _failure(const ["IDENTIFIER"]);
+          break;  
+        }
+        var seq = new List(2)..[0] = $$;
+        // !LEFTARROW
+        var ch1 = _ch, pos1 = _cursor, testing0 = _testing; 
+        _testing = _inputLen + 1;
+        // LEFTARROW
+        $$ = null;
+        success = _ch == 60; // '<'
+        // Lookahead (LEFTARROW)
+        if (success) $$ = _parse_LEFTARROW();
+        if (!success) {
+          if (_cursor > _testing) _failure(const ["<-"]);
+        }
+        _ch = ch1;
+        _cursor = pos1; 
+        _testing = testing0;
+        $$ = null;
+        success = !success;
+        if (!success) break;
+        seq[1] = $$;
+        $$ = seq;
+        if (success) {    
+          // IDENTIFIER
+          final $1 = seq[0];
+          // !LEFTARROW
+          final $2 = seq[1];
+          $$ = new RuleExpression($1);    
+        }
+        break;  
+      }
+      if (!success) {
+        _ch = ch0;
+        _cursor = pos0;
+      }
+      if (success) break;
+      // OPEN Expression CLOSE
+      var ch2 = _ch, pos2 = _cursor;
+      while (true) {  
+        // OPEN
+        $$ = null;
+        success = _ch == 40; // '('
+        // Lookahead (OPEN)
+        if (success) $$ = _parse_OPEN();
+        if (!success) {
+          if (_cursor > _testing) _failure(const ["("]);
+          break;  
+        }
+        var seq = new List(3)..[0] = $$;
+        // Expression
+        $$ = null;
+        success = _ch >= 33 && _ch <= 122 && _lookahead[_ch + 82];
+        // Lookahead (Expression)
+        if (success) $$ = _parse_Expression();    
+        if (!success) {  
+          if (_cursor > _testing) _failure(const ["IDENTIFIER", "(", "\'", "\"", "[", "."]);
+          break;  
+        }
+        seq[1] = $$;
+        // CLOSE
+        $$ = null;
+        success = _ch == 41; // ')'
+        // Lookahead (CLOSE)
+        if (success) $$ = _parse_CLOSE();
+        if (!success) {
+          if (_cursor > _testing) _failure(const [")"]);
+          break;  
+        }
+        seq[2] = $$;
+        $$ = seq;
+        if (success) {    
+          // OPEN
+          final $1 = seq[0];
+          // Expression
+          final $2 = seq[1];
+          // CLOSE
+          final $3 = seq[2];
+          $$ = $2;    
+        }
+        break;  
+      }
+      if (!success) {
+        _ch = ch2;
+        _cursor = pos2;
+      }
+      if (success) break;
+      // Literal
+      $$ = null;
+      success = _ch >= 34 && _ch <= 39 && _lookahead[_ch + 47];
+      // Lookahead (Literal)
+      if (success) $$ = _parse_Literal();    
+      if (!success) {  
+        if (_cursor > _testing) _failure(const ["\'", "\""]);
+      }
+      if (success) break;
+      // Class
+      $$ = null;
+      success = _ch == 91; // '['
+      // Lookahead (Class)
+      if (success) $$ = _parse_Class();
+      if (!success) {
+        if (_cursor > _testing) _failure(const ["["]);
+      }
+      if (success) break;
+      // DOT
+      $$ = null;
+      success = _ch == 46; // '.'
+      // Lookahead (DOT)
+      if (success) $$ = _parse_DOT();
+      if (!success) {
+        if (_cursor > _testing) _failure(const ["."]);
+      }
+      if (success) {    
+        // DOT
+        final $1 = $$;
+        $$ = new AnyCharacterExpression();    
+      }
+      break;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_QUESTION() {
+    // TERMINAL
+    // QUESTION <- "?" SPACING
+    var $$;  
+    // "?" SPACING
+    var ch0 = _ch, pos0 = _cursor;
+    while (true) {  
+      // "?"
+      $$ = _matchChar(63, '?', const ["?"]);
+      if (!success) break;
+      var seq = new List(2)..[0] = $$;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
+      seq[1] = $$;
+      $$ = seq;
+      if (success) {    
+        // "?"
+        final $1 = seq[0];
+        // SPACING
+        final $2 = seq[1];
+        $$ = $1;    
+      }
+      break;  
+    }
+    if (!success) {
+      _ch = ch0;
+      _cursor = pos0;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_Range() {
+    // NONTERMINAL
+    // Range <- Char "-" Char / Char
+    var $$;  
+    // Char "-" Char / Char
+    while (true) {
+      // Char "-" Char
+      var ch0 = _ch, pos0 = _cursor;
+      while (true) {  
+        // Char
+        $$ = _parse_Char();
+        if (!success) break;
+        var seq = new List(3)..[0] = $$;
+        // "-"
+        $$ = _matchChar(45, '-', const ["\\", "\\u"]);
+        if (!success) break;
+        seq[1] = $$;
+        // Char
+        $$ = _parse_Char();
+        if (!success) break;
+        seq[2] = $$;
+        $$ = seq;
+        if (success) {    
+          // Char
+          final $1 = seq[0];
+          // "-"
+          final $2 = seq[1];
+          // Char
+          final $3 = seq[2];
+          $$ = [$1, $3];    
+        }
+        break;  
+      }
+      if (!success) {
+        _ch = ch0;
+        _cursor = pos0;
+      }
+      if (success) break;
+      // Char
+      $$ = _parse_Char();
+      if (success) {    
+        // Char
+        final $1 = $$;
+        $$ = [$1, $1];    
+      }
+      break;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_SLASH() {
+    // TERMINAL
+    // SLASH <- "/" SPACING
+    var $$;  
+    // "/" SPACING
+    var ch0 = _ch, pos0 = _cursor;
+    while (true) {  
+      // "/"
+      $$ = _matchChar(47, '/', const ["/"]);
+      if (!success) break;
+      var seq = new List(2)..[0] = $$;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
+      seq[1] = $$;
+      $$ = seq;
+      break;  
+    }
+    if (!success) {
+      _ch = ch0;
+      _cursor = pos0;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_SPACE() {
+    // TERMINAL
+    // SPACE <- [\t ] / EOL
+    var $$;  
+    // [\t ] / EOL
+    while (true) {
+      // [\t ]
+      $$ = _matchMapping(9, 32, _mapping4, const ["SPACING"]);
+      if (success) break;
+      // EOL
+      $$ = null;
+      success = _ch >= 10 && _ch <= 13 && _lookahead[_ch + -9];
+      // Lookahead (EOL)
+      if (success) $$ = _parse_EOL();    
+      if (!success) {  
+        if (_cursor > _testing) _failure(const ["EOL"]);
+      }
+      break;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_SPACING() {
+    // TERMINAL
+    // SPACING <- (SPACE / COMMENT)*
+    var $$;  
+    // (SPACE / COMMENT)*
+    var testing0 = _testing; 
+    for (var reps = []; ; ) {
+      _testing = _cursor;
+      // SPACE / COMMENT
+      while (true) {
+        // SPACE
+        $$ = null;
+        success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
+        // Lookahead (SPACE)
+        if (success) $$ = _parse_SPACE();    
+        if (!success) {  
+          if (_cursor > _testing) _failure(const ["SPACING"]);
+        }
+        if (success) break;
+        // COMMENT
+        $$ = null;
+        success = _ch == 35; // '#'
+        // Lookahead (COMMENT)
+        if (success) $$ = _parse_COMMENT();
+        if (!success) {
+          if (_cursor > _testing) _failure(const ["SPACING"]);
+        }
+        break;
+      }
       if (success) {  
+        reps.add($$);
+      } else {
+        success = true;
+        _testing = testing0;
+        $$ = reps;
+        break; 
+      }
+    }
+    return $$;
+  }
+  
+  dynamic _parse_STAR() {
+    // TERMINAL
+    // STAR <- "*" SPACING
+    var $$;  
+    // "*" SPACING
+    var ch0 = _ch, pos0 = _cursor;
+    while (true) {  
+      // "*"
+      $$ = _matchChar(42, '*', const ["*"]);
+      if (!success) break;
+      var seq = new List(2)..[0] = $$;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
+      seq[1] = $$;
+      $$ = seq;
+      if (success) {    
+        // "*"
+        final $1 = seq[0];
+        // SPACING
+        final $2 = seq[1];
+        $$ = $1;    
+      }
+      break;  
+    }
+    if (!success) {
+      _ch = ch0;
+      _cursor = pos0;
+    }
+    return $$;
+  }
+  
+  dynamic _parse_Sequence() {
+    // NONTERMINAL
+    // Sequence <- Prefix+
+    var $$;  
+    // Prefix+
+    var testing0;
+    for (var first = true, reps; ;) {  
+      // Prefix  
+      $$ = null;  
+      success = _ch >= 33 && _ch <= 122 && _lookahead[_ch + 82];  
+      // Lookahead (Prefix)  
+      if (success) $$ = _parse_Prefix();      
+      if (!success) {    
+        if (_cursor > _testing) _failure(const ["IDENTIFIER", "(", "\'", "\"", "[", "."]);  
+      }  
+      if (success) {
+       if (first) {      
+          first = false;
+          reps = [$$];
+          testing0 = _testing;                  
+        } else {
+          reps.add($$);
+        }
+        _testing = _cursor;   
+      } else {
+        success = !first;
+        if (success) {      
+          _testing = testing0;
+          $$ = reps;      
+        } else $$ = null;
+        break;
+      }  
+    }
+    if (success) {    
+      // Prefix+
+      final $1 = $$;
+      $$ = new SequenceExpression($1);    
+    }
+    return $$;
+  }
+  
+  dynamic _parse_Suffix() {
+    // NONTERMINAL
+    // Suffix <- Primary (QUESTION / STAR / PLUS)?
+    var $$;  
+    // Primary (QUESTION / STAR / PLUS)?
+    var ch0 = _ch, pos0 = _cursor;
+    while (true) {  
+      // Primary
+      $$ = null;
+      success = _ch >= 34 && _ch <= 122 && _lookahead[_ch + 171];
+      // Lookahead (Primary)
+      if (success) $$ = _parse_Primary();    
+      if (!success) {  
+        if (_cursor > _testing) _failure(const ["IDENTIFIER", "(", "\'", "\"", "[", "."]);
         break;  
-      } else if (count-- == 0) {  
-        _result = null;  
-        success = false;        
-        // TODO: failure  
-        // TODO: !!!Expectations!!!  
-        if (_cursor > _testing && _cursor > _failurePos) {      
-          _expected = [];  
-          _failurePos = _cursor;  
+      }
+      var seq = new List(2)..[0] = $$;
+      // (QUESTION / STAR / PLUS)?
+      var testing0 = _testing;
+      _testing = _cursor;
+      // QUESTION / STAR / PLUS
+      while (true) {
+        // QUESTION
+        $$ = null;
+        success = _ch == 63; // '?'
+        // Lookahead (QUESTION)
+        if (success) $$ = _parse_QUESTION();
+        if (!success) {
+          if (_cursor > _testing) _failure(const ["?"]);
+        }
+        if (success) break;
+        // STAR
+        $$ = null;
+        success = _ch == 42; // '*'
+        // Lookahead (STAR)
+        if (success) $$ = _parse_STAR();
+        if (!success) {
+          if (_cursor > _testing) _failure(const ["*"]);
+        }
+        if (success) break;
+        // PLUS
+        $$ = null;
+        success = _ch == 43; // '+'
+        // Lookahead (PLUS)
+        if (success) $$ = _parse_PLUS();
+        if (!success) {
+          if (_cursor > _testing) _failure(const ["+"]);
+        }
+        break;
+      }
+      success = true; 
+      _testing = testing0;
+      if (!success) break;
+      seq[1] = $$;
+      $$ = seq;
+      if (success) {    
+        // Primary
+        final $1 = seq[0];
+        // (QUESTION / STAR / PLUS)?
+        final $2 = seq[1];
+        $$ = _suffix($2, $1);    
+      }
+      break;  
+    }
+    if (!success) {
+      _ch = ch0;
+      _cursor = pos0;
+    }
+    return $$;
+  }
+  
+  dynamic parse_Grammar() {
+    // NONTERMINAL
+    // Grammar <- SPACING Globals? Members? Definition+ EOF
+    var $$;  
+    // SPACING Globals? Members? Definition+ EOF
+    var ch0 = _ch, pos0 = _cursor;
+    while (true) {  
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
+      var seq = new List(5)..[0] = $$;
+      // Globals?
+      var testing0 = _testing;
+      _testing = _cursor;
+      // Globals
+      $$ = null;
+      success = _ch == 37; // '%'
+      // Lookahead (Globals)
+      if (success) $$ = _parse_Globals();
+      if (!success) {
+        if (_cursor > _testing) _failure(const ["%{"]);
+      }
+      success = true; 
+      _testing = testing0;
+      if (!success) break;
+      seq[1] = $$;
+      // Members?
+      var testing1 = _testing;
+      _testing = _cursor;
+      // Members
+      $$ = null;
+      success = _ch == 123; // '{'
+      // Lookahead (Members)
+      if (success) $$ = _parse_Members();
+      if (!success) {
+        if (_cursor > _testing) _failure(const ["{"]);
+      }
+      success = true; 
+      _testing = testing1;
+      if (!success) break;
+      seq[2] = $$;
+      // Definition+
+      var testing2;
+      for (var first = true, reps; ;) {  
+        // Definition  
+        $$ = null;  
+        success = _ch >= 65 && _ch <= 122 && _lookahead[_ch + -9];  
+        // Lookahead (Definition)  
+        if (success) $$ = _parse_Definition();      
+        if (!success) {    
+          if (_cursor > _testing) _failure(const ["IDENTIFIER"]);  
         }  
-        break;         
+        if (success) {
+         if (first) {      
+            first = false;
+            reps = [$$];
+            testing2 = _testing;                  
+          } else {
+            reps.add($$);
+          }
+          _testing = _cursor;   
+        } else {
+          success = !first;
+          if (success) {      
+            _testing = testing2;
+            $$ = reps;      
+          } else $$ = null;
+          break;
+        }  
+      }
+      if (!success) break;
+      seq[3] = $$;
+      // EOF
+      $$ = _parse_EOF();
+      if (!success) break;
+      seq[4] = $$;
+      $$ = seq;
+      if (success) {    
+        // SPACING
+        final $1 = seq[0];
+        // Globals?
+        final $2 = seq[1];
+        // Members?
+        final $3 = seq[2];
+        // Definition+
+        final $4 = seq[3];
+        // EOF
+        final $5 = seq[4];
+        $$ = new Grammar($4, $2, $3);    
+      }
+      break;  
+    }
+    if (!success) {
+      _ch = ch0;
+      _cursor = pos0;
+    }
+    return $$;
+  }
+  
+  void _addToCache(dynamic result, int start, int id) {  
+    var cached = _cache[start];
+    if (cached == null) {
+      _cacheRule[start] = id;
+      _cache[start] = [result, _cursor, success];
+    } else {    
+      var slot = start >> 5;
+      var r1 = (slot << 5) & 0x3fffffff;    
+      var mask = 1 << (start - r1);    
+      if ((_cacheState[slot] & mask) == 0) {
+        _cacheState[slot] |= mask;   
+        cached = [new List.filled(3, 0), new Map<int, List>()];
+        _cache[start] = cached;                                      
+      }
+      slot = id >> 5;
+      r1 = (slot << 5) & 0x3fffffff;    
+      mask = 1 << (id - r1);    
+      cached[0][slot] |= mask;
+      cached[1][id] = [result, _cursor, success];      
+    }
+    if (_cachePos < start) {
+      _cachePos = start;
+    }    
+  }
+  
+  void _calculatePos(int pos) {
+    if (pos == null || pos < 0 || pos > _inputLen) {
+      return;
+    }
+    _line = 1;
+    _column = 1;
+    for (var i = 0; i < _inputLen && i < pos; i++) {
+      var c = _runes[i];
+      if (c == 13) {
+        _line++;
+        _column = 1;
+        if (i + 1 < _inputLen && _runes[i + 1] == 10) {
+          i++;
+        }
+      } else if (c == 10) {
+        _line++;
+        _column = 1;
+      } else {
+        _column++;
+      }
+    }
+  }
+  
+  void _failure([List<String> expected]) {  
+    if (_failurePos > _cursor) {
+      return;
+    }
+    if (_cursor > _failurePos) {    
+      _expected = [];
+     _failurePos = _cursor;
+    }
+    if (expected != null) {
+      _expected.addAll(expected);
+    }  
+  }
+  
+  List _flatten(dynamic value) {
+    if (value is List) {
+      var result = [];
+      var length = value.length;
+      for (var i = 0; i < length; i++) {
+        var element = value[i];
+        if (element is Iterable) {
+          result.addAll(_flatten(element));
+        } else {
+          result.add(element);
+        }
+      }
+      return result;
+    } else if (value is Iterable) {
+      var result = [];
+      for (var element in value) {
+        if (element is! List) {
+          result.add(element);
+        } else {
+          result.addAll(_flatten(element));
+        }
+      }
+    }
+    return [value];
+  }
+  
+  dynamic _getFromCache(int id) {  
+    var result = _cache[_cursor];
+    if (result == null) {
+      return null;
+    }    
+    var slot = _cursor >> 5;
+    var r1 = (slot << 5) & 0x3fffffff;  
+    var mask = 1 << (_cursor - r1);
+    if ((_cacheState[slot] & mask) == 0) {
+      if (_cacheRule[_cursor] == id) {      
+        _cursor = result[1];
+        success = result[2];      
+        if (_cursor < _inputLen) {
+          _ch = _runes[_cursor];
+        } else {
+          _ch = EOF;
+        }      
+        return result;
+      } else {
+        return null;
       }    
-    }  
-  }  
-    
-  void _productionRule(int cp) {  
-    // TODO: Memoization goes here  
-    // TODO: If memoized expectation errors goes here  
-    var offset = _code[cp + 1];    
-    _decode(_data[offset + 0]);    
-    // TODO: Memoization goes here  
-  }  
-    
-  void _rule(int cp) {  
-    _decode(_code[cp + 1]);    
-  }  
-    
-  void _sequence(int cp) {    
-    var index = 0;    
-    var ch = _ch;   
-    var cursor = _cursor;  
-    var offset = _code[cp + 1];  
-    List<int> instructions = _data[offset + 1];  
-    var count = instructions.length;  
-    cp = instructions[index++];      
-    _decode(cp);  
-    if (!success) {  
-      return;  
-    }    
-    var result = new List(count--);  
-    result[0] = _result;  
-    var flag = _data[offset + 0];  
-    if (flag & 1 != 0) {  
-      if (count == 0) {  
-        result = _action(cp, result);    
-      } else {  
-        result[0] = _action(cp, result);   
-      }      
-    }  
-    flag >>= 1;    
-    for ( ; count-- > 0; flag >>= 1, index++) {  
-      cp = instructions[index];  
-      _decode(cp);  
-      if (!success) {  
-        _ch = ch;  
-        _cursor = cursor;  
-        return;  
-      }  
-      result[index] = _result;  
-      if (flag & 1 != 0) {  
-        if (count == 0) {  
-          result = _action(cp, result);  
-        } else {  
-          result[index] = _action(cp, result);   
-        }  
-      }      
-    }  
-    _result = result;      
-  }  
-    
-  void _sequenceElement(int cp) {  
-    var offset = _code[cp + 1];  
-    cp = _data[offset + 1];      
-    _decode(cp);  
-    if (!success) {  
-      return;  
-    }  
-    if (_data[offset + 0] & 1 != 0) {  
-      _result = _action(cp, _result);   
-    }  
-  }  
-    
-  int _toRune(String string) {  
-    if (string == null) {  
-      throw new ArgumentError("string: $string");  
-    }  
-    
-    var length = string.length;  
-    if (length == 0) {  
-      throw new StateError("An empty string contains no elements.");  
-    }  
-    
-    var start = string.codeUnitAt(0);  
-    if (length == 1) {  
-      return start;  
-    }  
-    
-    if ((start & 0xFC00) == 0xD800) {  
-      var end = string.codeUnitAt(1);  
-      if ((end & 0xFC00) == 0xDC00) {  
-        return (0x10000 + ((start & 0x3FF) << 10) + (end & 0x3FF));  
-      }  
-    }  
-    
-    return start;  
-  }  
-    
-  List<int> _toRunes(String string) {  
-    if (string == null) {  
-      throw new ArgumentError("string: $string");  
-    }  
-    
-    var length = string.length;  
-    if (length == 0) {  
-      return const <int>[];  
-    }  
-    
-    var runes = <int>[];  
-    runes.length = length;  
-    var i = 0;  
-    var pos = 0;  
-    for ( ; i < length; pos++) {  
-      var start = string.codeUnitAt(i);  
-      i++;  
-      if ((start & 0xFC00) == 0xD800 && i < length) {  
-        var end = string.codeUnitAt(i);  
-        if ((end & 0xFC00) == 0xDC00) {  
-          runes[pos] = (0x10000 + ((start & 0x3FF) << 10) + (end & 0x3FF));  
-          i++;  
-        } else {  
-          runes[pos] = start;  
-        }  
-      } else {  
-        runes[pos] = start;  
-      }  
-    }  
-    
-    runes.length = pos;  
-    return runes;  
-  }  
-    
-  void _zeroOrMore(int cp) {      
-    cp = _code[cp + 1];  
-    var testing = _testing;  
-    _testing = _inputLen + 1;  
-    _decode(cp);  
-    if (!success) {  
-      _result = const [];  
-      _testing = testing;  
-      success = true;  
-      return;    
-    }  
-    var elements = [_result];  
-    while(true) {  
-      _testing = _inputLen + 1;  
-      _decode(cp);  
-      if (!success) {  
-        break;  
-      }  
-      elements.add(_result);      
-    }  
-    _testing = testing;  
-    _result = elements;  
-    success = true;        
-  }  
-    
-  int get column {  
-    if (_column == -1) {  
-      _calculatePos(_failurePos);  
-    }  
-    return _column;        
-  }  
-    
-  List<String> get expected {  
-    var set = new Set<String>();    
-    set.addAll(_expected);  
-    if (set.contains(null)) {  
-      set.clear();  
-    }    
-    var result = set.toList();  
-    result.sort();   
-    return result;          
-  }  
-    
-  int get line {  
-    if (_line == -1) {  
-      _calculatePos(_failurePos);  
-    }  
-    return _line;        
-  }  
-    
-  void reset(int pos) {  
-    if (pos == null) {  
-      throw new ArgumentError('pos: $pos');  
-    }  
-    if (pos < 0 || pos > _inputLen) {  
-      throw new RangeError('pos');  
+    }
+    slot = id >> 5;
+    r1 = (slot << 5) & 0x3fffffff;  
+    mask = 1 << (id - r1);
+    if ((result[0][slot] & mask) == 0) {
+      return null;
+    }
+    var data = result[1][id];  
+    _cursor = data[1];
+    success = data[2];
+    if (_cursor < _inputLen) {
+      _ch = _runes[_cursor];
+    } else {
+      _ch = EOF;
     }   
-    _result = null;  
-    success = true;  
-    _cursor = pos;  
-    _cache = new List(_inputLen + 1);  
-    _cachePos = -1;  
-    _cacheRule = new List(_inputLen + 1);  
-    _cacheState = new List.filled(((_inputLen + 1) >> 5) + 1, 0);  
-    _ch = -1;    
-    _column = -1;   
-    _expected = [];  
-    _failurePos = -1;  
-    _flag = 0;    
-    _line = -1;  
-    success = true;      
-    _testing = -1;  
-    if (_cursor < _inputLen) {  
-      _ch = _runes[_cursor];  
-    }        
-  }  
-    
-  String get unexpected {  
-    if (_failurePos < 0 || _failurePos >= _inputLen) {  
-      return '';      
+    return data;  
+  }
+  
+  String _matchAny(List<String> expected) {
+    success = _cursor < _inputLen;
+    if (success) {
+      String result;
+      if (_ch < 128) {
+        result = _ascii[_ch];  
+      } else {
+        result = new String.fromCharCode(_ch);
+      }    
+      if (++_cursor < _inputLen) {
+        _ch = _runes[_cursor];
+      } else {
+        _ch = EOF;
+      }    
+      return result;
+    }
+    if (_cursor > _testing) {
+      _failure(expected);
     }  
-    return new String.fromCharCode(_runes[_failurePos]);    
-  }  
-    
+    return null;  
+  }
+  
+  String _matchChar(int ch, String string, List<String> expected) {
+    success = _ch == ch;
+    if (success) {
+      var result = string;  
+      if (++_cursor < _inputLen) {
+        _ch = _runes[_cursor];
+      } else {
+        _ch = EOF;
+      }    
+      return result;
+    }
+    if (_cursor > _testing) {
+      _failure(expected);
+    }  
+    return null;  
+  }
+  
+  String _matchMapping(int start, int end, List<bool> mapping, List<String> expected) {
+    success = _ch >= start && _ch <= end;
+    if (success) {    
+      if(mapping[_ch - start]) {
+        String result;
+        if (_ch < 128) {
+          result = _ascii[_ch];  
+        } else {
+          result = new String.fromCharCode(_ch);
+        }     
+        if (++_cursor < _inputLen) {
+          _ch = _runes[_cursor];
+        } else {
+          _ch = EOF;
+        }      
+        return result;
+      }
+      success = false;
+    }
+    if (_cursor > _testing) {
+       _failure(expected);
+    }  
+    return null;  
+  }
+  
+  String _matchRange(int start, int end, List<String> expected) {
+    success = _ch >= start && _ch <= end;
+    if (success) {
+      String result;
+      if (_ch < 128) {
+        result = _ascii[_ch];  
+      } else {
+        result = new String.fromCharCode(_ch);
+      }        
+      if (++_cursor < _inputLen) {
+        _ch = _runes[_cursor];
+      } else {
+        _ch = EOF;
+      }  
+      return result;
+    }
+    if (_cursor > _testing) {
+      _failure(expected);
+    }  
+    return null;  
+  }
+  
+  String _matchRanges(List<int> ranges, List<String> expected) {
+    var length = ranges.length;
+    for (var i = 0; i < length; i += 2) {
+      if (_ch <= ranges[i + 1]) {
+        if (_ch >= ranges[i]) {
+          String result;
+          if (_ch < 128) {
+            result = _ascii[_ch];  
+          } else {
+            result = new String.fromCharCode(_ch);
+          }          
+          if (++_cursor < _inputLen) {
+            _ch = _runes[_cursor];
+          } else {
+             _ch = EOF;
+          }
+          success = true;    
+          return result;
+        }      
+      } else break;  
+    }
+    if (_cursor > _testing) {
+      _failure(expected);
+    }
+    success = false;  
+    return null;  
+  }
+  
+  String _matchString(List<int> runes, String string, List<String> expected) {
+    var length = runes.length;  
+    success = true;  
+    if (_cursor + length < _inputLen) {
+      for (var i = 0; i < length; i++) {
+        if (runes[i] != _runes[_cursor + i]) {
+          success = false;
+          break;
+        }
+      }
+    } else {
+      success = false;
+    }  
+    if (success) {
+      _cursor += length;      
+      if (_cursor < _inputLen) {
+        _ch = _runes[_cursor];
+      } else {
+        _ch = EOF;
+      }    
+      return string;      
+    } 
+    if (_cursor > _testing) {
+      _failure(expected);
+    }  
+    return null; 
+  }
+  
+  void _nextChar([int count = 1]) {  
+    success = true;
+    _cursor += count; 
+    if (_cursor < _inputLen) {
+      _ch = _runes[_cursor];
+    } else {
+      _ch = EOF;
+    }    
+  }
+  
+  bool _testChar(int c, int flag) {
+    if (c < 0 || c > 127) {
+      return false;
+    }    
+    int slot = (c & 0xff) >> 6;  
+    int mask = 1 << c - ((slot << 6) & 0x3fffffff);  
+    if ((flag & mask) != 0) {    
+      return true;
+    }
+    return false;           
+  }
+  
+  bool _testInput(int flag) {
+    if (_cursor >= _inputLen) {
+      return false;
+    }
+    var c = _runes[_cursor];
+    if (c < 0 || c > 127) {
+      return false;
+    }    
+    int slot = (c & 0xff) >> 6;  
+    int mask = 1 << c - ((slot << 6) & 0x3fffffff);  
+    if ((flag & mask) != 0) {    
+      return true;
+    }
+    return false;           
+  }
+  
+  int _toRune(String string) {
+    if (string == null) {
+      throw new ArgumentError("string: $string");
+    }
+  
+    var length = string.length;
+    if (length == 0) {
+      throw new StateError("An empty string contains no elements.");
+    }
+  
+    var start = string.codeUnitAt(0);
+    if (length == 1) {
+      return start;
+    }
+  
+    if ((start & 0xFC00) == 0xD800) {
+      var end = string.codeUnitAt(1);
+      if ((end & 0xFC00) == 0xDC00) {
+        return (0x10000 + ((start & 0x3FF) << 10) + (end & 0x3FF));
+      }
+    }
+  
+    return start;
+  }
+  
+  List<int> _toRunes(String string) {
+    if (string == null) {
+      throw new ArgumentError("string: $string");
+    }
+  
+    var length = string.length;
+    if (length == 0) {
+      return const <int>[];
+    }
+  
+    var runes = <int>[];
+    runes.length = length;
+    var i = 0;
+    var pos = 0;
+    for ( ; i < length; pos++) {
+      var start = string.codeUnitAt(i);
+      i++;
+      if ((start & 0xFC00) == 0xD800 && i < length) {
+        var end = string.codeUnitAt(i);
+        if ((end & 0xFC00) == 0xDC00) {
+          runes[pos] = (0x10000 + ((start & 0x3FF) << 10) + (end & 0x3FF));
+          i++;
+        } else {
+          runes[pos] = start;
+        }
+      } else {
+        runes[pos] = start;
+      }
+    }
+  
+    runes.length = pos;
+    return runes;
+  }
+  
+  static List<bool> _unmap(List<int> mapping) {
+    var length = mapping.length;
+    var result = new List<bool>(length * 31);
+    var offset = 0;
+    for (var i = 0; i < length; i++) {
+      var v = mapping[i];
+      for (var j = 0; j < 31; j++) {
+        result[offset++] = v & (1 << j) == 0 ? false : true;
+      }
+    }
+    return result;
+  }
+  
+  List<String> get expected {
+    var set = new Set<String>();  
+    set.addAll(_expected);
+    if (set.contains(null)) {
+      set.clear();
+    }  
+    var result = set.toList();
+    result.sort(); 
+    return result;        
+  }
+  
+  void reset(int pos) {
+    if (pos == null) {
+      throw new ArgumentError('pos: $pos');
+    }
+    if (pos < 0 || pos > _inputLen) {
+      throw new RangeError('pos');
+    }      
+    _cursor = pos;
+    _cache = new List(_inputLen + 1);
+    _cachePos = -1;
+    _cacheRule = new List(_inputLen + 1);
+    _cacheState = new List.filled(((_inputLen + 1) >> 5) + 1, 0);
+    _ch = EOF;  
+    _column = -1; 
+    _expected = [];
+    _failurePos = -1;
+    _flag = 0;  
+    _line = -1;
+    success = true;    
+    _testing = -1;
+    if (_cursor < _inputLen) {
+      _ch = _runes[_cursor];
+    }    
+  }
+  
+  String get unexpected {
+    if (_failurePos < 0 || _failurePos >= _inputLen) {
+      return '';    
+    }
+    return new String.fromCharCode(_runes[_failurePos]);  
+  }
+  
 }
 

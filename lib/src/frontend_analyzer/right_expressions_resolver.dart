@@ -59,7 +59,7 @@ class RightExpressionsResolver extends ExpressionResolver {
       child.accept(this);
       if (!skip) {
         _applyData(child, expression);
-        if (!child.isAlwaysSuccess) {
+        if (!child.isOptional) {
           skip = true;
         }
       }

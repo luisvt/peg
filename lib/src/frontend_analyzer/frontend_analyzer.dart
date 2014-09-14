@@ -14,8 +14,7 @@ class FrontendAnalyzer {
       rule.expression.accept(new ExpressionOwnershipResolver());
     }
 
-    new AlwaysSuccessExpressionsResolver().resolve(rules);
-    new AlwaysZeroOrMoreExpressionsResolver().resolve(rules);
+    new OptionalExpressionsResolver().resolve(rules);
     new RepetitionExpressionsResolver().resolve(rules);
     new ExpressionAbleNotConsumeInputResolver().resolve(rules);
     new LeftExpressionsResolver().resolve(rules);
@@ -27,14 +26,15 @@ class FrontendAnalyzer {
       }
     }
 
-    new ExpectedLexemesResolver().resolve(rules);
     new TerminalRulesFinder().find(rules);
+    new ExpectedTerminalsResolver().resolve(rules);
     new ExpressionWithActionsResolver().resolve(rules);
+    new StartingRulesFinder().find(rules);
 
     // Exprerimental
     for (var rule in rules) {
       if (rule.directCallers.length == 0) {
-        var resolver = new AutomatonResolver();
+        //var resolver = new AutomatonResolver();
         //resolver.resolve([rule]);
         //_print(resolver.state0, new Set<ExpressionState>());
         //print("==============");
@@ -48,7 +48,7 @@ class FrontendAnalyzer {
     }
 
     reported.add(state);
-    var transitions = state.transitions;
+    var transitions = state.symbolTransitions;
     print("==============");
     print("State: $state:");
     for (var group in transitions.groups) {

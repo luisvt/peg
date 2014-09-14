@@ -11,7 +11,15 @@ class ProductionRule {
 
   Set<ProductionRule> directCallers = new Set<ProductionRule>();
 
+  Set<String> expected = new Set<String>();
+
   final OrderedChoiceExpression expression;
+
+  bool isSlaveTerminal;
+
+  bool isMasterTerminal;
+
+  bool isStartingRule;
 
   bool isTerminal;
 

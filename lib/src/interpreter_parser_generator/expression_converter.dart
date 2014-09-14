@@ -1,9 +1,12 @@
 part of peg.interpreter_parser_generator;
 
 class ExpressionConverter extends UnifyingExpressionVisitor<Instruction> {
+  Map<Expression, ProductionRuleInstruction> _productionRules;
+
   Map<Expression, Instruction> _visited;
 
   ExpressionConverter() {
+    _productionRules = <Expression, ProductionRuleInstruction>{};
     _visited = <Expression, Instruction>{};
   }
 
@@ -66,30 +69,34 @@ class ExpressionConverter extends UnifyingExpressionVisitor<Instruction> {
   Instruction visitOrderedChoice(OrderedChoiceExpression expression) {
     var instruction = _visited[expression];
     if (instruction != null) {
+      var productionRule = _productionRules[expression];
+      if (productionRule != null) {
+        return productionRule;
+      }
+
       return instruction;
     }
 
     var flag = 0;
-    if (expression.isAlwaysSuccess) {
-      flag |= OrderedChoiceInstruction.FLAG_IS_ALWAYS_OPTIONAL;
-    }
-
-    if (expression.isAlwaysZeroOrMore) {
-      flag |= OrderedChoiceInstruction.FLAG_IS_ALWAYS_ZERO_OR_MORE;
+    if (expression.isOptional) {
+      flag |= OrderedChoiceInstruction.FLAG_IS_OPTIONAL;
     }
 
     var instructions = <Instruction>[];
     // TODO: !!!Temporarily: Optimize transitions
-    var transitions = new SparseList<List<Instruction>>();
-    instruction = new OrderedChoiceInstruction(instructions, transitions, flag);
+    var empty  = <Instruction>[];
+    var symbols = new SparseList<List<Instruction>>();
+    instruction = new OrderedChoiceInstruction(instructions, symbols, empty, flag);
     ProductionRuleInstruction parentInstruction;
     // Syntatic ProductionRuleInstruction
     if (expression.parent == null) {
       var owner = expression.owner;
-      parentInstruction = new ProductionRuleInstruction(owner.id, owner.name, instruction);
+      parentInstruction = new ProductionRuleInstruction(owner.id, owner.name, instruction, false);
+      _productionRules[expression] = parentInstruction;
     }
 
 
+    // TODO: implement
     var transitions2 = new SparseList<List<Instruction>>();
 
     _visited[expression] = instruction;
@@ -106,7 +113,7 @@ class ExpressionConverter extends UnifyingExpressionVisitor<Instruction> {
     // TODO: !!!Temporarily to mix them all together into single group
     var unicode = Expression.unicodeGroup;
     var group = new GroupedRangeList<List<Instruction>>(unicode.start, unicode.end, instructions);
-    transitions.addGroup(group);
+    symbols.addGroup(group);
     // Syntatic ProductionRuleInstruction
     if (parentInstruction != null) {
       return parentInstruction;
@@ -139,7 +146,7 @@ class ExpressionConverter extends UnifyingExpressionVisitor<Instruction> {
 
     Instruction instruction;
     if (expressions.length == 1) {
-      instruction = new SequenceElementInstruction(children.first);
+      instruction = new SequenceWithOneElementInstruction(children.first);
     } else {
       instruction = new SequenceInstruction(children);
     }

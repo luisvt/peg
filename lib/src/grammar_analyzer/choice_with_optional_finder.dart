@@ -19,7 +19,7 @@ class ChoiceWithOptionalFinder extends UnifyingExpressionVisitor {
     }
 
     for (var child in expressions) {
-      if (child.isAlwaysSuccess) {
+      if (child.isOptional) {
         var owner = expression.owner;
         var list = result[owner];
         if (list == null) {

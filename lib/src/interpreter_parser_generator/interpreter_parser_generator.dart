@@ -7,7 +7,7 @@ class InterpreterParserGenerator implements Generator {
 
   final String name;
 
-  List<ProductionRuleInstruction> _entryPoints;
+  Map<String, Instruction> _entryPoints;
 
   InterpreterParserGenerator(this.name, this.grammar, {this.memoize: false}) {
     if (name == null) {
@@ -21,7 +21,6 @@ class InterpreterParserGenerator implements Generator {
 
   List<String> generate() {
     _transformExpressions();
-    _optimizeInstructions();
     List<String> topLevelCode;
     if (grammar.globals != null) {
       topLevelCode = Utils.codeToStrings(grammar.globals);
@@ -31,20 +30,12 @@ class InterpreterParserGenerator implements Generator {
     return generator.generate();
   }
 
-  void _optimizeInstructions() {
-    for (var i = 0; i < _entryPoints.length; i++) {
-      var instruction = _entryPoints[i];
-      var optimizer = new Optimizer();
-      _entryPoints[i] = optimizer.optimize(instruction);
-    }
-  }
-
   void _transformExpressions() {
-    _entryPoints = <ProductionRuleInstruction>[];
+    _entryPoints = <String, Instruction>{};
     for (var rule in grammar.rules) {
-      if (rule.directCallers.isEmpty) {
-        var transformer = new ProductionRuleInstructionBuilder(rule, trace: true);
-        _entryPoints.add(transformer.transform());
+      if (rule.isStartingRule) {
+        var transformer = new ProductionRuleInstructionBuilder(rule);
+        _entryPoints[rule.name] = transformer.transform();
       }
     }
   }

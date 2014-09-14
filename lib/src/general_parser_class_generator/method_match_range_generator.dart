@@ -24,7 +24,7 @@ class MethodMatchRangeGenerator extends TemplateGenerator {
   static const String _TEMPLATE = "TEMPLATE";
 
   static final String _template = '''
-String $NAME(int start, int end) {
+String $NAME(int start, int end, List<String> expected) {
   $_SUCCESS = $_CH >= start && $_CH <= end;
   if ($_SUCCESS) {
     String result;
@@ -41,7 +41,7 @@ String $NAME(int start, int end) {
     return result;
   }
   if ($_CURSOR > $_TESTING) {
-    $_FAILURE();
+    $_FAILURE(expected);
   }  
   return null;  
 }

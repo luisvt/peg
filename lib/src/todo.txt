@@ -1,10 +1,30 @@
 =======================================
 
-Main task is "Interpreter generator"
+Main task is "Nondeterministic finite automaton"
+
+Suitable for
+- Symbol transitions implementation
+- Error recovering implementation
+- More in-depth analysis of the (correctness of the) grammars
+
+=======================================
+
+Add public API of the parser generator
 
 =======================================
 
 Add support of "error recovering"
+
+=======================================
+
+_flatten should remove null's
+
+=======================================
+
+Add support of subterminals
+- Subterminals resolver
+- In-parsing going inside the subterminals from terminals
+- Improve error messages (going inside the subterminals from terminals)
 
 =======================================
 

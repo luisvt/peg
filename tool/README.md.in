@@ -9,12 +9,12 @@ Status: Experimental
 
 !!!NEW FEATURE!!!
 
-New parser generator available: intruction interpreter parser.
+Added the new parser generator: interpreter parser (NOT YET READY FOR USE).
 
 **Advantages:**
 
- - Less source code size of the generated parser
- - The same performance (it will be much better with an upcoming optimizers)
+ - Less source code size of the generated parser (the more complex grammar, the more noticeable difference in the size of)
+ - Higher performance (with an upcoming the symbols transitions it will be much better)
 
 Latest version always can be found at https://github.com/mezoni/peg
 
@@ -26,11 +26,13 @@ Latest version always can be found at https://github.com/mezoni/peg
 - Grammar reporting
 - Grammar statistics
 - High quality generated source code
+- High performance of parsing process
 - Lookahead mapping tables
 - Memoization
 - Possibility to trace parsing 
 - Powerful error and mistakes detection
 - Printing grammar
+- Symbols transitions (upcomming)
 - Terminal and nonterminal symbol recognition
 
 **Error detection**

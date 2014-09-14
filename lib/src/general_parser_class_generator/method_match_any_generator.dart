@@ -24,7 +24,7 @@ class MethodMatchAnyGenerator extends TemplateGenerator {
   static const String _TEMPLATE = "TEMPLATE";
 
   static final String _template = '''
-String $NAME() {
+String $NAME(List<String> expected) {
   $_SUCCESS = $_CURSOR < $_INPUT_LEN;
   if ($_SUCCESS) {
     String result;
@@ -41,7 +41,7 @@ String $NAME() {
     return result;
   }
   if ($_CURSOR > $_TESTING) {
-    $_FAILURE();
+    $_FAILURE(expected);
   }  
   return null;  
 }

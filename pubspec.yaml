@@ -1,5 +1,5 @@
 name: peg
-version: 0.0.12
+version: 0.0.15
 author: Andrew Mezoni <andrew.mezoni@gmail.com>
 description: PEG (Parsing expression grammar) parsers generator.
 homepage: https://github.com/mezoni/peg
@@ -10,7 +10,7 @@ dependencies:
   lists: any
   path: any
   string_matching:
-    git: https://github.com/mezoni/string_matching.git
+    path: /home/andrew/dart/for_web/string_matching
   strings: any
   template_block: any
   yaml: any

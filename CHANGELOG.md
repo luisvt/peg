@@ -1,3 +1,9 @@
+## 0.0.15
+
+- Added instruction optimizer in the interpreter parser
+- Added the subordination of terminals (master, slave, master/slave). In some cases this can helps developers to writing (after the analysing) grammar better and, also, this helps for the generator to better optimize the grammar and helps to improve error messages.
+- Breaking change: All methods, except the starting rules, are now private methods in all parsers. This is done for the interoperability of the generated parsers, better error messaging and performance improvement of parsing processes.
+
 ## 0.0.12
 
 - Added new parser generator: interpreter parser

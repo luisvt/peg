@@ -3,6 +3,7 @@ library peg.expressions;
 import 'package:lists/lists.dart';
 import 'package:peg/production_rule.dart';
 import 'package:peg/utils.dart';
+import 'package:peg/expression_states.dart';
 import 'package:peg/expression_visitors.dart';
 import 'package:strings/strings.dart';
 
