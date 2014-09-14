@@ -10,7 +10,7 @@ dependencies:
   lists: any
   path: any
   string_matching:
-    path: /home/andrew/dart/for_web/string_matching
+    git: https://github.com/mezoni/string_matching.git
   strings: any
   template_block: any
   yaml: any
