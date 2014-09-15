@@ -53,8 +53,8 @@ $_RESULT = null;
 $_SUCCESS = $_CH >= {{MIN}} && $_CH <= {{MAX}} && $_LOOKAHEAD[$_CH + {{POSITION}}];
 {{#LOOKAHEAD_COMMENTS}}
 if ($_SUCCESS) $_RESULT = {{RULE}}();    
-if (!$_SUCCESS) {  
-  {{#TRACE}}  
+if (!$_SUCCESS) {    
+  {{#TRACE}}    
   if ($_CURSOR > $_TESTING) $_FAILURE({{EXPECTED}});
   {{#BREAK}}  
 }''';
@@ -75,7 +75,7 @@ $_SUCCESS = $_CH == {{CHARACTER}}; {{COMMENT_CHARACTER}}
 if ($_SUCCESS) $_RESULT = {{RULE}}();
 if (!$_SUCCESS) {
   {{#TRACE}}
-  if ($_CURSOR > $_TESTING) $_FAILURE({{EXPECTED}});
+  if ($_CURSOR > $_TESTING) $_FAILURE({{EXPECTED}});  
   {{#BREAK}}  
 }''';
 
@@ -167,7 +167,6 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
     var position = parserClassGenerator.getLookaheadPosition(lookaheadId);
     var startCharacters = ruleExpression.startCharacters;
     block = getTemplateBlock(_TEMPLATE_LOOKAHEAD);
-    block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(ruleExpression));
     if (productionRuleGenerator.comment) {
       var name = _expression.name;
       block.assign('#COMMENTS', '// ${_expression.name}');
@@ -185,6 +184,7 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
 
     var end = startCharacters.end;
     var start = startCharacters.start;
+    block.assign('EXPECTED', Expectation.getExpectedAsPrintableList(_expression));
     block.assign('MIN', start);
     block.assign('MAX', end);
     block.assign('POSITION', position - start);
@@ -194,14 +194,13 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
   }
 
   List<String> _generateLookaheadOptional() {
-    TemplateBlock block;
+    var block = getTemplateBlock(_TEMPLATE_LOOKAHEAD_OPTIONAL);
     var parserClassGenerator = productionRuleGenerator.parserClassGenerator;
     var rule = _expression.rule;
     var ruleExpression = rule.expression;
     var lookaheadId = ruleExpression.lookaheadId;
     var position = parserClassGenerator.getLookaheadPosition(lookaheadId);
     var startCharacters = ruleExpression.startCharacters;
-    block = getTemplateBlock(_TEMPLATE_LOOKAHEAD_OPTIONAL);
     if (productionRuleGenerator.comment) {
       var comments = [];
       block.assign('#COMMENTS', '// ${_expression.name}');
@@ -232,7 +231,6 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
     var character = ruleExpression.startCharacters.start;
     var trace = parserClassGenerator.parserGenerator.trace;
     block = getTemplateBlock(_TEMPLATE_ONE);
-    block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(ruleExpression));
     if (productionRuleGenerator.comment) {
       var name = _expression.name;
       var printable = toPrintable(new String.fromCharCode(character));
@@ -253,6 +251,7 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
     }
 
     block.assign('CHARACTER', character);
+    block.assign('EXPECTED', Expectation.getExpectedAsPrintableList(_expression));
     block.assign('RULE', '${_getProductionRuleName()}');
     return block.process();
   }

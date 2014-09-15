@@ -45,7 +45,7 @@ Expression _suffix(String suffix, Expression expression) {
 }%
 
 Grammar <-
-  SPACING Globals? Members? Definition+ EOF { $$ = new Grammar($4, $2, $3); }
+  SPACING? Globals? Members? Definition+ EOF { $$ = new Grammar($4, $2, $3); }
 
 Globals <-
   '%{' GlobalsBody* '}%' SPACING { $$ = _flatten(["{", $2, "}", _spacing($4)]).join(); }
@@ -107,7 +107,7 @@ EOF <-
   !.
 
 IDENTIFIER <-
-  IDENT_START IDENT_CONT* SPACING { $$ = _flatten([$1, $2]).join(); }
+  IDENT_START IDENT_CONT* _SPACING { $$ = _flatten([$1, $2]).join(); }
   
 IDENT_START <-
   [a-zA-Z_]
@@ -116,49 +116,54 @@ IDENT_CONT <-
   IDENT_START / [0-9]
 
 LEFTARROW <-
-  '<-' SPACING
+  '<-' _SPACING
   
 SLASH <-
-  '/' SPACING
+  '/' _SPACING
   
 AND <-
-  '&' SPACING { $$ = $1; }
+  '&' _SPACING { $$ = $1; }
   
 NOT <-
-  '!' SPACING { $$ = $1; }
+  '!' _SPACING { $$ = $1; }
   
 QUESTION <-
-  '?' SPACING { $$ = $1; }
+  '?' _SPACING { $$ = $1; }
   
 STAR <-
-  '*' SPACING { $$ = $1; }
+  '*' _SPACING { $$ = $1; }
   
 PLUS <-
-  '+' SPACING { $$ = $1; }
+  '+' _SPACING { $$ = $1; }
   
 OPEN <-
-  '(' SPACING
+  '(' _SPACING
   
 CLOSE <-
-  ')' SPACING
+  ')' _SPACING
   
 DOT <-
-  '.' SPACING
+  '.' _SPACING
 
 HEX_NUMBER <-
   '\\u' [0-9a-fA-F]+ { $$ = int.parse($2.join(), radix: 16); }
   
 SPACING <-
-  (SPACE / COMMENT)*
+  _SPACING
   
 COMMENT <-
-  '#' (!EOL .)* EOL?
+  '#' (!_EOL .)* _EOL?
   
 SPACE <-
   [ \t] 
-  / EOL
+  / _EOL
  
 EOL <-
+  _EOL
+
+_SPACING <-
+  (SPACE / COMMENT)*
+
+_EOL <-
   '\r\n'
   / [\n\r]
-  

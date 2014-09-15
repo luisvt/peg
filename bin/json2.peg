@@ -1,0 +1,113 @@
+jsonText <-
+  WS? (object / array) EOF
+
+value <-
+  FALSE
+  / NULL
+  / TRUE
+  / object
+  / array
+  / NUMBER
+  / STRING
+
+object <-
+  BEGIN_OBJECT (member (VALUE_SEPARATOR member)*)? END_OBJECT
+
+member <-
+  STRING NAME_SEPARATOR value
+
+array <-
+  BEGIN_ARRAY (value ( VALUE_SEPARATOR value )*)? END_ARRAY
+
+# TOKENS  
+
+QUOTATION_MARK <-
+  ["]
+
+BEGIN_ARRAY <-
+  [\[] _WS
+
+BEGIN_OBJECT <-
+  [{] _WS
+
+DECIMAL_POINT <-
+  [.] _WS
+
+E <-
+  ([e] / [E]) _WS
+
+EXP <-
+  E (MINUS / PLUS)? DIGIT+ _WS
+
+END_ARRAY <-
+  [\]] _WS
+
+END_OBJECT <-
+  '}' _WS
+
+FALSE <-
+  "false" _WS
+
+FRAC <-
+  DECIMAL_POINT DIGIT* _WS
+
+INT <-
+  ( DIGIT DIGIT* ) _WS
+
+MINUS <-
+  [-] _WS
+
+NAME_SEPARATOR <-
+  [:] _WS
+
+NULL <-
+  "null" _WS
+
+NUMBER <-
+  MINUS? INT FRAC? EXP? _WS
+
+PLUS <-
+ [+] _WS
+
+STRING <-
+  QUOTATION_MARK CHAR* QUOTATION_MARK _WS
+
+TRUE <-
+  "true" _WS
+
+VALUE_SEPARATOR <-
+  [,] _WS
+
+# LEXEMES
+
+CHAR <-
+  UNESCAPED
+  / ESCAPE ["\\/bfnrt]
+  / [u] HEXDIG HEXDIG HEXDIG HEXDIG
+
+DIGIT <-
+  [0-9]
+
+ESCAPE <-
+  [\\]
+
+EOF <-
+   !.
+
+HEXDIG <-
+  DIGIT
+  / [a-f]
+  / [A-F]
+
+UNESCAPED <-
+  [ !]
+  / [#-\[]
+  / [\]-~]
+  / [\u5D-\u10FFFF]
+
+WS <-
+  _WS  
+
+ _WS <-
+  [ \t\n\r]*
+ 

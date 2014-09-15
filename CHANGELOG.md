@@ -1,3 +1,8 @@
+## 0.0.16
+
+- From now the generator recommends to separate the terminals from the subterminals for better perception of grammar and for the improved errors messages. This was chosen in favor of rejection of grammar optimization (because it requires the cloning of the grammar). Possible in future this limitation will be removed and grammar will optimized (added surrogate auto generated subterminals), but not now.
+- Was improved the basic ("expectation") error messages (fixed the bugs, implemented helper library "expectation")
+
 ## 0.0.15
 
 - Added instruction optimizer in the interpreter parser
