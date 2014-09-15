@@ -21,6 +21,15 @@ _flatten should remove null's
 
 =======================================
 
+Add detection and error reporing of unterminated tokens (terminals)
+
+=======================================
+
+Make public
+_calcucatePos
+
+=======================================
+
 Add support of subterminals
 - Subterminals resolver
 - In-parsing going inside the subterminals from terminals
@@ -49,7 +58,7 @@ TERMINAL <- "abc" # abc
 Add property: Expression.hasCharacterClass
 ---
 production rule: depends on memoization
-  report all if no cached
+  report all if not cached
 
 =======================================
 

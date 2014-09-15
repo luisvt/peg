@@ -42,17 +42,11 @@ class GrammarAnalyzer {
       warnings.add('Warning: Found several rules with name "${rule.name}"');
     }
 
-    // TODO: remove
-    /*
-    var nonterminalsWithLexemes = new NonterminalsWithLexemesFinder().find(rules
-        );
+    var nonterminalsWithLexemes = new NonterminalsWithLexemesFinder().find(rules);
     for (var rule in nonterminalsWithLexemes.keys) {
       var lexemes = nonterminalsWithLexemes[rule].join(", ");
-      warnings.add(
-          'Warning: Found the direct use of lexemes in nonterminal "${rule.name}": $lexemes'
-          );
+      warnings.add('Warning: Found the direct use of characters in nonterminal "${rule.name}": $lexemes');
     }
-    */
 
     var infiniteLoops = new InfiniteLoopFinder().find(rules);
     for (var rule in infiniteLoops.keys) {
@@ -74,6 +68,20 @@ class GrammarAnalyzer {
     var unconventionalNames = new UnconventionalNamesFinder().find(rules);
     for (var rule in unconventionalNames) {
       warnings.add('Warning: Found terminal symbol "${rule.name}" with lower case name.');
+    }
+
+    var masters = new UsageOfMasterTerminalsAsSlaveFinder().find(rules);
+    for (var rule in masters.keys) {
+      for (var expression in masters[rule]) {
+        warnings.add('Warning: Found usage of the master terminal as a slave in "${rule.name}": \'$expression\'');
+      }
+    }
+
+    var slaves = new UsageOfSlaveTerminalsInNonterminalsFinder().find(rules);
+    for (var rule in slaves.keys) {
+      for (var expression in slaves[rule]) {
+        warnings.add('Warning: Found usage of the slave terminal as a master in "${rule.name}": \'$expression\'');
+      }
     }
 
     return warnings;

@@ -1,4 +1,7 @@
-Grammar <- SPACING Globals? Members? Definition+ EOF
+Warning: Found the direct use of characters in nonterminal "GlobalsBody": .
+Warning: Found the direct use of characters in nonterminal "ActionBody": .
+Warning: Found the direct use of characters in nonterminal "Char": ["'\-\[-\]nrt], .
+Grammar <- SPACING? Globals? Members? Definition+ EOF
 
 Globals <- "%{" GlobalsBody* "}%" SPACING
 
@@ -32,38 +35,42 @@ Char <- "\\" ["'\-\[-\]nrt] / HEX_NUMBER / !"\\" !EOL .
 
 EOF <- !.
 
-IDENTIFIER <- IDENT_START IDENT_CONT* SPACING
+IDENTIFIER <- IDENT_START IDENT_CONT* _SPACING
 
 IDENT_START <- [A-Z_a-z]
 
 IDENT_CONT <- IDENT_START / [0-9]
 
-LEFTARROW <- "<-" SPACING
+LEFTARROW <- "<-" _SPACING
 
-SLASH <- "/" SPACING
+SLASH <- "/" _SPACING
 
-AND <- "&" SPACING
+AND <- "&" _SPACING
 
-NOT <- "!" SPACING
+NOT <- "!" _SPACING
 
-QUESTION <- "?" SPACING
+QUESTION <- "?" _SPACING
 
-STAR <- "*" SPACING
+STAR <- "*" _SPACING
 
-PLUS <- "+" SPACING
+PLUS <- "+" _SPACING
 
-OPEN <- "(" SPACING
+OPEN <- "(" _SPACING
 
-CLOSE <- ")" SPACING
+CLOSE <- ")" _SPACING
 
-DOT <- "." SPACING
+DOT <- "." _SPACING
 
 HEX_NUMBER <- "\\u" [0-9A-Fa-f]+
 
-SPACING <- (SPACE / COMMENT)*
+SPACING <- _SPACING
 
-COMMENT <- "#" (!EOL .)* EOL?
+COMMENT <- "#" (!_EOL .)* _EOL?
 
-SPACE <- [\t ] / EOL
+SPACE <- [\t ] / _EOL
 
-EOL <- "\r\n" / [\n\r]
+EOL <- _EOL
+
+_SPACING <- (SPACE / COMMENT)*
+
+_EOL <- "\r\n" / [\n\r]

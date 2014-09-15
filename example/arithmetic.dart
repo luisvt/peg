@@ -1,7 +1,5 @@
 library peg.example.arithmetic;
 
-import "package:strings/strings.dart";
-
 part "arithmetic_parser.dart";
 
 void main() {
@@ -16,17 +14,13 @@ num parse(String text) {
     var column = parser.column;
     var line = parser.line;
     var expected = parser.expected;
-    var unexpected = toPrintable(parser.unexpected);
+    var unexpected = parser.unexpected;
+    unexpected = unexpected.isEmpty ? "end of file" : "'$unexpected'";
     if (!expected.isEmpty) {
       var str = expected.join('\', \'');
-      throw
-          'Parser error at ($line, $column): expected \'$str\' but found \'$unexpected\'';
+      throw 'Parser error at ($line, $column): expected \'$str\' but found $unexpected';
     } else {
-      if (!unexpected.isEmpty) {
-        throw 'Parser error at ($line, $column): unexpected "$unexpected"';
-      } else {
-        throw 'Parser error at ($line, $column): unexpected end of file';
-      }
+      throw 'Parser error at ($line, $column): unexpected $unexpected';
     }
   }
 

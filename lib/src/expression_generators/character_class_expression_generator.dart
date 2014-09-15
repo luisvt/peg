@@ -37,18 +37,18 @@ class CharacterClassExpressionGenerator extends ExpressionGenerator {
 
   static final String _templateAscii = '''
 {{#COMMENTS}}
-$_RESULT = $_MATCH_MAPPING({{MIN}}, {{MAX}}, {{MAPPING}}, {{EXPECTED}});''';
+$_RESULT = $_MATCH_MAPPING({{MIN}}, {{MAX}}, {{MAPPING}});''';
 
   static final String _templateAsciiAndNonAscii = '''
 {{#COMMENTS}}
-$_RESULT = $_MATCH_MAPPING({{MIN}}, {{MAX}}, {{MAPPING}}, {{EXPECTED}});
+$_RESULT = $_MATCH_MAPPING({{MIN}}, {{MAX}}, {{MAPPING}});
 if (!$_SUCCESS) {
-  $_RESULT = $_MATCH_RANGES({{RANGES}}, {{EXPECTED}});
+  $_RESULT = $_MATCH_RANGES({{RANGES}});
 }''';
 
   static final String _templateCharacter = '''
 {{#COMMENTS}}
-$_RESULT = $_MATCH_CHAR({{RUNE}}, '{{STRING}}', {{EXPECTED}});''';
+$_RESULT = $_MATCH_CHAR({{RUNE}}, '{{STRING}}');''';
 
   static final String _templateEmpty = '''
 // {{#COMMENTS}}
@@ -57,11 +57,11 @@ $_RESULT = \'\';''';
 
   static final String _templateRange = '''
 {{#COMMENTS}}
-$_RESULT = $_MATCH_RANGE({{MIN}}, {{MAX}}, {{EXPECTED}});''';
+$_RESULT = $_MATCH_RANGE({{MIN}}, {{MAX}});''';
 
   static final String _templateRanges = '''
 {{#COMMENTS}}
-$_RESULT = $_MATCH_RANGES({{RANGES}}, {{EXPECTED}});''';
+$_RESULT = $_MATCH_RANGES({{RANGES}});''';
 
   SparseBoolList _ascii;
 
@@ -146,7 +146,6 @@ $_RESULT = $_MATCH_RANGES({{RANGES}}, {{EXPECTED}});''';
       block.assign('#COMMENTS', '// $_expression');
     }
 
-    block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(_expression));
     block.assign('MAX', _ascii.end);
     block.assign('MAPPING', range);
     block.assign('MIN', _ascii.start);
@@ -162,7 +161,6 @@ $_RESULT = $_MATCH_RANGES({{RANGES}}, {{EXPECTED}});''';
       block.assign('#COMMENTS', '// $_expression');
     }
 
-    block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(_expression));
     block.assign('MAX', _ascii.end);
     block.assign('MIN', _ascii.start);
     block.assign('MAPPING', mapping);
@@ -179,7 +177,6 @@ $_RESULT = $_MATCH_RANGES({{RANGES}}, {{EXPECTED}});''';
     var string = Utils.charToString(_singleCharacter);
     block.assign('RUNE', _singleCharacter);
     block.assign('STRING', _singleCharacter);
-    block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(_expression));
     return block.process();
   }
 
@@ -189,7 +186,6 @@ $_RESULT = $_MATCH_RANGES({{RANGES}}, {{EXPECTED}});''';
       block.assign('#COMMENTS', '// $_expression');
     }
 
-    block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(_expression));
     return block.process();
   }
 
@@ -199,7 +195,6 @@ $_RESULT = $_MATCH_RANGES({{RANGES}}, {{EXPECTED}});''';
       block.assign('#COMMENTS', '// $_expression');
     }
 
-    block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(_expression));
     block.assign('MAX', _singleRange.end);
     block.assign('MIN', _singleRange.start);
     return block.process();
@@ -212,7 +207,6 @@ $_RESULT = $_MATCH_RANGES({{RANGES}}, {{EXPECTED}});''';
       block.assign('#COMMENTS', '// $_expression');
     }
 
-    block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(_expression));
     block.assign('RANGES', ranges);
     return block.process();
   }

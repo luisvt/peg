@@ -62,60 +62,6 @@ abstract class ExpressionGenerator extends TemplateGenerator {
     }
   }
 
-  static String getExpectedOnFailure(Expression expression) {
-    var result = [];
-    var terminals = expression.owner.expected;
-    if (!terminals.contains(null)) {
-      for (var lexeme in terminals) {
-        result.add("\"${toPrintableString(lexeme)}\"");
-      }
-    }
-
-    if (result.length > 0) {
-      return "const [${result.join(", ")}]";
-    }
-
-    return "null";
-  }
-
-  // TODO: Use this widely for improve "expectation"
-  static String getExpectedOnFailure2(Expression expression) {
-    var result = [];
-    var lexemes = expression.expected;
-    if (!lexemes.contains(null)) {
-      for (var lexeme in lexemes) {
-        result.add("\"${toPrintableString(lexeme)}\"");
-      }
-    }
-
-    if (result.isEmpty) {
-      if (expression is OrderedChoiceExpression && expression.parent == null) {
-        var owner = expression.owner;
-        if (expression.owner.isTerminal) {
-          result.add("\"${owner.name}\"");
-        }
-      }
-    }
-
-    if (result.length > 0) {
-      return "const [${result.join(", ")}]";
-    }
-
-    return "null";
-  }
-
-  static String toPrintableString(String string) {
-    if (string == null) {
-      return "null";
-    }
-
-    if (string.isEmpty) {
-      return "";
-    }
-
-    return Utils.toPrintable(string);
-  }
-
   bool breakOnFailWasInserted() {
     return false;
   }

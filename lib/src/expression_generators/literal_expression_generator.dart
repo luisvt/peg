@@ -22,11 +22,11 @@ $_RESULT = \'\';''';
 
   static final String _templateString = '''
 {{#COMMENTS}}
-$_RESULT = $_MATCH_STRING({{RUNES}}, '{{STRING}}', {{EXPECTED}});''';
+$_RESULT = $_MATCH_STRING({{RUNES}}, '{{STRING}}');''';
 
   static final String _templateCharacter = '''
 {{#COMMENTS}}
-$_RESULT = $_MATCH_CHAR({{RUNE}}, '{{STRING}}', {{EXPECTED}});''';
+$_RESULT = $_MATCH_CHAR({{RUNE}}, '{{STRING}}');''';
 
   LiteralExpression _expression;
 
@@ -71,7 +71,6 @@ $_RESULT = $_MATCH_CHAR({{RUNE}}, '{{STRING}}', {{EXPECTED}});''';
 
     block.assign('RUNE', character);
     block.assign('STRING', string);
-    block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(_expression));
     return block.process();
   }
 
@@ -88,7 +87,6 @@ $_RESULT = $_MATCH_CHAR({{RUNE}}, '{{STRING}}', {{EXPECTED}});''';
     }
 
     var strings = productionRuleGenerator.parserClassGenerator.addString(text);
-    block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(_expression));
     block.assign('RUNES', strings);
     block.assign('STRING', literal.join());
     return block.process();

@@ -33,6 +33,8 @@ class MethodResetGenerator extends TemplateGenerator {
 
   static const String _SUCCESS = GeneralParserClassGenerator.VARIABLE_SUCCESS;
 
+  static const String _TERMINAL = GeneralParserClassGenerator.VARIABLE_TERMINAL;
+
   static const String _TESTING = GeneralParserClassGenerator.VARIABLE_TESTING;
 
   static const String _TEMPLATE = "TEMPLATE";
@@ -56,7 +58,8 @@ void $NAME(int pos) {
   $_FAILURE_POS = -1;
   $_FLAG = 0;  
   $_LINE = -1;
-  $_SUCCESS = true;    
+  $_SUCCESS = true;
+  $_TERMINAL = const <String>[];    
   $_TESTING = -1;
   if ($_CURSOR < $_INPUT_LEN) {
     $_CH = $_RUNES[$_CURSOR];

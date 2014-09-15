@@ -17,6 +17,8 @@ class ProductionRuleGenerator extends TemplateGenerator {
 
   static const String _SUCCESS = GeneralParserClassGenerator.VARIABLE_SUCCESS;
 
+  static const String _TERMINAL = GeneralParserClassGenerator.VARIABLE_TERMINAL;
+
   static const String _TRACE = MethodTraceGenerator.NAME;
 
   static const String _TEMPLATE_WITH_CACHE = '_TEMPLATE_WITH_CACHE';
@@ -186,6 +188,10 @@ dynamic {{NAME}}() {
     }
 
     strings.add('var $_RESULT;');
+    if (_productionRule.isMasterTerminal) {
+      var expected = Expectation.getExpectedAsPrintableList(_productionRule.expression);
+      strings.add('$_TERMINAL = const $expected;');
+    }
 
     return strings;
   }

@@ -24,7 +24,7 @@ class MethodMatchRangesGenerator extends TemplateGenerator {
   static const String _TEMPLATE = "TEMPLATE";
 
   static final String _template = '''
-String $NAME(List<int> ranges, List<String> expected) {
+String $NAME(List<int> ranges) {
   var length = ranges.length;
   for (var i = 0; i < length; i += 2) {
     if ($_CH <= ranges[i + 1]) {
@@ -44,9 +44,6 @@ String $NAME(List<int> ranges, List<String> expected) {
         return result;
       }      
     } else break;  
-  }
-  if ($_CURSOR > $_TESTING) {
-    $_FAILURE(expected);
   }
   $_SUCCESS = false;  
   return null;  
