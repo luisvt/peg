@@ -45,8 +45,6 @@ class GeneralParserClassGenerator extends TemplateGenerator {
 
   static const String VARIABLE_SUCCESS = "success";
 
-  static const String VARIABLE_TERMINAL = "_terminal";
-
   static const String VARIABLE_TESTING = "_testing";
 
   static const String _UNMAP = MethodUnmapGenerator.NAME;
@@ -131,14 +129,14 @@ class GeneralParserClassGenerator extends TemplateGenerator {
     var length = _strings.length;
     var found = false;
     var i = 0;
-    for ( ; i < length; i++) {
-      if (string == _strings[i]) {
+    for(; i < length; i++) {
+      if(string == _strings[i]) {
         found = true;
         break;
       }
     }
 
-    if (!found) {
+    if(!found) {
       i = length;
       _strings.add(string);
     }
@@ -153,10 +151,6 @@ class GeneralParserClassGenerator extends TemplateGenerator {
     for (var rule in grammar.rules) {
       var generator = new ProductionRuleGenerator(rule, this);
       generators[generator.name] = generator;
-      if (rule.isMasterTerminal && rule.isSlaveTerminal) {
-        generator = new ProductionRuleGenerator(rule, this);
-        generators[generator.name] = generator;
-      }
     }
 
     methods.addAll(_generateInSortOrder(generators));
@@ -358,7 +352,6 @@ class GeneralParserClassGenerator extends TemplateGenerator {
     strings.add('int $VARIABLE_LINE;');
     strings.add('List<int> $VARIABLE_RUNES;');
     strings.add('bool $VARIABLE_SUCCESS;');
-    strings.add('List<String> $VARIABLE_TERMINAL;');
     strings.add('int $VARIABLE_TESTING;');
     strings.add('');
     return strings;

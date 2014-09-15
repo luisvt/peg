@@ -3,7 +3,7 @@
 
 PEG (Parsing expression grammar) parsers generator.
 
-Version: 0.0.16
+Version: 0.0.15
 
 Status: Experimental
 
@@ -90,10 +90,7 @@ Examples:
 **Grammar**
 
 ```
-Warning: Found the direct use of characters in nonterminal "GlobalsBody": .
-Warning: Found the direct use of characters in nonterminal "ActionBody": .
-Warning: Found the direct use of characters in nonterminal "Char": ["'\-\[-\]nrt], .
-Grammar <- SPACING? Globals? Members? Definition+ EOF
+Grammar <- SPACING Globals? Members? Definition+ EOF
 
 Globals <- "%{" GlobalsBody* "}%" SPACING
 
@@ -127,45 +124,41 @@ Char <- "\\" ["'\-\[-\]nrt] / HEX_NUMBER / !"\\" !EOL .
 
 EOF <- !.
 
-IDENTIFIER <- IDENT_START IDENT_CONT* _SPACING
+IDENTIFIER <- IDENT_START IDENT_CONT* SPACING
 
 IDENT_START <- [A-Z_a-z]
 
 IDENT_CONT <- IDENT_START / [0-9]
 
-LEFTARROW <- "<-" _SPACING
+LEFTARROW <- "<-" SPACING
 
-SLASH <- "/" _SPACING
+SLASH <- "/" SPACING
 
-AND <- "&" _SPACING
+AND <- "&" SPACING
 
-NOT <- "!" _SPACING
+NOT <- "!" SPACING
 
-QUESTION <- "?" _SPACING
+QUESTION <- "?" SPACING
 
-STAR <- "*" _SPACING
+STAR <- "*" SPACING
 
-PLUS <- "+" _SPACING
+PLUS <- "+" SPACING
 
-OPEN <- "(" _SPACING
+OPEN <- "(" SPACING
 
-CLOSE <- ")" _SPACING
+CLOSE <- ")" SPACING
 
-DOT <- "." _SPACING
+DOT <- "." SPACING
 
 HEX_NUMBER <- "\\u" [0-9A-Fa-f]+
 
-SPACING <- _SPACING
+SPACING <- (SPACE / COMMENT)*
 
-COMMENT <- "#" (!_EOL .)* _EOL?
+COMMENT <- "#" (!EOL .)* EOL?
 
-SPACE <- [\t ] / _EOL
+SPACE <- [\t ] / EOL
 
-EOL <- _EOL
-
-_SPACING <- (SPACE / COMMENT)*
-
-_EOL <- "\r\n" / [\n\r]
+EOL <- "\r\n" / [\n\r]
 
 ```
 
@@ -195,10 +188,10 @@ num _binop(num left, num right, String op) {
 }%
 
 Expr <-
-  SPACES? Sentence EOF { $$ = $1; }
+  Sentence EOF { $$ = $1; }
 
 Sentence <-
-  Term (PLUS / MINUS) Sentence { $$ = _binop($2, $4, $3); }
+  SPACES Term (PLUS / MINUS) Sentence { $$ = _binop($2, $4, $3); }
   / Term
 
 Term <-
@@ -212,37 +205,34 @@ Atom <-
 # Tokens
 
 CLOSE <-
-  ')' _SPACES
+  ')' SPACES
 
 DIV <-
-  '/' _SPACES { $$ = $1; }
+  '/' SPACES { $$ = $1; }
 
 EOF <-
   !.
 
 MINUS <-
-  '-' _SPACES { $$ = $1; }
+  '-' SPACES { $$ = $1; }
 
 MUL <-
-  '*' _SPACES { $$ = $1; }
+  '*' SPACES { $$ = $1; }
 
 NUMBER <-
-  [0-9]+ _SPACES { $$ = int.parse($1.join()); }
+  [0-9]+ SPACES { $$ = int.parse($1.join()); }
 
 OPEN <-
-  '(' _SPACES
+  '(' SPACES
 
 PLUS <-
-  '+' _SPACES { $$ = $1; }
+  '+' SPACES { $$ = $1; }
  
 SPACES <-
-  _SPACES
+  WS*
 
  WS <-
    [ \n\t\r] / '\r\n'
-
-_SPACES <-
-  WS*
 ```
 
 Source code of the generated parser for `arithmetic grammar`
@@ -293,7 +283,6 @@ class ArithmeticParser {
   int _line;
   List<int> _runes;
   bool success;
-  List<String> _terminal;
   int _testing;
   
   ArithmeticParser(String text) {
@@ -333,8 +322,8 @@ class ArithmeticParser {
       success = _ch >= 48 && _ch <= 57 && _lookahead[_ch + -9];
       // Lookahead (NUMBER)
       if (success) $$ = _parse_NUMBER();    
-      if (!success) {    
-        if (_cursor > _testing) _failure(["NUMBER"]);
+      if (!success) {  
+        if (_cursor > _testing) _failure(const ["NUMBER"]);
       }
       if (success) break;
       // OPEN Sentence CLOSE
@@ -346,17 +335,17 @@ class ArithmeticParser {
         // Lookahead (OPEN)
         if (success) $$ = _parse_OPEN();
         if (!success) {
-          if (_cursor > _testing) _failure(["("]);  
+          if (_cursor > _testing) _failure(const ["("]);
           break;  
         }
         var seq = new List(3)..[0] = $$;
         // Sentence
         $$ = null;
-        success = _ch >= 40 && _ch <= 57 && _lookahead[_ch + -9];
+        success = _ch >= 9 && _ch <= 57 && _lookahead[_ch + -9];
         // Lookahead (Sentence)
         if (success) $$ = _parse_Sentence();    
-        if (!success) {    
-          if (_cursor > _testing) _failure(["NUMBER", "("]);
+        if (!success) {  
+          if (_cursor > _testing) _failure(const ["SPACES", "NUMBER", "("]);
           break;  
         }
         seq[1] = $$;
@@ -366,7 +355,7 @@ class ArithmeticParser {
         // Lookahead (CLOSE)
         if (success) $$ = _parse_CLOSE();
         if (!success) {
-          if (_cursor > _testing) _failure([")"]);  
+          if (_cursor > _testing) _failure(const [")"]);
           break;  
         }
         seq[2] = $$;
@@ -388,29 +377,25 @@ class ArithmeticParser {
       }
       break;
     }
-    if (!success && _cursor > _testing) {
-      _failure(["NUMBER", "("]);
-    }
     return $$;
   }
   
   dynamic _parse_CLOSE() {
     // TERMINAL
-    // CLOSE <- ")" _SPACES
+    // CLOSE <- ")" SPACES
     var $$;  
-    _terminal = const [")"];  
-    // ")" _SPACES
+    // ")" SPACES
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // ")"
-      $$ = _matchChar(41, ')');
+      $$ = _matchChar(41, ')', const [")"]);
       if (!success) break;
       var seq = new List(2)..[0] = $$;
-      // _SPACES
+      // SPACES
       $$ = null;
       success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (_SPACES is optional)
-      if (success) $$ = _parse__SPACES();
+      // Lookahead (SPACES is optional)
+      if (success) $$ = _parse_SPACES();
       else success = true;
       seq[1] = $$;
       $$ = seq;
@@ -420,36 +405,32 @@ class ArithmeticParser {
       _ch = ch0;
       _cursor = pos0;
     }
-    if (!success && _cursor > _testing) {
-      _failure([")"]);
-    }
     return $$;
   }
   
   dynamic _parse_DIV() {
     // TERMINAL
-    // DIV <- "/" _SPACES
+    // DIV <- "/" SPACES
     var $$;  
-    _terminal = const ["/"];  
-    // "/" _SPACES
+    // "/" SPACES
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "/"
-      $$ = _matchChar(47, '/');
+      $$ = _matchChar(47, '/', const ["/"]);
       if (!success) break;
       var seq = new List(2)..[0] = $$;
-      // _SPACES
+      // SPACES
       $$ = null;
       success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (_SPACES is optional)
-      if (success) $$ = _parse__SPACES();
+      // Lookahead (SPACES is optional)
+      if (success) $$ = _parse_SPACES();
       else success = true;
       seq[1] = $$;
       $$ = seq;
       if (success) {    
         // "/"
         final $1 = seq[0];
-        // _SPACES
+        // SPACES
         final $2 = seq[1];
         $$ = $1;    
       }
@@ -458,9 +439,6 @@ class ArithmeticParser {
     if (!success) {
       _ch = ch0;
       _cursor = pos0;
-    }
-    if (!success && _cursor > _testing) {
-      _failure(["/"]);
     }
     return $$;
   }
@@ -469,47 +447,42 @@ class ArithmeticParser {
     // TERMINAL
     // EOF <- !.
     var $$;  
-    _terminal = const ["EOF"];  
     // !.
     var ch0 = _ch, pos0 = _cursor, testing0 = _testing; 
     _testing = _inputLen + 1;
     // .
-    $$ = _matchAny();
+    $$ = _matchAny(const ["EOF"]);
     _ch = ch0;
     _cursor = pos0; 
     _testing = testing0;
     $$ = null;
     success = !success;
-    if (!success && _cursor > _testing) {
-      _failure(["EOF"]);
-    }
     return $$;
   }
   
   dynamic _parse_MINUS() {
     // TERMINAL
-    // MINUS <- "-" _SPACES
+    // MINUS <- "-" SPACES
     var $$;  
-    _terminal = const ["-"];  
-    // "-" _SPACES
+    // "-" SPACES
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "-"
-      $$ = _matchChar(45, '-');
+      $$ = _matchChar(45, '-', const ["-"]);
       if (!success) break;
       var seq = new List(2)..[0] = $$;
-      // _SPACES
+      // SPACES
       $$ = null;
       success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (_SPACES is optional)
-      if (success) $$ = _parse__SPACES();
+      // Lookahead (SPACES is optional)
+      if (success) $$ = _parse_SPACES();
       else success = true;
       seq[1] = $$;
       $$ = seq;
       if (success) {    
         // "-"
         final $1 = seq[0];
-        // _SPACES
+        // SPACES
         final $2 = seq[1];
         $$ = $1;    
       }
@@ -518,37 +491,33 @@ class ArithmeticParser {
     if (!success) {
       _ch = ch0;
       _cursor = pos0;
-    }
-    if (!success && _cursor > _testing) {
-      _failure(["-"]);
     }
     return $$;
   }
   
   dynamic _parse_MUL() {
     // TERMINAL
-    // MUL <- "*" _SPACES
+    // MUL <- "*" SPACES
     var $$;  
-    _terminal = const ["*"];  
-    // "*" _SPACES
+    // "*" SPACES
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "*"
-      $$ = _matchChar(42, '*');
+      $$ = _matchChar(42, '*', const ["*"]);
       if (!success) break;
       var seq = new List(2)..[0] = $$;
-      // _SPACES
+      // SPACES
       $$ = null;
       success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (_SPACES is optional)
-      if (success) $$ = _parse__SPACES();
+      // Lookahead (SPACES is optional)
+      if (success) $$ = _parse_SPACES();
       else success = true;
       seq[1] = $$;
       $$ = seq;
       if (success) {    
         // "*"
         final $1 = seq[0];
-        // _SPACES
+        // SPACES
         final $2 = seq[1];
         $$ = $1;    
       }
@@ -558,25 +527,21 @@ class ArithmeticParser {
       _ch = ch0;
       _cursor = pos0;
     }
-    if (!success && _cursor > _testing) {
-      _failure(["*"]);
-    }
     return $$;
   }
   
   dynamic _parse_NUMBER() {
     // TERMINAL
-    // NUMBER <- [0-9]+ _SPACES
+    // NUMBER <- [0-9]+ SPACES
     var $$;  
-    _terminal = const ["NUMBER"];  
-    // [0-9]+ _SPACES
+    // [0-9]+ SPACES
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // [0-9]+
       var testing0;
       for (var first = true, reps; ;) {  
         // [0-9]  
-        $$ = _matchRange(48, 57);  
+        $$ = _matchRange(48, 57, const ["NUMBER"]);  
         if (success) {
          if (first) {      
             first = false;
@@ -597,18 +562,18 @@ class ArithmeticParser {
       }
       if (!success) break;
       var seq = new List(2)..[0] = $$;
-      // _SPACES
+      // SPACES
       $$ = null;
       success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (_SPACES is optional)
-      if (success) $$ = _parse__SPACES();
+      // Lookahead (SPACES is optional)
+      if (success) $$ = _parse_SPACES();
       else success = true;
       seq[1] = $$;
       $$ = seq;
       if (success) {    
         // [0-9]+
         final $1 = seq[0];
-        // _SPACES
+        // SPACES
         final $2 = seq[1];
         $$ = int.parse($1.join());    
       }
@@ -618,29 +583,25 @@ class ArithmeticParser {
       _ch = ch0;
       _cursor = pos0;
     }
-    if (!success && _cursor > _testing) {
-      _failure(["NUMBER"]);
-    }
     return $$;
   }
   
   dynamic _parse_OPEN() {
     // TERMINAL
-    // OPEN <- "(" _SPACES
+    // OPEN <- "(" SPACES
     var $$;  
-    _terminal = const ["("];  
-    // "(" _SPACES
+    // "(" SPACES
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "("
-      $$ = _matchChar(40, '(');
+      $$ = _matchChar(40, '(', const ["("]);
       if (!success) break;
       var seq = new List(2)..[0] = $$;
-      // _SPACES
+      // SPACES
       $$ = null;
       success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (_SPACES is optional)
-      if (success) $$ = _parse__SPACES();
+      // Lookahead (SPACES is optional)
+      if (success) $$ = _parse_SPACES();
       else success = true;
       seq[1] = $$;
       $$ = seq;
@@ -650,36 +611,32 @@ class ArithmeticParser {
       _ch = ch0;
       _cursor = pos0;
     }
-    if (!success && _cursor > _testing) {
-      _failure(["("]);
-    }
     return $$;
   }
   
   dynamic _parse_PLUS() {
     // TERMINAL
-    // PLUS <- "+" _SPACES
+    // PLUS <- "+" SPACES
     var $$;  
-    _terminal = const ["+"];  
-    // "+" _SPACES
+    // "+" SPACES
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "+"
-      $$ = _matchChar(43, '+');
+      $$ = _matchChar(43, '+', const ["+"]);
       if (!success) break;
       var seq = new List(2)..[0] = $$;
-      // _SPACES
+      // SPACES
       $$ = null;
       success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (_SPACES is optional)
-      if (success) $$ = _parse__SPACES();
+      // Lookahead (SPACES is optional)
+      if (success) $$ = _parse_SPACES();
       else success = true;
       seq[1] = $$;
       $$ = seq;
       if (success) {    
         // "+"
         final $1 = seq[0];
-        // _SPACES
+        // SPACES
         final $2 = seq[1];
         $$ = $1;    
       }
@@ -689,32 +646,48 @@ class ArithmeticParser {
       _ch = ch0;
       _cursor = pos0;
     }
-    if (!success && _cursor > _testing) {
-      _failure(["+"]);
-    }
     return $$;
   }
   
   dynamic _parse_SPACES() {
     // TERMINAL
-    // SPACES <- _SPACES
-    var $$;  
-    _terminal = const ["SPACES"];  
-    // _SPACES
-    $$ = null;
-    success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-    // Lookahead (_SPACES is optional)
-    if (success) $$ = _parse__SPACES();
-    else success = true;
-    if (!success && _cursor > _testing) {
-      _failure(["SPACES"]);
+    // SPACES <- WS*
+    var $$;      
+    var pos = _cursor;    
+    if(pos <= _cachePos) {
+      $$ = _getFromCache(12);
     }
+    if($$ != null) {
+      return $$[0];       
+    }  
+    // WS*
+    var testing0 = _testing; 
+    for (var reps = []; ; ) {
+      _testing = _cursor;
+      // WS
+      $$ = null;
+      success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
+      // Lookahead (WS)
+      if (success) $$ = _parse_WS();    
+      if (!success) {  
+        if (_cursor > _testing) _failure(const ["SPACES"]);
+      }
+      if (success) {  
+        reps.add($$);
+      } else {
+        success = true;
+        _testing = testing0;
+        $$ = reps;
+        break; 
+      }
+    }
+    _addToCache($$, pos, 12);
     return $$;
   }
   
   dynamic _parse_Sentence() {
     // NONTERMINAL
-    // Sentence <- Term (PLUS / MINUS) Sentence / Term
+    // Sentence <- SPACES Term (PLUS / MINUS) Sentence / Term
     var $$;      
     var pos = _cursor;    
     if(pos <= _cachePos) {
@@ -723,21 +696,28 @@ class ArithmeticParser {
     if($$ != null) {
       return $$[0];       
     }  
-    // Term (PLUS / MINUS) Sentence / Term
+    // SPACES Term (PLUS / MINUS) Sentence / Term
     while (true) {
-      // Term (PLUS / MINUS) Sentence
+      // SPACES Term (PLUS / MINUS) Sentence
       var ch0 = _ch, pos0 = _cursor;
       while (true) {  
+        // SPACES
+        $$ = null;
+        success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
+        // Lookahead (SPACES is optional)
+        if (success) $$ = _parse_SPACES();
+        else success = true;
+        var seq = new List(4)..[0] = $$;
         // Term
         $$ = null;
         success = _ch >= 40 && _ch <= 57 && _lookahead[_ch + -9];
         // Lookahead (Term)
         if (success) $$ = _parse_Term();    
-        if (!success) {    
-          if (_cursor > _testing) _failure(["NUMBER", "("]);
+        if (!success) {  
+          if (_cursor > _testing) _failure(const ["NUMBER", "("]);
           break;  
         }
-        var seq = new List(3)..[0] = $$;
+        seq[1] = $$;
         // PLUS / MINUS
         while (true) {
           // PLUS
@@ -746,7 +726,7 @@ class ArithmeticParser {
           // Lookahead (PLUS)
           if (success) $$ = _parse_PLUS();
           if (!success) {
-            if (_cursor > _testing) _failure(["+"]);  
+            if (_cursor > _testing) _failure(const ["+"]);
           }
           if (success) break;
           // MINUS
@@ -755,33 +735,32 @@ class ArithmeticParser {
           // Lookahead (MINUS)
           if (success) $$ = _parse_MINUS();
           if (!success) {
-            if (_cursor > _testing) _failure(["-"]);  
+            if (_cursor > _testing) _failure(const ["-"]);
           }
           break;
         }
-        if (!success && _cursor > _testing) {
-          _failure(["+", "-", "NUMBER", "("]);
-        }
         if (!success) break;
-        seq[1] = $$;
+        seq[2] = $$;
         // Sentence
         $$ = null;
-        success = _ch >= 40 && _ch <= 57 && _lookahead[_ch + -9];
+        success = _ch >= 9 && _ch <= 57 && _lookahead[_ch + -9];
         // Lookahead (Sentence)
         if (success) $$ = _parse_Sentence();    
-        if (!success) {    
-          if (_cursor > _testing) _failure(["NUMBER", "("]);
+        if (!success) {  
+          if (_cursor > _testing) _failure(const ["SPACES", "NUMBER", "("]);
           break;  
         }
-        seq[2] = $$;
+        seq[3] = $$;
         $$ = seq;
         if (success) {    
-          // Term
+          // SPACES
           final $1 = seq[0];
-          // PLUS / MINUS
+          // Term
           final $2 = seq[1];
-          // Sentence
+          // PLUS / MINUS
           final $3 = seq[2];
+          // Sentence
+          final $4 = seq[3];
           $$ = _binop($2, $4, $3);    
         }
         break;  
@@ -796,13 +775,10 @@ class ArithmeticParser {
       success = _ch >= 40 && _ch <= 57 && _lookahead[_ch + -9];
       // Lookahead (Term)
       if (success) $$ = _parse_Term();    
-      if (!success) {    
-        if (_cursor > _testing) _failure(["NUMBER", "("]);
+      if (!success) {  
+        if (_cursor > _testing) _failure(const ["NUMBER", "("]);
       }
       break;
-    }
-    if (!success && _cursor > _testing) {
-      _failure(["NUMBER", "("]);
     }
     _addToCache($$, pos, 1);
     return $$;
@@ -829,8 +805,8 @@ class ArithmeticParser {
         success = _ch >= 40 && _ch <= 57 && _lookahead[_ch + -9];
         // Lookahead (Atom)
         if (success) $$ = _parse_Atom();    
-        if (!success) {    
-          if (_cursor > _testing) _failure(["NUMBER", "("]);
+        if (!success) {  
+          if (_cursor > _testing) _failure(const ["NUMBER", "("]);
           break;  
         }
         var seq = new List(3)..[0] = $$;
@@ -842,7 +818,7 @@ class ArithmeticParser {
           // Lookahead (MUL)
           if (success) $$ = _parse_MUL();
           if (!success) {
-            if (_cursor > _testing) _failure(["*"]);  
+            if (_cursor > _testing) _failure(const ["*"]);
           }
           if (success) break;
           // DIV
@@ -851,12 +827,9 @@ class ArithmeticParser {
           // Lookahead (DIV)
           if (success) $$ = _parse_DIV();
           if (!success) {
-            if (_cursor > _testing) _failure(["/"]);  
+            if (_cursor > _testing) _failure(const ["/"]);
           }
           break;
-        }
-        if (!success && _cursor > _testing) {
-          _failure(["*", "/", "NUMBER", "("]);
         }
         if (!success) break;
         seq[1] = $$;
@@ -865,8 +838,8 @@ class ArithmeticParser {
         success = _ch >= 40 && _ch <= 57 && _lookahead[_ch + -9];
         // Lookahead (Term)
         if (success) $$ = _parse_Term();    
-        if (!success) {    
-          if (_cursor > _testing) _failure(["NUMBER", "("]);
+        if (!success) {  
+          if (_cursor > _testing) _failure(const ["NUMBER", "("]);
           break;  
         }
         seq[2] = $$;
@@ -892,13 +865,10 @@ class ArithmeticParser {
       success = _ch >= 40 && _ch <= 57 && _lookahead[_ch + -9];
       // Lookahead (Atom)
       if (success) $$ = _parse_Atom();    
-      if (!success) {    
-        if (_cursor > _testing) _failure(["NUMBER", "("]);
+      if (!success) {  
+        if (_cursor > _testing) _failure(const ["NUMBER", "("]);
       }
       break;
-    }
-    if (!success && _cursor > _testing) {
-      _failure(["NUMBER", "("]);
     }
     _addToCache($$, pos, 2);
     return $$;
@@ -911,99 +881,42 @@ class ArithmeticParser {
     // [\t-\n\r ] / "\r\n"
     while (true) {
       // [\t-\n\r ]
-      $$ = _matchMapping(9, 32, _mapping0);
+      $$ = _matchMapping(9, 32, _mapping0, const ["SPACES"]);
       if (success) break;
       // "\r\n"
-      $$ = _matchString(_strings0, '\r\n');
+      $$ = _matchString(_strings0, '\r\n', const ["SPACES"]);
       break;
     }
-    if (!success && _cursor > _testing) {
-      _failure([]);
-    }
-    return $$;
-  }
-  
-  dynamic _parse__SPACES() {
-    // TERMINAL
-    // _SPACES <- WS*
-    var $$;      
-    var pos = _cursor;    
-    if(pos <= _cachePos) {
-      $$ = _getFromCache(14);
-    }
-    if($$ != null) {
-      return $$[0];       
-    }  
-    // WS*
-    var testing0 = _testing; 
-    for (var reps = []; ; ) {
-      _testing = _cursor;
-      // WS
-      $$ = null;
-      success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (WS)
-      if (success) $$ = _parse_WS();    
-      if (!success) {    
-        if (_cursor > _testing) _failure([]);
-      }
-      if (success) {  
-        reps.add($$);
-      } else {
-        success = true;
-        _testing = testing0;
-        $$ = reps;
-        break; 
-      }
-    }
-    if (!success && _cursor > _testing) {
-      _failure([]);
-    }
-    _addToCache($$, pos, 14);
     return $$;
   }
   
   dynamic parse_Expr() {
     // NONTERMINAL
-    // Expr <- SPACES? Sentence EOF
+    // Expr <- Sentence EOF
     var $$;  
-    // SPACES? Sentence EOF
+    // Sentence EOF
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
-      // SPACES?
-      var testing0 = _testing;
-      _testing = _cursor;
-      // SPACES
-      $$ = null;
-      success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (SPACES is optional)
-      if (success) $$ = _parse_SPACES();
-      else success = true;
-      success = true; 
-      _testing = testing0;
-      if (!success) break;
-      var seq = new List(3)..[0] = $$;
       // Sentence
       $$ = null;
-      success = _ch >= 40 && _ch <= 57 && _lookahead[_ch + -9];
+      success = _ch >= 9 && _ch <= 57 && _lookahead[_ch + -9];
       // Lookahead (Sentence)
       if (success) $$ = _parse_Sentence();    
-      if (!success) {    
-        if (_cursor > _testing) _failure(["NUMBER", "("]);
+      if (!success) {  
+        if (_cursor > _testing) _failure(const ["SPACES", "NUMBER", "("]);
         break;  
       }
-      seq[1] = $$;
+      var seq = new List(2)..[0] = $$;
       // EOF
       $$ = _parse_EOF();
       if (!success) break;
-      seq[2] = $$;
+      seq[1] = $$;
       $$ = seq;
       if (success) {    
-        // SPACES?
-        final $1 = seq[0];
         // Sentence
-        final $2 = seq[1];
+        final $1 = seq[0];
         // EOF
-        final $3 = seq[2];
+        final $2 = seq[1];
         $$ = $1;    
       }
       break;  
@@ -1011,9 +924,6 @@ class ArithmeticParser {
     if (!success) {
       _ch = ch0;
       _cursor = pos0;
-    }
-    if (!success && _cursor > _testing) {
-      _failure(["NUMBER", "("]);
     }
     return $$;
   }
@@ -1074,13 +984,9 @@ class ArithmeticParser {
       _expected = [];
      _failurePos = _cursor;
     }
-    if (expected == null) {
-      _expected.add(null);
-    } else if (expected.length != 0) {
+    if (expected != null) {
       _expected.addAll(expected);
-    } else {
-      _expected.addAll(_terminal);
-    }   
+    }  
   }
   
   List _flatten(dynamic value) {
@@ -1148,7 +1054,7 @@ class ArithmeticParser {
     return data;  
   }
   
-  String _matchAny() {
+  String _matchAny(List<String> expected) {
     success = _cursor < _inputLen;
     if (success) {
       String result;
@@ -1163,11 +1069,14 @@ class ArithmeticParser {
         _ch = EOF;
       }    
       return result;
-    }    
+    }
+    if (_cursor > _testing) {
+      _failure(expected);
+    }  
     return null;  
   }
   
-  String _matchChar(int ch, String string) {
+  String _matchChar(int ch, String string, List<String> expected) {
     success = _ch == ch;
     if (success) {
       var result = string;  
@@ -1177,11 +1086,14 @@ class ArithmeticParser {
         _ch = EOF;
       }    
       return result;
+    }
+    if (_cursor > _testing) {
+      _failure(expected);
     }  
     return null;  
   }
   
-  String _matchMapping(int start, int end, List<bool> mapping) {
+  String _matchMapping(int start, int end, List<bool> mapping, List<String> expected) {
     success = _ch >= start && _ch <= end;
     if (success) {    
       if(mapping[_ch - start]) {
@@ -1199,11 +1111,14 @@ class ArithmeticParser {
         return result;
       }
       success = false;
+    }
+    if (_cursor > _testing) {
+       _failure(expected);
     }  
     return null;  
   }
   
-  String _matchRange(int start, int end) {
+  String _matchRange(int start, int end, List<String> expected) {
     success = _ch >= start && _ch <= end;
     if (success) {
       String result;
@@ -1218,11 +1133,14 @@ class ArithmeticParser {
         _ch = EOF;
       }  
       return result;
+    }
+    if (_cursor > _testing) {
+      _failure(expected);
     }  
     return null;  
   }
   
-  String _matchRanges(List<int> ranges) {
+  String _matchRanges(List<int> ranges, List<String> expected) {
     var length = ranges.length;
     for (var i = 0; i < length; i += 2) {
       if (_ch <= ranges[i + 1]) {
@@ -1243,11 +1161,14 @@ class ArithmeticParser {
         }      
       } else break;  
     }
+    if (_cursor > _testing) {
+      _failure(expected);
+    }
     success = false;  
     return null;  
   }
   
-  String _matchString(List<int> runes, String string) {
+  String _matchString(List<int> runes, String string, List<String> expected) {
     var length = runes.length;  
     success = true;  
     if (_cursor + length < _inputLen) {
@@ -1268,6 +1189,9 @@ class ArithmeticParser {
         _ch = EOF;
       }    
       return string;      
+    } 
+    if (_cursor > _testing) {
+      _failure(expected);
     }  
     return null; 
   }
@@ -1411,8 +1335,7 @@ class ArithmeticParser {
     _failurePos = -1;
     _flag = 0;  
     _line = -1;
-    success = true;
-    _terminal = const <String>[];    
+    success = true;    
     _testing = -1;
     if (_cursor < _inputLen) {
       _ch = _runes[_cursor];

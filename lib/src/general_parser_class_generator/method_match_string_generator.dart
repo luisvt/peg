@@ -22,7 +22,7 @@ class MethodMatchStringGenerator extends TemplateGenerator {
   static const String _TEMPLATE = "TEMPLATE";
 
   static final String _template = '''
-String $NAME(List<int> runes, String string) {
+String $NAME(List<int> runes, String string, List<String> expected) {
   var length = runes.length;  
   $_SUCCESS = true;  
   if ($_CURSOR + length < $_INPUT_LEN) {
@@ -43,6 +43,9 @@ String $NAME(List<int> runes, String string) {
       $_CH = $_EOF;
     }    
     return string;      
+  } 
+  if ($_CURSOR > $_TESTING) {
+    $_FAILURE(expected);
   }  
   return null; 
 }

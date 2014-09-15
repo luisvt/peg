@@ -22,7 +22,7 @@ class MethodMatchCharGenerator extends TemplateGenerator {
   static const String _TEMPLATE = "TEMPLATE";
 
   static final String _template = '''
-String $NAME(int ch, String string) {
+String $NAME(int ch, String string, List<String> expected) {
   $_SUCCESS = $_CH == ch;
   if ($_SUCCESS) {
     var result = string;  
@@ -32,6 +32,9 @@ String $NAME(int ch, String string) {
       $_CH = $_EOF;
     }    
     return result;
+  }
+  if ($_CURSOR > $_TESTING) {
+    $_FAILURE(expected);
   }  
   return null;  
 }

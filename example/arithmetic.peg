@@ -19,10 +19,10 @@ num _binop(num left, num right, String op) {
 }%
 
 Expr <-
-  SPACES? Sentence EOF { $$ = $1; }
+  Sentence EOF { $$ = $1; }
 
 Sentence <-
-  Term (PLUS / MINUS) Sentence { $$ = _binop($2, $4, $3); }
+  SPACES Term (PLUS / MINUS) Sentence { $$ = _binop($2, $4, $3); }
   / Term
 
 Term <-
@@ -36,34 +36,31 @@ Atom <-
 # Tokens
 
 CLOSE <-
-  ')' _SPACES
+  ')' SPACES
 
 DIV <-
-  '/' _SPACES { $$ = $1; }
+  '/' SPACES { $$ = $1; }
 
 EOF <-
   !.
 
 MINUS <-
-  '-' _SPACES { $$ = $1; }
+  '-' SPACES { $$ = $1; }
 
 MUL <-
-  '*' _SPACES { $$ = $1; }
+  '*' SPACES { $$ = $1; }
 
 NUMBER <-
-  [0-9]+ _SPACES { $$ = int.parse($1.join()); }
+  [0-9]+ SPACES { $$ = int.parse($1.join()); }
 
 OPEN <-
-  '(' _SPACES
+  '(' SPACES
 
 PLUS <-
-  '+' _SPACES { $$ = $1; }
+  '+' SPACES { $$ = $1; }
  
 SPACES <-
-  _SPACES
+  WS*
 
  WS <-
    [ \n\t\r] / '\r\n'
-
-_SPACES <-
-  WS*

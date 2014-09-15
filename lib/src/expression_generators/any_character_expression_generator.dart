@@ -9,7 +9,7 @@ class AnyCharacterExpressionGenerator extends ExpressionGenerator {
 
   static final String _template = '''
 {{#COMMENTS}}
-$_RESULT = $_MATCH_ANY();''';
+$_RESULT = $_MATCH_ANY({{EXPECTED}});''';
 
   AnyCharacterExpressionGenerator(Expression expression, ProductionRuleGenerator productionRuleGenerator) : super(expression, productionRuleGenerator) {
     if (expression is! AnyCharacterExpression) {
@@ -25,6 +25,7 @@ $_RESULT = $_MATCH_ANY();''';
       block.assign('#COMMENTS', '// $_expression');
     }
 
+    block.assign('EXPECTED', ExpressionGenerator.getExpectedOnFailure(_expression));
     return block.process();
   }
 }

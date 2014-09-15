@@ -1,5 +1,6 @@
 part of peg.grammar_analyzer;
 
+// TODO: remove
 class NonterminalsWithLexemesFinder extends UnifyingExpressionVisitor {
   Map<ProductionRule, List<Expression>> result;
 
@@ -20,27 +21,12 @@ class NonterminalsWithLexemesFinder extends UnifyingExpressionVisitor {
   }
 
   Object visitCharacterClass(CharacterClassExpression expression) {
-    var groups = expression.ranges.groups;
-    var skip = false;
-    if (groups.length == 1) {
-      var first = groups.first;
-      if (first.start == first.end) {
-        skip = true;
-      }
-    }
-
-    if (!skip) {
-      _addExpression(expression);
-    }
-
+    _addExpression(expression);
     return null;
   }
 
   Object visitLiteral(LiteralExpression expression) {
-    if (expression.text.isEmpty) {
-      _addExpression(expression);
-    }
-
+    _addExpression(expression);
     return null;
   }
 

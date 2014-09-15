@@ -49,24 +49,24 @@ class PegParser {
   static final List<bool> _lookahead = _unmap([0x14800013, 0x7e000000, 0x7d0fffff, 0x38ffffff, 0x7f800010, 0x7f47ffff, 0x30fffff, 0x7ff80001, 0x7ff47fff, 0x1ffffff, 0x7fffffe, 0xffffffd]);
   // '\"', '\'', '-', '[', '\\', ']', 'n', 'r', 't'
   static final List<bool> _mapping0 = _unmap([0x821, 0x1c000000, 0x144000]);
-  // '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'a', 'b', 'c', 'd', 'e', 'f'
-  static final List<bool> _mapping1 = _unmap([0x7e03ff, 0xfc0000]);
-  // 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '_', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
-  static final List<bool> _mapping2 = _unmap([0x43ffffff, 0x7fffffe]);
-  // '\t', ' '
-  static final List<bool> _mapping3 = _unmap([0x800001]);
   // '\n', '\r'
-  static final List<bool> _mapping4 = _unmap([0x9]);
-  // "%{"
-  static final List<int> _strings0 = <int>[37, 123];
-  // "}%"
-  static final List<int> _strings1 = <int>[125, 37];
-  // "\u"
-  static final List<int> _strings2 = <int>[92, 117];
-  // "<-"
-  static final List<int> _strings3 = <int>[60, 45];
+  static final List<bool> _mapping1 = _unmap([0x9]);
+  // '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'a', 'b', 'c', 'd', 'e', 'f'
+  static final List<bool> _mapping2 = _unmap([0x7e03ff, 0xfc0000]);
+  // 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '_', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
+  static final List<bool> _mapping3 = _unmap([0x43ffffff, 0x7fffffe]);
+  // '\t', ' '
+  static final List<bool> _mapping4 = _unmap([0x800001]);
   // "\r\n"
-  static final List<int> _strings4 = <int>[13, 10];
+  static final List<int> _strings0 = <int>[13, 10];
+  // "%{"
+  static final List<int> _strings1 = <int>[37, 123];
+  // "}%"
+  static final List<int> _strings2 = <int>[125, 37];
+  // "\u"
+  static final List<int> _strings3 = <int>[92, 117];
+  // "<-"
+  static final List<int> _strings4 = <int>[60, 45];
   List _cache;
   int _cachePos;
   List<int> _cacheRule;
@@ -111,24 +111,27 @@ class PegParser {
    
   dynamic _parse_AND() {
     // TERMINAL
-    // AND <- "&" _SPACING
+    // AND <- "&" SPACING
     var $$;  
-    // "&" _SPACING
+    // "&" SPACING
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "&"
-      $$ = _matchChar(38, '&');
+      $$ = _matchChar(38, '&', const ["&"]);
       if (!success) break;
       var seq = new List(2)..[0] = $$;
-      // _SPACING
-      $$ = _parse__SPACING();
-      if (!success) break;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
       seq[1] = $$;
       $$ = seq;
       if (success) {    
         // "&"
         final $1 = seq[0];
-        // _SPACING
+        // SPACING
         final $2 = seq[1];
         $$ = $1;    
       }
@@ -137,9 +140,6 @@ class PegParser {
     if (!success) {
       _ch = ch0;
       _cursor = pos0;
-    }
-    if (!success && _cursor > _testing) {
-      _failure(const ["&"]);
     }
     return $$;
   }
@@ -152,7 +152,7 @@ class PegParser {
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "{"
-      $$ = _matchChar(123, '{');
+      $$ = _matchChar(123, '{', const ["{"]);
       if (!success) break;
       var seq = new List(4)..[0] = $$;
       // ActionBody*
@@ -173,12 +173,15 @@ class PegParser {
       if (!success) break;
       seq[1] = $$;
       // "}"
-      $$ = _matchChar(125, '}');
+      $$ = _matchChar(125, '}', const ["{"]);
       if (!success) break;
       seq[2] = $$;
       // SPACING
-      $$ = _parse_SPACING();
-      if (!success) break;
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
       seq[3] = $$;
       $$ = seq;
       if (success) {    
@@ -198,9 +201,6 @@ class PegParser {
       _ch = ch0;
       _cursor = pos0;
     }
-    if (!success && _cursor > _testing) {
-      _failure(const ["{"]);
-    }
     return $$;
   }
   
@@ -211,7 +211,13 @@ class PegParser {
     // Action / !"}" .
     while (true) {
       // Action
-      $$ = _parse_Action();
+      $$ = null;
+      success = _ch == 123; // '{'
+      // Lookahead (Action)
+      if (success) $$ = _parse_Action();
+      if (!success) {
+        if (_cursor > _testing) _failure(const ["{"]);
+      }
       if (success) break;
       // !"}" .
       var ch0 = _ch, pos0 = _cursor;
@@ -220,7 +226,7 @@ class PegParser {
         var ch1 = _ch, pos1 = _cursor, testing0 = _testing; 
         _testing = _inputLen + 1;
         // "}"
-        $$ = _matchChar(125, '}');
+        $$ = _matchChar(125, '}', const ["{"]);
         _ch = ch1;
         _cursor = pos1; 
         _testing = testing0;
@@ -229,7 +235,7 @@ class PegParser {
         if (!success) break;
         var seq = new List(2)..[0] = $$;
         // .
-        $$ = _matchAny();
+        $$ = _matchAny(const ["{"]);
         if (!success) break;
         seq[1] = $$;
         $$ = seq;
@@ -248,26 +254,26 @@ class PegParser {
       }
       break;
     }
-    if (!success && _cursor > _testing) {
-      _failure(const ["{"]);
-    }
     return $$;
   }
   
   dynamic _parse_CLOSE() {
     // TERMINAL
-    // CLOSE <- ")" _SPACING
+    // CLOSE <- ")" SPACING
     var $$;  
-    // ")" _SPACING
+    // ")" SPACING
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // ")"
-      $$ = _matchChar(41, ')');
+      $$ = _matchChar(41, ')', const [")"]);
       if (!success) break;
       var seq = new List(2)..[0] = $$;
-      // _SPACING
-      $$ = _parse__SPACING();
-      if (!success) break;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
       seq[1] = $$;
       $$ = seq;
       break;  
@@ -276,35 +282,38 @@ class PegParser {
       _ch = ch0;
       _cursor = pos0;
     }
-    if (!success && _cursor > _testing) {
-      _failure(const [")"]);
-    }
     return $$;
   }
   
   dynamic _parse_COMMENT() {
     // TERMINAL
-    // COMMENT <- "#" (!_EOL .)* _EOL?
+    // COMMENT <- "#" (!EOL .)* EOL?
     var $$;  
-    // "#" (!_EOL .)* _EOL?
+    // "#" (!EOL .)* EOL?
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "#"
-      $$ = _matchChar(35, '#');
+      $$ = _matchChar(35, '#', const ["SPACING"]);
       if (!success) break;
       var seq = new List(3)..[0] = $$;
-      // (!_EOL .)*
+      // (!EOL .)*
       var testing0 = _testing; 
       for (var reps = []; ; ) {
         _testing = _cursor;
-        // !_EOL .
+        // !EOL .
         var ch1 = _ch, pos1 = _cursor;
         while (true) {  
-          // !_EOL
+          // !EOL
           var ch2 = _ch, pos2 = _cursor, testing1 = _testing; 
           _testing = _inputLen + 1;
-          // _EOL
-          $$ = _parse__EOL();
+          // EOL
+          $$ = null;
+          success = _ch >= 10 && _ch <= 13 && _lookahead[_ch + -9];
+          // Lookahead (EOL)
+          if (success) $$ = _parse_EOL();    
+          if (!success) {  
+            if (_cursor > _testing) _failure(const ["EOL"]);
+          }
           _ch = ch2;
           _cursor = pos2; 
           _testing = testing1;
@@ -313,7 +322,7 @@ class PegParser {
           if (!success) break;
           var seq = new List(2)..[0] = $$;
           // .
-          $$ = _matchAny();
+          $$ = _matchAny(const ["SPACING"]);
           if (!success) break;
           seq[1] = $$;
           $$ = seq;
@@ -322,9 +331,6 @@ class PegParser {
         if (!success) {
           _ch = ch1;
           _cursor = pos1;
-        }
-        if (!success && _cursor > _testing) {
-          _failure(null);
         }
         if (success) {  
           reps.add($$);
@@ -337,11 +343,17 @@ class PegParser {
       }
       if (!success) break;
       seq[1] = $$;
-      // _EOL?
+      // EOL?
       var testing2 = _testing;
       _testing = _cursor;
-      // _EOL
-      $$ = _parse__EOL();
+      // EOL
+      $$ = null;
+      success = _ch >= 10 && _ch <= 13 && _lookahead[_ch + -9];
+      // Lookahead (EOL)
+      if (success) $$ = _parse_EOL();    
+      if (!success) {  
+        if (_cursor > _testing) _failure(const ["EOL"]);
+      }
       success = true; 
       _testing = testing2;
       if (!success) break;
@@ -352,9 +364,6 @@ class PegParser {
     if (!success) {
       _ch = ch0;
       _cursor = pos0;
-    }
-    if (!success && _cursor > _testing) {
-      _failure(null);
     }
     return $$;
   }
@@ -369,11 +378,11 @@ class PegParser {
       var ch0 = _ch, pos0 = _cursor;
       while (true) {  
         // "\\"
-        $$ = _matchChar(92, '\\');
+        $$ = _matchChar(92, '\\', const ["\\", "\\u"]);
         if (!success) break;
         var seq = new List(2)..[0] = $$;
         // ["'\-\[-\]nrt]
-        $$ = _matchMapping(34, 116, _mapping0);
+        $$ = _matchMapping(34, 116, _mapping0, const ["\\", "\\u"]);
         if (!success) break;
         seq[1] = $$;
         $$ = seq;
@@ -392,7 +401,13 @@ class PegParser {
       }
       if (success) break;
       // HEX_NUMBER
-      $$ = _parse_HEX_NUMBER();
+      $$ = null;
+      success = _ch == 92; // '\'
+      // Lookahead (HEX_NUMBER)
+      if (success) $$ = _parse_HEX_NUMBER();
+      if (!success) {
+        if (_cursor > _testing) _failure(const ["\\u"]);
+      }
       if (success) break;
       // !"\\" !EOL .
       var ch1 = _ch, pos1 = _cursor;
@@ -401,7 +416,7 @@ class PegParser {
         var ch2 = _ch, pos2 = _cursor, testing0 = _testing; 
         _testing = _inputLen + 1;
         // "\\"
-        $$ = _matchChar(92, '\\');
+        $$ = _matchChar(92, '\\', const ["\\", "\\u"]);
         _ch = ch2;
         _cursor = pos2; 
         _testing = testing0;
@@ -413,7 +428,13 @@ class PegParser {
         var ch3 = _ch, pos3 = _cursor, testing1 = _testing; 
         _testing = _inputLen + 1;
         // EOL
-        $$ = _parse_EOL();
+        $$ = null;
+        success = _ch >= 10 && _ch <= 13 && _lookahead[_ch + -9];
+        // Lookahead (EOL)
+        if (success) $$ = _parse_EOL();    
+        if (!success) {  
+          if (_cursor > _testing) _failure(const ["EOL"]);
+        }
         _ch = ch3;
         _cursor = pos3; 
         _testing = testing1;
@@ -422,7 +443,7 @@ class PegParser {
         if (!success) break;
         seq[1] = $$;
         // .
-        $$ = _matchAny();
+        $$ = _matchAny(const ["\\", "\\u"]);
         if (!success) break;
         seq[2] = $$;
         $$ = seq;
@@ -443,9 +464,6 @@ class PegParser {
       }
       break;
     }
-    if (!success && _cursor > _testing) {
-      _failure(const ["\\", "\\u"]);
-    }
     return $$;
   }
   
@@ -457,7 +475,7 @@ class PegParser {
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "["
-      $$ = _matchChar(91, '[');
+      $$ = _matchChar(91, '[', const ["["]);
       if (!success) break;
       var seq = new List(4)..[0] = $$;
       // (!"]" Range)*
@@ -471,7 +489,7 @@ class PegParser {
           var ch2 = _ch, pos2 = _cursor, testing1 = _testing; 
           _testing = _inputLen + 1;
           // "]"
-          $$ = _matchChar(93, ']');
+          $$ = _matchChar(93, ']', const ["["]);
           _ch = ch2;
           _cursor = pos2; 
           _testing = testing1;
@@ -497,9 +515,6 @@ class PegParser {
           _ch = ch1;
           _cursor = pos1;
         }
-        if (!success && _cursor > _testing) {
-          _failure(const ["["]);
-        }
         if (success) {  
           reps.add($$);
         } else {
@@ -512,12 +527,15 @@ class PegParser {
       if (!success) break;
       seq[1] = $$;
       // "]"
-      $$ = _matchChar(93, ']');
+      $$ = _matchChar(93, ']', const ["["]);
       if (!success) break;
       seq[2] = $$;
       // SPACING
-      $$ = _parse_SPACING();
-      if (!success) break;
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
       seq[3] = $$;
       $$ = seq;
       if (success) {    
@@ -537,26 +555,26 @@ class PegParser {
       _ch = ch0;
       _cursor = pos0;
     }
-    if (!success && _cursor > _testing) {
-      _failure(const ["["]);
-    }
     return $$;
   }
   
   dynamic _parse_DOT() {
     // TERMINAL
-    // DOT <- "." _SPACING
+    // DOT <- "." SPACING
     var $$;  
-    // "." _SPACING
+    // "." SPACING
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "."
-      $$ = _matchChar(46, '.');
+      $$ = _matchChar(46, '.', const ["."]);
       if (!success) break;
       var seq = new List(2)..[0] = $$;
-      // _SPACING
-      $$ = _parse__SPACING();
-      if (!success) break;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
       seq[1] = $$;
       $$ = seq;
       break;  
@@ -564,9 +582,6 @@ class PegParser {
     if (!success) {
       _ch = ch0;
       _cursor = pos0;
-    }
-    if (!success && _cursor > _testing) {
-      _failure(const ["."]);
     }
     return $$;
   }
@@ -579,16 +594,34 @@ class PegParser {
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // IDENTIFIER
-      $$ = _parse_IDENTIFIER();
-      if (!success) break;
+      $$ = null;
+      success = _ch >= 65 && _ch <= 122 && _lookahead[_ch + -9];
+      // Lookahead (IDENTIFIER)
+      if (success) $$ = _parse_IDENTIFIER();    
+      if (!success) {  
+        if (_cursor > _testing) _failure(const ["IDENTIFIER"]);
+        break;  
+      }
       var seq = new List(3)..[0] = $$;
       // LEFTARROW
-      $$ = _parse_LEFTARROW();
-      if (!success) break;
+      $$ = null;
+      success = _ch == 60; // '<'
+      // Lookahead (LEFTARROW)
+      if (success) $$ = _parse_LEFTARROW();
+      if (!success) {
+        if (_cursor > _testing) _failure(const ["<-"]);
+        break;  
+      }
       seq[1] = $$;
       // Expression
-      $$ = _parse_Expression();
-      if (!success) break;
+      $$ = null;
+      success = _ch >= 33 && _ch <= 122 && _lookahead[_ch + 82];
+      // Lookahead (Expression)
+      if (success) $$ = _parse_Expression();    
+      if (!success) {  
+        if (_cursor > _testing) _failure(const ["IDENTIFIER", "(", "\'", "\"", "[", "."]);
+        break;  
+      }
       seq[2] = $$;
       $$ = seq;
       if (success) {    
@@ -606,9 +639,6 @@ class PegParser {
       _ch = ch0;
       _cursor = pos0;
     }
-    if (!success && _cursor > _testing) {
-      _failure(null);
-    }
     return $$;
   }
   
@@ -620,26 +650,27 @@ class PegParser {
     var ch0 = _ch, pos0 = _cursor, testing0 = _testing; 
     _testing = _inputLen + 1;
     // .
-    $$ = _matchAny();
+    $$ = _matchAny(const ["EOF"]);
     _ch = ch0;
     _cursor = pos0; 
     _testing = testing0;
     $$ = null;
     success = !success;
-    if (!success && _cursor > _testing) {
-      _failure(const ["EOF"]);
-    }
     return $$;
   }
   
   dynamic _parse_EOL() {
     // TERMINAL
-    // EOL <- _EOL
+    // EOL <- "\r\n" / [\n\r]
     var $$;  
-    // _EOL
-    $$ = _parse__EOL();
-    if (!success && _cursor > _testing) {
-      _failure(const ["EOL"]);
+    // "\r\n" / [\n\r]
+    while (true) {
+      // "\r\n"
+      $$ = _matchString(_strings0, '\r\n', const ["EOL"]);
+      if (success) break;
+      // [\n\r]
+      $$ = _matchMapping(10, 13, _mapping1, const ["EOL"]);
+      break;
     }
     return $$;
   }
@@ -652,8 +683,14 @@ class PegParser {
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // Sequence
-      $$ = _parse_Sequence();
-      if (!success) break;
+      $$ = null;
+      success = _ch >= 33 && _ch <= 122 && _lookahead[_ch + 82];
+      // Lookahead (Sequence)
+      if (success) $$ = _parse_Sequence();    
+      if (!success) {  
+        if (_cursor > _testing) _failure(const ["IDENTIFIER", "(", "\'", "\"", "[", "."]);
+        break;  
+      }
       var seq = new List(2)..[0] = $$;
       // (SLASH Sequence)*
       var testing0 = _testing; 
@@ -663,12 +700,24 @@ class PegParser {
         var ch1 = _ch, pos1 = _cursor;
         while (true) {  
           // SLASH
-          $$ = _parse_SLASH();
-          if (!success) break;
+          $$ = null;
+          success = _ch == 47; // '/'
+          // Lookahead (SLASH)
+          if (success) $$ = _parse_SLASH();
+          if (!success) {
+            if (_cursor > _testing) _failure(const ["/"]);
+            break;  
+          }
           var seq = new List(2)..[0] = $$;
           // Sequence
-          $$ = _parse_Sequence();
-          if (!success) break;
+          $$ = null;
+          success = _ch >= 33 && _ch <= 122 && _lookahead[_ch + 82];
+          // Lookahead (Sequence)
+          if (success) $$ = _parse_Sequence();    
+          if (!success) {  
+            if (_cursor > _testing) _failure(const ["IDENTIFIER", "(", "\'", "\"", "[", "."]);
+            break;  
+          }
           seq[1] = $$;
           $$ = seq;
           if (success) {    
@@ -683,9 +732,6 @@ class PegParser {
         if (!success) {
           _ch = ch1;
           _cursor = pos1;
-        }
-        if (!success && _cursor > _testing) {
-          _failure(null);
         }
         if (success) {  
           reps.add($$);
@@ -712,9 +758,6 @@ class PegParser {
       _ch = ch0;
       _cursor = pos0;
     }
-    if (!success && _cursor > _testing) {
-      _failure(null);
-    }
     return $$;
   }
   
@@ -726,7 +769,7 @@ class PegParser {
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "%{"
-      $$ = _matchString(_strings0, '%{');
+      $$ = _matchString(_strings1, '%{', const ["%{"]);
       if (!success) break;
       var seq = new List(4)..[0] = $$;
       // GlobalsBody*
@@ -747,12 +790,15 @@ class PegParser {
       if (!success) break;
       seq[1] = $$;
       // "}%"
-      $$ = _matchString(_strings1, '}%');
+      $$ = _matchString(_strings2, '}%', const ["%{"]);
       if (!success) break;
       seq[2] = $$;
       // SPACING
-      $$ = _parse_SPACING();
-      if (!success) break;
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
       seq[3] = $$;
       $$ = seq;
       if (success) {    
@@ -772,9 +818,6 @@ class PegParser {
       _ch = ch0;
       _cursor = pos0;
     }
-    if (!success && _cursor > _testing) {
-      _failure(const ["%{"]);
-    }
     return $$;
   }
   
@@ -789,7 +832,7 @@ class PegParser {
       var ch1 = _ch, pos1 = _cursor, testing0 = _testing; 
       _testing = _inputLen + 1;
       // "}%"
-      $$ = _matchString(_strings1, '}%');
+      $$ = _matchString(_strings2, '}%', null);
       _ch = ch1;
       _cursor = pos1; 
       _testing = testing0;
@@ -798,7 +841,7 @@ class PegParser {
       if (!success) break;
       var seq = new List(2)..[0] = $$;
       // .
-      $$ = _matchAny();
+      $$ = _matchAny(null);
       if (!success) break;
       seq[1] = $$;
       $$ = seq;
@@ -815,9 +858,6 @@ class PegParser {
       _ch = ch0;
       _cursor = pos0;
     }
-    if (!success && _cursor > _testing) {
-      _failure(null);
-    }
     return $$;
   }
   
@@ -829,14 +869,14 @@ class PegParser {
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "\\u"
-      $$ = _matchString(_strings2, '\\u');
+      $$ = _matchString(_strings3, '\\u', const ["\\u"]);
       if (!success) break;
       var seq = new List(2)..[0] = $$;
       // [0-9A-Fa-f]+
       var testing0;
       for (var first = true, reps; ;) {  
         // [0-9A-Fa-f]  
-        $$ = _matchMapping(48, 102, _mapping1);  
+        $$ = _matchMapping(48, 102, _mapping2, const ["\\u"]);  
         if (success) {
          if (first) {      
             first = false;
@@ -871,29 +911,38 @@ class PegParser {
       _ch = ch0;
       _cursor = pos0;
     }
-    if (!success && _cursor > _testing) {
-      _failure(const ["\\u"]);
-    }
     return $$;
   }
   
   dynamic _parse_IDENTIFIER() {
     // TERMINAL
-    // IDENTIFIER <- IDENT_START IDENT_CONT* _SPACING
+    // IDENTIFIER <- IDENT_START IDENT_CONT* SPACING
     var $$;  
-    // IDENT_START IDENT_CONT* _SPACING
+    // IDENT_START IDENT_CONT* SPACING
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // IDENT_START
-      $$ = _parse_IDENT_START();
-      if (!success) break;
+      $$ = null;
+      success = _ch >= 65 && _ch <= 122 && _lookahead[_ch + -9];
+      // Lookahead (IDENT_START)
+      if (success) $$ = _parse_IDENT_START();    
+      if (!success) {  
+        if (_cursor > _testing) _failure(null);
+        break;  
+      }
       var seq = new List(3)..[0] = $$;
       // IDENT_CONT*
       var testing0 = _testing; 
       for (var reps = []; ; ) {
         _testing = _cursor;
         // IDENT_CONT
-        $$ = _parse_IDENT_CONT();
+        $$ = null;
+        success = _ch >= 48 && _ch <= 122 && _lookahead[_ch + 246];
+        // Lookahead (IDENT_CONT)
+        if (success) $$ = _parse_IDENT_CONT();    
+        if (!success) {  
+          if (_cursor > _testing) _failure(const ["IDENTIFIER"]);
+        }
         if (success) {  
           reps.add($$);
         } else {
@@ -905,9 +954,12 @@ class PegParser {
       }
       if (!success) break;
       seq[1] = $$;
-      // _SPACING
-      $$ = _parse__SPACING();
-      if (!success) break;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
       seq[2] = $$;
       $$ = seq;
       if (success) {    
@@ -915,7 +967,7 @@ class PegParser {
         final $1 = seq[0];
         // IDENT_CONT*
         final $2 = seq[1];
-        // _SPACING
+        // SPACING
         final $3 = seq[2];
         $$ = _flatten([$1, $2]).join();    
       }
@@ -924,9 +976,6 @@ class PegParser {
     if (!success) {
       _ch = ch0;
       _cursor = pos0;
-    }
-    if (!success && _cursor > _testing) {
-      _failure(const ["IDENTIFIER"]);
     }
     return $$;
   }
@@ -938,14 +987,17 @@ class PegParser {
     // IDENT_START / [0-9]
     while (true) {
       // IDENT_START
-      $$ = _parse_IDENT_START();
+      $$ = null;
+      success = _ch >= 65 && _ch <= 122 && _lookahead[_ch + -9];
+      // Lookahead (IDENT_START)
+      if (success) $$ = _parse_IDENT_START();    
+      if (!success) {  
+        if (_cursor > _testing) _failure(null);
+      }
       if (success) break;
       // [0-9]
-      $$ = _matchRange(48, 57);
+      $$ = _matchRange(48, 57, const ["IDENTIFIER"]);
       break;
-    }
-    if (!success && _cursor > _testing) {
-      _failure(const ["IDENTIFIER"]);
     }
     return $$;
   }
@@ -955,27 +1007,27 @@ class PegParser {
     // IDENT_START <- [A-Z_a-z]
     var $$;  
     // [A-Z_a-z]
-    $$ = _matchMapping(65, 122, _mapping2);
-    if (!success && _cursor > _testing) {
-      _failure(null);
-    }
+    $$ = _matchMapping(65, 122, _mapping3, null);
     return $$;
   }
   
   dynamic _parse_LEFTARROW() {
     // TERMINAL
-    // LEFTARROW <- "<-" _SPACING
+    // LEFTARROW <- "<-" SPACING
     var $$;  
-    // "<-" _SPACING
+    // "<-" SPACING
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "<-"
-      $$ = _matchString(_strings3, '<-');
+      $$ = _matchString(_strings4, '<-', const ["<-"]);
       if (!success) break;
       var seq = new List(2)..[0] = $$;
-      // _SPACING
-      $$ = _parse__SPACING();
-      if (!success) break;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
       seq[1] = $$;
       $$ = seq;
       break;  
@@ -983,9 +1035,6 @@ class PegParser {
     if (!success) {
       _ch = ch0;
       _cursor = pos0;
-    }
-    if (!success && _cursor > _testing) {
-      _failure(const ["<-"]);
     }
     return $$;
   }
@@ -1000,7 +1049,7 @@ class PegParser {
       var ch0 = _ch, pos0 = _cursor;
       while (true) {  
         // "\'"
-        $$ = _matchChar(39, '\'');
+        $$ = _matchChar(39, '\'', const ["\'", "\""]);
         if (!success) break;
         var seq = new List(4)..[0] = $$;
         // (!"\'" Char)*
@@ -1014,7 +1063,7 @@ class PegParser {
             var ch2 = _ch, pos2 = _cursor, testing1 = _testing; 
             _testing = _inputLen + 1;
             // "\'"
-            $$ = _matchChar(39, '\'');
+            $$ = _matchChar(39, '\'', const ["\'", "\""]);
             _ch = ch2;
             _cursor = pos2; 
             _testing = testing1;
@@ -1040,9 +1089,6 @@ class PegParser {
             _ch = ch1;
             _cursor = pos1;
           }
-          if (!success && _cursor > _testing) {
-            _failure(const ["\'", "\""]);
-          }
           if (success) {  
             reps.add($$);
           } else {
@@ -1055,12 +1101,15 @@ class PegParser {
         if (!success) break;
         seq[1] = $$;
         // "\'"
-        $$ = _matchChar(39, '\'');
+        $$ = _matchChar(39, '\'', const ["\'", "\""]);
         if (!success) break;
         seq[2] = $$;
         // SPACING
-        $$ = _parse_SPACING();
-        if (!success) break;
+        $$ = null;
+        success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+        // Lookahead (SPACING is optional)
+        if (success) $$ = _parse_SPACING();
+        else success = true;
         seq[3] = $$;
         $$ = seq;
         if (success) {    
@@ -1085,7 +1134,7 @@ class PegParser {
       var ch3 = _ch, pos3 = _cursor;
       while (true) {  
         // "\""
-        $$ = _matchChar(34, '\"');
+        $$ = _matchChar(34, '\"', const ["\'", "\""]);
         if (!success) break;
         var seq = new List(4)..[0] = $$;
         // (!"\"" Char)*
@@ -1099,7 +1148,7 @@ class PegParser {
             var ch5 = _ch, pos5 = _cursor, testing3 = _testing; 
             _testing = _inputLen + 1;
             // "\""
-            $$ = _matchChar(34, '\"');
+            $$ = _matchChar(34, '\"', const ["\'", "\""]);
             _ch = ch5;
             _cursor = pos5; 
             _testing = testing3;
@@ -1125,9 +1174,6 @@ class PegParser {
             _ch = ch4;
             _cursor = pos4;
           }
-          if (!success && _cursor > _testing) {
-            _failure(const ["\'", "\""]);
-          }
           if (success) {  
             reps.add($$);
           } else {
@@ -1140,12 +1186,15 @@ class PegParser {
         if (!success) break;
         seq[1] = $$;
         // "\""
-        $$ = _matchChar(34, '\"');
+        $$ = _matchChar(34, '\"', const ["\'", "\""]);
         if (!success) break;
         seq[2] = $$;
         // SPACING
-        $$ = _parse_SPACING();
-        if (!success) break;
+        $$ = null;
+        success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+        // Lookahead (SPACING is optional)
+        if (success) $$ = _parse_SPACING();
+        else success = true;
         seq[3] = $$;
         $$ = seq;
         if (success) {    
@@ -1167,9 +1216,6 @@ class PegParser {
       }
       break;
     }
-    if (!success && _cursor > _testing) {
-      _failure(const ["\'", "\""]);
-    }
     return $$;
   }
   
@@ -1181,7 +1227,7 @@ class PegParser {
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "{"
-      $$ = _matchChar(123, '{');
+      $$ = _matchChar(123, '{', const ["{"]);
       if (!success) break;
       var seq = new List(4)..[0] = $$;
       // ActionBody*
@@ -1202,12 +1248,15 @@ class PegParser {
       if (!success) break;
       seq[1] = $$;
       // "}"
-      $$ = _matchChar(125, '}');
+      $$ = _matchChar(125, '}', const ["{"]);
       if (!success) break;
       seq[2] = $$;
       // SPACING
-      $$ = _parse_SPACING();
-      if (!success) break;
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
       seq[3] = $$;
       $$ = seq;
       if (success) {    
@@ -1227,32 +1276,32 @@ class PegParser {
       _ch = ch0;
       _cursor = pos0;
     }
-    if (!success && _cursor > _testing) {
-      _failure(const ["{"]);
-    }
     return $$;
   }
   
   dynamic _parse_NOT() {
     // TERMINAL
-    // NOT <- "!" _SPACING
+    // NOT <- "!" SPACING
     var $$;  
-    // "!" _SPACING
+    // "!" SPACING
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "!"
-      $$ = _matchChar(33, '!');
+      $$ = _matchChar(33, '!', const ["!"]);
       if (!success) break;
       var seq = new List(2)..[0] = $$;
-      // _SPACING
-      $$ = _parse__SPACING();
-      if (!success) break;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
       seq[1] = $$;
       $$ = seq;
       if (success) {    
         // "!"
         final $1 = seq[0];
-        // _SPACING
+        // SPACING
         final $2 = seq[1];
         $$ = $1;    
       }
@@ -1261,27 +1310,27 @@ class PegParser {
     if (!success) {
       _ch = ch0;
       _cursor = pos0;
-    }
-    if (!success && _cursor > _testing) {
-      _failure(const ["!"]);
     }
     return $$;
   }
   
   dynamic _parse_OPEN() {
     // TERMINAL
-    // OPEN <- "(" _SPACING
+    // OPEN <- "(" SPACING
     var $$;  
-    // "(" _SPACING
+    // "(" SPACING
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "("
-      $$ = _matchChar(40, '(');
+      $$ = _matchChar(40, '(', const ["("]);
       if (!success) break;
       var seq = new List(2)..[0] = $$;
-      // _SPACING
-      $$ = _parse__SPACING();
-      if (!success) break;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
       seq[1] = $$;
       $$ = seq;
       break;  
@@ -1290,32 +1339,32 @@ class PegParser {
       _ch = ch0;
       _cursor = pos0;
     }
-    if (!success && _cursor > _testing) {
-      _failure(const ["("]);
-    }
     return $$;
   }
   
   dynamic _parse_PLUS() {
     // TERMINAL
-    // PLUS <- "+" _SPACING
+    // PLUS <- "+" SPACING
     var $$;  
-    // "+" _SPACING
+    // "+" SPACING
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "+"
-      $$ = _matchChar(43, '+');
+      $$ = _matchChar(43, '+', const ["+"]);
       if (!success) break;
       var seq = new List(2)..[0] = $$;
-      // _SPACING
-      $$ = _parse__SPACING();
-      if (!success) break;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
       seq[1] = $$;
       $$ = seq;
       if (success) {    
         // "+"
         final $1 = seq[0];
-        // _SPACING
+        // SPACING
         final $2 = seq[1];
         $$ = $1;    
       }
@@ -1324,9 +1373,6 @@ class PegParser {
     if (!success) {
       _ch = ch0;
       _cursor = pos0;
-    }
-    if (!success && _cursor > _testing) {
-      _failure(const ["+"]);
     }
     return $$;
   }
@@ -1344,28 +1390,49 @@ class PegParser {
       // AND / NOT
       while (true) {
         // AND
-        $$ = _parse_AND();
+        $$ = null;
+        success = _ch == 38; // '&'
+        // Lookahead (AND)
+        if (success) $$ = _parse_AND();
+        if (!success) {
+          if (_cursor > _testing) _failure(const ["&"]);
+        }
         if (success) break;
         // NOT
-        $$ = _parse_NOT();
+        $$ = null;
+        success = _ch == 33; // '!'
+        // Lookahead (NOT)
+        if (success) $$ = _parse_NOT();
+        if (!success) {
+          if (_cursor > _testing) _failure(const ["!"]);
+        }
         break;
-      }
-      if (!success && _cursor > _testing) {
-        _failure(null);
       }
       success = true; 
       _testing = testing0;
       if (!success) break;
       var seq = new List(3)..[0] = $$;
       // Suffix
-      $$ = _parse_Suffix();
-      if (!success) break;
+      $$ = null;
+      success = _ch >= 34 && _ch <= 122 && _lookahead[_ch + 171];
+      // Lookahead (Suffix)
+      if (success) $$ = _parse_Suffix();    
+      if (!success) {  
+        if (_cursor > _testing) _failure(const ["IDENTIFIER", "(", "\'", "\"", "[", "."]);
+        break;  
+      }
       seq[1] = $$;
       // Action?
       var testing1 = _testing;
       _testing = _cursor;
       // Action
-      $$ = _parse_Action();
+      $$ = null;
+      success = _ch == 123; // '{'
+      // Lookahead (Action)
+      if (success) $$ = _parse_Action();
+      if (!success) {
+        if (_cursor > _testing) _failure(const ["{"]);
+      }
       success = true; 
       _testing = testing1;
       if (!success) break;
@@ -1386,9 +1453,6 @@ class PegParser {
       _ch = ch0;
       _cursor = pos0;
     }
-    if (!success && _cursor > _testing) {
-      _failure(null);
-    }
     return $$;
   }
   
@@ -1402,14 +1466,26 @@ class PegParser {
       var ch0 = _ch, pos0 = _cursor;
       while (true) {  
         // IDENTIFIER
-        $$ = _parse_IDENTIFIER();
-        if (!success) break;
+        $$ = null;
+        success = _ch >= 65 && _ch <= 122 && _lookahead[_ch + -9];
+        // Lookahead (IDENTIFIER)
+        if (success) $$ = _parse_IDENTIFIER();    
+        if (!success) {  
+          if (_cursor > _testing) _failure(const ["IDENTIFIER"]);
+          break;  
+        }
         var seq = new List(2)..[0] = $$;
         // !LEFTARROW
         var ch1 = _ch, pos1 = _cursor, testing0 = _testing; 
         _testing = _inputLen + 1;
         // LEFTARROW
-        $$ = _parse_LEFTARROW();
+        $$ = null;
+        success = _ch == 60; // '<'
+        // Lookahead (LEFTARROW)
+        if (success) $$ = _parse_LEFTARROW();
+        if (!success) {
+          if (_cursor > _testing) _failure(const ["<-"]);
+        }
         _ch = ch1;
         _cursor = pos1; 
         _testing = testing0;
@@ -1436,16 +1512,34 @@ class PegParser {
       var ch2 = _ch, pos2 = _cursor;
       while (true) {  
         // OPEN
-        $$ = _parse_OPEN();
-        if (!success) break;
+        $$ = null;
+        success = _ch == 40; // '('
+        // Lookahead (OPEN)
+        if (success) $$ = _parse_OPEN();
+        if (!success) {
+          if (_cursor > _testing) _failure(const ["("]);
+          break;  
+        }
         var seq = new List(3)..[0] = $$;
         // Expression
-        $$ = _parse_Expression();
-        if (!success) break;
+        $$ = null;
+        success = _ch >= 33 && _ch <= 122 && _lookahead[_ch + 82];
+        // Lookahead (Expression)
+        if (success) $$ = _parse_Expression();    
+        if (!success) {  
+          if (_cursor > _testing) _failure(const ["IDENTIFIER", "(", "\'", "\"", "[", "."]);
+          break;  
+        }
         seq[1] = $$;
         // CLOSE
-        $$ = _parse_CLOSE();
-        if (!success) break;
+        $$ = null;
+        success = _ch == 41; // ')'
+        // Lookahead (CLOSE)
+        if (success) $$ = _parse_CLOSE();
+        if (!success) {
+          if (_cursor > _testing) _failure(const [")"]);
+          break;  
+        }
         seq[2] = $$;
         $$ = seq;
         if (success) {    
@@ -1465,13 +1559,31 @@ class PegParser {
       }
       if (success) break;
       // Literal
-      $$ = _parse_Literal();
+      $$ = null;
+      success = _ch >= 34 && _ch <= 39 && _lookahead[_ch + 47];
+      // Lookahead (Literal)
+      if (success) $$ = _parse_Literal();    
+      if (!success) {  
+        if (_cursor > _testing) _failure(const ["\'", "\""]);
+      }
       if (success) break;
       // Class
-      $$ = _parse_Class();
+      $$ = null;
+      success = _ch == 91; // '['
+      // Lookahead (Class)
+      if (success) $$ = _parse_Class();
+      if (!success) {
+        if (_cursor > _testing) _failure(const ["["]);
+      }
       if (success) break;
       // DOT
-      $$ = _parse_DOT();
+      $$ = null;
+      success = _ch == 46; // '.'
+      // Lookahead (DOT)
+      if (success) $$ = _parse_DOT();
+      if (!success) {
+        if (_cursor > _testing) _failure(const ["."]);
+      }
       if (success) {    
         // DOT
         final $1 = $$;
@@ -1479,32 +1591,32 @@ class PegParser {
       }
       break;
     }
-    if (!success && _cursor > _testing) {
-      _failure(null);
-    }
     return $$;
   }
   
   dynamic _parse_QUESTION() {
     // TERMINAL
-    // QUESTION <- "?" _SPACING
+    // QUESTION <- "?" SPACING
     var $$;  
-    // "?" _SPACING
+    // "?" SPACING
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "?"
-      $$ = _matchChar(63, '?');
+      $$ = _matchChar(63, '?', const ["?"]);
       if (!success) break;
       var seq = new List(2)..[0] = $$;
-      // _SPACING
-      $$ = _parse__SPACING();
-      if (!success) break;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
       seq[1] = $$;
       $$ = seq;
       if (success) {    
         // "?"
         final $1 = seq[0];
-        // _SPACING
+        // SPACING
         final $2 = seq[1];
         $$ = $1;    
       }
@@ -1513,9 +1625,6 @@ class PegParser {
     if (!success) {
       _ch = ch0;
       _cursor = pos0;
-    }
-    if (!success && _cursor > _testing) {
-      _failure(const ["?"]);
     }
     return $$;
   }
@@ -1534,7 +1643,7 @@ class PegParser {
         if (!success) break;
         var seq = new List(3)..[0] = $$;
         // "-"
-        $$ = _matchChar(45, '-');
+        $$ = _matchChar(45, '-', const ["\\", "\\u"]);
         if (!success) break;
         seq[1] = $$;
         // Char
@@ -1567,26 +1676,26 @@ class PegParser {
       }
       break;
     }
-    if (!success && _cursor > _testing) {
-      _failure(const ["\\", "\\u"]);
-    }
     return $$;
   }
   
   dynamic _parse_SLASH() {
     // TERMINAL
-    // SLASH <- "/" _SPACING
+    // SLASH <- "/" SPACING
     var $$;  
-    // "/" _SPACING
+    // "/" SPACING
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "/"
-      $$ = _matchChar(47, '/');
+      $$ = _matchChar(47, '/', const ["/"]);
       if (!success) break;
       var seq = new List(2)..[0] = $$;
-      // _SPACING
-      $$ = _parse__SPACING();
-      if (!success) break;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
       seq[1] = $$;
       $$ = seq;
       break;  
@@ -1595,63 +1704,95 @@ class PegParser {
       _ch = ch0;
       _cursor = pos0;
     }
-    if (!success && _cursor > _testing) {
-      _failure(const ["/"]);
-    }
     return $$;
   }
   
   dynamic _parse_SPACE() {
     // TERMINAL
-    // SPACE <- [\t ] / _EOL
+    // SPACE <- [\t ] / EOL
     var $$;  
-    // [\t ] / _EOL
+    // [\t ] / EOL
     while (true) {
       // [\t ]
-      $$ = _matchMapping(9, 32, _mapping3);
+      $$ = _matchMapping(9, 32, _mapping4, const ["SPACING"]);
       if (success) break;
-      // _EOL
-      $$ = _parse__EOL();
+      // EOL
+      $$ = null;
+      success = _ch >= 10 && _ch <= 13 && _lookahead[_ch + -9];
+      // Lookahead (EOL)
+      if (success) $$ = _parse_EOL();    
+      if (!success) {  
+        if (_cursor > _testing) _failure(const ["EOL"]);
+      }
       break;
-    }
-    if (!success && _cursor > _testing) {
-      _failure(null);
     }
     return $$;
   }
   
   dynamic _parse_SPACING() {
     // TERMINAL
-    // SPACING <- _SPACING
+    // SPACING <- (SPACE / COMMENT)*
     var $$;  
-    // _SPACING
-    $$ = _parse__SPACING();
-    if (!success && _cursor > _testing) {
-      _failure(const ["SPACING"]);
+    // (SPACE / COMMENT)*
+    var testing0 = _testing; 
+    for (var reps = []; ; ) {
+      _testing = _cursor;
+      // SPACE / COMMENT
+      while (true) {
+        // SPACE
+        $$ = null;
+        success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
+        // Lookahead (SPACE)
+        if (success) $$ = _parse_SPACE();    
+        if (!success) {  
+          if (_cursor > _testing) _failure(const ["SPACING"]);
+        }
+        if (success) break;
+        // COMMENT
+        $$ = null;
+        success = _ch == 35; // '#'
+        // Lookahead (COMMENT)
+        if (success) $$ = _parse_COMMENT();
+        if (!success) {
+          if (_cursor > _testing) _failure(const ["SPACING"]);
+        }
+        break;
+      }
+      if (success) {  
+        reps.add($$);
+      } else {
+        success = true;
+        _testing = testing0;
+        $$ = reps;
+        break; 
+      }
     }
     return $$;
   }
   
   dynamic _parse_STAR() {
     // TERMINAL
-    // STAR <- "*" _SPACING
+    // STAR <- "*" SPACING
     var $$;  
-    // "*" _SPACING
+    // "*" SPACING
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "*"
-      $$ = _matchChar(42, '*');
+      $$ = _matchChar(42, '*', const ["*"]);
       if (!success) break;
       var seq = new List(2)..[0] = $$;
-      // _SPACING
-      $$ = _parse__SPACING();
-      if (!success) break;
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
       seq[1] = $$;
       $$ = seq;
       if (success) {    
         // "*"
         final $1 = seq[0];
-        // _SPACING
+        // SPACING
         final $2 = seq[1];
         $$ = $1;    
       }
@@ -1660,9 +1801,6 @@ class PegParser {
     if (!success) {
       _ch = ch0;
       _cursor = pos0;
-    }
-    if (!success && _cursor > _testing) {
-      _failure(const ["*"]);
     }
     return $$;
   }
@@ -1675,7 +1813,13 @@ class PegParser {
     var testing0;
     for (var first = true, reps; ;) {  
       // Prefix  
-      $$ = _parse_Prefix();  
+      $$ = null;  
+      success = _ch >= 33 && _ch <= 122 && _lookahead[_ch + 82];  
+      // Lookahead (Prefix)  
+      if (success) $$ = _parse_Prefix();      
+      if (!success) {    
+        if (_cursor > _testing) _failure(const ["IDENTIFIER", "(", "\'", "\"", "[", "."]);  
+      }  
       if (success) {
        if (first) {      
           first = false;
@@ -1699,9 +1843,6 @@ class PegParser {
       final $1 = $$;
       $$ = new SequenceExpression($1);    
     }
-    if (!success && _cursor > _testing) {
-      _failure(null);
-    }
     return $$;
   }
   
@@ -1713,8 +1854,14 @@ class PegParser {
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // Primary
-      $$ = _parse_Primary();
-      if (!success) break;
+      $$ = null;
+      success = _ch >= 34 && _ch <= 122 && _lookahead[_ch + 171];
+      // Lookahead (Primary)
+      if (success) $$ = _parse_Primary();    
+      if (!success) {  
+        if (_cursor > _testing) _failure(const ["IDENTIFIER", "(", "\'", "\"", "[", "."]);
+        break;  
+      }
       var seq = new List(2)..[0] = $$;
       // (QUESTION / STAR / PLUS)?
       var testing0 = _testing;
@@ -1722,17 +1869,32 @@ class PegParser {
       // QUESTION / STAR / PLUS
       while (true) {
         // QUESTION
-        $$ = _parse_QUESTION();
+        $$ = null;
+        success = _ch == 63; // '?'
+        // Lookahead (QUESTION)
+        if (success) $$ = _parse_QUESTION();
+        if (!success) {
+          if (_cursor > _testing) _failure(const ["?"]);
+        }
         if (success) break;
         // STAR
-        $$ = _parse_STAR();
+        $$ = null;
+        success = _ch == 42; // '*'
+        // Lookahead (STAR)
+        if (success) $$ = _parse_STAR();
+        if (!success) {
+          if (_cursor > _testing) _failure(const ["*"]);
+        }
         if (success) break;
         // PLUS
-        $$ = _parse_PLUS();
+        $$ = null;
+        success = _ch == 43; // '+'
+        // Lookahead (PLUS)
+        if (success) $$ = _parse_PLUS();
+        if (!success) {
+          if (_cursor > _testing) _failure(const ["+"]);
+        }
         break;
-      }
-      if (!success && _cursor > _testing) {
-        _failure(null);
       }
       success = true; 
       _testing = testing0;
@@ -1752,110 +1914,69 @@ class PegParser {
       _ch = ch0;
       _cursor = pos0;
     }
-    if (!success && _cursor > _testing) {
-      _failure(null);
-    }
-    return $$;
-  }
-  
-  dynamic _parse__EOL() {
-    // TERMINAL
-    // _EOL <- "\r\n" / [\n\r]
-    var $$;  
-    // "\r\n" / [\n\r]
-    while (true) {
-      // "\r\n"
-      $$ = _matchString(_strings4, '\r\n');
-      if (success) break;
-      // [\n\r]
-      $$ = _matchMapping(10, 13, _mapping4);
-      break;
-    }
-    if (!success && _cursor > _testing) {
-      _failure(null);
-    }
-    return $$;
-  }
-  
-  dynamic _parse__SPACING() {
-    // TERMINAL
-    // _SPACING <- (SPACE / COMMENT)*
-    var $$;  
-    // (SPACE / COMMENT)*
-    var testing0 = _testing; 
-    for (var reps = []; ; ) {
-      _testing = _cursor;
-      // SPACE / COMMENT
-      while (true) {
-        // SPACE
-        $$ = _parse_SPACE();
-        if (success) break;
-        // COMMENT
-        $$ = _parse_COMMENT();
-        break;
-      }
-      if (!success && _cursor > _testing) {
-        _failure(null);
-      }
-      if (success) {  
-        reps.add($$);
-      } else {
-        success = true;
-        _testing = testing0;
-        $$ = reps;
-        break; 
-      }
-    }
-    if (!success && _cursor > _testing) {
-      _failure(null);
-    }
     return $$;
   }
   
   dynamic parse_Grammar() {
     // NONTERMINAL
-    // Grammar <- SPACING? Globals? Members? Definition+ EOF
+    // Grammar <- SPACING Globals? Members? Definition+ EOF
     var $$;  
-    // SPACING? Globals? Members? Definition+ EOF
+    // SPACING Globals? Members? Definition+ EOF
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
-      // SPACING?
+      // SPACING
+      $$ = null;
+      success = _ch >= 9 && _ch <= 35 && _lookahead[_ch + -9];
+      // Lookahead (SPACING is optional)
+      if (success) $$ = _parse_SPACING();
+      else success = true;
+      var seq = new List(5)..[0] = $$;
+      // Globals?
       var testing0 = _testing;
       _testing = _cursor;
-      // SPACING
-      $$ = _parse_SPACING();
+      // Globals
+      $$ = null;
+      success = _ch == 37; // '%'
+      // Lookahead (Globals)
+      if (success) $$ = _parse_Globals();
+      if (!success) {
+        if (_cursor > _testing) _failure(const ["%{"]);
+      }
       success = true; 
       _testing = testing0;
       if (!success) break;
-      var seq = new List(5)..[0] = $$;
-      // Globals?
+      seq[1] = $$;
+      // Members?
       var testing1 = _testing;
       _testing = _cursor;
-      // Globals
-      $$ = _parse_Globals();
+      // Members
+      $$ = null;
+      success = _ch == 123; // '{'
+      // Lookahead (Members)
+      if (success) $$ = _parse_Members();
+      if (!success) {
+        if (_cursor > _testing) _failure(const ["{"]);
+      }
       success = true; 
       _testing = testing1;
       if (!success) break;
-      seq[1] = $$;
-      // Members?
-      var testing2 = _testing;
-      _testing = _cursor;
-      // Members
-      $$ = _parse_Members();
-      success = true; 
-      _testing = testing2;
-      if (!success) break;
       seq[2] = $$;
       // Definition+
-      var testing3;
+      var testing2;
       for (var first = true, reps; ;) {  
         // Definition  
-        $$ = _parse_Definition();  
+        $$ = null;  
+        success = _ch >= 65 && _ch <= 122 && _lookahead[_ch + -9];  
+        // Lookahead (Definition)  
+        if (success) $$ = _parse_Definition();      
+        if (!success) {    
+          if (_cursor > _testing) _failure(const ["IDENTIFIER"]);  
+        }  
         if (success) {
          if (first) {      
             first = false;
             reps = [$$];
-            testing3 = _testing;                  
+            testing2 = _testing;                  
           } else {
             reps.add($$);
           }
@@ -1863,7 +1984,7 @@ class PegParser {
         } else {
           success = !first;
           if (success) {      
-            _testing = testing3;
+            _testing = testing2;
             $$ = reps;      
           } else $$ = null;
           break;
@@ -1877,7 +1998,7 @@ class PegParser {
       seq[4] = $$;
       $$ = seq;
       if (success) {    
-        // SPACING?
+        // SPACING
         final $1 = seq[0];
         // Globals?
         final $2 = seq[1];
@@ -1894,9 +2015,6 @@ class PegParser {
     if (!success) {
       _ch = ch0;
       _cursor = pos0;
-    }
-    if (!success && _cursor > _testing) {
-      _failure(null);
     }
     return $$;
   }
@@ -2027,7 +2145,7 @@ class PegParser {
     return data;  
   }
   
-  String _matchAny() {
+  String _matchAny(List<String> expected) {
     success = _cursor < _inputLen;
     if (success) {
       String result;
@@ -2042,11 +2160,14 @@ class PegParser {
         _ch = EOF;
       }    
       return result;
-    }    
+    }
+    if (_cursor > _testing) {
+      _failure(expected);
+    }  
     return null;  
   }
   
-  String _matchChar(int ch, String string) {
+  String _matchChar(int ch, String string, List<String> expected) {
     success = _ch == ch;
     if (success) {
       var result = string;  
@@ -2056,11 +2177,14 @@ class PegParser {
         _ch = EOF;
       }    
       return result;
+    }
+    if (_cursor > _testing) {
+      _failure(expected);
     }  
     return null;  
   }
   
-  String _matchMapping(int start, int end, List<bool> mapping) {
+  String _matchMapping(int start, int end, List<bool> mapping, List<String> expected) {
     success = _ch >= start && _ch <= end;
     if (success) {    
       if(mapping[_ch - start]) {
@@ -2078,11 +2202,14 @@ class PegParser {
         return result;
       }
       success = false;
+    }
+    if (_cursor > _testing) {
+       _failure(expected);
     }  
     return null;  
   }
   
-  String _matchRange(int start, int end) {
+  String _matchRange(int start, int end, List<String> expected) {
     success = _ch >= start && _ch <= end;
     if (success) {
       String result;
@@ -2097,11 +2224,14 @@ class PegParser {
         _ch = EOF;
       }  
       return result;
+    }
+    if (_cursor > _testing) {
+      _failure(expected);
     }  
     return null;  
   }
   
-  String _matchRanges(List<int> ranges) {
+  String _matchRanges(List<int> ranges, List<String> expected) {
     var length = ranges.length;
     for (var i = 0; i < length; i += 2) {
       if (_ch <= ranges[i + 1]) {
@@ -2122,11 +2252,14 @@ class PegParser {
         }      
       } else break;  
     }
+    if (_cursor > _testing) {
+      _failure(expected);
+    }
     success = false;  
     return null;  
   }
   
-  String _matchString(List<int> runes, String string) {
+  String _matchString(List<int> runes, String string, List<String> expected) {
     var length = runes.length;  
     success = true;  
     if (_cursor + length < _inputLen) {
@@ -2147,6 +2280,9 @@ class PegParser {
         _ch = EOF;
       }    
       return string;      
+    } 
+    if (_cursor > _testing) {
+      _failure(expected);
     }  
     return null; 
   }

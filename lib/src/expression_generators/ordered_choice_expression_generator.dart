@@ -1,15 +1,9 @@
 part of peg.expression_generators;
 
 class OrderedChoiceExpressionGenerator extends ListExpressionGenerator {
-  static const String _CURSOR = GeneralParserClassGenerator.VARIABLE_CURSOR;
-
-  static const String _FAILURE = MethodFailureGenerator.NAME;
-
   static const String _RESULT = ProductionRuleGenerator.VARIABLE_RESULT;
 
   static const String _SUCCESS = GeneralParserClassGenerator.VARIABLE_SUCCESS;
-
-  static const String _TESTING = GeneralParserClassGenerator.VARIABLE_TESTING;
 
   static const String _TEMPLATE_INNER = 'TEMPLATE_INNER';
 
@@ -23,24 +17,18 @@ class OrderedChoiceExpressionGenerator extends ListExpressionGenerator {
 {{#EXPRESSION}}
 if ($_SUCCESS) break;''';
 
-  static final String _templateLast = '''
-{{#EXPRESSION}}''';
-
   static final String _templateOuter = '''
 {{#COMMENTS}}
 while (true) {
   {{#EXPRESSIONS}}
   break;
-}
-if (!$_SUCCESS && $_CURSOR > $_TESTING) {
-  $_FAILURE({{EXPECTED}});
 }''';
 
+  static final String _templateLast = '''
+{{#EXPRESSION}}''';
+
   static final String _templateSingle = '''
-{{#EXPRESSION}}
-if (!$_SUCCESS && $_CURSOR > $_TESTING) {
-  $_FAILURE({{EXPECTED}});
-}''';
+{{#EXPRESSION}}''';
 
   OrderedChoiceExpression _expression;
 
@@ -86,14 +74,12 @@ if (!$_SUCCESS && $_CURSOR > $_TESTING) {
       block.assign('#COMMENTS', '// $_expression');
     }
 
-    block.assign('EXPECTED', Expectation.getExpectedAsPrintableList(_expression));
     return block.process();
   }
 
   List<String> _generateSingle() {
     var block = getTemplateBlock(_TEMPLATE_SINGLE);
     block.assign('#EXPRESSION', _generators[0].generate());
-    block.assign('EXPECTED', Expectation.getExpectedAsPrintableList(_expression));
     return block.process();
   }
 }
