@@ -68,6 +68,7 @@ class Expectation {
       }
     }
 
+    // TODO: Improve expression.toString() as token representation
     return _getExpected(expression.owner, token, [expression.toString()]);
   }
 

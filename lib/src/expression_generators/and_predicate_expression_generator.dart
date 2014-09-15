@@ -25,7 +25,7 @@ $_TESTING = $_INPUT_LEN + 1;
 $_CH = {{CH}};
 $_CURSOR = {{POS}}; 
 $_TESTING = {{TESTING}};
-$_RESULT = null''';
+$_RESULT = null;''';
 
   AndPredicateExpressionGenerator(Expression expression, ProductionRuleGenerator productionRuleGenerator) : super(expression, productionRuleGenerator) {
     if (expression is! AndPredicateExpression) {

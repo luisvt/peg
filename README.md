@@ -3,7 +3,7 @@
 
 PEG (Parsing expression grammar) parsers generator.
 
-Version: 0.0.17
+Version: 0.0.18
 
 Status: Experimental
 
