@@ -23,8 +23,6 @@ class MethodResetGenerator extends TemplateGenerator {
 
   static const String _FAILURE_POS = GeneralParserClassGenerator.VARIABLE_FAILURE_POS;
 
-  static const String _FLAG = GeneralParserClassGenerator.VARIABLE_FLAG;
-
   static const String _INPUT_LEN = GeneralParserClassGenerator.VARIABLE_INPUT_LEN;
 
   static const String _LINE = GeneralParserClassGenerator.VARIABLE_LINE;
@@ -33,9 +31,13 @@ class MethodResetGenerator extends TemplateGenerator {
 
   static const String _SUCCESS = GeneralParserClassGenerator.VARIABLE_SUCCESS;
 
-  static const String _TERMINAL = GeneralParserClassGenerator.VARIABLE_TERMINAL;
-
   static const String _TESTING = GeneralParserClassGenerator.VARIABLE_TESTING;
+
+  static const String _TOKEN = GeneralParserClassGenerator.VARIABLE_TOKEN;
+
+  static const String _TOKEN_LEVEL = GeneralParserClassGenerator.VARIABLE_TOKEN_LEVEL;
+
+  static const String _TOKEN_START = GeneralParserClassGenerator.VARIABLE_TOKEN_START;
 
   static const String _TEMPLATE = "TEMPLATE";
 
@@ -55,12 +57,13 @@ void $NAME(int pos) {
   $_CH = $_EOF;  
   $_COLUMN = -1; 
   $_EXPECTED = [];
-  $_FAILURE_POS = -1;
-  $_FLAG = 0;  
+  $_FAILURE_POS = -1;    
   $_LINE = -1;
-  $_SUCCESS = true;
-  $_TERMINAL = const <String>[];    
+  $_SUCCESS = true;      
   $_TESTING = -1;
+  $_TOKEN = null;
+  $_TOKEN_LEVEL = 0;
+  $_TOKEN_START = null;
   if ($_CURSOR < $_INPUT_LEN) {
     $_CH = $_RUNES[$_CURSOR];
   }    

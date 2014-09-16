@@ -28,7 +28,7 @@ Expression _prefix(dynamic prefix, Expression expression, String action) {
   return expression;
 }
 
-dynamic _spacing(s) => s == null ? '' : s;
+dynamic SPACING(s) => s == null ? '' : s;
 
 Expression _suffix(String suffix, Expression expression) {
   switch (suffix) {
@@ -48,16 +48,16 @@ Grammar <-
   SPACING? Globals? Members? Definition+ EOF { $$ = new Grammar($4, $2, $3); }
 
 Globals <-
-  '%{' GlobalsBody* '}%' SPACING { $$ = _flatten(["{", $2, "}", _spacing($4)]).join(); }
+  '%{' GlobalsBody* '}%' SPACING { $$ = _flatten(["{", $2, "}", SPACING($4)]).join(); }
 
 GlobalsBody <-
   !'}%' . { $$ = $2; }
 
 Members <-
-  '{' ActionBody* '}' SPACING { $$ = _flatten([$1, $2, $3, _spacing($4)]).join(); }
+  '{' ActionBody* '}' SPACING { $$ = _flatten([$1, $2, $3, SPACING($4)]).join(); }
   
 Action <-
-  '{' ActionBody* '}' SPACING { $$ = _flatten([$1, $2, $3, _spacing($4)]).join(); }
+  '{' ActionBody* '}' SPACING { $$ = _flatten([$1, $2, $3, SPACING($4)]).join(); }
 
 ActionBody <-
   Action
@@ -107,7 +107,7 @@ EOF <-
   !.
 
 IDENTIFIER <-
-  IDENT_START IDENT_CONT* _SPACING { $$ = _flatten([$1, $2]).join(); }
+  IDENT_START IDENT_CONT* SPACING { $$ = _flatten([$1, $2]).join(); }
   
 IDENT_START <-
   [a-zA-Z_]
@@ -116,54 +116,48 @@ IDENT_CONT <-
   IDENT_START / [0-9]
 
 LEFTARROW <-
-  '<-' _SPACING
+  '<-' SPACING
   
 SLASH <-
-  '/' _SPACING
+  '/' SPACING
   
 AND <-
-  '&' _SPACING { $$ = $1; }
+  '&' SPACING { $$ = $1; }
   
 NOT <-
-  '!' _SPACING { $$ = $1; }
+  '!' SPACING { $$ = $1; }
   
 QUESTION <-
-  '?' _SPACING { $$ = $1; }
+  '?' SPACING { $$ = $1; }
   
 STAR <-
-  '*' _SPACING { $$ = $1; }
+  '*' SPACING { $$ = $1; }
   
 PLUS <-
-  '+' _SPACING { $$ = $1; }
+  '+' SPACING { $$ = $1; }
   
 OPEN <-
-  '(' _SPACING
+  '(' SPACING
   
 CLOSE <-
-  ')' _SPACING
+  ')' SPACING
   
 DOT <-
-  '.' _SPACING
+  '.' SPACING
 
 HEX_NUMBER <-
   '\\u' [0-9a-fA-F]+ { $$ = int.parse($2.join(), radix: 16); }
   
-SPACING <-
-  _SPACING
-  
 COMMENT <-
-  '#' (!_EOL .)* _EOL?
+  '#' (!EOL .)* EOL?
   
 SPACE <-
   [ \t] 
-  / _EOL
+  / EOL
  
-EOL <-
-  _EOL
-
-_SPACING <-
+SPACING <-
   (SPACE / COMMENT)*
 
-_EOL <-
+EOL <-
   '\r\n'
   / [\n\r]

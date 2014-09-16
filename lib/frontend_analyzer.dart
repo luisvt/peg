@@ -1,7 +1,6 @@
 library peg.frontend_analyzer;
 
 import 'package:lists/lists.dart';
-import 'package:peg/expectation.dart';
 import 'package:peg/expressions.dart';
 import 'package:peg/grammar.dart';
 import 'package:peg/production_rule.dart';

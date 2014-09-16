@@ -25,8 +25,6 @@ class GeneralParserClassGenerator extends TemplateGenerator {
 
   static const String VARIABLE_FAILURE_POS = "_failurePos";
 
-  static const String VARIABLE_FLAG = "_flag";
-
   static const String VARIABLE_INPUT_LEN = "_inputLen";
 
   static const String VARIABLE_LINE = "_line";
@@ -45,7 +43,11 @@ class GeneralParserClassGenerator extends TemplateGenerator {
 
   static const String VARIABLE_SUCCESS = "success";
 
-  static const String VARIABLE_TERMINAL = "_terminal";
+  static const String VARIABLE_TOKEN = "_token";
+
+  static const String VARIABLE_TOKEN_LEVEL = "_tokenLevel";
+
+  static const String VARIABLE_TOKEN_START = "_tokenStart";
 
   static const String VARIABLE_TESTING = "_testing";
 
@@ -175,6 +177,7 @@ class GeneralParserClassGenerator extends TemplateGenerator {
     generators[MethodExpectedGenerator.NAME] = new MethodExpectedGenerator();
     generators[MethodFailureGenerator.NAME] = new MethodFailureGenerator();
     // Helpers
+    generators[MethodCompactGenerator.NAME] = new MethodCompactGenerator();
     generators[MethodFlattenGenerator.NAME] = new MethodFlattenGenerator();
     // Matchers
     generators[MethodMatchAnyGenerator.NAME] = new MethodMatchAnyGenerator();
@@ -353,13 +356,14 @@ class GeneralParserClassGenerator extends TemplateGenerator {
     strings.add('int $VARIABLE_CURSOR;');
     strings.add('List<String> $VARIABLE_EXPECTED;');
     strings.add('int $VARIABLE_FAILURE_POS;');
-    strings.add('int $VARIABLE_FLAG;');
     strings.add('int $VARIABLE_INPUT_LEN;');
     strings.add('int $VARIABLE_LINE;');
     strings.add('List<int> $VARIABLE_RUNES;');
     strings.add('bool $VARIABLE_SUCCESS;');
-    strings.add('List<String> $VARIABLE_TERMINAL;');
     strings.add('int $VARIABLE_TESTING;');
+    strings.add('String $VARIABLE_TOKEN;');
+    strings.add('int $VARIABLE_TOKEN_LEVEL;');
+    strings.add('int $VARIABLE_TOKEN_START;');
     strings.add('');
     return strings;
   }

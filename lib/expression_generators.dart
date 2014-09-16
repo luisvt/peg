@@ -1,11 +1,9 @@
 library peg.expression_generators;
 
 import 'package:lists/lists.dart';
-import 'package:peg/expectation.dart';
 import 'package:peg/expressions.dart';
 import 'package:peg/generators.dart';
 import 'package:peg/general_parser_class_generator.dart';
-import 'package:peg/general_parser_generator.dart';
 import 'package:peg/production_rule_generator.dart';
 import 'package:peg/trace.dart';
 import 'package:strings/strings.dart';

@@ -8,6 +8,8 @@ const String ARITHMETIC_PARSER_DART = "example/arithmetic_parser.dart";
 const String ARITHMETIC_PEG = "example/arithmetic.peg";
 const String CHANGE_LOG = "tool/change.log";
 const String CHANGELOG_MD = "CHANGELOG.md";
+const String JSON_PARSER_DART = "example/json_parser.dart";
+const String JSON_PEG = "example/json.peg";
 const String PEG_PEG = "bin/peg.peg";
 const String PEG_PEG_TEXT = "bin/peg.peg.txt";
 const String PUBSPEC_YAML = "pubspec.yaml";
@@ -28,6 +30,8 @@ void main(List<String> args) {
 
   var generatedFiles = [];
   generatedFiles.add(ARITHMETIC_PARSER_DART);
+  // TODO: create rule for auto generated parsers
+  // generatedFiles.add(JSON_PARSER_DART);
   generatedFiles.add(CHANGELOG_MD);
   generatedFiles.add(PEG_PEG_TEXT);
   generatedFiles.add(README_MD);
@@ -58,9 +62,7 @@ void main(List<String> args) {
   });
 
   rule("%.peg.txt", ["%.peg"], (Target t, Map args) {
-    return Process.run(
-        "$dartSdk/bin/dart",
-        ["bin/peg.dart", "print", t.sources.first]).then((result) {
+    return Process.run("$dartSdk/bin/dart", ["bin/peg.dart", "print", t.sources.first]).then((result) {
       if (result.exitCode != 0) {
         print(result.stdout);
         return result.exitCode;
@@ -72,17 +74,7 @@ void main(List<String> args) {
   });
 
   rule("%_parser.dart", ["%.peg"], (Target t, Map args) {
-    return Process.run(
-        "$dartSdk/bin/dart",
-        [
-            "bin/peg.dart",
-            "general",
-            "-c",
-            "-l",
-            "-m",
-            "-o",
-            t.name,
-            t.sources.first]).then((result) {
+    return Process.run("$dartSdk/bin/dart", ["bin/peg.dart", "general", "-c", "-l", "-m", "-o", t.name, t.sources.first]).then((result) {
       if (result.exitCode != 0) {
         print(result.stdout);
         return result.exitCode;
@@ -143,19 +135,9 @@ void main(List<String> args) {
     logChanges(message);
   }, description: "log changes, --m message", reusable: true);
 
-  target(
-      "prj:changelog",
-      [CHANGELOG_MD],
-      null,
-      description: "generate '$CHANGELOG_MD'",
-      reusable: true);
+  target("prj:changelog", [CHANGELOG_MD], null, description: "generate '$CHANGELOG_MD'", reusable: true);
 
-  target(
-      "prj:readme",
-      [README_MD],
-      null,
-      description: "generate '$README_MD'",
-      reusable: true);
+  target("prj:readme", [README_MD], null, description: "generate '$README_MD'", reusable: true);
 
   target("prj:version", [], (Target t, Map args) {
     print("Version: ${getVersion()}");

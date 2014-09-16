@@ -176,7 +176,7 @@ $_RESULT = $_MATCH_RANGES({{RANGES}});''';
 
     var string = Utils.charToString(_singleCharacter);
     block.assign('RUNE', _singleCharacter);
-    block.assign('STRING', _singleCharacter);
+    block.assign('STRING', string);
     return block.process();
   }
 

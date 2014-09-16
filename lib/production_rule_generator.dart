@@ -1,6 +1,5 @@
 library peg.production_rule_generator;
 
-import 'package:peg/expectation.dart';
 import 'package:peg/expression_generators.dart';
 import 'package:peg/generators.dart';
 import 'package:peg/general_parser_class_generator.dart';

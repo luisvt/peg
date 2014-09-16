@@ -14,6 +14,8 @@
 0.0.15 Added instruction optimizer in the interpreter parser
 0.0.15 Breaking change: All methods, except the starting rules, are now private methods in all parsers. This is done for the interoperability of the generated parsers, better error messaging and performance improvement of parsing processes.
 0.0.15 Added the subordination of terminals (master, slave, master/slave). In some cases this can helps developers to writing (after the analysing) grammar better and, also, this helps for the generator to better optimize the grammar and helps to improve error messages.
-0.0.16 Was improved the basic ("expectation") error messages (fixed the bugs, implemented helper library "expectation")
-0.0.16 From now the generator recommends to separate the terminals from the subterminals for better perception of grammar and for the improved errors messages. This was chosen in favor of rejection of grammar optimization (because it requires the cloning of the grammar). Possible in future this limitation will be removed and grammar will optimized (added surrogate auto generated subterminals), but not now.
+0.0.16 Was improved the basic ("expectation") error messages
+0.0.16 Added initial support of the tokens for improving the errors messages and support of the upcomming AST generator.
 0.0.18 Fixed bug in `AndPredicateExpressionGenerator` (was missed character `;` in the template after refactoring) 
+0.0.19 Fixed bug in `CharacterClassExpressionGenerator`
+0.0.19 Added full functional example of json parser

@@ -86,14 +86,16 @@ if (!$_SUCCESS && $_CURSOR > $_TESTING) {
       block.assign('#COMMENTS', '// $_expression');
     }
 
-    block.assign('EXPECTED', Expectation.getExpectedAsPrintableList(_expression));
+    var lexemes = Utils.toPrintableList(_expression.expectedLexemes.toList());
+    block.assign('EXPECTED', "const [${lexemes.join(", ")}]");
     return block.process();
   }
 
   List<String> _generateSingle() {
     var block = getTemplateBlock(_TEMPLATE_SINGLE);
     block.assign('#EXPRESSION', _generators[0].generate());
-    block.assign('EXPECTED', Expectation.getExpectedAsPrintableList(_expression));
+    var lexemes = Utils.toPrintableList(_expression.expectedLexemes.toList());
+    block.assign('EXPECTED', "const [${lexemes.join(", ")}]");
     return block.process();
   }
 }

@@ -34,13 +34,14 @@ class ArithmeticParser {
   int _cursor;
   List<String> _expected;
   int _failurePos;
-  int _flag;
   int _inputLen;
   int _line;
   List<int> _runes;
   bool success;
-  List<String> _terminal;
   int _testing;
+  String _token;
+  int _tokenLevel;
+  int _tokenStart;
   
   ArithmeticParser(String text) {
     if (text == null) {
@@ -71,7 +72,7 @@ class ArithmeticParser {
   dynamic _parse_Atom() {
     // NONTERMINAL
     // Atom <- NUMBER / OPEN Sentence CLOSE
-    var $$;  
+    var $$;
     // NUMBER / OPEN Sentence CLOSE
     while (true) {
       // NUMBER
@@ -80,7 +81,7 @@ class ArithmeticParser {
       // Lookahead (NUMBER)
       if (success) $$ = _parse_NUMBER();    
       if (!success) {    
-        if (_cursor > _testing) _failure(["NUMBER"]);
+        if (_cursor > _testing) _failure(const ["NUMBER"]);
       }
       if (success) break;
       // OPEN Sentence CLOSE
@@ -92,7 +93,7 @@ class ArithmeticParser {
         // Lookahead (OPEN)
         if (success) $$ = _parse_OPEN();
         if (!success) {
-          if (_cursor > _testing) _failure(["("]);  
+          if (_cursor > _testing) _failure(const ["("]);  
           break;  
         }
         var seq = new List(3)..[0] = $$;
@@ -102,7 +103,7 @@ class ArithmeticParser {
         // Lookahead (Sentence)
         if (success) $$ = _parse_Sentence();    
         if (!success) {    
-          if (_cursor > _testing) _failure(["NUMBER", "("]);
+          if (_cursor > _testing) _failure(const ["NUMBER", "("]);
           break;  
         }
         seq[1] = $$;
@@ -112,7 +113,7 @@ class ArithmeticParser {
         // Lookahead (CLOSE)
         if (success) $$ = _parse_CLOSE();
         if (!success) {
-          if (_cursor > _testing) _failure([")"]);  
+          if (_cursor > _testing) _failure(const [")"]);  
           break;  
         }
         seq[2] = $$;
@@ -135,7 +136,7 @@ class ArithmeticParser {
       break;
     }
     if (!success && _cursor > _testing) {
-      _failure(["NUMBER", "("]);
+      _failure(const ["NUMBER", "("]);
     }
     return $$;
   }
@@ -143,8 +144,11 @@ class ArithmeticParser {
   dynamic _parse_CLOSE() {
     // TERMINAL
     // CLOSE <- ")" _SPACES
-    var $$;  
-    _terminal = const [")"];  
+    var $$;
+    if (_tokenLevel++ == 0) {  
+      _token = ")";  
+      _tokenStart = _cursor;  
+    }  
     // ")" _SPACES
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
@@ -167,7 +171,11 @@ class ArithmeticParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure([")"]);
+      _failure(const [")"]);
+    }
+    if (--_tokenLevel == 0) {
+      _token = null;
+      _tokenStart = null;
     }
     return $$;
   }
@@ -175,8 +183,11 @@ class ArithmeticParser {
   dynamic _parse_DIV() {
     // TERMINAL
     // DIV <- "/" _SPACES
-    var $$;  
-    _terminal = const ["/"];  
+    var $$;
+    if (_tokenLevel++ == 0) {  
+      _token = "/";  
+      _tokenStart = _cursor;  
+    }  
     // "/" _SPACES
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
@@ -206,7 +217,11 @@ class ArithmeticParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(["/"]);
+      _failure(const ["/"]);
+    }
+    if (--_tokenLevel == 0) {
+      _token = null;
+      _tokenStart = null;
     }
     return $$;
   }
@@ -214,8 +229,11 @@ class ArithmeticParser {
   dynamic _parse_EOF() {
     // TERMINAL
     // EOF <- !.
-    var $$;  
-    _terminal = const ["EOF"];  
+    var $$;
+    if (_tokenLevel++ == 0) {  
+      _token = "EOF";  
+      _tokenStart = _cursor;  
+    }  
     // !.
     var ch0 = _ch, pos0 = _cursor, testing0 = _testing; 
     _testing = _inputLen + 1;
@@ -227,7 +245,11 @@ class ArithmeticParser {
     $$ = null;
     success = !success;
     if (!success && _cursor > _testing) {
-      _failure(["EOF"]);
+      _failure(const [null, "EOF"]);
+    }
+    if (--_tokenLevel == 0) {
+      _token = null;
+      _tokenStart = null;
     }
     return $$;
   }
@@ -235,8 +257,11 @@ class ArithmeticParser {
   dynamic _parse_MINUS() {
     // TERMINAL
     // MINUS <- "-" _SPACES
-    var $$;  
-    _terminal = const ["-"];  
+    var $$;
+    if (_tokenLevel++ == 0) {  
+      _token = "-";  
+      _tokenStart = _cursor;  
+    }  
     // "-" _SPACES
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
@@ -266,7 +291,11 @@ class ArithmeticParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(["-"]);
+      _failure(const ["-"]);
+    }
+    if (--_tokenLevel == 0) {
+      _token = null;
+      _tokenStart = null;
     }
     return $$;
   }
@@ -274,8 +303,11 @@ class ArithmeticParser {
   dynamic _parse_MUL() {
     // TERMINAL
     // MUL <- "*" _SPACES
-    var $$;  
-    _terminal = const ["*"];  
+    var $$;
+    if (_tokenLevel++ == 0) {  
+      _token = "*";  
+      _tokenStart = _cursor;  
+    }  
     // "*" _SPACES
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
@@ -305,7 +337,11 @@ class ArithmeticParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(["*"]);
+      _failure(const ["*"]);
+    }
+    if (--_tokenLevel == 0) {
+      _token = null;
+      _tokenStart = null;
     }
     return $$;
   }
@@ -313,8 +349,11 @@ class ArithmeticParser {
   dynamic _parse_NUMBER() {
     // TERMINAL
     // NUMBER <- [0-9]+ _SPACES
-    var $$;  
-    _terminal = const ["NUMBER"];  
+    var $$;
+    if (_tokenLevel++ == 0) {  
+      _token = "NUMBER";  
+      _tokenStart = _cursor;  
+    }  
     // [0-9]+ _SPACES
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
@@ -365,7 +404,11 @@ class ArithmeticParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(["NUMBER"]);
+      _failure(const ["NUMBER"]);
+    }
+    if (--_tokenLevel == 0) {
+      _token = null;
+      _tokenStart = null;
     }
     return $$;
   }
@@ -373,8 +416,11 @@ class ArithmeticParser {
   dynamic _parse_OPEN() {
     // TERMINAL
     // OPEN <- "(" _SPACES
-    var $$;  
-    _terminal = const ["("];  
+    var $$;
+    if (_tokenLevel++ == 0) {  
+      _token = "(";  
+      _tokenStart = _cursor;  
+    }  
     // "(" _SPACES
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
@@ -397,7 +443,11 @@ class ArithmeticParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(["("]);
+      _failure(const ["("]);
+    }
+    if (--_tokenLevel == 0) {
+      _token = null;
+      _tokenStart = null;
     }
     return $$;
   }
@@ -405,8 +455,11 @@ class ArithmeticParser {
   dynamic _parse_PLUS() {
     // TERMINAL
     // PLUS <- "+" _SPACES
-    var $$;  
-    _terminal = const ["+"];  
+    var $$;
+    if (_tokenLevel++ == 0) {  
+      _token = "+";  
+      _tokenStart = _cursor;  
+    }  
     // "+" _SPACES
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
@@ -436,7 +489,11 @@ class ArithmeticParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(["+"]);
+      _failure(const ["+"]);
+    }
+    if (--_tokenLevel == 0) {
+      _token = null;
+      _tokenStart = null;
     }
     return $$;
   }
@@ -444,8 +501,11 @@ class ArithmeticParser {
   dynamic _parse_SPACES() {
     // TERMINAL
     // SPACES <- _SPACES
-    var $$;  
-    _terminal = const ["SPACES"];  
+    var $$;
+    if (_tokenLevel++ == 0) {  
+      _token = "SPACES";  
+      _tokenStart = _cursor;  
+    }  
     // _SPACES
     $$ = null;
     success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
@@ -453,7 +513,11 @@ class ArithmeticParser {
     if (success) $$ = _parse__SPACES();
     else success = true;
     if (!success && _cursor > _testing) {
-      _failure(["SPACES"]);
+      _failure(const ["_SPACES", "SPACES"]);
+    }
+    if (--_tokenLevel == 0) {
+      _token = null;
+      _tokenStart = null;
     }
     return $$;
   }
@@ -461,14 +525,14 @@ class ArithmeticParser {
   dynamic _parse_Sentence() {
     // NONTERMINAL
     // Sentence <- Term (PLUS / MINUS) Sentence / Term
-    var $$;      
     var pos = _cursor;    
     if(pos <= _cachePos) {
       $$ = _getFromCache(1);
     }
     if($$ != null) {
       return $$[0];       
-    }  
+    }
+    var $$;
     // Term (PLUS / MINUS) Sentence / Term
     while (true) {
       // Term (PLUS / MINUS) Sentence
@@ -480,7 +544,7 @@ class ArithmeticParser {
         // Lookahead (Term)
         if (success) $$ = _parse_Term();    
         if (!success) {    
-          if (_cursor > _testing) _failure(["NUMBER", "("]);
+          if (_cursor > _testing) _failure(const ["NUMBER", "("]);
           break;  
         }
         var seq = new List(3)..[0] = $$;
@@ -492,7 +556,7 @@ class ArithmeticParser {
           // Lookahead (PLUS)
           if (success) $$ = _parse_PLUS();
           if (!success) {
-            if (_cursor > _testing) _failure(["+"]);  
+            if (_cursor > _testing) _failure(const ["+"]);  
           }
           if (success) break;
           // MINUS
@@ -501,12 +565,12 @@ class ArithmeticParser {
           // Lookahead (MINUS)
           if (success) $$ = _parse_MINUS();
           if (!success) {
-            if (_cursor > _testing) _failure(["-"]);  
+            if (_cursor > _testing) _failure(const ["-"]);  
           }
           break;
         }
         if (!success && _cursor > _testing) {
-          _failure(["+", "-", "NUMBER", "("]);
+          _failure(const ["+", "-"]);
         }
         if (!success) break;
         seq[1] = $$;
@@ -516,7 +580,7 @@ class ArithmeticParser {
         // Lookahead (Sentence)
         if (success) $$ = _parse_Sentence();    
         if (!success) {    
-          if (_cursor > _testing) _failure(["NUMBER", "("]);
+          if (_cursor > _testing) _failure(const ["NUMBER", "("]);
           break;  
         }
         seq[2] = $$;
@@ -543,12 +607,12 @@ class ArithmeticParser {
       // Lookahead (Term)
       if (success) $$ = _parse_Term();    
       if (!success) {    
-        if (_cursor > _testing) _failure(["NUMBER", "("]);
+        if (_cursor > _testing) _failure(const ["NUMBER", "("]);
       }
       break;
     }
     if (!success && _cursor > _testing) {
-      _failure(["NUMBER", "("]);
+      _failure(const ["NUMBER", "("]);
     }
     _addToCache($$, pos, 1);
     return $$;
@@ -557,14 +621,14 @@ class ArithmeticParser {
   dynamic _parse_Term() {
     // NONTERMINAL
     // Term <- Atom (MUL / DIV) Term / Atom
-    var $$;      
     var pos = _cursor;    
     if(pos <= _cachePos) {
       $$ = _getFromCache(2);
     }
     if($$ != null) {
       return $$[0];       
-    }  
+    }
+    var $$;
     // Atom (MUL / DIV) Term / Atom
     while (true) {
       // Atom (MUL / DIV) Term
@@ -576,7 +640,7 @@ class ArithmeticParser {
         // Lookahead (Atom)
         if (success) $$ = _parse_Atom();    
         if (!success) {    
-          if (_cursor > _testing) _failure(["NUMBER", "("]);
+          if (_cursor > _testing) _failure(const ["NUMBER", "("]);
           break;  
         }
         var seq = new List(3)..[0] = $$;
@@ -588,7 +652,7 @@ class ArithmeticParser {
           // Lookahead (MUL)
           if (success) $$ = _parse_MUL();
           if (!success) {
-            if (_cursor > _testing) _failure(["*"]);  
+            if (_cursor > _testing) _failure(const ["*"]);  
           }
           if (success) break;
           // DIV
@@ -597,12 +661,12 @@ class ArithmeticParser {
           // Lookahead (DIV)
           if (success) $$ = _parse_DIV();
           if (!success) {
-            if (_cursor > _testing) _failure(["/"]);  
+            if (_cursor > _testing) _failure(const ["/"]);  
           }
           break;
         }
         if (!success && _cursor > _testing) {
-          _failure(["*", "/", "NUMBER", "("]);
+          _failure(const ["*", "/"]);
         }
         if (!success) break;
         seq[1] = $$;
@@ -612,7 +676,7 @@ class ArithmeticParser {
         // Lookahead (Term)
         if (success) $$ = _parse_Term();    
         if (!success) {    
-          if (_cursor > _testing) _failure(["NUMBER", "("]);
+          if (_cursor > _testing) _failure(const ["NUMBER", "("]);
           break;  
         }
         seq[2] = $$;
@@ -639,12 +703,12 @@ class ArithmeticParser {
       // Lookahead (Atom)
       if (success) $$ = _parse_Atom();    
       if (!success) {    
-        if (_cursor > _testing) _failure(["NUMBER", "("]);
+        if (_cursor > _testing) _failure(const ["NUMBER", "("]);
       }
       break;
     }
     if (!success && _cursor > _testing) {
-      _failure(["NUMBER", "("]);
+      _failure(const ["NUMBER", "("]);
     }
     _addToCache($$, pos, 2);
     return $$;
@@ -653,7 +717,11 @@ class ArithmeticParser {
   dynamic _parse_WS() {
     // TERMINAL
     // WS <- [\t-\n\r ] / "\r\n"
-    var $$;  
+    var $$;
+    if (_tokenLevel++ == 0) {  
+      _token = "WS";  
+      _tokenStart = _cursor;  
+    }  
     // [\t-\n\r ] / "\r\n"
     while (true) {
       // [\t-\n\r ]
@@ -664,7 +732,11 @@ class ArithmeticParser {
       break;
     }
     if (!success && _cursor > _testing) {
-      _failure([]);
+      _failure(const ["WS"]);
+    }
+    if (--_tokenLevel == 0) {
+      _token = null;
+      _tokenStart = null;
     }
     return $$;
   }
@@ -672,14 +744,18 @@ class ArithmeticParser {
   dynamic _parse__SPACES() {
     // TERMINAL
     // _SPACES <- WS*
-    var $$;      
     var pos = _cursor;    
     if(pos <= _cachePos) {
       $$ = _getFromCache(14);
     }
     if($$ != null) {
       return $$[0];       
-    }  
+    }
+    var $$;
+    if (_tokenLevel++ == 0) {    
+      _token = "_SPACES";    
+      _tokenStart = _cursor;    
+    }    
     // WS*
     var testing0 = _testing; 
     for (var reps = []; ; ) {
@@ -690,7 +766,7 @@ class ArithmeticParser {
       // Lookahead (WS)
       if (success) $$ = _parse_WS();    
       if (!success) {    
-        if (_cursor > _testing) _failure([]);
+        if (_cursor > _testing) _failure(const ["WS"]);
       }
       if (success) {  
         reps.add($$);
@@ -702,16 +778,20 @@ class ArithmeticParser {
       }
     }
     if (!success && _cursor > _testing) {
-      _failure([]);
+      _failure(const ["_SPACES"]);
     }
     _addToCache($$, pos, 14);
+    if (--_tokenLevel == 0) {
+      _token = null;
+      _tokenStart = null;
+    }
     return $$;
   }
   
   dynamic parse_Expr() {
     // NONTERMINAL
     // Expr <- SPACES? Sentence EOF
-    var $$;  
+    var $$;
     // SPACES? Sentence EOF
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
@@ -734,7 +814,7 @@ class ArithmeticParser {
       // Lookahead (Sentence)
       if (success) $$ = _parse_Sentence();    
       if (!success) {    
-        if (_cursor > _testing) _failure(["NUMBER", "("]);
+        if (_cursor > _testing) _failure(const ["NUMBER", "("]);
         break;  
       }
       seq[1] = $$;
@@ -759,7 +839,7 @@ class ArithmeticParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(["NUMBER", "("]);
+      _failure(const ["NUMBER", "("]);
     }
     return $$;
   }
@@ -812,6 +892,37 @@ class ArithmeticParser {
     }
   }
   
+  Iterable _compact(Iterable iterable) {  
+    if (iterable is List) {
+      var hasNull = false;
+      var length = iterable.length;
+      for (var i = 0; i < length; i++) {
+        if (iterable[i] == null) {
+          hasNull = true;
+          break;
+        }
+      }
+      if (!hasNull) {
+        return iterable;
+      }
+      var result = [];
+      for (var i = 0; i < length; i++) {
+        var element = iterable[i];
+        if (element != null) {
+          result.add(element);
+        }
+      }
+      return result;
+    }   
+    var result = [];
+    for (var element in iterable) {   
+      if (element != null) {
+        result.add(element);
+      }
+    }
+    return result;  
+  }
+  
   void _failure([List<String> expected]) {  
     if (_failurePos > _cursor) {
       return;
@@ -820,12 +931,12 @@ class ArithmeticParser {
       _expected = [];
      _failurePos = _cursor;
     }
-    if (expected == null) {
+    if (_token != null) {
+      _expected.add(_token);
+    } else if (expected == null) {
       _expected.add(null);
-    } else if (expected.length != 0) {
-      _expected.addAll(expected);
     } else {
-      _expected.addAll(_terminal);
+      _expected.addAll(expected);
     }   
   }
   
@@ -1154,12 +1265,13 @@ class ArithmeticParser {
     _ch = EOF;  
     _column = -1; 
     _expected = [];
-    _failurePos = -1;
-    _flag = 0;  
+    _failurePos = -1;    
     _line = -1;
-    success = true;
-    _terminal = const <String>[];    
+    success = true;      
     _testing = -1;
+    _token = null;
+    _tokenLevel = 0;
+    _tokenStart = null;
     if (_cursor < _inputLen) {
       _ch = _runes[_cursor];
     }    

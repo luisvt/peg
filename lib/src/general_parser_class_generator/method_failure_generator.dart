@@ -9,7 +9,7 @@ class MethodFailureGenerator extends TemplateGenerator {
 
   static const String _FAILURE_POS = GeneralParserClassGenerator.VARIABLE_FAILURE_POS;
 
-  static const String _TERMINAL = GeneralParserClassGenerator.VARIABLE_TERMINAL;
+  static const String _TOKEN = GeneralParserClassGenerator.VARIABLE_TOKEN;
 
   static const String _TEMPLATE = "TEMPLATE";
 
@@ -22,12 +22,12 @@ void $NAME([List<String> expected]) {
     $_EXPECTED = [];
    $_FAILURE_POS = $_CURSOR;
   }
-  if (expected == null) {
+  if (_token != null) {
+    $_EXPECTED.add($_TOKEN);
+  } else if (expected == null) {
     $_EXPECTED.add(null);
-  } else if (expected.length != 0) {
-    $_EXPECTED.addAll(expected);
   } else {
-    $_EXPECTED.addAll($_TERMINAL);
+    $_EXPECTED.addAll(expected);
   }   
 }
 ''';

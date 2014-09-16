@@ -111,6 +111,23 @@ class Utils {
     return strings.join();
   }
 
+  static List<String> toPrintableList(Iterable<String> strings) {
+    if (strings == null) {
+      throw new ArgumentError("strings: $strings");
+    }
+
+    var result = <String>[];
+    for (var string in strings) {
+      if (string == null) {
+        result.add(string);
+      } else {
+        result.add("\"${toPrintable(string)}\"");
+      }
+    }
+
+    return result;
+  }
+
   static String _charToAscii(int char, [bool printable = false]) {
     if (char == null || char < 0) {
       throw new ArgumentError('c: $char');

@@ -9,17 +9,23 @@ class ProductionRuleGenerator extends TemplateGenerator {
 
   static const String _CURSOR = GeneralParserClassGenerator.VARIABLE_CURSOR;
 
-  static const String _FLAG = GeneralParserClassGenerator.VARIABLE_FLAG;
-
   static const String _GET_FROM_CACHE = MethodGetFromCacheGenerator.NAME;
 
   static const String _RESULT = VARIABLE_RESULT;
 
   static const String _SUCCESS = GeneralParserClassGenerator.VARIABLE_SUCCESS;
 
-  static const String _TERMINAL = GeneralParserClassGenerator.VARIABLE_TERMINAL;
+  static const String _TOKEN = GeneralParserClassGenerator.VARIABLE_TOKEN;
+
+  static const String _TOKEN_LEVEL = GeneralParserClassGenerator.VARIABLE_TOKEN_LEVEL;
+
+  static const String _TOKEN_START = GeneralParserClassGenerator.VARIABLE_TOKEN_START;
 
   static const String _TRACE = MethodTraceGenerator.NAME;
+
+  static const String _TEMPLATE_TOKEN_EPILOG = '_TEMPLATE_TOKEN_EPILOG';
+
+  static const String _TEMPLATE_TOKEN_PROLOG = '_TEMPLATE_TOKEN_PROLOG';
 
   static const String _TEMPLATE_WITH_CACHE = '_TEMPLATE_WITH_CACHE';
 
@@ -31,11 +37,22 @@ class ProductionRuleGenerator extends TemplateGenerator {
 
   static const String PREFIX_PARSE = 'parse_';
 
+  static String _templateTokenEpilog = '''
+if (--$_TOKEN_LEVEL == 0) {
+  $_TOKEN = null;
+  $_TOKEN_START = null;
+}''';
+
+  static String _templateTokenProlog = '''
+if ($_TOKEN_LEVEL++ == 0) {
+  $_TOKEN = {{TOKEN}};
+  $_TOKEN_START = $_CURSOR;
+}''';
+
   static String _templateWithCache = '''
 dynamic {{NAME}}() {
   {{#COMMENTS}}
-  {{#ENTER}}
-  {{#VARIABLES}}      
+  {{#ENTER}}        
   var pos = $_CURSOR;    
   if(pos <= $_CACHE_POS) {
     $_RESULT = $_GET_FROM_CACHE({{RULE_ID}});
@@ -43,10 +60,12 @@ dynamic {{NAME}}() {
   if($_RESULT != null) {
     {{#LEAVE_CACHED}}
     return $_RESULT[0];       
-  }  
-  {{#FLAGS}}  
+  }
+  {{#VARIABLES}}
+  {{#TOKEN_PROLOG}}    
   {{#EXPRESSION}}
   $_ADD_TO_CACHE($_RESULT, pos, {{RULE_ID}});
+  {{#TOKEN_EPILOG}}
   {{#LEAVE}}        
   return $_RESULT;
 }
@@ -55,10 +74,11 @@ dynamic {{NAME}}() {
   static String _templateWithoutCache = '''
 dynamic {{NAME}}() {
   {{#COMMENTS}}
-  {{#ENTER}}
-  {{#FLAGS}}  
-  {{#VARIABLES}}  
+  {{#ENTER}}  
+  {{#VARIABLES}}
+  {{#TOKEN_PROLOG}}  
   {{#EXPRESSION}}
+  {{#TOKEN_EPILOG}}
   {{#LEAVE}}    
   return $_RESULT;
 }
@@ -94,6 +114,8 @@ dynamic {{NAME}}() {
     _productionRule = productionRule;
     _expressionGenerator = new OrderedChoiceExpressionGenerator(productionRule.expression, this);
     _comment = parserClassGenerator.parserGenerator.comment;
+    addTemplate(_TEMPLATE_TOKEN_EPILOG, _templateTokenEpilog);
+    addTemplate(_TEMPLATE_TOKEN_PROLOG, _templateTokenProlog);
     addTemplate(_TEMPLATE_WITH_CACHE, _templateWithCache);
     addTemplate(_TEMPLATE_WITHOUT_CACHE, _templateWithoutCache);
   }
@@ -175,6 +197,26 @@ dynamic {{NAME}}() {
     block.assign('#LEAVE_CACHE', "$_TRACE('$name', ($_SUCCESS ? '$success' : '$failed'));");
   }
 
+  List<String> _generateTokenEpilog() {
+    if (!_productionRule.isTerminal) {
+      return const <String>[];
+    }
+
+    var block = getTemplateBlock(_TEMPLATE_TOKEN_EPILOG);
+    return block.process();
+  }
+
+  List<String> _generateTokenProlog() {
+    if (!_productionRule.isTerminal) {
+      return const <String>[];
+    }
+
+    var block = getTemplateBlock(_TEMPLATE_TOKEN_PROLOG);
+    var name = Utils.toPrintable(_productionRule.getTokenName());
+    block.assign("TOKEN", "\"$name\"");
+    return block.process();
+  }
+
   List<String> _generateVariables() {
     var strings = [];
     for (var name in _variables.keys) {
@@ -188,11 +230,6 @@ dynamic {{NAME}}() {
     }
 
     strings.add('var $_RESULT;');
-    if (_productionRule.isMasterTerminal) {
-      var expected = Expectation.getExpectedAsPrintableList(_productionRule.expression);
-      strings.add('$_TERMINAL = const $expected;');
-    }
-
     return strings;
   }
 
@@ -203,6 +240,11 @@ dynamic {{NAME}}() {
       var lexical = _productionRule.isTerminal ? 'TERMINAL' : 'NONTERMINAL';
       block.assign('#COMMENTS', '// $lexical');
       block.assign('#COMMENTS', '// $_productionRule');
+    }
+
+    if (_productionRule.isTerminal) {
+      block.assign('#TOKEN_EPILOG', _generateTokenEpilog());
+      block.assign('#TOKEN_PROLOG', _generateTokenProlog());
     }
 
     if (parserClassGenerator.parserGenerator.trace) {
@@ -228,6 +270,11 @@ dynamic {{NAME}}() {
       block.assign('#COMMENTS', '// $_productionRule');
     }
 
+    if (_productionRule.isTerminal) {
+      block.assign('#TOKEN_EPILOG', _generateTokenEpilog());
+      block.assign('#TOKEN_PROLOG', _generateTokenProlog());
+    }
+
     if (parserClassGenerator.parserGenerator.trace) {
       _assignTraceVariables(block);
     }
@@ -237,24 +284,5 @@ dynamic {{NAME}}() {
     //block.assign('#FLAGS', _setFlag());
     block.assign('NAME', methodName);
     return block.process();
-  }
-
-  List<String> _setFlag() {
-    var reset = 0;
-    var set = 0;
-    var strings = [];
-    if (_productionRule.isTerminal) {
-      set |= GeneralParserClassGenerator.FLAG_TOKENIZATION;
-    }
-
-    if (reset != 0) {
-      // strings.add('// $_FLAG &= ${reset};');
-    }
-
-    if (set != 0) {
-      // strings.add('// $_FLAG |= ${set};');
-    }
-
-    return strings;
   }
 }

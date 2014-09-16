@@ -13,11 +13,44 @@ Add public API of the parser generator
 
 =======================================
 
-Add support of "error recovering"
+Document (private) API of parser:
+- _cursor
+- _flatten
+- _inputLen
+- _token
+- _tokenStart
+
+Document (public) API of parser:
+- calculatePos
+- column
+- errors !!!
+- expected ???
+- line
+- unexpected ???
 
 =======================================
 
-_flatten should remove null's
+Add conception of parser errors
+
+Add member "get:errors" into generated parser class
+
+abstract class XXXParserError {
+  ParserErrorTypes type;
+  int position;
+  String to String();
+}
+
+class XXXParserErrorTypes {
+  static const ParserErrorTypes XXX;
+}
+
+=======================================
+
+Add public API of the parser generator
+
+=======================================
+
+Add support of "error recovering"
 
 =======================================
 

@@ -15,5 +15,3 @@ part 'src/grammar_analyzer/nonterminals_with_lexemes_finder.dart';
 part 'src/grammar_analyzer/starting_rules_finder.dart';
 part 'src/grammar_analyzer/unconventional_names_finder.dart';
 part 'src/grammar_analyzer/unresolved_rules_finder.dart';
-part 'src/grammar_analyzer/usage_of_master_terminals_as_slave.dart';
-part 'src/grammar_analyzer/usage_of_slave_terminals_in_nonterminals_finder.dart';

@@ -70,20 +70,6 @@ class GrammarAnalyzer {
       warnings.add('Warning: Found terminal symbol "${rule.name}" with lower case name.');
     }
 
-    var masters = new UsageOfMasterTerminalsAsSlaveFinder().find(rules);
-    for (var rule in masters.keys) {
-      for (var expression in masters[rule]) {
-        warnings.add('Warning: Found usage of the master terminal as a slave in "${rule.name}": \'$expression\'');
-      }
-    }
-
-    var slaves = new UsageOfSlaveTerminalsInNonterminalsFinder().find(rules);
-    for (var rule in slaves.keys) {
-      for (var expression in slaves[rule]) {
-        warnings.add('Warning: Found usage of the slave terminal as a master in "${rule.name}": \'$expression\'');
-      }
-    }
-
     return warnings;
   }
 }

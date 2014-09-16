@@ -184,7 +184,8 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
 
     var end = startCharacters.end;
     var start = startCharacters.start;
-    block.assign('EXPECTED', Expectation.getExpectedAsPrintableList(_expression));
+    var lexemes = Utils.toPrintableList(_expression.expectedLexemes.toList());
+    block.assign('EXPECTED', "const [${lexemes.join(", ")}]");
     block.assign('MIN', start);
     block.assign('MAX', end);
     block.assign('POSITION', position - start);
@@ -251,7 +252,8 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
     }
 
     block.assign('CHARACTER', character);
-    block.assign('EXPECTED', Expectation.getExpectedAsPrintableList(_expression));
+    var lexemes = Utils.toPrintableList(_expression.expectedLexemes.toList());
+    block.assign('EXPECTED', "const [${lexemes.join(", ")}]");
     block.assign('RULE', '${_getProductionRuleName()}');
     return block.process();
   }

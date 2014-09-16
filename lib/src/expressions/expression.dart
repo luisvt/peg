@@ -29,7 +29,9 @@ abstract class Expression {
 
   Set<Expression> directRightExpressions = new Set<Expression>();
 
-  Set<String> expected = new Set<String>();
+  Set<String> expectedLexemes = new Set<String>();
+
+  Set<String> expectedStrings = new Set<String>();
 
   int flag = 0;
 

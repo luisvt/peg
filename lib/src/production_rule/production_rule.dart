@@ -11,7 +11,9 @@ class ProductionRule {
 
   Set<ProductionRule> directCallers = new Set<ProductionRule>();
 
-  Set<String> expected = new Set<String>();
+  Set<String> expectedLexemes = new Set<String>();
+
+  Set<String> expectedStrings = new Set<String>();
 
   final OrderedChoiceExpression expression;
 
@@ -105,13 +107,19 @@ class ProductionRule {
     return allCallers.length > 0;
   }
 
-  // TODO: improve
-  String getNameOfFailure([ProductionRule caller]) {
-    if (isTerminal) {
-      return name;
+  String getTokenName() {
+    if (!isTerminal) {
+      return null;
     }
 
-    return null;
+    if (expectedStrings.length == 1) {
+      var first = expectedStrings.first;
+      if (first != null) {
+        return first;
+      }
+    }
+
+    return name;
   }
 
   String toString() {
