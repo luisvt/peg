@@ -54,7 +54,8 @@ $_SUCCESS = $_CH >= {{MIN}} && $_CH <= {{MAX}} && $_LOOKAHEAD[$_CH + {{POSITION}
 {{#LOOKAHEAD_COMMENTS}}
 if ($_SUCCESS) $_RESULT = {{RULE}}();    
 if (!$_SUCCESS) {    
-  {{#TRACE}}    
+  {{#TRACE}}
+  {{#COMMENT_EXPECTED}}    
   if ($_CURSOR > $_TESTING) $_FAILURE({{EXPECTED}});
   {{#BREAK}}  
 }''';
@@ -75,6 +76,7 @@ $_SUCCESS = $_CH == {{CHARACTER}}; {{COMMENT_CHARACTER}}
 if ($_SUCCESS) $_RESULT = {{RULE}}();
 if (!$_SUCCESS) {
   {{#TRACE}}
+  {{#COMMENT_EXPECTED}}
   if ($_CURSOR > $_TESTING) $_FAILURE({{EXPECTED}});  
   {{#BREAK}}  
 }''';
@@ -159,17 +161,18 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
   }
 
   List<String> _generateLookahead() {
-    TemplateBlock block;
+    var block = getTemplateBlock(_TEMPLATE_LOOKAHEAD);
+    var expected = _expression.expectedLexemes;
     var parserClassGenerator = productionRuleGenerator.parserClassGenerator;
     var rule = _expression.rule;
     var ruleExpression = rule.expression;
     var lookaheadId = ruleExpression.lookaheadId;
     var position = parserClassGenerator.getLookaheadPosition(lookaheadId);
     var startCharacters = ruleExpression.startCharacters;
-    block = getTemplateBlock(_TEMPLATE_LOOKAHEAD);
     if (productionRuleGenerator.comment) {
       var name = _expression.name;
       block.assign('#COMMENTS', '// ${_expression.name}');
+      block.assign('#COMMENT_EXPECTED', '// Expected: ${Utils.toPrintableList(expected).join(", ")}');
       block.assign('#LOOKAHEAD_COMMENTS', '// Lookahead ($name)');
     }
 
@@ -184,8 +187,7 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
 
     var end = startCharacters.end;
     var start = startCharacters.start;
-    var lexemes = Utils.toPrintableList(_expression.expectedLexemes.toList());
-    block.assign('EXPECTED', "const [${lexemes.join(", ")}]");
+    block.assign('EXPECTED', productionRuleGenerator.parserClassGenerator.addExpected(expected));
     block.assign('MIN', start);
     block.assign('MAX', end);
     block.assign('POSITION', position - start);
@@ -225,18 +227,19 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
   }
 
   List<String> _generateOne() {
-    TemplateBlock block;
+    var block = getTemplateBlock(_TEMPLATE_ONE);;
+    var expected = _expression.expectedLexemes;
     var parserClassGenerator = productionRuleGenerator.parserClassGenerator;
     var rule = _expression.rule;
     var ruleExpression = rule.expression;
     var character = ruleExpression.startCharacters.start;
     var trace = parserClassGenerator.parserGenerator.trace;
-    block = getTemplateBlock(_TEMPLATE_ONE);
     if (productionRuleGenerator.comment) {
       var name = _expression.name;
       var printable = toPrintable(new String.fromCharCode(character));
       block.assign('COMMENT_CHARACTER', '// \'$printable\'');
       block.assign('#COMMENTS', '// ${_expression.name}');
+      block.assign('#COMMENT_EXPECTED', '// Expected: ${Utils.toPrintableList(expected).join(", ")}');
       block.assign('#LOOKAHEAD_COMMENTS', '// Lookahead ($name)');
     } else {
       block.assign('COMMENT_CHARACTER', '');
@@ -252,8 +255,7 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
     }
 
     block.assign('CHARACTER', character);
-    var lexemes = Utils.toPrintableList(_expression.expectedLexemes.toList());
-    block.assign('EXPECTED', "const [${lexemes.join(", ")}]");
+    block.assign('EXPECTED', productionRuleGenerator.parserClassGenerator.addExpected(expected));
     block.assign('RULE', '${_getProductionRuleName()}');
     return block.process();
   }

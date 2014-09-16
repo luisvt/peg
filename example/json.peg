@@ -73,25 +73,25 @@ array <-
   { $$ = _flatten($2).fold([], (p, c) => p..add(c)); }
 
 QUOTATION_MARK <-
-  ["]
+  '"'
 
 BEGIN_ARRAY <-
-  [\[] WS
+  '[' WS
 
 BEGIN_OBJECT <-
-  [{] WS
+  '{' WS
 
 DECIMAL_POINT <-
-  [.] WS { $$ = $1; }
+  '.' WS { $$ = $1; }
 
 E <-
-  ([e] / [E]) WS { $$ = $1; }
+  ('e' / 'E') WS { $$ = $1; }
 
 EXP <-
   E (MINUS / PLUS)? DIGIT+ WS { $$ = _flatten(_compact([$1, $2, $3])).join(); }
 
 END_ARRAY <-
-  [\]] WS
+  ']' WS
 
 END_OBJECT <-
   '}' WS
@@ -106,10 +106,10 @@ INT <-
   DIGIT+ WS { $$ = _flatten($1).join(); }
 
 MINUS <-
-  [-] WS { $$ = $1; }
+  '-' WS { $$ = $1; }
 
 NAME_SEPARATOR <-
-  [:] WS
+  ':' WS
 
 NULL <-
   "null" WS { $$ = null; }
@@ -118,7 +118,7 @@ NUMBER <-
   MINUS? INT FRAC? EXP? WS { $$ = _parseNumber($1, $2, $3, $4); }
 
 PLUS <-
- [+] WS { $$ = $1; }
+ '+' WS { $$ = $1; }
 
 STRING <-
   QUOTATION_MARK CHAR* QUOTATION_MARK WS { $$ = _flatten($2).join(); }
@@ -127,18 +127,18 @@ TRUE <-
   "true" WS { $$ = true; }
 
 VALUE_SEPARATOR <-
-  [,] WS
+  ',' WS
 
 CHAR <-
   UNESCAPED
   / ESCAPE ["\\/bfnrt]                     { $$ = _escape($2); }
-  / ESCAPE [u] HEXDIG HEXDIG HEXDIG HEXDIG { $$ = _hex2str([$3, $4, $5, $6].join()); }
+  / ESCAPE 'u' HEXDIG HEXDIG HEXDIG HEXDIG { $$ = _hex2str([$3, $4, $5, $6].join()); }
 
 DIGIT <-
   [0-9]
 
 ESCAPE <-
-  [\\]
+  '\\'
 
 EOF <-
    !.

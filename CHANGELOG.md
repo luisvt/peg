@@ -1,3 +1,8 @@
+## 0.0.20
+
+- Added statistics about an auto generated names of the terminals (they used in the error messages). This feature useful for correcting grammar for better perception of the components of the grammar.
+- Fixed bugs in `ExpectationResolver` (error messages about the expected lexemes are now more correct)
+
 ## 0.0.19
 
 - Added full functional example of json parser

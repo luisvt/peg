@@ -112,8 +112,8 @@ class ProductionRule {
       return null;
     }
 
-    if (expectedStrings.length == 1) {
-      var first = expectedStrings.first;
+    if (expectedLexemes.length == 1) {
+      var first = expectedLexemes.first;
       if (first != null) {
         return first;
       }

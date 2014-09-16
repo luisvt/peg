@@ -28,8 +28,6 @@ Expression _prefix(dynamic prefix, Expression expression, String action) {
   return expression;
 }
 
-dynamic SPACING(s) => s == null ? '' : s;
-
 Expression _suffix(String suffix, Expression expression) {
   switch (suffix) {
     case '?':
@@ -44,20 +42,24 @@ Expression _suffix(String suffix, Expression expression) {
 
 }%
 
+{
+List _normalize(Iterable sequence) => _flatten(_compact(sequence));
+}
+
 Grammar <-
   SPACING? Globals? Members? Definition+ EOF { $$ = new Grammar($4, $2, $3); }
 
 Globals <-
-  '%{' GlobalsBody* '}%' SPACING { $$ = _flatten(["{", $2, "}", SPACING($4)]).join(); }
+  '%{' GlobalsBody* '}%' SPACING { $$ = _normalize(["{", $2, "}", $4]).join(); }
 
 GlobalsBody <-
   !'}%' . { $$ = $2; }
 
 Members <-
-  '{' ActionBody* '}' SPACING { $$ = _flatten([$1, $2, $3, SPACING($4)]).join(); }
+  '{' ActionBody* '}' SPACING { $$ = _normalize([$1, $2, $3, $4]).join(); }
   
 Action <-
-  '{' ActionBody* '}' SPACING { $$ = _flatten([$1, $2, $3, SPACING($4)]).join(); }
+  '{' ActionBody* '}' SPACING { $$ = _normalize([$1, $2, $3, $4]).join(); }
 
 ActionBody <-
   Action
@@ -86,7 +88,7 @@ Primary <-
   / DOT                   { $$ = new AnyCharacterExpression(); }
   
 Literal <-
-  '\'' (!'\'' Char { $$ = $2; })* '\'' SPACING { $$ = new LiteralExpression(new String.fromCharCodes($2)); } 
+  "'" (!"'" Char { $$ = $2; })* "'" SPACING { $$ = new LiteralExpression(new String.fromCharCodes($2)); } 
   / '"' (!'"' Char { $$ = $2; })* '"' SPACING  { $$ = new LiteralExpression(new String.fromCharCodes($2)); }  
   
 Class <-
@@ -146,7 +148,7 @@ DOT <-
   '.' SPACING
 
 HEX_NUMBER <-
-  '\\u' [0-9a-fA-F]+ { $$ = int.parse($2.join(), radix: 16); }
+  [\\] 'u' [0-9a-fA-F]+ { $$ = int.parse($2.join(), radix: 16); }
   
 COMMENT <-
   '#' (!EOL .)* EOL?

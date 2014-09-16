@@ -30,8 +30,6 @@ Expression _prefix(dynamic prefix, Expression expression, String action) {
   return expression;
 }
 
-dynamic SPACING(s) => s == null ? '' : s;
-
 Expression _suffix(String suffix, Expression expression) {
   switch (suffix) {
     case '?':
@@ -67,6 +65,36 @@ class PegParser {
   static final List<int> _strings3 = <int>[92, 117];
   // "<-"
   static final List<int> _strings4 = <int>[60, 45];
+  static final List<String> _expect0 = <String>["&"];
+  static final List<String> _expect1 = <String>["{"];
+  static final List<String> _expect2 = <String>[null, "{"];
+  static final List<String> _expect3 = <String>[")"];
+  static final List<String> _expect4 = <String>["EOL"];
+  static final List<String> _expect5 = <String>[null];
+  static final List<String> _expect6 = <String>["#"];
+  static final List<String> _expect7 = <String>["\\u"];
+  static final List<String> _expect8 = <String>[null, "\\", "\\u"];
+  static final List<String> _expect9 = <String>["["];
+  static final List<String> _expect10 = <String>["."];
+  static final List<String> _expect11 = <String>["IDENTIFIER"];
+  static final List<String> _expect12 = <String>["<-"];
+  static final List<String> _expect13 = <String>["\"", "\'", "(", ".", "IDENTIFIER", "["];
+  static final List<String> _expect14 = <String>["EOF"];
+  static final List<String> _expect15 = <String>["/"];
+  static final List<String> _expect16 = <String>["%{"];
+  static final List<String> _expect17 = <String>["IDENT_START"];
+  static final List<String> _expect18 = <String>["IDENT_CONT"];
+  static final List<String> _expect19 = <String>["\"", "\'"];
+  static final List<String> _expect20 = <String>["!"];
+  static final List<String> _expect21 = <String>["("];
+  static final List<String> _expect22 = <String>["+"];
+  static final List<String> _expect23 = <String>["!", "&"];
+  static final List<String> _expect24 = <String>["?"];
+  static final List<String> _expect25 = <String>["SPACE"];
+  static final List<String> _expect26 = <String>["#", "SPACE"];
+  static final List<String> _expect27 = <String>["SPACING"];
+  static final List<String> _expect28 = <String>["*"];
+  static final List<String> _expect29 = <String>["*", "+", "?"];
   List _cache;
   int _cachePos;
   List<int> _cacheRule;
@@ -148,7 +176,8 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["&"]);
+      // Expected: "&"
+      _failure(_expect0);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -206,7 +235,7 @@ class PegParser {
         final $3 = seq[2];
         // SPACING
         final $4 = seq[3];
-        $$ = _flatten([$1, $2, $3, SPACING($4)]).join();    
+        $$ = _normalize([$1, $2, $3, $4]).join();    
       }
       break;  
     }
@@ -215,7 +244,8 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(const []);
+      // Expected: "{"
+      _failure(_expect1);
     }
     return $$;
   }
@@ -232,7 +262,8 @@ class PegParser {
       // Lookahead (Action)
       if (success) $$ = _parse_Action();
       if (!success) {
-        if (_cursor > _testing) _failure(const []);  
+        // Expected: "{"
+        if (_cursor > _testing) _failure(_expect1);  
       }
       if (success) break;
       // !"}" .
@@ -271,7 +302,8 @@ class PegParser {
       break;
     }
     if (!success && _cursor > _testing) {
-      _failure(const []);
+      // Expected: "{", null
+      _failure(_expect2);
     }
     return $$;
   }
@@ -306,7 +338,8 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(const [")"]);
+      // Expected: ")"
+      _failure(_expect3);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -346,7 +379,8 @@ class PegParser {
           // Lookahead (EOL)
           if (success) $$ = _parse_EOL();    
           if (!success) {    
-            if (_cursor > _testing) _failure(const ["EOL"]);
+            // Expected: "EOL"    
+            if (_cursor > _testing) _failure(_expect4);
           }
           _ch = ch2;
           _cursor = pos2; 
@@ -367,7 +401,8 @@ class PegParser {
           _cursor = pos1;
         }
         if (!success && _cursor > _testing) {
-          _failure(const []);
+          // Expected: null
+          _failure(_expect5);
         }
         if (success) {  
           reps.add($$);
@@ -389,7 +424,8 @@ class PegParser {
       // Lookahead (EOL)
       if (success) $$ = _parse_EOL();    
       if (!success) {    
-        if (_cursor > _testing) _failure(const ["EOL"]);
+        // Expected: "EOL"    
+        if (_cursor > _testing) _failure(_expect4);
       }
       success = true; 
       _testing = testing2;
@@ -403,7 +439,8 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["#"]);
+      // Expected: "#"
+      _failure(_expect6);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -450,7 +487,8 @@ class PegParser {
       // Lookahead (HEX_NUMBER)
       if (success) $$ = _parse_HEX_NUMBER();
       if (!success) {
-        if (_cursor > _testing) _failure(const ["\\u"]);  
+        // Expected: "\\u"
+        if (_cursor > _testing) _failure(_expect7);  
       }
       if (success) break;
       // !"\\" !EOL .
@@ -477,7 +515,8 @@ class PegParser {
         // Lookahead (EOL)
         if (success) $$ = _parse_EOL();    
         if (!success) {    
-          if (_cursor > _testing) _failure(const ["EOL"]);
+          // Expected: "EOL"    
+          if (_cursor > _testing) _failure(_expect4);
         }
         _ch = ch3;
         _cursor = pos3; 
@@ -509,7 +548,8 @@ class PegParser {
       break;
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["\\u"]);
+      // Expected: "\\", "\\u", null
+      _failure(_expect8);
     }
     return $$;
   }
@@ -563,7 +603,8 @@ class PegParser {
           _cursor = pos1;
         }
         if (!success && _cursor > _testing) {
-          _failure(const ["\\u"]);
+          // Expected: "\\", "\\u", null
+          _failure(_expect8);
         }
         if (success) {  
           reps.add($$);
@@ -606,7 +647,8 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(const []);
+      // Expected: "["
+      _failure(_expect9);
     }
     return $$;
   }
@@ -641,7 +683,8 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["."]);
+      // Expected: "."
+      _failure(_expect10);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -663,7 +706,8 @@ class PegParser {
       // Lookahead (IDENTIFIER)
       if (success) $$ = _parse_IDENTIFIER();    
       if (!success) {    
-        if (_cursor > _testing) _failure(const ["IDENT_START", "IDENTIFIER"]);
+        // Expected: "IDENTIFIER"    
+        if (_cursor > _testing) _failure(_expect11);
         break;  
       }
       var seq = new List(3)..[0] = $$;
@@ -673,7 +717,8 @@ class PegParser {
       // Lookahead (LEFTARROW)
       if (success) $$ = _parse_LEFTARROW();
       if (!success) {
-        if (_cursor > _testing) _failure(const ["<-"]);  
+        // Expected: "<-"
+        if (_cursor > _testing) _failure(_expect12);  
         break;  
       }
       seq[1] = $$;
@@ -683,7 +728,8 @@ class PegParser {
       // Lookahead (Expression)
       if (success) $$ = _parse_Expression();    
       if (!success) {    
-        if (_cursor > _testing) _failure(const ["IDENT_START", "IDENTIFIER", "(", "."]);
+        // Expected: "IDENTIFIER", "(", "\'", "\"", "[", "."    
+        if (_cursor > _testing) _failure(_expect13);
         break;  
       }
       seq[2] = $$;
@@ -704,7 +750,8 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["IDENT_START", "IDENTIFIER"]);
+      // Expected: "IDENTIFIER"
+      _failure(_expect11);
     }
     return $$;
   }
@@ -728,7 +775,8 @@ class PegParser {
     $$ = null;
     success = !success;
     if (!success && _cursor > _testing) {
-      _failure(const [null, "EOF"]);
+      // Expected: "EOF"
+      _failure(_expect14);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -755,7 +803,8 @@ class PegParser {
       break;
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["EOL"]);
+      // Expected: "EOL"
+      _failure(_expect4);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -777,7 +826,8 @@ class PegParser {
       // Lookahead (Sequence)
       if (success) $$ = _parse_Sequence();    
       if (!success) {    
-        if (_cursor > _testing) _failure(const ["IDENT_START", "IDENTIFIER", "(", "."]);
+        // Expected: "IDENTIFIER", "(", "\'", "\"", "[", "."    
+        if (_cursor > _testing) _failure(_expect13);
         break;  
       }
       var seq = new List(2)..[0] = $$;
@@ -794,7 +844,8 @@ class PegParser {
           // Lookahead (SLASH)
           if (success) $$ = _parse_SLASH();
           if (!success) {
-            if (_cursor > _testing) _failure(const ["/"]);  
+            // Expected: "/"
+            if (_cursor > _testing) _failure(_expect15);  
             break;  
           }
           var seq = new List(2)..[0] = $$;
@@ -804,7 +855,8 @@ class PegParser {
           // Lookahead (Sequence)
           if (success) $$ = _parse_Sequence();    
           if (!success) {    
-            if (_cursor > _testing) _failure(const ["IDENT_START", "IDENTIFIER", "(", "."]);
+            // Expected: "IDENTIFIER", "(", "\'", "\"", "[", "."    
+            if (_cursor > _testing) _failure(_expect13);
             break;  
           }
           seq[1] = $$;
@@ -823,7 +875,8 @@ class PegParser {
           _cursor = pos1;
         }
         if (!success && _cursor > _testing) {
-          _failure(const ["/"]);
+          // Expected: "/"
+          _failure(_expect15);
         }
         if (success) {  
           reps.add($$);
@@ -851,7 +904,8 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["IDENT_START", "IDENTIFIER", "(", "."]);
+      // Expected: "IDENTIFIER", "(", "\'", "\"", "[", "."
+      _failure(_expect13);
     }
     return $$;
   }
@@ -905,7 +959,7 @@ class PegParser {
         final $3 = seq[2];
         // SPACING
         final $4 = seq[3];
-        $$ = _flatten(["{", $2, "}", SPACING($4)]).join();    
+        $$ = _normalize(["{", $2, "}", $4]).join();    
       }
       break;  
     }
@@ -914,7 +968,8 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(const []);
+      // Expected: "%{"
+      _failure(_expect16);
     }
     return $$;
   }
@@ -957,7 +1012,8 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(const []);
+      // Expected: null
+      _failure(_expect5);
     }
     return $$;
   }
@@ -1017,7 +1073,8 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["\\u"]);
+      // Expected: "\\u"
+      _failure(_expect7);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -1043,7 +1100,8 @@ class PegParser {
       // Lookahead (IDENT_START)
       if (success) $$ = _parse_IDENT_START();    
       if (!success) {    
-        if (_cursor > _testing) _failure(const ["IDENT_START"]);
+        // Expected: "IDENT_START"    
+        if (_cursor > _testing) _failure(_expect17);
         break;  
       }
       var seq = new List(3)..[0] = $$;
@@ -1057,7 +1115,8 @@ class PegParser {
         // Lookahead (IDENT_CONT)
         if (success) $$ = _parse_IDENT_CONT();    
         if (!success) {    
-          if (_cursor > _testing) _failure(const ["IDENT_START", "IDENT_CONT"]);
+          // Expected: "IDENT_CONT"    
+          if (_cursor > _testing) _failure(_expect18);
         }
         if (success) {  
           reps.add($$);
@@ -1094,7 +1153,8 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["IDENT_START", "IDENTIFIER"]);
+      // Expected: "IDENTIFIER"
+      _failure(_expect11);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -1119,7 +1179,8 @@ class PegParser {
       // Lookahead (IDENT_START)
       if (success) $$ = _parse_IDENT_START();    
       if (!success) {    
-        if (_cursor > _testing) _failure(const ["IDENT_START"]);
+        // Expected: "IDENT_START"    
+        if (_cursor > _testing) _failure(_expect17);
       }
       if (success) break;
       // [0-9]
@@ -1127,7 +1188,8 @@ class PegParser {
       break;
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["IDENT_START", "IDENT_CONT"]);
+      // Expected: "IDENT_CONT"
+      _failure(_expect18);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -1147,7 +1209,8 @@ class PegParser {
     // [A-Z_a-z]
     $$ = _matchMapping(65, 122, _mapping3);
     if (!success && _cursor > _testing) {
-      _failure(const ["IDENT_START"]);
+      // Expected: "IDENT_START"
+      _failure(_expect17);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -1186,7 +1249,8 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["<-"]);
+      // Expected: "<-"
+      _failure(_expect12);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -1246,7 +1310,8 @@ class PegParser {
             _cursor = pos1;
           }
           if (!success && _cursor > _testing) {
-            _failure(const ["\\u"]);
+            // Expected: "\\", "\\u", null
+            _failure(_expect8);
           }
           if (success) {  
             reps.add($$);
@@ -1334,7 +1399,8 @@ class PegParser {
             _cursor = pos4;
           }
           if (!success && _cursor > _testing) {
-            _failure(const ["\\u"]);
+            // Expected: "\\", "\\u", null
+            _failure(_expect8);
           }
           if (success) {  
             reps.add($$);
@@ -1379,7 +1445,8 @@ class PegParser {
       break;
     }
     if (!success && _cursor > _testing) {
-      _failure(const []);
+      // Expected: "\'", "\""
+      _failure(_expect19);
     }
     return $$;
   }
@@ -1433,7 +1500,7 @@ class PegParser {
         final $3 = seq[2];
         // SPACING
         final $4 = seq[3];
-        $$ = _flatten([$1, $2, $3, SPACING($4)]).join();    
+        $$ = _normalize([$1, $2, $3, $4]).join();    
       }
       break;  
     }
@@ -1442,7 +1509,8 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(const []);
+      // Expected: "{"
+      _failure(_expect1);
     }
     return $$;
   }
@@ -1484,7 +1552,8 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["!"]);
+      // Expected: "!"
+      _failure(_expect20);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -1523,7 +1592,8 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["("]);
+      // Expected: "("
+      _failure(_expect21);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -1569,7 +1639,8 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["+"]);
+      // Expected: "+"
+      _failure(_expect22);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -1596,7 +1667,8 @@ class PegParser {
         // Lookahead (AND)
         if (success) $$ = _parse_AND();
         if (!success) {
-          if (_cursor > _testing) _failure(const ["&"]);  
+          // Expected: "&"
+          if (_cursor > _testing) _failure(_expect0);  
         }
         if (success) break;
         // NOT
@@ -1605,12 +1677,14 @@ class PegParser {
         // Lookahead (NOT)
         if (success) $$ = _parse_NOT();
         if (!success) {
-          if (_cursor > _testing) _failure(const ["!"]);  
+          // Expected: "!"
+          if (_cursor > _testing) _failure(_expect20);  
         }
         break;
       }
       if (!success && _cursor > _testing) {
-        _failure(const ["&", "!"]);
+        // Expected: "&", "!"
+        _failure(_expect23);
       }
       success = true; 
       _testing = testing0;
@@ -1622,7 +1696,8 @@ class PegParser {
       // Lookahead (Suffix)
       if (success) $$ = _parse_Suffix();    
       if (!success) {    
-        if (_cursor > _testing) _failure(const ["IDENT_START", "IDENTIFIER", "(", "."]);
+        // Expected: "IDENTIFIER", "(", "\'", "\"", "[", "."    
+        if (_cursor > _testing) _failure(_expect13);
         break;  
       }
       seq[1] = $$;
@@ -1635,7 +1710,8 @@ class PegParser {
       // Lookahead (Action)
       if (success) $$ = _parse_Action();
       if (!success) {
-        if (_cursor > _testing) _failure(const []);  
+        // Expected: "{"
+        if (_cursor > _testing) _failure(_expect1);  
       }
       success = true; 
       _testing = testing1;
@@ -1658,7 +1734,8 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["IDENT_START", "IDENTIFIER", "(", "."]);
+      // Expected: "IDENTIFIER", "(", "\'", "\"", "[", "."
+      _failure(_expect13);
     }
     return $$;
   }
@@ -1678,7 +1755,8 @@ class PegParser {
         // Lookahead (IDENTIFIER)
         if (success) $$ = _parse_IDENTIFIER();    
         if (!success) {    
-          if (_cursor > _testing) _failure(const ["IDENT_START", "IDENTIFIER"]);
+          // Expected: "IDENTIFIER"    
+          if (_cursor > _testing) _failure(_expect11);
           break;  
         }
         var seq = new List(2)..[0] = $$;
@@ -1691,7 +1769,8 @@ class PegParser {
         // Lookahead (LEFTARROW)
         if (success) $$ = _parse_LEFTARROW();
         if (!success) {
-          if (_cursor > _testing) _failure(const ["<-"]);  
+          // Expected: "<-"
+          if (_cursor > _testing) _failure(_expect12);  
         }
         _ch = ch1;
         _cursor = pos1; 
@@ -1724,7 +1803,8 @@ class PegParser {
         // Lookahead (OPEN)
         if (success) $$ = _parse_OPEN();
         if (!success) {
-          if (_cursor > _testing) _failure(const ["("]);  
+          // Expected: "("
+          if (_cursor > _testing) _failure(_expect21);  
           break;  
         }
         var seq = new List(3)..[0] = $$;
@@ -1734,7 +1814,8 @@ class PegParser {
         // Lookahead (Expression)
         if (success) $$ = _parse_Expression();    
         if (!success) {    
-          if (_cursor > _testing) _failure(const ["IDENT_START", "IDENTIFIER", "(", "."]);
+          // Expected: "IDENTIFIER", "(", "\'", "\"", "[", "."    
+          if (_cursor > _testing) _failure(_expect13);
           break;  
         }
         seq[1] = $$;
@@ -1744,7 +1825,8 @@ class PegParser {
         // Lookahead (CLOSE)
         if (success) $$ = _parse_CLOSE();
         if (!success) {
-          if (_cursor > _testing) _failure(const [")"]);  
+          // Expected: ")"
+          if (_cursor > _testing) _failure(_expect3);  
           break;  
         }
         seq[2] = $$;
@@ -1771,7 +1853,8 @@ class PegParser {
       // Lookahead (Literal)
       if (success) $$ = _parse_Literal();    
       if (!success) {    
-        if (_cursor > _testing) _failure(const []);
+        // Expected: "\'", "\""    
+        if (_cursor > _testing) _failure(_expect19);
       }
       if (success) break;
       // Class
@@ -1780,7 +1863,8 @@ class PegParser {
       // Lookahead (Class)
       if (success) $$ = _parse_Class();
       if (!success) {
-        if (_cursor > _testing) _failure(const []);  
+        // Expected: "["
+        if (_cursor > _testing) _failure(_expect9);  
       }
       if (success) break;
       // DOT
@@ -1789,7 +1873,8 @@ class PegParser {
       // Lookahead (DOT)
       if (success) $$ = _parse_DOT();
       if (!success) {
-        if (_cursor > _testing) _failure(const ["."]);  
+        // Expected: "."
+        if (_cursor > _testing) _failure(_expect10);  
       }
       if (success) {    
         // DOT
@@ -1799,7 +1884,8 @@ class PegParser {
       break;
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["IDENT_START", "IDENTIFIER", "(", "."]);
+      // Expected: "IDENTIFIER", "(", "\'", "\"", "[", "."
+      _failure(_expect13);
     }
     return $$;
   }
@@ -1841,7 +1927,8 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["?"]);
+      // Expected: "?"
+      _failure(_expect24);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -1898,7 +1985,8 @@ class PegParser {
       break;
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["\\u"]);
+      // Expected: "\\", "\\u", null
+      _failure(_expect8);
     }
     return $$;
   }
@@ -1933,7 +2021,8 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["/"]);
+      // Expected: "/"
+      _failure(_expect15);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -1961,12 +2050,14 @@ class PegParser {
       // Lookahead (EOL)
       if (success) $$ = _parse_EOL();    
       if (!success) {    
-        if (_cursor > _testing) _failure(const ["EOL"]);
+        // Expected: "EOL"    
+        if (_cursor > _testing) _failure(_expect4);
       }
       break;
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["EOL", "SPACE"]);
+      // Expected: "SPACE"
+      _failure(_expect25);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -1995,7 +2086,8 @@ class PegParser {
         // Lookahead (SPACE)
         if (success) $$ = _parse_SPACE();    
         if (!success) {    
-          if (_cursor > _testing) _failure(const ["EOL", "SPACE"]);
+          // Expected: "SPACE"    
+          if (_cursor > _testing) _failure(_expect25);
         }
         if (success) break;
         // COMMENT
@@ -2004,12 +2096,14 @@ class PegParser {
         // Lookahead (COMMENT)
         if (success) $$ = _parse_COMMENT();
         if (!success) {
-          if (_cursor > _testing) _failure(const ["#"]);  
+          // Expected: "#"
+          if (_cursor > _testing) _failure(_expect6);  
         }
         break;
       }
       if (!success && _cursor > _testing) {
-        _failure(const ["EOL", "SPACE", "#"]);
+        // Expected: "SPACE", "#"
+        _failure(_expect26);
       }
       if (success) {  
         reps.add($$);
@@ -2021,7 +2115,8 @@ class PegParser {
       }
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["SPACING"]);
+      // Expected: "SPACING"
+      _failure(_expect27);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -2067,7 +2162,8 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["*"]);
+      // Expected: "*"
+      _failure(_expect28);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -2089,7 +2185,8 @@ class PegParser {
       // Lookahead (Prefix)  
       if (success) $$ = _parse_Prefix();      
       if (!success) {      
-        if (_cursor > _testing) _failure(const ["IDENT_START", "IDENTIFIER", "(", "."]);  
+        // Expected: "IDENTIFIER", "(", "\'", "\"", "[", "."      
+        if (_cursor > _testing) _failure(_expect13);  
       }  
       if (success) {
        if (first) {      
@@ -2115,7 +2212,8 @@ class PegParser {
       $$ = new SequenceExpression($1);    
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["IDENT_START", "IDENTIFIER", "(", "."]);
+      // Expected: "IDENTIFIER", "(", "\'", "\"", "[", "."
+      _failure(_expect13);
     }
     return $$;
   }
@@ -2133,7 +2231,8 @@ class PegParser {
       // Lookahead (Primary)
       if (success) $$ = _parse_Primary();    
       if (!success) {    
-        if (_cursor > _testing) _failure(const ["IDENT_START", "IDENTIFIER", "(", "."]);
+        // Expected: "IDENTIFIER", "(", "\'", "\"", "[", "."    
+        if (_cursor > _testing) _failure(_expect13);
         break;  
       }
       var seq = new List(2)..[0] = $$;
@@ -2148,7 +2247,8 @@ class PegParser {
         // Lookahead (QUESTION)
         if (success) $$ = _parse_QUESTION();
         if (!success) {
-          if (_cursor > _testing) _failure(const ["?"]);  
+          // Expected: "?"
+          if (_cursor > _testing) _failure(_expect24);  
         }
         if (success) break;
         // STAR
@@ -2157,7 +2257,8 @@ class PegParser {
         // Lookahead (STAR)
         if (success) $$ = _parse_STAR();
         if (!success) {
-          if (_cursor > _testing) _failure(const ["*"]);  
+          // Expected: "*"
+          if (_cursor > _testing) _failure(_expect28);  
         }
         if (success) break;
         // PLUS
@@ -2166,12 +2267,14 @@ class PegParser {
         // Lookahead (PLUS)
         if (success) $$ = _parse_PLUS();
         if (!success) {
-          if (_cursor > _testing) _failure(const ["+"]);  
+          // Expected: "+"
+          if (_cursor > _testing) _failure(_expect22);  
         }
         break;
       }
       if (!success && _cursor > _testing) {
-        _failure(const ["?", "*", "+"]);
+        // Expected: "?", "*", "+"
+        _failure(_expect29);
       }
       success = true; 
       _testing = testing0;
@@ -2192,7 +2295,8 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["IDENT_START", "IDENTIFIER", "(", "."]);
+      // Expected: "IDENTIFIER", "(", "\'", "\"", "[", "."
+      _failure(_expect13);
     }
     return $$;
   }
@@ -2226,7 +2330,8 @@ class PegParser {
       // Lookahead (Globals)
       if (success) $$ = _parse_Globals();
       if (!success) {
-        if (_cursor > _testing) _failure(const []);  
+        // Expected: "%{"
+        if (_cursor > _testing) _failure(_expect16);  
       }
       success = true; 
       _testing = testing1;
@@ -2241,7 +2346,8 @@ class PegParser {
       // Lookahead (Members)
       if (success) $$ = _parse_Members();
       if (!success) {
-        if (_cursor > _testing) _failure(const []);  
+        // Expected: "{"
+        if (_cursor > _testing) _failure(_expect1);  
       }
       success = true; 
       _testing = testing2;
@@ -2256,7 +2362,8 @@ class PegParser {
         // Lookahead (Definition)  
         if (success) $$ = _parse_Definition();      
         if (!success) {      
-          if (_cursor > _testing) _failure(const ["IDENT_START", "IDENTIFIER"]);  
+          // Expected: "IDENTIFIER"      
+          if (_cursor > _testing) _failure(_expect11);  
         }  
         if (success) {
          if (first) {      
@@ -2303,7 +2410,8 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      _failure(const ["IDENT_START", "IDENTIFIER"]);
+      // Expected: "IDENTIFIER"
+      _failure(_expect11);
     }
     return $$;
   }
@@ -2748,5 +2856,6 @@ class PegParser {
     return new String.fromCharCode(_runes[_failurePos]);  
   }
   
+  List _normalize(Iterable sequence) => _flatten(_compact(sequence));
 }
 

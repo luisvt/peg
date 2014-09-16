@@ -23,6 +23,8 @@ class GeneralParserClassGenerator extends TemplateGenerator {
 
   static const String VARIABLE_EXPECTED = "_expected";
 
+  static const String VARIABLE_EXPECT = "_expect";
+
   static const String VARIABLE_FAILURE_POS = "_failurePos";
 
   static const String VARIABLE_INPUT_LEN = "_inputLen";
@@ -59,17 +61,19 @@ class GeneralParserClassGenerator extends TemplateGenerator {
 
   final GeneralParserGenerator parserGenerator;
 
-  List<ProductionRuleGenerator> _generators = [];
+  List<List<String>> _expected = <List<String>>[];
+
+  List<ProductionRuleGenerator> _generators = <ProductionRuleGenerator>[];
 
   Map<int, dynamic> _lookaheadRules = new Map<int, dynamic>();
 
-  List<int> _lookaheadTable = new List<int>();
+  List<int> _lookaheadTable = <int>[];
 
-  List<SparseBoolList> _mappings = [];
+  List<SparseBoolList> _mappings = <SparseBoolList>[];
 
-  List<SparseBoolList> _ranges = [];
+  List<SparseBoolList> _ranges = <SparseBoolList>[];
 
-  List<String> _strings = [];
+  List<String> _strings = <String>[];
 
   GeneralParserClassGenerator(this.name, this.grammar, this.parserGenerator) {
     if (name == null) {
@@ -85,6 +89,48 @@ class GeneralParserClassGenerator extends TemplateGenerator {
     }
 
     _optimizeLookaheads();
+  }
+
+  String addExpected(Iterable<String> expected) {
+    if (expected == null) {
+      throw new ArgumentError('expected: $expected');
+    }
+
+    var list = expected.toList();
+    list.sort((a, b) {
+      if (a == null) {
+        return -1;
+      }
+
+      if (b == null) {
+        return 1;
+      }
+
+      return a.compareTo(b);
+    });
+
+    var count = _expected.length;
+    var length = list.length;
+    for (var i = 0; i < count; i++) {
+      var current = _expected[i];
+      if (current.length != length) {
+        continue;
+      }
+
+      var equal = true;
+      for (var i = 0; i < length; i++) {
+        if (current[i] != list[i]) {
+          equal = false;
+        }
+      }
+
+      if (equal) {
+        return '$VARIABLE_EXPECT$i';
+      }
+    }
+
+    _expected.add(list);
+    return '$VARIABLE_EXPECT${_expected.length - 1}';
   }
 
   String addMapping(SparseBoolList range) {
@@ -344,6 +390,14 @@ class GeneralParserClassGenerator extends TemplateGenerator {
         }
 
         strings.add('static final List<int> $VARIABLE_STRINGS$i = <int>[${list.join(', ')}];');
+      }
+    }
+
+    if (!_expected.isEmpty) {
+      var length = _expected.length;
+      for (var i = 0; i < length; i++) {
+        var expected = Utils.toPrintableList(_expected[i]);
+        strings.add('static final List<String> $VARIABLE_EXPECT$i = <String>[${expected.join(', ')}];');
       }
     }
 

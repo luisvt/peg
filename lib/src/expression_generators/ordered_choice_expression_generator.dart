@@ -33,12 +33,14 @@ while (true) {
   break;
 }
 if (!$_SUCCESS && $_CURSOR > $_TESTING) {
+  {{#COMMENT_EXPECTED}}
   $_FAILURE({{EXPECTED}});
 }''';
 
   static final String _templateSingle = '''
 {{#EXPRESSION}}
 if (!$_SUCCESS && $_CURSOR > $_TESTING) {
+  {{#COMMENT_EXPECTED}}
   $_FAILURE({{EXPECTED}});
 }''';
 
@@ -82,20 +84,25 @@ if (!$_SUCCESS && $_CURSOR > $_TESTING) {
       block.assign('#EXPRESSIONS', inner.process());
     }
 
+    var expected = _expression.expectedLexemes;
     if (productionRuleGenerator.comment) {
       block.assign('#COMMENTS', '// $_expression');
+      block.assign('#COMMENT_EXPECTED', '// Expected: ${Utils.toPrintableList(expected).join(", ")}');
     }
 
-    var lexemes = Utils.toPrintableList(_expression.expectedLexemes.toList());
-    block.assign('EXPECTED', "const [${lexemes.join(", ")}]");
+    block.assign('EXPECTED', productionRuleGenerator.parserClassGenerator.addExpected(expected));
     return block.process();
   }
 
   List<String> _generateSingle() {
     var block = getTemplateBlock(_TEMPLATE_SINGLE);
     block.assign('#EXPRESSION', _generators[0].generate());
-    var lexemes = Utils.toPrintableList(_expression.expectedLexemes.toList());
-    block.assign('EXPECTED', "const [${lexemes.join(", ")}]");
+    var expected = _expression.expectedLexemes;
+    block.assign('EXPECTED', productionRuleGenerator.parserClassGenerator.addExpected(expected));
+    if (productionRuleGenerator.comment) {
+      block.assign('#COMMENT_EXPECTED', '// Expected: ${Utils.toPrintableList(expected).join(", ")}');
+    }
+
     return block.process();
   }
 }

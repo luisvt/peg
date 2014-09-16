@@ -27,7 +27,7 @@ class FrontendAnalyzer {
     }
 
     new TerminalRulesFinder().find(rules);
-    new ExpectedResolver().resolve(rules);
+    new ExpectationResolver().resolve(rules);
     new ExpressionWithActionsResolver().resolve(rules);
     new StartingRulesFinder().find(rules);
 

@@ -1,6 +1,6 @@
 part of peg.frontend_analyzer;
 
-class ExpectedResolver extends ExpressionResolver {
+class ExpectationResolver extends ExpressionResolver {
   Object visitAndPredicate(AndPredicateExpression expression) {
     var child = expression.expression;
     child.accept(this);
@@ -9,33 +9,24 @@ class ExpectedResolver extends ExpressionResolver {
   }
 
   Object visitAnyCharacter(AnyCharacterExpression expression) {
+    expression.expectedLexemes.add(null);
     expression.expectedStrings.add(null);
     return null;
   }
 
   Object visitCharacterClass(CharacterClassExpression expression) {
-    var done = false;
-    var groups = expression.ranges.groups;
-    if (groups.length == 1) {
-      var group = groups.first;
-      if (group.start == group.end) {
-        expression.expectedStrings.add(new String.fromCharCode(group.start));
-        done = true;
-      }
-    }
-
-    if (!done) {
-      expression.expectedStrings.add(null);
-    }
-
+    expression.expectedLexemes.add(null);
+    expression.expectedStrings.add(null);
     return null;
   }
 
   Object visitLiteral(LiteralExpression expression) {
     var text = expression.text;
     if (text.isEmpty) {
+      expression.expectedLexemes.add(null);
       expression.expectedStrings.add(null);
     } else {
+      expression.expectedLexemes.add(text);
       expression.expectedStrings.add(text);
     }
 
@@ -85,13 +76,20 @@ class ExpectedResolver extends ExpressionResolver {
       var owner = expression.owner;
       if (owner.isTerminal) {
         var done = false;
+        var hasUnexpected = false;
+        var expectedLexemes = expression.expectedLexemes;
         var expectedStrings = expression.expectedStrings;
-        if (expectedStrings.length == 1) {
-          var first = expectedStrings.first;
-          if (first != null) {
-            expression.expectedLexemes.add(first);
-            done = true;
+        expectedLexemes.clear();
+        for (var string in expectedStrings) {
+          if (string == null) {
+            hasUnexpected = true;
+            break;
           }
+        }
+
+        if (expectedStrings.length == 1 && !hasUnexpected) {
+          expectedLexemes.add(expectedStrings.first);
+          done = true;
         }
 
         if (!done) {

@@ -61,7 +61,7 @@ CLOSE <- ")" SPACING
 
 DOT <- "." SPACING
 
-HEX_NUMBER <- "\\u" [0-9A-Fa-f]+
+HEX_NUMBER <- [\] "u" [0-9A-Fa-f]+
 
 COMMENT <- "#" (!EOL .)* EOL?
 

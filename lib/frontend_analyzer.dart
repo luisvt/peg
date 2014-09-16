@@ -9,7 +9,7 @@ import 'package:peg/expression_visitors.dart';
 import 'package:strings/strings.dart';
 
 part 'src/frontend_analyzer/automaton_resolver.dart';
-part 'src/frontend_analyzer/expected_resolver.dart';
+part 'src/frontend_analyzer/expectation_resolver.dart';
 part 'src/frontend_analyzer/expression_able_not_consume_input_resolver.dart';
 part 'src/frontend_analyzer/expression_callers_resolver.dart';
 part 'src/frontend_analyzer/expression_level_resolver.dart';
