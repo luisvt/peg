@@ -775,14 +775,14 @@ class ArithmeticParser {
   dynamic _parse_Sentence() {
     // NONTERMINAL
     // Sentence <- Term (PLUS / MINUS) Sentence / Term
+    var $$;        
     var pos = _cursor;    
     if(pos <= _cachePos) {
       $$ = _getFromCache(1);
     }
     if($$ != null) {
       return $$[0];       
-    }
-    var $$;
+    }  
     // Term (PLUS / MINUS) Sentence / Term
     while (true) {
       // Term (PLUS / MINUS) Sentence
@@ -871,14 +871,14 @@ class ArithmeticParser {
   dynamic _parse_Term() {
     // NONTERMINAL
     // Term <- Atom (MUL / DIV) Term / Atom
+    var $$;        
     var pos = _cursor;    
     if(pos <= _cachePos) {
       $$ = _getFromCache(2);
     }
     if($$ != null) {
       return $$[0];       
-    }
-    var $$;
+    }  
     // Atom (MUL / DIV) Term / Atom
     while (true) {
       // Atom (MUL / DIV) Term
@@ -994,14 +994,14 @@ class ArithmeticParser {
   dynamic _parse__SPACES() {
     // TERMINAL
     // _SPACES <- WS*
+    var $$;        
     var pos = _cursor;    
     if(pos <= _cachePos) {
       $$ = _getFromCache(14);
     }
     if($$ != null) {
       return $$[0];       
-    }
-    var $$;
+    }  
     if (_tokenLevel++ == 0) {    
       _token = "_SPACES";    
       _tokenStart = _cursor;    

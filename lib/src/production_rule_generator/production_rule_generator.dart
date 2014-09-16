@@ -52,7 +52,8 @@ if ($_TOKEN_LEVEL++ == 0) {
   static String _templateWithCache = '''
 dynamic {{NAME}}() {
   {{#COMMENTS}}
-  {{#ENTER}}        
+  {{#ENTER}}
+  {{#VARIABLES}}        
   var pos = $_CURSOR;    
   if(pos <= $_CACHE_POS) {
     $_RESULT = $_GET_FROM_CACHE({{RULE_ID}});
@@ -60,8 +61,7 @@ dynamic {{NAME}}() {
   if($_RESULT != null) {
     {{#LEAVE_CACHED}}
     return $_RESULT[0];       
-  }
-  {{#VARIABLES}}
+  }  
   {{#TOKEN_PROLOG}}    
   {{#EXPRESSION}}
   $_ADD_TO_CACHE($_RESULT, pos, {{RULE_ID}});
