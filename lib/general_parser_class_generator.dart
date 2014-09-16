@@ -1,11 +1,11 @@
 library peg.grammar_generator;
 
 import 'package:lists/lists.dart';
+import 'package:string_matching/helper_methods_generators.dart';
 import 'package:strings/strings.dart';
 import 'package:peg/class_generator.dart';
 import 'package:peg/generators.dart';
 import 'package:peg/grammar.dart';
-import 'package:peg/helper_methods_generators.dart';
 import 'package:peg/general_parser_generator.dart';
 import 'package:peg/production_rule.dart';
 import 'package:peg/production_rule_generator.dart';

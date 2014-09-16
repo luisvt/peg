@@ -65,11 +65,6 @@ class GrammarAnalyzer {
       warnings.add('Warning: Found optional expression in choice in "${rule.name}": $expression');
     }
 
-    var unconventionalNames = new UnconventionalNamesFinder().find(rules);
-    for (var rule in unconventionalNames) {
-      warnings.add('Warning: Found terminal symbol "${rule.name}" with lower case name.');
-    }
-
     return warnings;
   }
 }

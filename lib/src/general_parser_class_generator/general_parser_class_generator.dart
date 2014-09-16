@@ -196,7 +196,9 @@ class GeneralParserClassGenerator extends TemplateGenerator {
 
   List<String> generate() {
     var constructors = [new ClassContructorGenerator(name).generate()];
-    var generators = <String, Generator>{};
+    // TODO: Temporary
+    //var generators = <String, Generator>{};
+    var generators = <String, dynamic>{};
     var methods = [];
     for (var rule in grammar.rules) {
       var generator = new ProductionRuleGenerator(rule, this);

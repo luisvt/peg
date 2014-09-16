@@ -61,10 +61,8 @@ class PegParser {
   static final List<int> _strings1 = <int>[37, 123];
   // "}%"
   static final List<int> _strings2 = <int>[125, 37];
-  // "\u"
-  static final List<int> _strings3 = <int>[92, 117];
   // "<-"
-  static final List<int> _strings4 = <int>[60, 45];
+  static final List<int> _strings3 = <int>[60, 45];
   static final List<String> _expect0 = <String>["&"];
   static final List<String> _expect1 = <String>["{"];
   static final List<String> _expect2 = <String>[null, "{"];
@@ -72,8 +70,8 @@ class PegParser {
   static final List<String> _expect4 = <String>["EOL"];
   static final List<String> _expect5 = <String>[null];
   static final List<String> _expect6 = <String>["#"];
-  static final List<String> _expect7 = <String>["\\u"];
-  static final List<String> _expect8 = <String>[null, "\\", "\\u"];
+  static final List<String> _expect7 = <String>["HEX_NUMBER"];
+  static final List<String> _expect8 = <String>[null, "HEX_NUMBER", "\\"];
   static final List<String> _expect9 = <String>["["];
   static final List<String> _expect10 = <String>["."];
   static final List<String> _expect11 = <String>["IDENTIFIER"];
@@ -487,7 +485,7 @@ class PegParser {
       // Lookahead (HEX_NUMBER)
       if (success) $$ = _parse_HEX_NUMBER();
       if (!success) {
-        // Expected: "\\u"
+        // Expected: "HEX_NUMBER"
         if (_cursor > _testing) _failure(_expect7);  
       }
       if (success) break;
@@ -548,7 +546,7 @@ class PegParser {
       break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "\\", "\\u", null
+      // Expected: "\\", "HEX_NUMBER", null
       _failure(_expect8);
     }
     return $$;
@@ -603,7 +601,7 @@ class PegParser {
           _cursor = pos1;
         }
         if (!success && _cursor > _testing) {
-          // Expected: "\\", "\\u", null
+          // Expected: "\\", "HEX_NUMBER", null
           _failure(_expect8);
         }
         if (success) {  
@@ -1020,19 +1018,23 @@ class PegParser {
   
   dynamic _parse_HEX_NUMBER() {
     // TERMINAL
-    // HEX_NUMBER <- "\\u" [0-9A-Fa-f]+
+    // HEX_NUMBER <- [\] "u" [0-9A-Fa-f]+
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "\\u";  
+      _token = "HEX_NUMBER";  
       _tokenStart = _cursor;  
     }  
-    // "\\u" [0-9A-Fa-f]+
+    // [\] "u" [0-9A-Fa-f]+
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
-      // "\\u"
-      $$ = _matchString(_strings3, '\\u');
+      // [\]
+      $$ = _matchChar(92, '\\');
       if (!success) break;
-      var seq = new List(2)..[0] = $$;
+      var seq = new List(3)..[0] = $$;
+      // "u"
+      $$ = _matchChar(117, 'u');
+      if (!success) break;
+      seq[1] = $$;
       // [0-9A-Fa-f]+
       var testing0;
       for (var first = true, reps; ;) {  
@@ -1057,13 +1059,15 @@ class PegParser {
         }  
       }
       if (!success) break;
-      seq[1] = $$;
+      seq[2] = $$;
       $$ = seq;
       if (success) {    
-        // "\\u"
+        // [\]
         final $1 = seq[0];
-        // [0-9A-Fa-f]+
+        // "u"
         final $2 = seq[1];
+        // [0-9A-Fa-f]+
+        final $3 = seq[2];
         $$ = int.parse($2.join(), radix: 16);    
       }
       break;  
@@ -1073,7 +1077,7 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "\\u"
+      // Expected: "HEX_NUMBER"
       _failure(_expect7);
     }
     if (--_tokenLevel == 0) {
@@ -1231,7 +1235,7 @@ class PegParser {
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
       // "<-"
-      $$ = _matchString(_strings4, '<-');
+      $$ = _matchString(_strings3, '<-');
       if (!success) break;
       var seq = new List(2)..[0] = $$;
       // SPACING
@@ -1310,7 +1314,7 @@ class PegParser {
             _cursor = pos1;
           }
           if (!success && _cursor > _testing) {
-            // Expected: "\\", "\\u", null
+            // Expected: "\\", "HEX_NUMBER", null
             _failure(_expect8);
           }
           if (success) {  
@@ -1399,7 +1403,7 @@ class PegParser {
             _cursor = pos4;
           }
           if (!success && _cursor > _testing) {
-            // Expected: "\\", "\\u", null
+            // Expected: "\\", "HEX_NUMBER", null
             _failure(_expect8);
           }
           if (success) {  
@@ -1985,7 +1989,7 @@ class PegParser {
       break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "\\", "\\u", null
+      // Expected: "\\", "HEX_NUMBER", null
       _failure(_expect8);
     }
     return $$;
@@ -2679,7 +2683,7 @@ class PegParser {
   String _matchString(List<int> runes, String string) {
     var length = runes.length;  
     success = true;  
-    if (_cursor + length < _inputLen) {
+    if (_cursor + length <= _inputLen) {
       for (var i = 0; i < length; i++) {
         if (runes[i] != _runes[_cursor + i]) {
           success = false;

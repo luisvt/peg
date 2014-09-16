@@ -25,7 +25,7 @@ class MethodMatchStringGenerator extends TemplateGenerator {
 String $NAME(List<int> runes, String string) {
   var length = runes.length;  
   $_SUCCESS = true;  
-  if ($_CURSOR + length < $_INPUT_LEN) {
+  if ($_CURSOR + length <= $_INPUT_LEN) {
     for (var i = 0; i < length; i++) {
       if (runes[i] != $_RUNES[$_CURSOR + i]) {
         $_SUCCESS = false;

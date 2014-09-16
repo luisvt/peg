@@ -3,7 +3,7 @@
 
 PEG (Parsing expression grammar) parsers generator.
 
-Version: 0.0.20
+Version: 0.0.21
 
 Status: Experimental
 
@@ -1376,7 +1376,7 @@ class ArithmeticParser {
   String _matchString(List<int> runes, String string) {
     var length = runes.length;  
     success = true;  
-    if (_cursor + length < _inputLen) {
+    if (_cursor + length <= _inputLen) {
       for (var i = 0; i < length; i++) {
         if (runes[i] != _runes[_cursor + i]) {
           success = false;

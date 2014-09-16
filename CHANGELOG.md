@@ -1,6 +1,11 @@
+## 0.0.21
+
+- Fixed bug in `_matchString`
+- Removed convention on a naming terminals and nonterminals in favor to the possibility of analyzing (and control) the grammar on the subject of the auto generated representation names of terminals
+
 ## 0.0.20
 
-- Added statistics about an auto generated names of the terminals (they used in the error messages). This feature useful for correcting grammar for better perception of the components of the grammar.
+- Added statistics about an auto generated names of the terminals (they used in the error messages). This feature useful for correcting grammar for better perception of the components of the grammar
 - Fixed bugs in `ExpectationResolver` (error messages about the expected lexemes are now more correct)
 
 ## 0.0.19

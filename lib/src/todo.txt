@@ -63,13 +63,6 @@ _calcucatePos
 
 =======================================
 
-Add support of subterminals
-- Subterminals resolver
-- In-parsing going inside the subterminals from terminals
-- Improve error messages (going inside the subterminals from terminals)
-
-=======================================
-
 rewrite "duplicate data remover" in general parser generator
 
 =======================================
@@ -101,13 +94,6 @@ Nullable
 MayAdvance
 MayFail
 
-=======================================
-
-Hide sub-terminals failure messages
-FLAG
-use in failure (sub terminals)
-use in memoization
-
 ========================================
 
 Remove Utils.charToString() and other related to strings
@@ -127,25 +113,8 @@ TEST: choice with optional expression
 
 ========================================
 
-parse([int position = 0]) {
-  reset(position);
-  return parseXXXSTART_RULE();
-}
-
-========================================
-
 AND action:
  & { $$ = true; }
-
- ========================================
-
- Improve "expected" names via:
-  _failure with flag?
-  subterminals
-
-========================================
-
-lookahead optional w/o action (return default values)
 
 ========================================
 
