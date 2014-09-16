@@ -73,7 +73,7 @@ array <-
   { $$ = _flatten($2).fold([], (p, c) => p..add(c)); }
 
 QUOTATION_MARK <-
-  '"'
+  ["]
 
 BEGIN_ARRAY <-
   '[' WS

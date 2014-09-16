@@ -1068,7 +1068,7 @@ class PegParser {
         final $2 = seq[1];
         // [0-9A-Fa-f]+
         final $3 = seq[2];
-        $$ = int.parse($2.join(), radix: 16);    
+        $$ = int.parse($3.join(), radix: 16);    
       }
       break;  
     }

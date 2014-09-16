@@ -148,7 +148,7 @@ DOT <-
   '.' SPACING
 
 HEX_NUMBER <-
-  [\\] 'u' [0-9a-fA-F]+ { $$ = int.parse($2.join(), radix: 16); }
+  [\\] 'u' [0-9a-fA-F]+ { $$ = int.parse($3.join(), radix: 16); }
   
 COMMENT <-
   '#' (!EOL .)* EOL?

@@ -4,7 +4,7 @@ import "package:strings/strings.dart";
 import "json_parser.dart";
 
 void main() {
-  var result = parse(json);
+  var result = parse('json');
   print(result);
 }
 

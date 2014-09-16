@@ -82,13 +82,14 @@ class JsonParser {
   static final List<String> _expect18 = <String>[":"];
   static final List<String> _expect19 = <String>["null"];
   static final List<String> _expect20 = <String>["NUMBER"];
-  static final List<String> _expect21 = <String>["\""];
-  static final List<String> _expect22 = <String>["true"];
-  static final List<String> _expect23 = <String>["UNESCAPED"];
-  static final List<String> _expect24 = <String>[","];
-  static final List<String> _expect25 = <String>["WS"];
-  static final List<String> _expect26 = <String>["\"", "NUMBER", "[", "false", "null", "true", "{"];
-  static final List<String> _expect27 = <String>["[", "{"];
+  static final List<String> _expect21 = <String>["QUOTATION_MARK"];
+  static final List<String> _expect22 = <String>["STRING"];
+  static final List<String> _expect23 = <String>["true"];
+  static final List<String> _expect24 = <String>["UNESCAPED"];
+  static final List<String> _expect25 = <String>[","];
+  static final List<String> _expect26 = <String>["WS"];
+  static final List<String> _expect27 = <String>["NUMBER", "STRING", "[", "false", "null", "true", "{"];
+  static final List<String> _expect28 = <String>["[", "{"];
   List _cache;
   int _cachePos;
   List<int> _cacheRule;
@@ -1275,16 +1276,16 @@ class JsonParser {
   
   dynamic _parse_QUOTATION_MARK() {
     // TERMINAL
-    // QUOTATION_MARK <- "\""
+    // QUOTATION_MARK <- ["]
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "\"";  
+      _token = "QUOTATION_MARK";  
       _tokenStart = _cursor;  
     }  
-    // "\""
+    // ["]
     $$ = _matchChar(34, '\"');
     if (!success && _cursor > _testing) {
-      // Expected: "\""
+      // Expected: "QUOTATION_MARK"
       _failure(_expect21);
     }
     if (--_tokenLevel == 0) {
@@ -1299,7 +1300,7 @@ class JsonParser {
     // STRING <- QUOTATION_MARK CHAR* QUOTATION_MARK WS
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "\"";  
+      _token = "STRING";  
       _tokenStart = _cursor;  
     }  
     // QUOTATION_MARK CHAR* QUOTATION_MARK WS
@@ -1311,7 +1312,7 @@ class JsonParser {
       // Lookahead (QUOTATION_MARK)
       if (success) $$ = _parse_QUOTATION_MARK();
       if (!success) {
-        // Expected: "\""
+        // Expected: "QUOTATION_MARK"
         if (_cursor > _testing) _failure(_expect21);  
         break;  
       }
@@ -1339,7 +1340,7 @@ class JsonParser {
       // Lookahead (QUOTATION_MARK)
       if (success) $$ = _parse_QUOTATION_MARK();
       if (!success) {
-        // Expected: "\""
+        // Expected: "QUOTATION_MARK"
         if (_cursor > _testing) _failure(_expect21);  
         break;  
       }
@@ -1370,8 +1371,8 @@ class JsonParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "\""
-      _failure(_expect21);
+      // Expected: "STRING"
+      _failure(_expect22);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -1418,7 +1419,7 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: "true"
-      _failure(_expect22);
+      _failure(_expect23);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -1452,7 +1453,7 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: "UNESCAPED"
-      _failure(_expect23);
+      _failure(_expect24);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -1492,7 +1493,7 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: ","
-      _failure(_expect24);
+      _failure(_expect25);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -1526,7 +1527,7 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: "WS"
-      _failure(_expect25);
+      _failure(_expect26);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -1565,8 +1566,8 @@ class JsonParser {
         // Lookahead (value)
         if (success) $$ = _parse_value();    
         if (!success) {    
-          // Expected: "false", "null", "true", "[", "NUMBER", "\"", "{"    
-          if (_cursor > _testing) _failure(_expect26);
+          // Expected: "false", "null", "true", "[", "NUMBER", "STRING", "{"    
+          if (_cursor > _testing) _failure(_expect27);
           break;  
         }
         var seq = new List(2)..[0] = $$;
@@ -1584,7 +1585,7 @@ class JsonParser {
             if (success) $$ = _parse_VALUE_SEPARATOR();
             if (!success) {
               // Expected: ","
-              if (_cursor > _testing) _failure(_expect24);  
+              if (_cursor > _testing) _failure(_expect25);  
               break;  
             }
             var seq = new List(2)..[0] = $$;
@@ -1594,8 +1595,8 @@ class JsonParser {
             // Lookahead (value)
             if (success) $$ = _parse_value();    
             if (!success) {    
-              // Expected: "false", "null", "true", "[", "NUMBER", "\"", "{"    
-              if (_cursor > _testing) _failure(_expect26);
+              // Expected: "false", "null", "true", "[", "NUMBER", "STRING", "{"    
+              if (_cursor > _testing) _failure(_expect27);
               break;  
             }
             seq[1] = $$;
@@ -1615,7 +1616,7 @@ class JsonParser {
           }
           if (!success && _cursor > _testing) {
             // Expected: ","
-            _failure(_expect24);
+            _failure(_expect25);
           }
           if (success) {  
             reps.add($$);
@@ -1636,8 +1637,8 @@ class JsonParser {
         _cursor = pos1;
       }
       if (!success && _cursor > _testing) {
-        // Expected: "false", "null", "true", "[", "NUMBER", "\"", "{"
-        _failure(_expect26);
+        // Expected: "false", "null", "true", "[", "NUMBER", "STRING", "{"
+        _failure(_expect27);
       }
       success = true; 
       _testing = testing0;
@@ -1690,8 +1691,8 @@ class JsonParser {
       // Lookahead (STRING)
       if (success) $$ = _parse_STRING();
       if (!success) {
-        // Expected: "\""
-        if (_cursor > _testing) _failure(_expect21);  
+        // Expected: "STRING"
+        if (_cursor > _testing) _failure(_expect22);  
         break;  
       }
       var seq = new List(3)..[0] = $$;
@@ -1712,8 +1713,8 @@ class JsonParser {
       // Lookahead (value)
       if (success) $$ = _parse_value();    
       if (!success) {    
-        // Expected: "false", "null", "true", "[", "NUMBER", "\"", "{"    
-        if (_cursor > _testing) _failure(_expect26);
+        // Expected: "false", "null", "true", "[", "NUMBER", "STRING", "{"    
+        if (_cursor > _testing) _failure(_expect27);
         break;  
       }
       seq[2] = $$;
@@ -1734,8 +1735,8 @@ class JsonParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "\""
-      _failure(_expect21);
+      // Expected: "STRING"
+      _failure(_expect22);
     }
     return $$;
   }
@@ -1770,8 +1771,8 @@ class JsonParser {
         // Lookahead (member)
         if (success) $$ = _parse_member();
         if (!success) {
-          // Expected: "\""
-          if (_cursor > _testing) _failure(_expect21);  
+          // Expected: "STRING"
+          if (_cursor > _testing) _failure(_expect22);  
           break;  
         }
         var seq = new List(2)..[0] = $$;
@@ -1789,7 +1790,7 @@ class JsonParser {
             if (success) $$ = _parse_VALUE_SEPARATOR();
             if (!success) {
               // Expected: ","
-              if (_cursor > _testing) _failure(_expect24);  
+              if (_cursor > _testing) _failure(_expect25);  
               break;  
             }
             var seq = new List(2)..[0] = $$;
@@ -1799,8 +1800,8 @@ class JsonParser {
             // Lookahead (member)
             if (success) $$ = _parse_member();
             if (!success) {
-              // Expected: "\""
-              if (_cursor > _testing) _failure(_expect21);  
+              // Expected: "STRING"
+              if (_cursor > _testing) _failure(_expect22);  
               break;  
             }
             seq[1] = $$;
@@ -1820,7 +1821,7 @@ class JsonParser {
           }
           if (!success && _cursor > _testing) {
             // Expected: ","
-            _failure(_expect24);
+            _failure(_expect25);
           }
           if (success) {  
             reps.add($$);
@@ -1841,8 +1842,8 @@ class JsonParser {
         _cursor = pos1;
       }
       if (!success && _cursor > _testing) {
-        // Expected: "\""
-        _failure(_expect21);
+        // Expected: "STRING"
+        _failure(_expect22);
       }
       success = true; 
       _testing = testing0;
@@ -1915,7 +1916,7 @@ class JsonParser {
       if (success) $$ = _parse_TRUE();
       if (!success) {
         // Expected: "true"
-        if (_cursor > _testing) _failure(_expect22);  
+        if (_cursor > _testing) _failure(_expect23);  
       }
       if (success) break;
       // object
@@ -1954,14 +1955,14 @@ class JsonParser {
       // Lookahead (STRING)
       if (success) $$ = _parse_STRING();
       if (!success) {
-        // Expected: "\""
-        if (_cursor > _testing) _failure(_expect21);  
+        // Expected: "STRING"
+        if (_cursor > _testing) _failure(_expect22);  
       }
       break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "false", "null", "true", "[", "NUMBER", "\"", "{"
-      _failure(_expect26);
+      // Expected: "false", "null", "true", "[", "NUMBER", "STRING", "{"
+      _failure(_expect27);
     }
     return $$;
   }
@@ -2011,7 +2012,7 @@ class JsonParser {
       }
       if (!success && _cursor > _testing) {
         // Expected: "{", "["
-        _failure(_expect27);
+        _failure(_expect28);
       }
       if (!success) break;
       seq[1] = $$;
@@ -2037,7 +2038,7 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: "{", "["
-      _failure(_expect27);
+      _failure(_expect28);
     }
     return $$;
   }
@@ -2305,7 +2306,7 @@ class JsonParser {
   String _matchString(List<int> runes, String string) {
     var length = runes.length;  
     success = true;  
-    if (_cursor + length < _inputLen) {
+    if (_cursor + length <= _inputLen) {
       for (var i = 0; i < length; i++) {
         if (runes[i] != _runes[_cursor + i]) {
           success = false;
