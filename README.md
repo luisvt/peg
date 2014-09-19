@@ -3,7 +3,7 @@
 
 PEG (Parsing expression grammar) parsers generator.
 
-Version: 0.0.22
+Version: 0.0.23
 
 Status: Experimental
 
@@ -266,70 +266,355 @@ num _binop(num left, num right, String op) {
   }
 }
 class ArithmeticParser {
-  static const int EOF = -1;
   static final List<String> _ascii = new List<String>.generate(128, (c) => new String.fromCharCode(c));
+  
+  static final List<String> _expect0 = <String>["(", "NUMBER"];
+  
+  static final List<String> _expect1 = <String>["+"];
+  
+  static final List<String> _expect10 = <String>["EOF"];
+  
+  static final List<String> _expect11 = <String>["WS"];
+  
+  static final List<String> _expect12 = <String>["SPACES"];
+  
+  static final List<String> _expect2 = <String>["-"];
+  
+  static final List<String> _expect3 = <String>["+", "-"];
+  
+  static final List<String> _expect4 = <String>["*"];
+  
+  static final List<String> _expect5 = <String>["/"];
+  
+  static final List<String> _expect6 = <String>["*", "/"];
+  
+  static final List<String> _expect7 = <String>["NUMBER"];
+  
+  static final List<String> _expect8 = <String>["("];
+  
+  static final List<String> _expect9 = <String>[")"];
+  
   static final List<bool> _lookahead = _unmap([0x800013, 0x3ff01]);
-  // '\t', '\n', '\r', ' '
+  
+  // '\t',.generate() '\n',.generate() '\r',.generate() ' '
   static final List<bool> _mapping0 = _unmap([0x800013]);
-  // "\r\n"
+  
+  // '\r\n'
   static final List<int> _strings0 = <int>[13, 10];
-  static final List<String> _expect0 = <String>["NUMBER"];
-  static final List<String> _expect1 = <String>["("];
-  static final List<String> _expect2 = <String>["(", "NUMBER"];
-  static final List<String> _expect3 = <String>[")"];
-  static final List<String> _expect4 = <String>["/"];
-  static final List<String> _expect5 = <String>["EOF"];
-  static final List<String> _expect6 = <String>["-"];
-  static final List<String> _expect7 = <String>["*"];
-  static final List<String> _expect8 = <String>["+"];
-  static final List<String> _expect9 = <String>["WS"];
-  static final List<String> _expect10 = <String>["SPACES"];
-  static final List<String> _expect11 = <String>["+", "-"];
-  static final List<String> _expect12 = <String>["*", "/"];
+  
   List _cache;
+  
   int _cachePos;
+  
   List<int> _cacheRule;
+  
   List<int> _cacheState;
+  
   int _ch;
-  int _column;
+  
   int _cursor;
+  
   List<String> _expected;
+  
   int _failurePos;
+  
+  List<int> _input;
+  
   int _inputLen;
-  int _line;
-  List<int> _runes;
-  bool success;
+  
   int _testing;
+  
   String _token;
+  
   int _tokenLevel;
+  
   int _tokenStart;
   
-  ArithmeticParser(String text) {
+  bool success;
+  
+  final String text;
+  
+  ArithmeticParser(this.text) {
     if (text == null) {
       throw new ArgumentError('text: $text');
     }    
-    _runes = _toRunes(text);
-    _inputLen = _runes.length;
+    _input = _toCodePoints(text);
+    _inputLen = _input.length;
     if (_inputLen >= 0x3fffffe8 / 32) {
       throw new StateError('File size to big: $_inputLen');
     }  
     reset(0);    
   }
   
-  int get column { 
-    if (_column == -1) { 
-      _calculatePos(_failurePos); 
-    } 
-    return _column;       
-  } 
-   
-  int get line { 
-    if (_line == -1) { 
-      _calculatePos(_failurePos); 
-    } 
-    return _line;       
-  } 
-   
+  void _addToCache(dynamic result, int start, int id) {  
+    var cached = _cache[start];
+    if (cached == null) {
+      _cacheRule[start] = id;
+      _cache[start] = [result, _cursor, success];
+    } else {    
+      var slot = start >> 5;
+      var r1 = (slot << 5) & 0x3fffffff;    
+      var mask = 1 << (start - r1);    
+      if ((_cacheState[slot] & mask) == 0) {
+        _cacheState[slot] |= mask;   
+        cached = [new List.filled(2, 0), new Map<int, List>()];
+        _cache[start] = cached;                                      
+      }
+      slot = id >> 5;
+      r1 = (slot << 5) & 0x3fffffff;    
+      mask = 1 << (id - r1);    
+      cached[0][slot] |= mask;
+      cached[1][id] = [result, _cursor, success];      
+    }
+    if (_cachePos < start) {
+      _cachePos = start;
+    }    
+  }
+  
+  Iterable _compact(Iterable iterable) {  
+    if (iterable is List) {
+      var hasNull = false;
+      var length = iterable.length;
+      for (var i = 0; i < length; i++) {
+        if (iterable[i] == null) {
+          hasNull = true;
+          break;
+        }
+      }
+      if (!hasNull) {
+        return iterable;
+      }
+      var result = [];
+      for (var i = 0; i < length; i++) {
+        var element = iterable[i];
+        if (element != null) {
+          result.add(element);
+        }
+      }
+      return result;
+    }   
+    var result = [];
+    for (var element in iterable) {   
+      if (element != null) {
+        result.add(element);
+      }
+    }
+    return result;  
+  }
+  
+  void _failure([List<String> expected]) {  
+    if (_failurePos > _cursor) {
+      return;
+    }
+    if (_cursor > _failurePos) {    
+      _expected = [];
+     _failurePos = _cursor;
+    }
+    if (_token != null) {
+      if (_cursor > _tokenStart) {
+        // TODO:
+        var malformed = true;
+      } else if (_cursor == _inputLen) {
+        // TODO:
+        var unterminated = true;
+      }
+      _expected.add(_token);
+    } else if (expected == null) {
+      _expected.add(null);
+    } else {
+      _expected.addAll(expected);
+    }   
+  }
+  
+  List _flatten(dynamic value) {
+    if (value is List) {
+      var result = [];
+      var length = value.length;
+      for (var i = 0; i < length; i++) {
+        var element = value[i];
+        if (element is Iterable) {
+          result.addAll(_flatten(element));
+        } else {
+          result.add(element);
+        }
+      }
+      return result;
+    } else if (value is Iterable) {
+      var result = [];
+      for (var element in value) {
+        if (element is! List) {
+          result.add(element);
+        } else {
+          result.addAll(_flatten(element));
+        }
+      }
+    }
+    return [value];
+  }
+  
+  dynamic _getFromCache(int id) {  
+    var result = _cache[_cursor];
+    if (result == null) {
+      return null;
+    }    
+    var slot = _cursor >> 5;
+    var r1 = (slot << 5) & 0x3fffffff;  
+    var mask = 1 << (_cursor - r1);
+    if ((_cacheState[slot] & mask) == 0) {
+      if (_cacheRule[_cursor] == id) {      
+        _cursor = result[1];
+        success = result[2];      
+        if (_cursor < _inputLen) {
+          _ch = _input[_cursor];
+        } else {
+          _ch = -1;
+        }      
+        return result;
+      } else {
+        return null;
+      }    
+    }
+    slot = id >> 5;
+    r1 = (slot << 5) & 0x3fffffff;  
+    mask = 1 << (id - r1);
+    if ((result[0][slot] & mask) == 0) {
+      return null;
+    }
+    var data = result[1][id];  
+    _cursor = data[1];
+    success = data[2];
+    if (_cursor < _inputLen) {
+      _ch = _input[_cursor];
+    } else {
+      _ch = -1;
+    }   
+    return data;  
+  }
+  
+  String _matchAny() {
+    success = _cursor < _inputLen;
+    if (success) {
+      String result;
+      if (_ch < 128) {
+        result = _ascii[_ch];  
+      } else {
+        result = new String.fromCharCode(_ch);
+      }    
+      if (++_cursor < _inputLen) {
+        _ch = _input[_cursor];
+      } else {
+        _ch = -1;
+      }    
+      return result;
+    }    
+    return null;  
+  }
+  
+  String _matchChar(int ch, String string) {
+    success = _ch == ch;
+    if (success) {
+      var result = string;  
+      if (++_cursor < _inputLen) {
+        _ch = _input[_cursor];
+      } else {
+        _ch = -1;
+      }    
+      return result;
+    }  
+    return null;  
+  }
+  
+  String _matchMapping(int start, int end, List<bool> mapping) {
+    success = _ch >= start && _ch <= end;
+    if (success) {    
+      if(mapping[_ch - start]) {
+        String result;
+        if (_ch < 128) {
+          result = _ascii[_ch];  
+        } else {
+          result = new String.fromCharCode(_ch);
+        }     
+        if (++_cursor < _inputLen) {
+          _ch = _input[_cursor];
+        } else {
+          _ch = -1;
+        }      
+        return result;
+      }
+      success = false;
+    }  
+    return null;  
+  }
+  
+  String _matchRange(int start, int end) {
+    success = _ch >= start && _ch <= end;
+    if (success) {
+      String result;
+      if (_ch < 128) {
+        result = _ascii[_ch];  
+      } else {
+        result = new String.fromCharCode(_ch);
+      }        
+      if (++_cursor < _inputLen) {
+        _ch = _input[_cursor];
+      } else {
+        _ch = -1;
+      }  
+      return result;
+    }  
+    return null;  
+  }
+  
+  String _matchRanges(List<int> ranges) {
+    var length = ranges.length;
+    for (var i = 0; i < length; i += 2) {
+      if (_ch <= ranges[i + 1]) {
+        if (_ch >= ranges[i]) {
+          String result;
+          if (_ch < 128) {
+            result = _ascii[_ch];  
+          } else {
+            result = new String.fromCharCode(_ch);
+          }          
+          if (++_cursor < _inputLen) {
+            _ch = _input[_cursor];
+          } else {
+             _ch = -1;
+          }
+          success = true;    
+          return result;
+        }      
+      } else break;  
+    }
+    success = false;  
+    return null;  
+  }
+  
+  String _matchString(List<int> runes, String string) {
+    var length = runes.length;  
+    success = true;  
+    if (_cursor + length <= _inputLen) {
+      for (var i = 0; i < length; i++) {
+        if (runes[i] != _input[_cursor + i]) {
+          success = false;
+          break;
+        }
+      }
+    } else {
+      success = false;
+    }  
+    if (success) {
+      _cursor += length;      
+      if (_cursor < _inputLen) {
+        _ch = _input[_cursor];
+      } else {
+        _ch = -1;
+      }    
+      return string;      
+    }  
+    return null; 
+  }
+  
   dynamic _parse_Atom() {
     // NONTERMINAL
     // Atom <- NUMBER / OPEN Sentence CLOSE
@@ -343,7 +628,7 @@ class ArithmeticParser {
       if (success) $$ = _parse_NUMBER();    
       if (!success) {    
         // Expected: "NUMBER"    
-        if (_cursor > _testing) _failure(_expect0);
+        if (_cursor > _testing) _failure(_expect7);
       }
       if (success) break;
       // OPEN Sentence CLOSE
@@ -356,7 +641,7 @@ class ArithmeticParser {
         if (success) $$ = _parse_OPEN();
         if (!success) {
           // Expected: "("
-          if (_cursor > _testing) _failure(_expect1);  
+          if (_cursor > _testing) _failure(_expect8);  
           break;  
         }
         var seq = new List(3)..[0] = $$;
@@ -367,7 +652,7 @@ class ArithmeticParser {
         if (success) $$ = _parse_Sentence();    
         if (!success) {    
           // Expected: "NUMBER", "("    
-          if (_cursor > _testing) _failure(_expect2);
+          if (_cursor > _testing) _failure(_expect0);
           break;  
         }
         seq[1] = $$;
@@ -378,7 +663,7 @@ class ArithmeticParser {
         if (success) $$ = _parse_CLOSE();
         if (!success) {
           // Expected: ")"
-          if (_cursor > _testing) _failure(_expect3);  
+          if (_cursor > _testing) _failure(_expect9);  
           break;  
         }
         seq[2] = $$;
@@ -402,7 +687,7 @@ class ArithmeticParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: "NUMBER", "("
-      _failure(_expect2);
+      _failure(_expect0);
     }
     return $$;
   }
@@ -438,7 +723,7 @@ class ArithmeticParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: ")"
-      _failure(_expect3);
+      _failure(_expect9);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -485,7 +770,7 @@ class ArithmeticParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: "/"
-      _failure(_expect4);
+      _failure(_expect5);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -514,7 +799,7 @@ class ArithmeticParser {
     success = !success;
     if (!success && _cursor > _testing) {
       // Expected: "EOF"
-      _failure(_expect5);
+      _failure(_expect10);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -561,7 +846,7 @@ class ArithmeticParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: "-"
-      _failure(_expect6);
+      _failure(_expect2);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -608,7 +893,7 @@ class ArithmeticParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: "*"
-      _failure(_expect7);
+      _failure(_expect4);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -676,7 +961,7 @@ class ArithmeticParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: "NUMBER"
-      _failure(_expect0);
+      _failure(_expect7);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -716,7 +1001,7 @@ class ArithmeticParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: "("
-      _failure(_expect1);
+      _failure(_expect8);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -763,7 +1048,7 @@ class ArithmeticParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: "+"
-      _failure(_expect8);
+      _failure(_expect1);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -798,7 +1083,7 @@ class ArithmeticParser {
       if (success) $$ = _parse_WS();    
       if (!success) {    
         // Expected: "WS"    
-        if (_cursor > _testing) _failure(_expect9);
+        if (_cursor > _testing) _failure(_expect11);
       }
       if (success) {  
         reps.add($$);
@@ -811,7 +1096,7 @@ class ArithmeticParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: "SPACES"
-      _failure(_expect10);
+      _failure(_expect12);
     }
     _addToCache($$, pos, 12);
     if (--_tokenLevel == 0) {
@@ -844,7 +1129,7 @@ class ArithmeticParser {
         if (success) $$ = _parse_Term();    
         if (!success) {    
           // Expected: "NUMBER", "("    
-          if (_cursor > _testing) _failure(_expect2);
+          if (_cursor > _testing) _failure(_expect0);
           break;  
         }
         var seq = new List(3)..[0] = $$;
@@ -857,7 +1142,7 @@ class ArithmeticParser {
           if (success) $$ = _parse_PLUS();
           if (!success) {
             // Expected: "+"
-            if (_cursor > _testing) _failure(_expect8);  
+            if (_cursor > _testing) _failure(_expect1);  
           }
           if (success) break;
           // MINUS
@@ -867,13 +1152,13 @@ class ArithmeticParser {
           if (success) $$ = _parse_MINUS();
           if (!success) {
             // Expected: "-"
-            if (_cursor > _testing) _failure(_expect6);  
+            if (_cursor > _testing) _failure(_expect2);  
           }
           break;
         }
         if (!success && _cursor > _testing) {
           // Expected: "+", "-"
-          _failure(_expect11);
+          _failure(_expect3);
         }
         if (!success) break;
         seq[1] = $$;
@@ -884,7 +1169,7 @@ class ArithmeticParser {
         if (success) $$ = _parse_Sentence();    
         if (!success) {    
           // Expected: "NUMBER", "("    
-          if (_cursor > _testing) _failure(_expect2);
+          if (_cursor > _testing) _failure(_expect0);
           break;  
         }
         seq[2] = $$;
@@ -912,13 +1197,13 @@ class ArithmeticParser {
       if (success) $$ = _parse_Term();    
       if (!success) {    
         // Expected: "NUMBER", "("    
-        if (_cursor > _testing) _failure(_expect2);
+        if (_cursor > _testing) _failure(_expect0);
       }
       break;
     }
     if (!success && _cursor > _testing) {
       // Expected: "NUMBER", "("
-      _failure(_expect2);
+      _failure(_expect0);
     }
     _addToCache($$, pos, 1);
     return $$;
@@ -947,7 +1232,7 @@ class ArithmeticParser {
         if (success) $$ = _parse_Atom();    
         if (!success) {    
           // Expected: "NUMBER", "("    
-          if (_cursor > _testing) _failure(_expect2);
+          if (_cursor > _testing) _failure(_expect0);
           break;  
         }
         var seq = new List(3)..[0] = $$;
@@ -960,7 +1245,7 @@ class ArithmeticParser {
           if (success) $$ = _parse_MUL();
           if (!success) {
             // Expected: "*"
-            if (_cursor > _testing) _failure(_expect7);  
+            if (_cursor > _testing) _failure(_expect4);  
           }
           if (success) break;
           // DIV
@@ -970,13 +1255,13 @@ class ArithmeticParser {
           if (success) $$ = _parse_DIV();
           if (!success) {
             // Expected: "/"
-            if (_cursor > _testing) _failure(_expect4);  
+            if (_cursor > _testing) _failure(_expect5);  
           }
           break;
         }
         if (!success && _cursor > _testing) {
           // Expected: "*", "/"
-          _failure(_expect12);
+          _failure(_expect6);
         }
         if (!success) break;
         seq[1] = $$;
@@ -987,7 +1272,7 @@ class ArithmeticParser {
         if (success) $$ = _parse_Term();    
         if (!success) {    
           // Expected: "NUMBER", "("    
-          if (_cursor > _testing) _failure(_expect2);
+          if (_cursor > _testing) _failure(_expect0);
           break;  
         }
         seq[2] = $$;
@@ -1015,13 +1300,13 @@ class ArithmeticParser {
       if (success) $$ = _parse_Atom();    
       if (!success) {    
         // Expected: "NUMBER", "("    
-        if (_cursor > _testing) _failure(_expect2);
+        if (_cursor > _testing) _failure(_expect0);
       }
       break;
     }
     if (!success && _cursor > _testing) {
       // Expected: "NUMBER", "("
-      _failure(_expect2);
+      _failure(_expect0);
     }
     _addToCache($$, pos, 2);
     return $$;
@@ -1046,13 +1331,136 @@ class ArithmeticParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: "WS"
-      _failure(_expect9);
+      _failure(_expect11);
     }
     if (--_tokenLevel == 0) {
       _token = null;
       _tokenStart = null;
     }
     return $$;
+  }
+  
+  int _toCodePoint(String string) {
+    if (string == null) {
+      throw new ArgumentError("string: $string");
+    }
+  
+    var length = string.length;
+    if (length == 0) {
+      throw new StateError("An empty string contains no elements.");
+    }
+  
+    var start = string.codeUnitAt(0);
+    if (length == 1) {
+      return start;
+    }
+  
+    if ((start & 0xFC00) == 0xD800) {
+      var end = string.codeUnitAt(1);
+      if ((end & 0xFC00) == 0xDC00) {
+        return (0x10000 + ((start & 0x3FF) << 10) + (end & 0x3FF));
+      }
+    }
+  
+    return start;
+  }
+  
+  List<int> _toCodePoints(String string) {
+    if (string == null) {
+      throw new ArgumentError("string: $string");
+    }
+  
+    var length = string.length;
+    if (length == 0) {
+      return const <int>[];
+    }
+  
+    var codePoints = <int>[];
+    codePoints.length = length;
+    var i = 0;
+    var pos = 0;
+    for ( ; i < length; pos++) {
+      var start = string.codeUnitAt(i);
+      i++;
+      if ((start & 0xFC00) == 0xD800 && i < length) {
+        var end = string.codeUnitAt(i);
+        if ((end & 0xFC00) == 0xDC00) {
+          codePoints[pos] = (0x10000 + ((start & 0x3FF) << 10) + (end & 0x3FF));
+          i++;
+        } else {
+          codePoints[pos] = start;
+        }
+      } else {
+        codePoints[pos] = start;
+      }
+    }
+  
+    codePoints.length = pos;
+    return codePoints;
+  }
+  
+  static List<bool> _unmap(List<int> mapping) {
+    var length = mapping.length;
+    var result = new List<bool>(length * 31);
+    var offset = 0;
+    for (var i = 0; i < length; i++) {
+      var v = mapping[i];
+      for (var j = 0; j < 31; j++) {
+        result[offset++] = v & (1 << j) == 0 ? false : true;
+      }
+    }
+    return result;
+  }
+  
+  List<ArithmeticParserError> errors() {
+    if (success) {
+      return <ArithmeticParserError>[];
+    }
+  
+    String escape(int c) {
+      switch (c) {
+        case 10:
+          return r"\n";
+        case 13:
+          return r"\r";
+        case 09:
+          return r"\t";
+        case -1:
+          return "";
+      }
+      return new String.fromCharCode(c);
+    } 
+    
+    String getc(int position) {  
+      if (position < _inputLen) {
+        return "'${escape(_input[position])}'";      
+      }       
+      return "end of file";
+    }
+  
+    var errors = <ArithmeticParserError>[];
+    if (_failurePos >= _cursor) {
+      var set = new Set<String>();  
+      set.addAll(_expected);
+      var length = 1;
+      if (_failurePos >= _inputLen) {
+        length = 0;
+      }
+      if (set.contains(null)) {
+        var string = getc(_failurePos);
+        var message = "Unexpected $string";
+        var error = new ArithmeticParserError(ArithmeticParserError.UNEXPECTED, _failurePos, length, message);
+        errors.add(error);
+      } else {      
+        var found = getc(_failurePos);      
+        var list = set.toList();
+        list.sort();
+        var message = "Expected ${list.join(", ")} but found $found";
+        var error = new ArithmeticParserError(ArithmeticParserError.EXPECTED, _failurePos, length, message);
+        errors.add(error);
+      }    
+    }
+    return errors;  
   }
   
   dynamic parse_Expr() {
@@ -1082,7 +1490,7 @@ class ArithmeticParser {
       if (success) $$ = _parse_Sentence();    
       if (!success) {    
         // Expected: "NUMBER", "("    
-        if (_cursor > _testing) _failure(_expect2);
+        if (_cursor > _testing) _failure(_expect0);
         break;  
       }
       seq[1] = $$;
@@ -1108,415 +1516,9 @@ class ArithmeticParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: "NUMBER", "("
-      _failure(_expect2);
+      _failure(_expect0);
     }
     return $$;
-  }
-  
-  void _addToCache(dynamic result, int start, int id) {  
-    var cached = _cache[start];
-    if (cached == null) {
-      _cacheRule[start] = id;
-      _cache[start] = [result, _cursor, success];
-    } else {    
-      var slot = start >> 5;
-      var r1 = (slot << 5) & 0x3fffffff;    
-      var mask = 1 << (start - r1);    
-      if ((_cacheState[slot] & mask) == 0) {
-        _cacheState[slot] |= mask;   
-        cached = [new List.filled(2, 0), new Map<int, List>()];
-        _cache[start] = cached;                                      
-      }
-      slot = id >> 5;
-      r1 = (slot << 5) & 0x3fffffff;    
-      mask = 1 << (id - r1);    
-      cached[0][slot] |= mask;
-      cached[1][id] = [result, _cursor, success];      
-    }
-    if (_cachePos < start) {
-      _cachePos = start;
-    }    
-  }
-  
-  void _calculatePos(int pos) {
-    if (pos == null || pos < 0 || pos > _inputLen) {
-      return;
-    }
-    _line = 1;
-    _column = 1;
-    for (var i = 0; i < _inputLen && i < pos; i++) {
-      var c = _runes[i];
-      if (c == 13) {
-        _line++;
-        _column = 1;
-        if (i + 1 < _inputLen && _runes[i + 1] == 10) {
-          i++;
-        }
-      } else if (c == 10) {
-        _line++;
-        _column = 1;
-      } else {
-        _column++;
-      }
-    }
-  }
-  
-  Iterable _compact(Iterable iterable) {  
-    if (iterable is List) {
-      var hasNull = false;
-      var length = iterable.length;
-      for (var i = 0; i < length; i++) {
-        if (iterable[i] == null) {
-          hasNull = true;
-          break;
-        }
-      }
-      if (!hasNull) {
-        return iterable;
-      }
-      var result = [];
-      for (var i = 0; i < length; i++) {
-        var element = iterable[i];
-        if (element != null) {
-          result.add(element);
-        }
-      }
-      return result;
-    }   
-    var result = [];
-    for (var element in iterable) {   
-      if (element != null) {
-        result.add(element);
-      }
-    }
-    return result;  
-  }
-  
-  void _failure([List<String> expected]) {  
-    if (_failurePos > _cursor) {
-      return;
-    }
-    if (_cursor > _failurePos) {    
-      _expected = [];
-     _failurePos = _cursor;
-    }
-    if (_token != null) {
-      _expected.add(_token);
-    } else if (expected == null) {
-      _expected.add(null);
-    } else {
-      _expected.addAll(expected);
-    }   
-  }
-  
-  List _flatten(dynamic value) {
-    if (value is List) {
-      var result = [];
-      var length = value.length;
-      for (var i = 0; i < length; i++) {
-        var element = value[i];
-        if (element is Iterable) {
-          result.addAll(_flatten(element));
-        } else {
-          result.add(element);
-        }
-      }
-      return result;
-    } else if (value is Iterable) {
-      var result = [];
-      for (var element in value) {
-        if (element is! List) {
-          result.add(element);
-        } else {
-          result.addAll(_flatten(element));
-        }
-      }
-    }
-    return [value];
-  }
-  
-  dynamic _getFromCache(int id) {  
-    var result = _cache[_cursor];
-    if (result == null) {
-      return null;
-    }    
-    var slot = _cursor >> 5;
-    var r1 = (slot << 5) & 0x3fffffff;  
-    var mask = 1 << (_cursor - r1);
-    if ((_cacheState[slot] & mask) == 0) {
-      if (_cacheRule[_cursor] == id) {      
-        _cursor = result[1];
-        success = result[2];      
-        if (_cursor < _inputLen) {
-          _ch = _runes[_cursor];
-        } else {
-          _ch = EOF;
-        }      
-        return result;
-      } else {
-        return null;
-      }    
-    }
-    slot = id >> 5;
-    r1 = (slot << 5) & 0x3fffffff;  
-    mask = 1 << (id - r1);
-    if ((result[0][slot] & mask) == 0) {
-      return null;
-    }
-    var data = result[1][id];  
-    _cursor = data[1];
-    success = data[2];
-    if (_cursor < _inputLen) {
-      _ch = _runes[_cursor];
-    } else {
-      _ch = EOF;
-    }   
-    return data;  
-  }
-  
-  String _matchAny() {
-    success = _cursor < _inputLen;
-    if (success) {
-      String result;
-      if (_ch < 128) {
-        result = _ascii[_ch];  
-      } else {
-        result = new String.fromCharCode(_ch);
-      }    
-      if (++_cursor < _inputLen) {
-        _ch = _runes[_cursor];
-      } else {
-        _ch = EOF;
-      }    
-      return result;
-    }    
-    return null;  
-  }
-  
-  String _matchChar(int ch, String string) {
-    success = _ch == ch;
-    if (success) {
-      var result = string;  
-      if (++_cursor < _inputLen) {
-        _ch = _runes[_cursor];
-      } else {
-        _ch = EOF;
-      }    
-      return result;
-    }  
-    return null;  
-  }
-  
-  String _matchMapping(int start, int end, List<bool> mapping) {
-    success = _ch >= start && _ch <= end;
-    if (success) {    
-      if(mapping[_ch - start]) {
-        String result;
-        if (_ch < 128) {
-          result = _ascii[_ch];  
-        } else {
-          result = new String.fromCharCode(_ch);
-        }     
-        if (++_cursor < _inputLen) {
-          _ch = _runes[_cursor];
-        } else {
-          _ch = EOF;
-        }      
-        return result;
-      }
-      success = false;
-    }  
-    return null;  
-  }
-  
-  String _matchRange(int start, int end) {
-    success = _ch >= start && _ch <= end;
-    if (success) {
-      String result;
-      if (_ch < 128) {
-        result = _ascii[_ch];  
-      } else {
-        result = new String.fromCharCode(_ch);
-      }        
-      if (++_cursor < _inputLen) {
-        _ch = _runes[_cursor];
-      } else {
-        _ch = EOF;
-      }  
-      return result;
-    }  
-    return null;  
-  }
-  
-  String _matchRanges(List<int> ranges) {
-    var length = ranges.length;
-    for (var i = 0; i < length; i += 2) {
-      if (_ch <= ranges[i + 1]) {
-        if (_ch >= ranges[i]) {
-          String result;
-          if (_ch < 128) {
-            result = _ascii[_ch];  
-          } else {
-            result = new String.fromCharCode(_ch);
-          }          
-          if (++_cursor < _inputLen) {
-            _ch = _runes[_cursor];
-          } else {
-             _ch = EOF;
-          }
-          success = true;    
-          return result;
-        }      
-      } else break;  
-    }
-    success = false;  
-    return null;  
-  }
-  
-  String _matchString(List<int> runes, String string) {
-    var length = runes.length;  
-    success = true;  
-    if (_cursor + length <= _inputLen) {
-      for (var i = 0; i < length; i++) {
-        if (runes[i] != _runes[_cursor + i]) {
-          success = false;
-          break;
-        }
-      }
-    } else {
-      success = false;
-    }  
-    if (success) {
-      _cursor += length;      
-      if (_cursor < _inputLen) {
-        _ch = _runes[_cursor];
-      } else {
-        _ch = EOF;
-      }    
-      return string;      
-    }  
-    return null; 
-  }
-  
-  void _nextChar([int count = 1]) {  
-    success = true;
-    _cursor += count; 
-    if (_cursor < _inputLen) {
-      _ch = _runes[_cursor];
-    } else {
-      _ch = EOF;
-    }    
-  }
-  
-  bool _testChar(int c, int flag) {
-    if (c < 0 || c > 127) {
-      return false;
-    }    
-    int slot = (c & 0xff) >> 6;  
-    int mask = 1 << c - ((slot << 6) & 0x3fffffff);  
-    if ((flag & mask) != 0) {    
-      return true;
-    }
-    return false;           
-  }
-  
-  bool _testInput(int flag) {
-    if (_cursor >= _inputLen) {
-      return false;
-    }
-    var c = _runes[_cursor];
-    if (c < 0 || c > 127) {
-      return false;
-    }    
-    int slot = (c & 0xff) >> 6;  
-    int mask = 1 << c - ((slot << 6) & 0x3fffffff);  
-    if ((flag & mask) != 0) {    
-      return true;
-    }
-    return false;           
-  }
-  
-  int _toRune(String string) {
-    if (string == null) {
-      throw new ArgumentError("string: $string");
-    }
-  
-    var length = string.length;
-    if (length == 0) {
-      throw new StateError("An empty string contains no elements.");
-    }
-  
-    var start = string.codeUnitAt(0);
-    if (length == 1) {
-      return start;
-    }
-  
-    if ((start & 0xFC00) == 0xD800) {
-      var end = string.codeUnitAt(1);
-      if ((end & 0xFC00) == 0xDC00) {
-        return (0x10000 + ((start & 0x3FF) << 10) + (end & 0x3FF));
-      }
-    }
-  
-    return start;
-  }
-  
-  List<int> _toRunes(String string) {
-    if (string == null) {
-      throw new ArgumentError("string: $string");
-    }
-  
-    var length = string.length;
-    if (length == 0) {
-      return const <int>[];
-    }
-  
-    var runes = <int>[];
-    runes.length = length;
-    var i = 0;
-    var pos = 0;
-    for ( ; i < length; pos++) {
-      var start = string.codeUnitAt(i);
-      i++;
-      if ((start & 0xFC00) == 0xD800 && i < length) {
-        var end = string.codeUnitAt(i);
-        if ((end & 0xFC00) == 0xDC00) {
-          runes[pos] = (0x10000 + ((start & 0x3FF) << 10) + (end & 0x3FF));
-          i++;
-        } else {
-          runes[pos] = start;
-        }
-      } else {
-        runes[pos] = start;
-      }
-    }
-  
-    runes.length = pos;
-    return runes;
-  }
-  
-  static List<bool> _unmap(List<int> mapping) {
-    var length = mapping.length;
-    var result = new List<bool>(length * 31);
-    var offset = 0;
-    for (var i = 0; i < length; i++) {
-      var v = mapping[i];
-      for (var j = 0; j < 31; j++) {
-        result[offset++] = v & (1 << j) == 0 ? false : true;
-      }
-    }
-    return result;
-  }
-  
-  List<String> get expected {
-    var set = new Set<String>();  
-    set.addAll(_expected);
-    if (set.contains(null)) {
-      set.clear();
-    }  
-    var result = set.toList();
-    result.sort(); 
-    return result;        
   }
   
   void reset(int pos) {
@@ -1531,27 +1533,41 @@ class ArithmeticParser {
     _cachePos = -1;
     _cacheRule = new List(_inputLen + 1);
     _cacheState = new List.filled(((_inputLen + 1) >> 5) + 1, 0);
-    _ch = EOF;  
-    _column = -1; 
+    _ch = -1;   
     _expected = [];
-    _failurePos = -1;    
-    _line = -1;
+    _failurePos = -1;  
     success = true;      
     _testing = -1;
     _token = null;
     _tokenLevel = 0;
     _tokenStart = null;
     if (_cursor < _inputLen) {
-      _ch = _runes[_cursor];
+      _ch = _input[_cursor];
     }    
   }
   
-  String get unexpected {
-    if (_failurePos < 0 || _failurePos >= _inputLen) {
-      return '';    
-    }
-    return new String.fromCharCode(_runes[_failurePos]);  
-  }
+}
+
+class ArithmeticParserError {
+  static const int EXPECTED = 1;    
+      
+  static const int MALFORMED = 2;    
+      
+  static const int MISSING = 3;    
+      
+  static const int UNEXPECTED = 4;    
+      
+  static const int UNTERMINATED = 5;    
+      
+  final int length;
+  
+  final String message;
+  
+  final int position;
+  
+  final int type;
+  
+  ArithmeticParserError(this.type, this.position, this.length, this.message);
   
 }
 

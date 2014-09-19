@@ -1,5 +1,6 @@
 library peg.example.arithmetic;
 
+import "package:text/text.dart";
 part "arithmetic_parser.dart";
 
 void main() {
@@ -7,21 +8,18 @@ void main() {
   print(result);
 }
 
-num parse(String text) {
-  var parser = new ArithmeticParser(text);
+num parse(String string) {
+  var parser = new ArithmeticParser(string);
   var result = parser.parse_Expr();
   if (!parser.success) {
-    var column = parser.column;
-    var line = parser.line;
-    var expected = parser.expected;
-    var unexpected = parser.unexpected;
-    unexpected = unexpected.isEmpty ? "end of file" : "'$unexpected'";
-    if (!expected.isEmpty) {
-      var str = expected.join('\', \'');
-      throw 'Parser error at ($line, $column): expected \'$str\' but found $unexpected';
-    } else {
-      throw 'Parser error at ($line, $column): unexpected $unexpected';
+    var text = new Text(string);
+    for (var error in parser.errors()) {
+      var location = text.locationAt(error.position);
+      var message = "Parser error at ${location.line}:${location.column}. ${error.message}";
+      print(message);
     }
+
+    throw new FormatException();
   }
 
   return result;

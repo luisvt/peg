@@ -1,28 +1,25 @@
 library peg.example.json;
 
-import "package:strings/strings.dart";
+import "package:text/text.dart";
 import "json_parser.dart";
 
 void main() {
-  var result = parse('json');
+  var result = parse('{"');
   print(result);
 }
 
-dynamic parse(String text) {
-  var parser = new JsonParser(text);
+dynamic parse(String string) {
+  var parser = new JsonParser(string);
   var result = parser.parse_jsonText();
   if (!parser.success) {
-    var column = parser.column;
-    var line = parser.line;
-    var expected = parser.expected;
-    var unexpected = parser.unexpected;
-    unexpected = unexpected.isEmpty ? "end of file" : "'${toPrintable(unexpected)}'";
-    if (!expected.isEmpty) {
-      var str = expected.join('\', \'');
-      throw 'Parser error at ($line, $column): expected \'$str\' but found $unexpected';
-    } else {
-      throw 'Parser error at ($line, $column): unexpected $unexpected';
+    var text = new Text(string);
+    for (var error in parser.errors()) {
+      var location = text.locationAt(error.position);
+      var message = "Parser error at ${location.line}:${location.column}. ${error.message}";
+      print(message);
     }
+
+    throw new FormatException();
   }
 
   return result;

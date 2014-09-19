@@ -1,3 +1,10 @@
+## 0.0.23
+
+- Added function `errors() => List<ParserError>`.
+- Breaking change. Removed 'line' and 'column' properties.
+- Refactored the entire codebase for easiest implementing several kinds of parser generators.
+- Started the improvements of the error messages. From now all the parser errors are an instances of `XxxParserError` type.
+
 ## 0.0.21
 
 - Fixed bug in `_matchString`

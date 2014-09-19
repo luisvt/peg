@@ -1,12 +1,14 @@
 import "dart:io";
 import "package:args_helper/args_helper.dart";
 import 'package:path/path.dart' as path;
-import 'package:peg/grammar.dart';
-import 'package:peg/grammar_analyzer.dart';
-import 'package:peg/grammar_reporter.dart';
-import 'package:peg/general_parser_generator.dart';
-import 'package:peg/interpreter_parser_generator.dart';
+import 'package:peg/grammar/grammar.dart';
+import 'package:peg/grammar_analyzer/grammar_analyzer.dart';
+import 'package:peg/grammar_reporter/grammar_reporter.dart';
+import 'package:peg/general_parser/parser_generator.dart';
+import 'package:peg/interpreter_parser/parser_generator.dart';
+import 'package:peg/parser_generator/parser_generator_options.dart';
 import 'package:strings/strings.dart';
+import 'package:text/text.dart';
 import "package:yaml/yaml.dart" as yaml;
 import 'peg_parser.dart';
 
@@ -28,12 +30,19 @@ class Program {
 
     var parser = _getParser(filename);
     var grammar = _parseGrammar(parser);
-    var generator = new GeneralParserGenerator(name, grammar, comment: comment, lookahead: lookahead, memoize: memoize, trace: trace);
+    var options = new ParserGeneratorOptions();
+    options.comment = comment;
+    options.lookahead = lookahead;
+    options.memoize = memoize;
+    options.trace = trace;
+    var generator = new GeneralParserGenerator(name, grammar, options);
     var genarated = generator.generate();
     new File(output).writeAsStringSync(genarated.join('\n'));
   }
 
   void interpretCommand(String filename, {bool memoize, String name, String output}) {
+    print("Not implemented yet.");
+    exit(-1);
     var basename = path.basenameWithoutExtension(filename);
     if (output == null || output.isEmpty) {
       output = underscore(basename) + '_parser.dart';
@@ -47,7 +56,7 @@ class Program {
     var grammar = _parseGrammar(parser);
     var generator = new InterpreterParserGenerator(name, grammar, memoize: memoize);
     var genarated = generator.generate();
-    new File(output).writeAsStringSync(genarated.join('\n'));
+    //new File(output).writeAsStringSync(genarated.join('\n'));
   }
 
   void printCommand(String filename) {
@@ -81,19 +90,11 @@ class Program {
   Grammar _parseGrammar(PegParser parser) {
     var grammar = parser.parse_Grammar();
     if (!parser.success) {
-      var column = parser.column;
-      var line = parser.line;
-      var expected = parser.expected;
-      var unexpected = toPrintable(parser.unexpected);
-      if (!expected.isEmpty) {
-        var str = expected.join('\', \'');
-        print('Parser error at ($line, $column): expected \'$str\' but found \'$unexpected\'');
-      } else {
-        if (!unexpected.isEmpty) {
-          print('Parser error at ($line, $column): unexpected "$unexpected"');
-        } else {
-          print('Parser error at ($line, $column): unexpected end of file');
-        }
+      var text = new Text(parser.text);
+      for (var error in parser.errors()) {
+        var location = text.locationAt(error.position);
+        var message = "Parser error at ${location.line}:${location.column}. ${error.message}";
+        print(message);
       }
 
       exit(-1);
