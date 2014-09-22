@@ -45,7 +45,8 @@ class GrammarAnalyzer {
     var nonterminalsWithLexemes = new NonterminalsWithLexemesFinder().find(rules);
     for (var rule in nonterminalsWithLexemes.keys) {
       var lexemes = nonterminalsWithLexemes[rule].join(", ");
-      warnings.add('Warning: Found the direct use of characters in nonterminal "${rule.name}": $lexemes');
+      // TODO: Reduce restrictions
+      //warnings.add('Warning: Found the direct use of characters in nonterminal "${rule.name}": $lexemes');
     }
 
     var infiniteLoops = new InfiniteLoopFinder().find(rules);

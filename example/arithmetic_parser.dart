@@ -173,7 +173,7 @@ class ArithmeticParser {
       var name = _tokenNames[_token];
       if (_failurePos == _inputLen && (flag & 1) != 0) {             
         var message = "Unterminated $name";
-        _errors.add(new ArithmeticParserError(ArithmeticParserError.UNEXPECTED, _failurePos, _tokenStart, message));            
+        _errors.add(new ArithmeticParserError(ArithmeticParserError.UNTERMINATED, _failurePos, _tokenStart, message));            
       }
       else if (_failurePos > _tokenStart && (flag & 1) != 0) {             
         var message = "Malformed $name";

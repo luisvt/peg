@@ -25,7 +25,7 @@ class MethodFailureGenerator extends DeclarationGenerator {
 
   static const String _TYPE_MALFORMED = ParserErrorClassGenerator.TYPE_MALFORMED;
 
-  static const String _TYPE_UNEXPECTED = ParserErrorClassGenerator.TYPE_UNEXPECTED;
+  static const String _TYPE_UNTERMINATED = ParserErrorClassGenerator.TYPE_UNTERMINATED;
 
   static const String _TEMPLATE = "TEMPLATE";
 
@@ -43,7 +43,7 @@ void $NAME([List<String> expected]) {
     var name = $_TOKEN_NAMES[$_TOKEN];
     if ($_FAILURE_POS == $_INPUT_LEN && (flag & $_FLAG_TOKEN_VALUE) != 0) {             
       var message = "Unterminated \$name";
-      $_ERRORS.add(new {{ERROR_CLASS}}({{ERROR_CLASS}}.$_TYPE_UNEXPECTED, $_FAILURE_POS, $_TOKEN_START, message));            
+      $_ERRORS.add(new {{ERROR_CLASS}}({{ERROR_CLASS}}.$_TYPE_UNTERMINATED, $_FAILURE_POS, $_TOKEN_START, message));            
     }
     else if ($_FAILURE_POS > $_TOKEN_START && (flag & $_FLAG_TOKEN_VALUE) != 0) {             
       var message = "Malformed \$name";

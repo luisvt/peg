@@ -125,6 +125,14 @@ class Program {
       for (var rule in reporter.rules) {
         print('--------------------------------');
         print('${rule.name}:');
+        var type = "Nonterminal";
+        if (rule.isLexeme) {
+          type = "Lexeme";
+        } else if (rule.isMorpheme) {
+          type = "Morpheme";
+        }
+
+        print(' Type: $type');
         print(' Direct callees:');
         var callees = rule.directCallees.toList();
         callees.sort((a, b) => a.name.compareTo(b.name));
@@ -200,7 +208,7 @@ class Program {
     }
 
     print('--------------------------------');
-    print('Terminals:');
+    print('Lexemes:');
     for (var rule in reporter.terminals) {
       if (rule.isLexeme) {
         print('  ${rule.name}');
@@ -208,7 +216,7 @@ class Program {
     }
 
     print('--------------------------------');
-    print('Subterminals:');
+    print('Morphemes:');
     for (var rule in reporter.terminals) {
       if (rule.isMorpheme) {
         print('  ${rule.name}');
@@ -216,9 +224,17 @@ class Program {
     }
 
     print('--------------------------------');
-    print('Terminal names:');
+    print('Lexemes & morphemes:');
     for (var rule in reporter.terminals) {
-      if (rule.isTerminal) {
+      if (rule.isLexeme && rule.isMorpheme) {
+        print('  ${rule.name}');
+      }
+    }
+
+    print('--------------------------------');
+    print('Lexeme names:');
+    for (var rule in reporter.terminals) {
+      if (rule.isLexeme) {
         print('  ${rule.name} : ${rule.getTokenName()}');
       }
     }

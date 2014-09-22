@@ -110,3 +110,8 @@ Such (as an arithmetic) grammars parsed faster with a memoization.
 ```dart
 {{example/arithmetic_parser.dart}}
 ```
+Arithmetic grammar statistics
+
+```dart
+{{example/arithmetic.peg.stat.txt}}
+```

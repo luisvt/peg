@@ -1,3 +1,8 @@
+## 0.0.25
+
+- Fixed a very small bug in the creation of the parser error
+- Improved statistic information in the command `stat` 
+
 ## 0.0.24
 
 - Added recognition and error reporting of the `malformed tokens` (eg, number's)

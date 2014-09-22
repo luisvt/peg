@@ -3,7 +3,7 @@
 
 PEG (Parsing expression grammar) parsers generator.
 
-Version: 0.0.24
+Version: 0.0.25
 
 Status: Experimental
 
@@ -90,14 +90,7 @@ Examples:
 **Grammar**
 
 ```
-Warning: Found the direct use of characters in nonterminal "GlobalsBody": .
-Warning: Found the direct use of characters in nonterminal "ActionBody": .
-Warning: Found the direct use of characters in nonterminal "Char": ["'\-\[-\]nrt], .
-Grammar <- SPACING? Globals? Members? Definition+ EOF
-
-Globals <- "%{" GlobalsBody* "}%" SPACING
-
-GlobalsBody <- !"}%" .
+Grammar <- SPACING? GLOBALS? Members? Definition+ EOF
 
 Members <- "{" ActionBody* "}" SPACING
 
@@ -115,17 +108,19 @@ Prefix <- (AND / NOT)? Suffix Action?
 
 Suffix <- Primary (QUESTION / STAR / PLUS)?
 
-Primary <- IDENTIFIER !LEFTARROW / OPEN Expression CLOSE / Literal / Class / DOT
+Primary <- IDENTIFIER !LEFTARROW / OPEN Expression CLOSE / LITERAL / CLASS / DOT
 
-Literal <- "\'" (!"\'" Char)* "\'" SPACING / "\"" (!"\"" Char)* "\"" SPACING
+CHAR <- "\\" ["'\-\[-\]nrt] / HEX_NUMBER / !"\\" !EOL .
 
-Class <- "[" (!"]" Range)* "]" SPACING
+CLASS <- "[" (!"]" RANGE)* "]" SPACING
 
-Range <- Char "-" Char / Char
-
-Char <- "\\" ["'\-\[-\]nrt] / HEX_NUMBER / !"\\" !EOL .
+LITERAL <- "\'" (!"\'" CHAR)* "\'" SPACING / "\"" (!"\"" CHAR)* "\"" SPACING
 
 EOF <- !.
+
+GLOBALS <- "%{" GLOBALS_BODY* "}%" SPACING
+
+GLOBALS_BODY <- !"}%" .
 
 IDENTIFIER <- IDENT_START IDENT_CONT* SPACING
 
@@ -134,6 +129,8 @@ IDENT_START <- [A-Z_a-z]
 IDENT_CONT <- IDENT_START / [0-9]
 
 LEFTARROW <- "<-" SPACING
+
+RANGE <- CHAR "-" CHAR / CHAR
 
 SLASH <- "/" SPACING
 
@@ -421,7 +418,7 @@ class ArithmeticParser {
       var name = _tokenNames[_token];
       if (_failurePos == _inputLen && (flag & 1) != 0) {             
         var message = "Unterminated $name";
-        _errors.add(new ArithmeticParserError(ArithmeticParserError.UNEXPECTED, _failurePos, _tokenStart, message));            
+        _errors.add(new ArithmeticParserError(ArithmeticParserError.UNTERMINATED, _failurePos, _tokenStart, message));            
       }
       else if (_failurePos > _tokenStart && (flag & 1) != 0) {             
         var message = "Malformed $name";
@@ -1596,5 +1593,382 @@ class ArithmeticParserError {
   
 }
 
+
+```
+Arithmetic grammar statistics
+
+```dart
+--------------------------------
+Starting rules:
+Expr
+--------------------------------
+Rules:
+--------------------------------
+Atom:
+ Type: Nonterminal
+ Direct callees:
+  CLOSE
+  NUMBER
+  OPEN
+  Sentence
+ All callees:
+  Atom
+  CLOSE
+  DIV
+  MINUS
+  MUL
+  NUMBER
+  OPEN
+  PLUS
+  SPACES
+  Sentence
+  Term
+  WS
+ Direct callers:
+  Term
+ All callers:
+  Atom
+  Expr
+  Sentence
+  Term
+ Start characters:
+  [(][0-9]
+ Expected lexemes:
+  NUMBER '('
+--------------------------------
+CLOSE:
+ Type: Lexeme
+ Direct callees:
+  SPACES
+ All callees:
+  SPACES
+  WS
+ Direct callers:
+  Atom
+ All callers:
+  Atom
+  Expr
+  Sentence
+  Term
+ Start characters:
+  [)]
+ Expected lexemes:
+  ')'
+--------------------------------
+DIV:
+ Type: Lexeme
+ Direct callees:
+  SPACES
+ All callees:
+  SPACES
+  WS
+ Direct callers:
+  Term
+ All callers:
+  Atom
+  Expr
+  Sentence
+  Term
+ Start characters:
+  [/]
+ Expected lexemes:
+  '/'
+--------------------------------
+EOF:
+ Type: Lexeme
+ Direct callees:
+ All callees:
+ Direct callers:
+  Expr
+ All callers:
+  Expr
+ Start characters:
+ Expected lexemes:
+  EOF
+--------------------------------
+Expr:
+ Type: Nonterminal
+ Direct callees:
+  EOF
+  SPACES
+  Sentence
+ All callees:
+  Atom
+  CLOSE
+  DIV
+  EOF
+  MINUS
+  MUL
+  NUMBER
+  OPEN
+  PLUS
+  SPACES
+  Sentence
+  Term
+  WS
+ Direct callers:
+ All callers:
+ Start characters:
+  [\t-\n][\r][ ][(][0-9]
+ Expected lexemes:
+  NUMBER '('
+--------------------------------
+MINUS:
+ Type: Lexeme
+ Direct callees:
+  SPACES
+ All callees:
+  SPACES
+  WS
+ Direct callers:
+  Sentence
+ All callers:
+  Atom
+  Expr
+  Sentence
+  Term
+ Start characters:
+  [-]
+ Expected lexemes:
+  '-'
+--------------------------------
+MUL:
+ Type: Lexeme
+ Direct callees:
+  SPACES
+ All callees:
+  SPACES
+  WS
+ Direct callers:
+  Term
+ All callers:
+  Atom
+  Expr
+  Sentence
+  Term
+ Start characters:
+  [*]
+ Expected lexemes:
+  '*'
+--------------------------------
+NUMBER:
+ Type: Lexeme
+ Direct callees:
+  SPACES
+ All callees:
+  SPACES
+  WS
+ Direct callers:
+  Atom
+ All callers:
+  Atom
+  Expr
+  Sentence
+  Term
+ Start characters:
+  [0-9]
+ Expected lexemes:
+  NUMBER
+--------------------------------
+OPEN:
+ Type: Lexeme
+ Direct callees:
+  SPACES
+ All callees:
+  SPACES
+  WS
+ Direct callers:
+  Atom
+ All callers:
+  Atom
+  Expr
+  Sentence
+  Term
+ Start characters:
+  [(]
+ Expected lexemes:
+  '('
+--------------------------------
+PLUS:
+ Type: Lexeme
+ Direct callees:
+  SPACES
+ All callees:
+  SPACES
+  WS
+ Direct callers:
+  Sentence
+ All callers:
+  Atom
+  Expr
+  Sentence
+  Term
+ Start characters:
+  [+]
+ Expected lexemes:
+  '+'
+--------------------------------
+SPACES:
+ Type: Lexeme
+ Direct callees:
+  WS
+ All callees:
+  WS
+ Direct callers:
+  CLOSE
+  DIV
+  Expr
+  MINUS
+  MUL
+  NUMBER
+  OPEN
+  PLUS
+ All callers:
+  Atom
+  CLOSE
+  DIV
+  Expr
+  MINUS
+  MUL
+  NUMBER
+  OPEN
+  PLUS
+  Sentence
+  Term
+ Start characters:
+  [\t-\n][\r][ ]
+ Expected lexemes:
+  SPACES
+--------------------------------
+Sentence:
+ Type: Nonterminal
+ Direct callees:
+  MINUS
+  PLUS
+  Sentence
+  Term
+ All callees:
+  Atom
+  CLOSE
+  DIV
+  MINUS
+  MUL
+  NUMBER
+  OPEN
+  PLUS
+  SPACES
+  Sentence
+  Term
+  WS
+ Direct callers:
+  Atom
+  Expr
+  Sentence
+ All callers:
+  Atom
+  Expr
+  Sentence
+  Term
+ Start characters:
+  [(][0-9]
+ Expected lexemes:
+  NUMBER '('
+--------------------------------
+Term:
+ Type: Nonterminal
+ Direct callees:
+  Atom
+  DIV
+  MUL
+  Term
+ All callees:
+  Atom
+  CLOSE
+  DIV
+  MINUS
+  MUL
+  NUMBER
+  OPEN
+  PLUS
+  SPACES
+  Sentence
+  Term
+  WS
+ Direct callers:
+  Sentence
+  Term
+ All callers:
+  Atom
+  Expr
+  Sentence
+  Term
+ Start characters:
+  [(][0-9]
+ Expected lexemes:
+  NUMBER '('
+--------------------------------
+WS:
+ Type: Morpheme
+ Direct callees:
+ All callees:
+ Direct callers:
+  SPACES
+ All callers:
+  Atom
+  CLOSE
+  DIV
+  Expr
+  MINUS
+  MUL
+  NUMBER
+  OPEN
+  PLUS
+  SPACES
+  Sentence
+  Term
+ Start characters:
+  [\t-\n][\r][ ]
+ Expected lexemes:
+  WS
+--------------------------------
+Nonterminals:
+  Atom
+  Expr
+  Sentence
+  Term
+--------------------------------
+Lexemes:
+  CLOSE
+  DIV
+  EOF
+  MINUS
+  MUL
+  NUMBER
+  OPEN
+  PLUS
+  SPACES
+--------------------------------
+Morphemes:
+  SPACES
+  WS
+--------------------------------
+Lexemes & morphemes:
+  SPACES
+--------------------------------
+Lexeme names:
+  CLOSE : ')'
+  DIV : '/'
+  EOF : EOF
+  MINUS : '-'
+  MUL : '*'
+  NUMBER : NUMBER
+  OPEN : '('
+  PLUS : '+'
+  SPACES : SPACES
+--------------------------------
+Recursives:
+  Atom
+  Sentence
+  Term
 
 ```

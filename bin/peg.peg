@@ -47,13 +47,7 @@ List _normalize(Iterable sequence) => _flatten(_compact(sequence));
 }
 
 Grammar <-
-  SPACING? Globals? Members? Definition+ EOF { $$ = new Grammar($4, $2, $3); }
-
-Globals <-
-  '%{' GlobalsBody* '}%' SPACING { $$ = _normalize(["{", $2, "}", $4]).join(); }
-
-GlobalsBody <-
-  !'}%' . { $$ = $2; }
+  SPACING? GLOBALS? Members? Definition+ EOF { $$ = new Grammar($4, $2, $3); }
 
 Members <-
   '{' ActionBody* '}' SPACING { $$ = _normalize([$1, $2, $3, $4]).join(); }
@@ -83,30 +77,32 @@ Suffix <-
 Primary <-
   IDENTIFIER !LEFTARROW   { $$ = new RuleExpression($1); }
   / OPEN Expression CLOSE { $$ = $2; }
-  / Literal
-  / Class
+  / LITERAL
+  / CLASS
   / DOT                   { $$ = new AnyCharacterExpression(); }
-  
-Literal <-
-  "'" (!"'" Char { $$ = $2; })* "'" SPACING { $$ = new LiteralExpression(new String.fromCharCodes($2)); } 
-  / '"' (!'"' Char { $$ = $2; })* '"' SPACING  { $$ = new LiteralExpression(new String.fromCharCodes($2)); }  
-  
-Class <-
-  '[' (!']' Range { $$ = $2; })* ']' SPACING { $$ = new CharacterClassExpression($2); }
-  
-Range <-
-  Char '-' Char { $$ = [$1, $3]; }
-  / Char        { $$ = [$1, $1]; }
-  
-Char <-
-  '\\' ["'\-\[-\]nrt] { $$ = _escape($2.codeUnitAt(0)); }  
-  / HEX_NUMBER
-  / !'\\' !EOL .      { $$ = _toCodePoint($3); }
   
 # Tokens
 
+CHAR <-
+  '\\' ["'\-\[-\]nrt] { $$ = _escape($2.codeUnitAt(0)); }  
+  / HEX_NUMBER
+  / !'\\' !EOL .      { $$ = _toCodePoint($3); }
+
+CLASS <-
+  '[' (!']' RANGE { $$ = $2; })* ']' SPACING { $$ = new CharacterClassExpression($2); }
+
+LITERAL <-
+  "'" (!"'" CHAR { $$ = $2; })* "'" SPACING { $$ = new LiteralExpression(new String.fromCharCodes($2)); } 
+  / '"' (!'"' CHAR { $$ = $2; })* '"' SPACING  { $$ = new LiteralExpression(new String.fromCharCodes($2)); }  
+
 EOF <-
   !.
+
+GLOBALS <-
+  '%{' GLOBALS_BODY* '}%' SPACING { $$ = _normalize(["{", $2, "}", $4]).join(); }
+
+GLOBALS_BODY <-
+  !'}%' . { $$ = $2; }
 
 IDENTIFIER <-
   IDENT_START IDENT_CONT* SPACING { $$ = _flatten([$1, $2]).join(); }
@@ -119,6 +115,10 @@ IDENT_CONT <-
 
 LEFTARROW <-
   '<-' SPACING
+
+RANGE <-
+  CHAR '-' CHAR { $$ = [$1, $3]; }
+  / CHAR        { $$ = [$1, $1]; }
   
 SLASH <-
   '/' SPACING

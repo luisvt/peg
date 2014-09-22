@@ -1,0 +1,372 @@
+--------------------------------
+Starting rules:
+Expr
+--------------------------------
+Rules:
+--------------------------------
+Atom:
+ Type: Nonterminal
+ Direct callees:
+  CLOSE
+  NUMBER
+  OPEN
+  Sentence
+ All callees:
+  Atom
+  CLOSE
+  DIV
+  MINUS
+  MUL
+  NUMBER
+  OPEN
+  PLUS
+  SPACES
+  Sentence
+  Term
+  WS
+ Direct callers:
+  Term
+ All callers:
+  Atom
+  Expr
+  Sentence
+  Term
+ Start characters:
+  [(][0-9]
+ Expected lexemes:
+  NUMBER '('
+--------------------------------
+CLOSE:
+ Type: Lexeme
+ Direct callees:
+  SPACES
+ All callees:
+  SPACES
+  WS
+ Direct callers:
+  Atom
+ All callers:
+  Atom
+  Expr
+  Sentence
+  Term
+ Start characters:
+  [)]
+ Expected lexemes:
+  ')'
+--------------------------------
+DIV:
+ Type: Lexeme
+ Direct callees:
+  SPACES
+ All callees:
+  SPACES
+  WS
+ Direct callers:
+  Term
+ All callers:
+  Atom
+  Expr
+  Sentence
+  Term
+ Start characters:
+  [/]
+ Expected lexemes:
+  '/'
+--------------------------------
+EOF:
+ Type: Lexeme
+ Direct callees:
+ All callees:
+ Direct callers:
+  Expr
+ All callers:
+  Expr
+ Start characters:
+ Expected lexemes:
+  EOF
+--------------------------------
+Expr:
+ Type: Nonterminal
+ Direct callees:
+  EOF
+  SPACES
+  Sentence
+ All callees:
+  Atom
+  CLOSE
+  DIV
+  EOF
+  MINUS
+  MUL
+  NUMBER
+  OPEN
+  PLUS
+  SPACES
+  Sentence
+  Term
+  WS
+ Direct callers:
+ All callers:
+ Start characters:
+  [\t-\n][\r][ ][(][0-9]
+ Expected lexemes:
+  NUMBER '('
+--------------------------------
+MINUS:
+ Type: Lexeme
+ Direct callees:
+  SPACES
+ All callees:
+  SPACES
+  WS
+ Direct callers:
+  Sentence
+ All callers:
+  Atom
+  Expr
+  Sentence
+  Term
+ Start characters:
+  [-]
+ Expected lexemes:
+  '-'
+--------------------------------
+MUL:
+ Type: Lexeme
+ Direct callees:
+  SPACES
+ All callees:
+  SPACES
+  WS
+ Direct callers:
+  Term
+ All callers:
+  Atom
+  Expr
+  Sentence
+  Term
+ Start characters:
+  [*]
+ Expected lexemes:
+  '*'
+--------------------------------
+NUMBER:
+ Type: Lexeme
+ Direct callees:
+  SPACES
+ All callees:
+  SPACES
+  WS
+ Direct callers:
+  Atom
+ All callers:
+  Atom
+  Expr
+  Sentence
+  Term
+ Start characters:
+  [0-9]
+ Expected lexemes:
+  NUMBER
+--------------------------------
+OPEN:
+ Type: Lexeme
+ Direct callees:
+  SPACES
+ All callees:
+  SPACES
+  WS
+ Direct callers:
+  Atom
+ All callers:
+  Atom
+  Expr
+  Sentence
+  Term
+ Start characters:
+  [(]
+ Expected lexemes:
+  '('
+--------------------------------
+PLUS:
+ Type: Lexeme
+ Direct callees:
+  SPACES
+ All callees:
+  SPACES
+  WS
+ Direct callers:
+  Sentence
+ All callers:
+  Atom
+  Expr
+  Sentence
+  Term
+ Start characters:
+  [+]
+ Expected lexemes:
+  '+'
+--------------------------------
+SPACES:
+ Type: Lexeme
+ Direct callees:
+  WS
+ All callees:
+  WS
+ Direct callers:
+  CLOSE
+  DIV
+  Expr
+  MINUS
+  MUL
+  NUMBER
+  OPEN
+  PLUS
+ All callers:
+  Atom
+  CLOSE
+  DIV
+  Expr
+  MINUS
+  MUL
+  NUMBER
+  OPEN
+  PLUS
+  Sentence
+  Term
+ Start characters:
+  [\t-\n][\r][ ]
+ Expected lexemes:
+  SPACES
+--------------------------------
+Sentence:
+ Type: Nonterminal
+ Direct callees:
+  MINUS
+  PLUS
+  Sentence
+  Term
+ All callees:
+  Atom
+  CLOSE
+  DIV
+  MINUS
+  MUL
+  NUMBER
+  OPEN
+  PLUS
+  SPACES
+  Sentence
+  Term
+  WS
+ Direct callers:
+  Atom
+  Expr
+  Sentence
+ All callers:
+  Atom
+  Expr
+  Sentence
+  Term
+ Start characters:
+  [(][0-9]
+ Expected lexemes:
+  NUMBER '('
+--------------------------------
+Term:
+ Type: Nonterminal
+ Direct callees:
+  Atom
+  DIV
+  MUL
+  Term
+ All callees:
+  Atom
+  CLOSE
+  DIV
+  MINUS
+  MUL
+  NUMBER
+  OPEN
+  PLUS
+  SPACES
+  Sentence
+  Term
+  WS
+ Direct callers:
+  Sentence
+  Term
+ All callers:
+  Atom
+  Expr
+  Sentence
+  Term
+ Start characters:
+  [(][0-9]
+ Expected lexemes:
+  NUMBER '('
+--------------------------------
+WS:
+ Type: Morpheme
+ Direct callees:
+ All callees:
+ Direct callers:
+  SPACES
+ All callers:
+  Atom
+  CLOSE
+  DIV
+  Expr
+  MINUS
+  MUL
+  NUMBER
+  OPEN
+  PLUS
+  SPACES
+  Sentence
+  Term
+ Start characters:
+  [\t-\n][\r][ ]
+ Expected lexemes:
+  WS
+--------------------------------
+Nonterminals:
+  Atom
+  Expr
+  Sentence
+  Term
+--------------------------------
+Lexemes:
+  CLOSE
+  DIV
+  EOF
+  MINUS
+  MUL
+  NUMBER
+  OPEN
+  PLUS
+  SPACES
+--------------------------------
+Morphemes:
+  SPACES
+  WS
+--------------------------------
+Lexemes & morphemes:
+  SPACES
+--------------------------------
+Lexeme names:
+  CLOSE : ')'
+  DIV : '/'
+  EOF : EOF
+  MINUS : '-'
+  MUL : '*'
+  NUMBER : NUMBER
+  OPEN : '('
+  PLUS : '+'
+  SPACES : SPACES
+--------------------------------
+Recursives:
+  Atom
+  Sentence
+  Term

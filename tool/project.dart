@@ -6,6 +6,7 @@ import "package:file_utils/file_utils.dart";
 
 const String ARITHMETIC_PARSER_DART = "example/arithmetic_parser.dart";
 const String ARITHMETIC_PEG = "example/arithmetic.peg";
+const String ARITHMETIC_PEG_STAT_TXT = "example/arithmetic.peg.stat.txt";
 const String CHANGE_LOG = "tool/change.log";
 const String CHANGELOG_MD = "CHANGELOG.md";
 const String JSON_PARSER_DART = "example/json_parser.dart";
@@ -26,6 +27,7 @@ void main(List<String> args) {
   var filesUsedInReadMe = ["tool/README.md.in", "pubspec.yaml"];
   filesUsedInReadMe.add(ARITHMETIC_PARSER_DART);
   filesUsedInReadMe.add(ARITHMETIC_PEG);
+  filesUsedInReadMe.add(ARITHMETIC_PEG_STAT_TXT);
   filesUsedInReadMe.add(PEG_PEG_TEXT);
 
   var generatedFiles = [];
@@ -35,6 +37,9 @@ void main(List<String> args) {
   generatedFiles.add(CHANGELOG_MD);
   generatedFiles.add(PEG_PEG_TEXT);
   generatedFiles.add(README_MD);
+  generatedFiles.add(ARITHMETIC_PEG_STAT_TXT);
+
+  FileUtils.rm(generatedFiles);
 
   var dartSdk = FileUtils.fullpath(Platform.environment["DART_SDK"]);
 
@@ -63,6 +68,18 @@ void main(List<String> args) {
 
   rule("%.peg.txt", ["%.peg"], (Target t, Map args) {
     return Process.run("$dartSdk/bin/dart", ["bin/peg.dart", "print", t.sources.first]).then((result) {
+      if (result.exitCode != 0) {
+        print(result.stdout);
+        return result.exitCode;
+      }
+
+      var file = new File(t.name);
+      file.writeAsStringSync(result.stdout);
+    });
+  });
+
+  rule("%.peg.stat.txt", ["%.peg"], (Target t, Map args) {
+    return Process.run("$dartSdk/bin/dart", ["bin/peg.dart", "stat", "-d", "high", t.sources.first]).then((result) {
       if (result.exitCode != 0) {
         print(result.stdout);
         return result.exitCode;

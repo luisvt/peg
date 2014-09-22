@@ -31,3 +31,5 @@
 0.0.24 Added recognition and error reporting of the `unterminated tokens` (eg, string's)
 0.0.24 Added statistic information in the command `stat` about the `expected lexemes` in the nonterminals. Can be used for visual analysing of the quality of the developed grammar and the proposed error messages on the failures
 0.0.24 Fixed bugs in the grammar `example/json.peg` (thanks to the newly added recognition and error reporting of the `malformed tokens`) 
+0.0.25 Fixed a very small bug in the creation of the parser error
+0.0.25 Improved statistic information in the command `stat` 

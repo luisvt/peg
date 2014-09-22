@@ -6,9 +6,9 @@ class TerminalRulesFinder {
     for (var rule in rules) {
       var expression = rule.expression;
       if (expression.startsWithAny) {
-        rule.isLexeme = false;
-        rule.isMorpheme = false;
-        rule.isTerminal = false;
+        //rule.isLexeme = false;
+        //rule.isMorpheme = false;
+        //rule.isTerminal = false;
       }
     }
 
@@ -27,15 +27,15 @@ class TerminalRulesFinder {
     }
 
     for (var rule in rules) {
-      rule.isLexeme = isMasterTerminal(rule);
+      rule.isLexeme = isLexeme(rule);
     }
 
     for (var rule in rules) {
-      rule.isMorpheme = isSlaveTerminal(rule);
+      rule.isMorpheme = isMorpheme(rule);
     }
   }
 
-  bool isMasterTerminal(ProductionRule rule) {
+  bool isLexeme(ProductionRule rule) {
     if (!isTerminal(rule)) {
       return false;
     }
@@ -49,7 +49,7 @@ class TerminalRulesFinder {
     return false;
   }
 
-  bool isSlaveTerminal(ProductionRule rule) {
+  bool isMorpheme(ProductionRule rule) {
     if (!isTerminal(rule)) {
       return false;
     }

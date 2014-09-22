@@ -1,11 +1,4 @@
-Warning: Found the direct use of characters in nonterminal "GlobalsBody": .
-Warning: Found the direct use of characters in nonterminal "ActionBody": .
-Warning: Found the direct use of characters in nonterminal "Char": ["'\-\[-\]nrt], .
-Grammar <- SPACING? Globals? Members? Definition+ EOF
-
-Globals <- "%{" GlobalsBody* "}%" SPACING
-
-GlobalsBody <- !"}%" .
+Grammar <- SPACING? GLOBALS? Members? Definition+ EOF
 
 Members <- "{" ActionBody* "}" SPACING
 
@@ -23,17 +16,19 @@ Prefix <- (AND / NOT)? Suffix Action?
 
 Suffix <- Primary (QUESTION / STAR / PLUS)?
 
-Primary <- IDENTIFIER !LEFTARROW / OPEN Expression CLOSE / Literal / Class / DOT
+Primary <- IDENTIFIER !LEFTARROW / OPEN Expression CLOSE / LITERAL / CLASS / DOT
 
-Literal <- "\'" (!"\'" Char)* "\'" SPACING / "\"" (!"\"" Char)* "\"" SPACING
+CHAR <- "\\" ["'\-\[-\]nrt] / HEX_NUMBER / !"\\" !EOL .
 
-Class <- "[" (!"]" Range)* "]" SPACING
+CLASS <- "[" (!"]" RANGE)* "]" SPACING
 
-Range <- Char "-" Char / Char
-
-Char <- "\\" ["'\-\[-\]nrt] / HEX_NUMBER / !"\\" !EOL .
+LITERAL <- "\'" (!"\'" CHAR)* "\'" SPACING / "\"" (!"\"" CHAR)* "\"" SPACING
 
 EOF <- !.
+
+GLOBALS <- "%{" GLOBALS_BODY* "}%" SPACING
+
+GLOBALS_BODY <- !"}%" .
 
 IDENTIFIER <- IDENT_START IDENT_CONT* SPACING
 
@@ -42,6 +37,8 @@ IDENT_START <- [A-Z_a-z]
 IDENT_CONT <- IDENT_START / [0-9]
 
 LEFTARROW <- "<-" SPACING
+
+RANGE <- CHAR "-" CHAR / CHAR
 
 SLASH <- "/" SPACING
 
