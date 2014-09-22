@@ -180,6 +180,16 @@ class Program {
         if (!characters.isEmpty) {
           print('  ${characters.join()}');
         }
+
+        print(' Expected lexemes:');
+        var expected = <String>[];
+        for (var lexeme in rule.expression.expectedLexemes) {
+          expected.add(lexeme);
+        }
+
+        if (!expected.isEmpty) {
+          print('  ${expected.join(" ")}');
+        }
       }
     }
 
@@ -192,7 +202,7 @@ class Program {
     print('--------------------------------');
     print('Terminals:');
     for (var rule in reporter.terminals) {
-      if (rule.isMasterTerminal) {
+      if (rule.isLexeme) {
         print('  ${rule.name}');
       }
     }
@@ -200,7 +210,7 @@ class Program {
     print('--------------------------------');
     print('Subterminals:');
     for (var rule in reporter.terminals) {
-      if (rule.isSlaveTerminal) {
+      if (rule.isMorpheme) {
         print('  ${rule.name}');
       }
     }

@@ -15,6 +15,8 @@ class MethodResetGenerator extends DeclarationGenerator {
 
   static const String _CURSOR = ParserClassGenerator.CURSOR;
 
+  static const String _ERRORS = ParserClassGenerator.ERRORS;
+
   static const String _EXPECTED = ParserClassGenerator.EXPECTED;
 
   static const String _EOF = ParserClassGenerator.EOF;
@@ -50,8 +52,9 @@ void $NAME(int pos) {
   $_CACHE_POS = -1;
   $_CACHE_RULE = new List($_INPUT_LEN + 1);
   $_CACHE_STATE = new List.filled((($_INPUT_LEN + 1) >> 5) + 1, 0);
-  $_CH = $_EOF;   
-  $_EXPECTED = [];
+  $_CH = $_EOF;
+  $_ERRORS = <{{ERROR_CLASS}}>[];   
+  $_EXPECTED = <String>[];
   $_FAILURE_POS = -1;  
   $_SUCCESS = true;      
   $_TESTING = -1;
@@ -64,13 +67,23 @@ void $NAME(int pos) {
 }
 ''';
 
-  MethodResetGenerator() {
+  final ParserClassGenerator parserClassGenerator;
+
+  MethodResetGenerator(this.parserClassGenerator) {
+    if (parserClassGenerator == null) {
+      throw new ArgumentError("parserClassGenerator: $parserClassGenerator");
+    }
+
     addTemplate(_TEMPLATE, _template);
   }
 
   String get name => NAME;
 
   List<String> generate() {
-    return getTemplateBlock(_TEMPLATE).process();
+    var block = getTemplateBlock(_TEMPLATE);
+    var parserName = parserClassGenerator.name;
+    var errorClass = ParserErrorClassGenerator.getName(parserName);
+    block.assign("ERROR_CLASS", errorClass);
+    return block.process();
   }
 }

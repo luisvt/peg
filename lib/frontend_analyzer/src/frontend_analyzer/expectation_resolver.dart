@@ -88,7 +88,7 @@ class ExpectationResolver extends ExpressionResolver {
         }
 
         if (expectedStrings.length == 1 && !hasUnexpected) {
-          expectedLexemes.add(expectedStrings.first);
+          expectedLexemes.add("'${expectedStrings.first}'");
           done = true;
         }
 

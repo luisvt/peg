@@ -84,17 +84,14 @@ BEGIN_OBJECT <-
 DECIMAL_POINT <-
   '.' WS { $$ = $1; }
 
-E <-
-  ('e' / 'E') WS { $$ = $1; }
-
-EXP <-
-  E (MINUS / PLUS)? DIGIT+ WS { $$ = _flatten(_compact([$1, $2, $3])).join(); }
-
 END_ARRAY <-
   ']' WS
 
 END_OBJECT <-
   '}' WS
+
+EXP <-
+  ('e' / 'E') ('-' / '+')? DIGIT+ WS { $$ = _flatten(_compact([$1, $2, $3])).join(); }
 
 FALSE <-
   "false" WS { $$ = false; }
@@ -105,9 +102,6 @@ FRAC <-
 INT <-
   DIGIT+ WS { $$ = _flatten($1).join(); }
 
-MINUS <-
-  '-' WS { $$ = $1; }
-
 NAME_SEPARATOR <-
   ':' WS
 
@@ -115,10 +109,7 @@ NULL <-
   "null" WS { $$ = null; }
 
 NUMBER <-
-  MINUS? INT FRAC? EXP? WS { $$ = _parseNumber($1, $2, $3, $4); }
-
-PLUS <-
- '+' WS { $$ = $1; }
+  '-'? INT FRAC? EXP? WS { $$ = _parseNumber($1, $2, $3, $4); }
 
 STRING <-
   QUOTATION_MARK CHAR* QUOTATION_MARK WS { $$ = _flatten($2).join(); }

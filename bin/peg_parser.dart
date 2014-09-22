@@ -48,25 +48,25 @@ class PegParser {
   
   static final List<String> _expect1 = <String>["{"];
   
-  static final List<String> _expect10 = <String>["!", "&"];
+  static final List<String> _expect10 = <String>["\'!\'", "\'&\'"];
   
-  static final List<String> _expect11 = <String>["?"];
+  static final List<String> _expect11 = <String>["\'?\'"];
   
-  static final List<String> _expect12 = <String>["*"];
+  static final List<String> _expect12 = <String>["\'*\'"];
   
-  static final List<String> _expect13 = <String>["+"];
+  static final List<String> _expect13 = <String>["\'+\'"];
   
-  static final List<String> _expect14 = <String>["*", "+", "?"];
+  static final List<String> _expect14 = <String>["\'*\'", "\'+\'", "\'?\'"];
   
-  static final List<String> _expect15 = <String>["("];
+  static final List<String> _expect15 = <String>["\'(\'"];
   
-  static final List<String> _expect16 = <String>[")"];
+  static final List<String> _expect16 = <String>["\')\'"];
   
   static final List<String> _expect17 = <String>["\"", "\'"];
   
   static final List<String> _expect18 = <String>["["];
   
-  static final List<String> _expect19 = <String>["."];
+  static final List<String> _expect19 = <String>["\'.\'"];
   
   static final List<String> _expect2 = <String>["IDENTIFIER"];
   
@@ -82,11 +82,11 @@ class PegParser {
   
   static final List<String> _expect25 = <String>["IDENT_CONT"];
   
-  static final List<String> _expect26 = <String>["#"];
+  static final List<String> _expect26 = <String>["\'#\'"];
   
   static final List<String> _expect27 = <String>["SPACE"];
   
-  static final List<String> _expect28 = <String>["#", "SPACE"];
+  static final List<String> _expect28 = <String>["\'#\'", "SPACE"];
   
   static final List<String> _expect29 = <String>["SPACING"];
   
@@ -94,31 +94,31 @@ class PegParser {
   
   static final List<String> _expect4 = <String>[null, "{"];
   
-  static final List<String> _expect5 = <String>["<-"];
+  static final List<String> _expect5 = <String>["\'<-\'"];
   
-  static final List<String> _expect6 = <String>["\"", "\'", "(", ".", "IDENTIFIER", "["];
+  static final List<String> _expect6 = <String>["\"", "\'", "\'(\'", "\'.\'", "IDENTIFIER", "["];
   
-  static final List<String> _expect7 = <String>["/"];
+  static final List<String> _expect7 = <String>["\'/\'"];
   
-  static final List<String> _expect8 = <String>["&"];
+  static final List<String> _expect8 = <String>["\'&\'"];
   
-  static final List<String> _expect9 = <String>["!"];
+  static final List<String> _expect9 = <String>["\'!\'"];
   
   static final List<bool> _lookahead = _unmap([0x14800013, 0x7e000000, 0x7d0fffff, 0x38ffffff, 0x7f800010, 0x7f47ffff, 0x30fffff, 0x7ff80001, 0x7ff47fff, 0x1ffffff, 0x7fffffe, 0xffffffd]);
   
-  // '\"',.generate() '\'',.generate() '-',.generate() '[',.generate() '\\',.generate() ']',.generate() 'n',.generate() 'r',.generate() 't'
+  // '\"', '\'', '-', '[', '\\', ']', 'n', 'r', 't'
   static final List<bool> _mapping0 = _unmap([0x821, 0x1c000000, 0x144000]);
   
-  // 'A',.generate() 'B',.generate() 'C',.generate() 'D',.generate() 'E',.generate() 'F',.generate() 'G',.generate() 'H',.generate() 'I',.generate() 'J',.generate() 'K',.generate() 'L',.generate() 'M',.generate() 'N',.generate() 'O',.generate() 'P',.generate() 'Q',.generate() 'R',.generate() 'S',.generate() 'T',.generate() 'U',.generate() 'V',.generate() 'W',.generate() 'X',.generate() 'Y',.generate() 'Z',.generate() '_',.generate() 'a',.generate() 'b',.generate() 'c',.generate() 'd',.generate() 'e',.generate() 'f',.generate() 'g',.generate() 'h',.generate() 'i',.generate() 'j',.generate() 'k',.generate() 'l',.generate() 'm',.generate() 'n',.generate() 'o',.generate() 'p',.generate() 'q',.generate() 'r',.generate() 's',.generate() 't',.generate() 'u',.generate() 'v',.generate() 'w',.generate() 'x',.generate() 'y',.generate() 'z'
+  // 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '_', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
   static final List<bool> _mapping1 = _unmap([0x43ffffff, 0x7fffffe]);
   
-  // '0',.generate() '1',.generate() '2',.generate() '3',.generate() '4',.generate() '5',.generate() '6',.generate() '7',.generate() '8',.generate() '9',.generate() 'A',.generate() 'B',.generate() 'C',.generate() 'D',.generate() 'E',.generate() 'F',.generate() 'a',.generate() 'b',.generate() 'c',.generate() 'd',.generate() 'e',.generate() 'f'
+  // '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'a', 'b', 'c', 'd', 'e', 'f'
   static final List<bool> _mapping2 = _unmap([0x7e03ff, 0xfc0000]);
   
-  // '\t',.generate() ' '
+  // '\t', ' '
   static final List<bool> _mapping3 = _unmap([0x800001]);
   
-  // '\n',.generate() '\r'
+  // '\n', '\r'
   static final List<bool> _mapping4 = _unmap([0x9]);
   
   // '%{'
@@ -133,6 +133,10 @@ class PegParser {
   // '\r\n'
   static final List<int> _strings3 = <int>[13, 10];
   
+  final List<int> _tokenFlags = [0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+  
+  final List<String> _tokenNames = ["EOF", "IDENTIFIER", "IDENT_START", "IDENT_CONT", "\'<-\'", "\'/\'", "\'&\'", "\'!\'", "\'?\'", "\'*\'", "\'+\'", "\'(\'", "\')\'", "\'.\'", "HEX_NUMBER", "\'#\'", "SPACE", "SPACING", "EOL"];
+  
   List _cache;
   
   int _cachePos;
@@ -145,6 +149,8 @@ class PegParser {
   
   int _cursor;
   
+  List<PegParserError> _errors;
+  
   List<String> _expected;
   
   int _failurePos;
@@ -155,7 +161,7 @@ class PegParser {
   
   int _testing;
   
-  String _token;
+  int _token;
   
   int _tokenLevel;
   
@@ -212,19 +218,22 @@ class PegParser {
     if (_failurePos > _cursor) {
       return;
     }
-    if (_cursor > _failurePos) {    
+    if (_failurePos < _cursor) {    
       _expected = [];
      _failurePos = _cursor;
     }
     if (_token != null) {
-      if (_cursor > _tokenStart) {
-        // TODO:
-        var malformed = true;
-      } else if (_cursor == _inputLen) {
-        // TODO:
-        var unterminated = true;
+      var flag = _tokenFlags[_token];
+      var name = _tokenNames[_token];
+      if (_failurePos == _inputLen && (flag & 1) != 0) {             
+        var message = "Unterminated $name";
+        _errors.add(new PegParserError(PegParserError.UNEXPECTED, _failurePos, _tokenStart, message));            
       }
-      _expected.add(_token);
+      else if (_failurePos > _tokenStart && (flag & 1) != 0) {             
+        var message = "Malformed $name";
+        _errors.add(new PegParserError(PegParserError.MALFORMED, _failurePos, _tokenStart, message));            
+      }
+      _expected.add(name);        
     } else if (expected == null) {
       _expected.add(null);
     } else {
@@ -387,7 +396,7 @@ class PegParser {
     // AND <- "&" SPACING
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "&";  
+      _token = 6;  
       _tokenStart = _cursor;  
     }  
     // "&" SPACING
@@ -419,7 +428,7 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "&"
+      // Expected: '&'
       _failure(_expect8);
     }
     if (--_tokenLevel == 0) {
@@ -487,7 +496,7 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "{"
+      // Expected: {
       _failure(_expect1);
     }
     return $$;
@@ -505,7 +514,7 @@ class PegParser {
       // Lookahead (Action)
       if (success) $$ = _parse_Action();
       if (!success) {
-        // Expected: "{"
+        // Expected: {
         if (_cursor > _testing) _failure(_expect1);  
       }
       if (success) break;
@@ -545,7 +554,7 @@ class PegParser {
       break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "{", null
+      // Expected: {, null
       _failure(_expect4);
     }
     return $$;
@@ -556,7 +565,7 @@ class PegParser {
     // CLOSE <- ")" SPACING
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = ")";  
+      _token = 12;  
       _tokenStart = _cursor;  
     }  
     // ")" SPACING
@@ -581,7 +590,7 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: ")"
+      // Expected: ')'
       _failure(_expect16);
     }
     if (--_tokenLevel == 0) {
@@ -596,7 +605,7 @@ class PegParser {
     // COMMENT <- "#" (!EOL .)* EOL?
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "#";  
+      _token = 15;  
       _tokenStart = _cursor;  
     }  
     // "#" (!EOL .)* EOL?
@@ -622,7 +631,7 @@ class PegParser {
           // Lookahead (EOL)
           if (success) $$ = _parse_EOL();    
           if (!success) {    
-            // Expected: "EOL"    
+            // Expected: EOL    
             if (_cursor > _testing) _failure(_expect22);
           }
           _ch = ch2;
@@ -667,7 +676,7 @@ class PegParser {
       // Lookahead (EOL)
       if (success) $$ = _parse_EOL();    
       if (!success) {    
-        // Expected: "EOL"    
+        // Expected: EOL    
         if (_cursor > _testing) _failure(_expect22);
       }
       success = true; 
@@ -682,7 +691,7 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "#"
+      // Expected: '#'
       _failure(_expect26);
     }
     if (--_tokenLevel == 0) {
@@ -730,7 +739,7 @@ class PegParser {
       // Lookahead (HEX_NUMBER)
       if (success) $$ = _parse_HEX_NUMBER();
       if (!success) {
-        // Expected: "HEX_NUMBER"
+        // Expected: HEX_NUMBER
         if (_cursor > _testing) _failure(_expect21);  
       }
       if (success) break;
@@ -758,7 +767,7 @@ class PegParser {
         // Lookahead (EOL)
         if (success) $$ = _parse_EOL();    
         if (!success) {    
-          // Expected: "EOL"    
+          // Expected: EOL    
           if (_cursor > _testing) _failure(_expect22);
         }
         _ch = ch3;
@@ -791,7 +800,7 @@ class PegParser {
       break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "\\", "HEX_NUMBER", null
+      // Expected: \, HEX_NUMBER, null
       _failure(_expect20);
     }
     return $$;
@@ -846,7 +855,7 @@ class PegParser {
           _cursor = pos1;
         }
         if (!success && _cursor > _testing) {
-          // Expected: "\\", "HEX_NUMBER", null
+          // Expected: \, HEX_NUMBER, null
           _failure(_expect20);
         }
         if (success) {  
@@ -890,7 +899,7 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "["
+      // Expected: [
       _failure(_expect18);
     }
     return $$;
@@ -901,7 +910,7 @@ class PegParser {
     // DOT <- "." SPACING
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = ".";  
+      _token = 13;  
       _tokenStart = _cursor;  
     }  
     // "." SPACING
@@ -926,7 +935,7 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "."
+      // Expected: '.'
       _failure(_expect19);
     }
     if (--_tokenLevel == 0) {
@@ -949,7 +958,7 @@ class PegParser {
       // Lookahead (IDENTIFIER)
       if (success) $$ = _parse_IDENTIFIER();    
       if (!success) {    
-        // Expected: "IDENTIFIER"    
+        // Expected: IDENTIFIER    
         if (_cursor > _testing) _failure(_expect2);
         break;  
       }
@@ -960,7 +969,7 @@ class PegParser {
       // Lookahead (LEFTARROW)
       if (success) $$ = _parse_LEFTARROW();
       if (!success) {
-        // Expected: "<-"
+        // Expected: '<-'
         if (_cursor > _testing) _failure(_expect5);  
         break;  
       }
@@ -971,7 +980,7 @@ class PegParser {
       // Lookahead (Expression)
       if (success) $$ = _parse_Expression();    
       if (!success) {    
-        // Expected: "IDENTIFIER", "(", "\'", "\"", "[", "."    
+        // Expected: IDENTIFIER, '(', ', ", [, '.'    
         if (_cursor > _testing) _failure(_expect6);
         break;  
       }
@@ -993,7 +1002,7 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "IDENTIFIER"
+      // Expected: IDENTIFIER
       _failure(_expect2);
     }
     return $$;
@@ -1004,7 +1013,7 @@ class PegParser {
     // EOF <- !.
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "EOF";  
+      _token = 0;  
       _tokenStart = _cursor;  
     }  
     // !.
@@ -1018,7 +1027,7 @@ class PegParser {
     $$ = null;
     success = !success;
     if (!success && _cursor > _testing) {
-      // Expected: "EOF"
+      // Expected: EOF
       _failure(_expect23);
     }
     if (--_tokenLevel == 0) {
@@ -1033,7 +1042,7 @@ class PegParser {
     // EOL <- "\r\n" / [\n\r]
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "EOL";  
+      _token = 18;  
       _tokenStart = _cursor;  
     }  
     // "\r\n" / [\n\r]
@@ -1046,7 +1055,7 @@ class PegParser {
       break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "EOL"
+      // Expected: EOL
       _failure(_expect22);
     }
     if (--_tokenLevel == 0) {
@@ -1069,7 +1078,7 @@ class PegParser {
       // Lookahead (Sequence)
       if (success) $$ = _parse_Sequence();    
       if (!success) {    
-        // Expected: "IDENTIFIER", "(", "\'", "\"", "[", "."    
+        // Expected: IDENTIFIER, '(', ', ", [, '.'    
         if (_cursor > _testing) _failure(_expect6);
         break;  
       }
@@ -1087,7 +1096,7 @@ class PegParser {
           // Lookahead (SLASH)
           if (success) $$ = _parse_SLASH();
           if (!success) {
-            // Expected: "/"
+            // Expected: '/'
             if (_cursor > _testing) _failure(_expect7);  
             break;  
           }
@@ -1098,7 +1107,7 @@ class PegParser {
           // Lookahead (Sequence)
           if (success) $$ = _parse_Sequence();    
           if (!success) {    
-            // Expected: "IDENTIFIER", "(", "\'", "\"", "[", "."    
+            // Expected: IDENTIFIER, '(', ', ", [, '.'    
             if (_cursor > _testing) _failure(_expect6);
             break;  
           }
@@ -1118,7 +1127,7 @@ class PegParser {
           _cursor = pos1;
         }
         if (!success && _cursor > _testing) {
-          // Expected: "/"
+          // Expected: '/'
           _failure(_expect7);
         }
         if (success) {  
@@ -1147,7 +1156,7 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "IDENTIFIER", "(", "\'", "\"", "[", "."
+      // Expected: IDENTIFIER, '(', ', ", [, '.'
       _failure(_expect6);
     }
     return $$;
@@ -1211,7 +1220,7 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "%{"
+      // Expected: %{
       _failure(_expect0);
     }
     return $$;
@@ -1266,7 +1275,7 @@ class PegParser {
     // HEX_NUMBER <- [\] "u" [0-9A-Fa-f]+
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "HEX_NUMBER";  
+      _token = 14;  
       _tokenStart = _cursor;  
     }  
     // [\] "u" [0-9A-Fa-f]+
@@ -1322,7 +1331,7 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "HEX_NUMBER"
+      // Expected: HEX_NUMBER
       _failure(_expect21);
     }
     if (--_tokenLevel == 0) {
@@ -1337,7 +1346,7 @@ class PegParser {
     // IDENTIFIER <- IDENT_START IDENT_CONT* SPACING
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "IDENTIFIER";  
+      _token = 1;  
       _tokenStart = _cursor;  
     }  
     // IDENT_START IDENT_CONT* SPACING
@@ -1349,7 +1358,7 @@ class PegParser {
       // Lookahead (IDENT_START)
       if (success) $$ = _parse_IDENT_START();    
       if (!success) {    
-        // Expected: "IDENT_START"    
+        // Expected: IDENT_START    
         if (_cursor > _testing) _failure(_expect24);
         break;  
       }
@@ -1364,7 +1373,7 @@ class PegParser {
         // Lookahead (IDENT_CONT)
         if (success) $$ = _parse_IDENT_CONT();    
         if (!success) {    
-          // Expected: "IDENT_CONT"    
+          // Expected: IDENT_CONT    
           if (_cursor > _testing) _failure(_expect25);
         }
         if (success) {  
@@ -1402,7 +1411,7 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "IDENTIFIER"
+      // Expected: IDENTIFIER
       _failure(_expect2);
     }
     if (--_tokenLevel == 0) {
@@ -1417,7 +1426,7 @@ class PegParser {
     // IDENT_CONT <- IDENT_START / [0-9]
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "IDENT_CONT";  
+      _token = 3;  
       _tokenStart = _cursor;  
     }  
     // IDENT_START / [0-9]
@@ -1428,7 +1437,7 @@ class PegParser {
       // Lookahead (IDENT_START)
       if (success) $$ = _parse_IDENT_START();    
       if (!success) {    
-        // Expected: "IDENT_START"    
+        // Expected: IDENT_START    
         if (_cursor > _testing) _failure(_expect24);
       }
       if (success) break;
@@ -1437,7 +1446,7 @@ class PegParser {
       break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "IDENT_CONT"
+      // Expected: IDENT_CONT
       _failure(_expect25);
     }
     if (--_tokenLevel == 0) {
@@ -1452,13 +1461,13 @@ class PegParser {
     // IDENT_START <- [A-Z_a-z]
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "IDENT_START";  
+      _token = 2;  
       _tokenStart = _cursor;  
     }  
     // [A-Z_a-z]
     $$ = _matchMapping(65, 122, _mapping1);
     if (!success && _cursor > _testing) {
-      // Expected: "IDENT_START"
+      // Expected: IDENT_START
       _failure(_expect24);
     }
     if (--_tokenLevel == 0) {
@@ -1473,7 +1482,7 @@ class PegParser {
     // LEFTARROW <- "<-" SPACING
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "<-";  
+      _token = 4;  
       _tokenStart = _cursor;  
     }  
     // "<-" SPACING
@@ -1498,7 +1507,7 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "<-"
+      // Expected: '<-'
       _failure(_expect5);
     }
     if (--_tokenLevel == 0) {
@@ -1559,7 +1568,7 @@ class PegParser {
             _cursor = pos1;
           }
           if (!success && _cursor > _testing) {
-            // Expected: "\\", "HEX_NUMBER", null
+            // Expected: \, HEX_NUMBER, null
             _failure(_expect20);
           }
           if (success) {  
@@ -1648,7 +1657,7 @@ class PegParser {
             _cursor = pos4;
           }
           if (!success && _cursor > _testing) {
-            // Expected: "\\", "HEX_NUMBER", null
+            // Expected: \, HEX_NUMBER, null
             _failure(_expect20);
           }
           if (success) {  
@@ -1694,7 +1703,7 @@ class PegParser {
       break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "\'", "\""
+      // Expected: ', "
       _failure(_expect17);
     }
     return $$;
@@ -1758,7 +1767,7 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "{"
+      // Expected: {
       _failure(_expect1);
     }
     return $$;
@@ -1769,7 +1778,7 @@ class PegParser {
     // NOT <- "!" SPACING
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "!";  
+      _token = 7;  
       _tokenStart = _cursor;  
     }  
     // "!" SPACING
@@ -1801,7 +1810,7 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "!"
+      // Expected: '!'
       _failure(_expect9);
     }
     if (--_tokenLevel == 0) {
@@ -1816,7 +1825,7 @@ class PegParser {
     // OPEN <- "(" SPACING
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "(";  
+      _token = 11;  
       _tokenStart = _cursor;  
     }  
     // "(" SPACING
@@ -1841,7 +1850,7 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "("
+      // Expected: '('
       _failure(_expect15);
     }
     if (--_tokenLevel == 0) {
@@ -1856,7 +1865,7 @@ class PegParser {
     // PLUS <- "+" SPACING
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "+";  
+      _token = 10;  
       _tokenStart = _cursor;  
     }  
     // "+" SPACING
@@ -1888,7 +1897,7 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "+"
+      // Expected: '+'
       _failure(_expect13);
     }
     if (--_tokenLevel == 0) {
@@ -1916,7 +1925,7 @@ class PegParser {
         // Lookahead (AND)
         if (success) $$ = _parse_AND();
         if (!success) {
-          // Expected: "&"
+          // Expected: '&'
           if (_cursor > _testing) _failure(_expect8);  
         }
         if (success) break;
@@ -1926,13 +1935,13 @@ class PegParser {
         // Lookahead (NOT)
         if (success) $$ = _parse_NOT();
         if (!success) {
-          // Expected: "!"
+          // Expected: '!'
           if (_cursor > _testing) _failure(_expect9);  
         }
         break;
       }
       if (!success && _cursor > _testing) {
-        // Expected: "&", "!"
+        // Expected: '&', '!'
         _failure(_expect10);
       }
       success = true; 
@@ -1945,7 +1954,7 @@ class PegParser {
       // Lookahead (Suffix)
       if (success) $$ = _parse_Suffix();    
       if (!success) {    
-        // Expected: "IDENTIFIER", "(", "\'", "\"", "[", "."    
+        // Expected: IDENTIFIER, '(', ', ", [, '.'    
         if (_cursor > _testing) _failure(_expect6);
         break;  
       }
@@ -1959,7 +1968,7 @@ class PegParser {
       // Lookahead (Action)
       if (success) $$ = _parse_Action();
       if (!success) {
-        // Expected: "{"
+        // Expected: {
         if (_cursor > _testing) _failure(_expect1);  
       }
       success = true; 
@@ -1983,7 +1992,7 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "IDENTIFIER", "(", "\'", "\"", "[", "."
+      // Expected: IDENTIFIER, '(', ', ", [, '.'
       _failure(_expect6);
     }
     return $$;
@@ -2004,7 +2013,7 @@ class PegParser {
         // Lookahead (IDENTIFIER)
         if (success) $$ = _parse_IDENTIFIER();    
         if (!success) {    
-          // Expected: "IDENTIFIER"    
+          // Expected: IDENTIFIER    
           if (_cursor > _testing) _failure(_expect2);
           break;  
         }
@@ -2018,7 +2027,7 @@ class PegParser {
         // Lookahead (LEFTARROW)
         if (success) $$ = _parse_LEFTARROW();
         if (!success) {
-          // Expected: "<-"
+          // Expected: '<-'
           if (_cursor > _testing) _failure(_expect5);  
         }
         _ch = ch1;
@@ -2052,7 +2061,7 @@ class PegParser {
         // Lookahead (OPEN)
         if (success) $$ = _parse_OPEN();
         if (!success) {
-          // Expected: "("
+          // Expected: '('
           if (_cursor > _testing) _failure(_expect15);  
           break;  
         }
@@ -2063,7 +2072,7 @@ class PegParser {
         // Lookahead (Expression)
         if (success) $$ = _parse_Expression();    
         if (!success) {    
-          // Expected: "IDENTIFIER", "(", "\'", "\"", "[", "."    
+          // Expected: IDENTIFIER, '(', ', ", [, '.'    
           if (_cursor > _testing) _failure(_expect6);
           break;  
         }
@@ -2074,7 +2083,7 @@ class PegParser {
         // Lookahead (CLOSE)
         if (success) $$ = _parse_CLOSE();
         if (!success) {
-          // Expected: ")"
+          // Expected: ')'
           if (_cursor > _testing) _failure(_expect16);  
           break;  
         }
@@ -2102,7 +2111,7 @@ class PegParser {
       // Lookahead (Literal)
       if (success) $$ = _parse_Literal();    
       if (!success) {    
-        // Expected: "\'", "\""    
+        // Expected: ', "    
         if (_cursor > _testing) _failure(_expect17);
       }
       if (success) break;
@@ -2112,7 +2121,7 @@ class PegParser {
       // Lookahead (Class)
       if (success) $$ = _parse_Class();
       if (!success) {
-        // Expected: "["
+        // Expected: [
         if (_cursor > _testing) _failure(_expect18);  
       }
       if (success) break;
@@ -2122,7 +2131,7 @@ class PegParser {
       // Lookahead (DOT)
       if (success) $$ = _parse_DOT();
       if (!success) {
-        // Expected: "."
+        // Expected: '.'
         if (_cursor > _testing) _failure(_expect19);  
       }
       if (success) {    
@@ -2133,7 +2142,7 @@ class PegParser {
       break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "IDENTIFIER", "(", "\'", "\"", "[", "."
+      // Expected: IDENTIFIER, '(', ', ", [, '.'
       _failure(_expect6);
     }
     return $$;
@@ -2144,7 +2153,7 @@ class PegParser {
     // QUESTION <- "?" SPACING
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "?";  
+      _token = 8;  
       _tokenStart = _cursor;  
     }  
     // "?" SPACING
@@ -2176,7 +2185,7 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "?"
+      // Expected: '?'
       _failure(_expect11);
     }
     if (--_tokenLevel == 0) {
@@ -2234,7 +2243,7 @@ class PegParser {
       break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "\\", "HEX_NUMBER", null
+      // Expected: \, HEX_NUMBER, null
       _failure(_expect20);
     }
     return $$;
@@ -2245,7 +2254,7 @@ class PegParser {
     // SLASH <- "/" SPACING
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "/";  
+      _token = 5;  
       _tokenStart = _cursor;  
     }  
     // "/" SPACING
@@ -2270,7 +2279,7 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "/"
+      // Expected: '/'
       _failure(_expect7);
     }
     if (--_tokenLevel == 0) {
@@ -2285,7 +2294,7 @@ class PegParser {
     // SPACE <- [\t ] / EOL
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "SPACE";  
+      _token = 16;  
       _tokenStart = _cursor;  
     }  
     // [\t ] / EOL
@@ -2299,13 +2308,13 @@ class PegParser {
       // Lookahead (EOL)
       if (success) $$ = _parse_EOL();    
       if (!success) {    
-        // Expected: "EOL"    
+        // Expected: EOL    
         if (_cursor > _testing) _failure(_expect22);
       }
       break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "SPACE"
+      // Expected: SPACE
       _failure(_expect27);
     }
     if (--_tokenLevel == 0) {
@@ -2320,7 +2329,7 @@ class PegParser {
     // SPACING <- (SPACE / COMMENT)*
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "SPACING";  
+      _token = 17;  
       _tokenStart = _cursor;  
     }  
     // (SPACE / COMMENT)*
@@ -2335,7 +2344,7 @@ class PegParser {
         // Lookahead (SPACE)
         if (success) $$ = _parse_SPACE();    
         if (!success) {    
-          // Expected: "SPACE"    
+          // Expected: SPACE    
           if (_cursor > _testing) _failure(_expect27);
         }
         if (success) break;
@@ -2345,13 +2354,13 @@ class PegParser {
         // Lookahead (COMMENT)
         if (success) $$ = _parse_COMMENT();
         if (!success) {
-          // Expected: "#"
+          // Expected: '#'
           if (_cursor > _testing) _failure(_expect26);  
         }
         break;
       }
       if (!success && _cursor > _testing) {
-        // Expected: "SPACE", "#"
+        // Expected: SPACE, '#'
         _failure(_expect28);
       }
       if (success) {  
@@ -2364,7 +2373,7 @@ class PegParser {
       }
     }
     if (!success && _cursor > _testing) {
-      // Expected: "SPACING"
+      // Expected: SPACING
       _failure(_expect29);
     }
     if (--_tokenLevel == 0) {
@@ -2379,7 +2388,7 @@ class PegParser {
     // STAR <- "*" SPACING
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "*";  
+      _token = 9;  
       _tokenStart = _cursor;  
     }  
     // "*" SPACING
@@ -2411,7 +2420,7 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "*"
+      // Expected: '*'
       _failure(_expect12);
     }
     if (--_tokenLevel == 0) {
@@ -2434,7 +2443,7 @@ class PegParser {
       // Lookahead (Prefix)  
       if (success) $$ = _parse_Prefix();      
       if (!success) {      
-        // Expected: "IDENTIFIER", "(", "\'", "\"", "[", "."      
+        // Expected: IDENTIFIER, '(', ', ", [, '.'      
         if (_cursor > _testing) _failure(_expect6);  
       }  
       if (success) {
@@ -2461,7 +2470,7 @@ class PegParser {
       $$ = new SequenceExpression($1);    
     }
     if (!success && _cursor > _testing) {
-      // Expected: "IDENTIFIER", "(", "\'", "\"", "[", "."
+      // Expected: IDENTIFIER, '(', ', ", [, '.'
       _failure(_expect6);
     }
     return $$;
@@ -2480,7 +2489,7 @@ class PegParser {
       // Lookahead (Primary)
       if (success) $$ = _parse_Primary();    
       if (!success) {    
-        // Expected: "IDENTIFIER", "(", "\'", "\"", "[", "."    
+        // Expected: IDENTIFIER, '(', ', ", [, '.'    
         if (_cursor > _testing) _failure(_expect6);
         break;  
       }
@@ -2496,7 +2505,7 @@ class PegParser {
         // Lookahead (QUESTION)
         if (success) $$ = _parse_QUESTION();
         if (!success) {
-          // Expected: "?"
+          // Expected: '?'
           if (_cursor > _testing) _failure(_expect11);  
         }
         if (success) break;
@@ -2506,7 +2515,7 @@ class PegParser {
         // Lookahead (STAR)
         if (success) $$ = _parse_STAR();
         if (!success) {
-          // Expected: "*"
+          // Expected: '*'
           if (_cursor > _testing) _failure(_expect12);  
         }
         if (success) break;
@@ -2516,13 +2525,13 @@ class PegParser {
         // Lookahead (PLUS)
         if (success) $$ = _parse_PLUS();
         if (!success) {
-          // Expected: "+"
+          // Expected: '+'
           if (_cursor > _testing) _failure(_expect13);  
         }
         break;
       }
       if (!success && _cursor > _testing) {
-        // Expected: "?", "*", "+"
+        // Expected: '?', '*', '+'
         _failure(_expect14);
       }
       success = true; 
@@ -2544,7 +2553,7 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "IDENTIFIER", "(", "\'", "\"", "[", "."
+      // Expected: IDENTIFIER, '(', ', ", [, '.'
       _failure(_expect6);
     }
     return $$;
@@ -2650,26 +2659,30 @@ class PegParser {
   
     var errors = <PegParserError>[];
     if (_failurePos >= _cursor) {
-      var set = new Set<String>();  
-      set.addAll(_expected);
-      var length = 1;
-      if (_failurePos >= _inputLen) {
-        length = 0;
+      var set = new Set<PegParserError>();
+      set.addAll(_errors);
+      for (var error in set) {
+        if (error.position >= _failurePos) {
+          errors.add(error);
+        }
       }
-      if (set.contains(null)) {
+      var names = new Set<String>();  
+      names.addAll(_expected);
+      if (names.contains(null)) {
         var string = getc(_failurePos);
         var message = "Unexpected $string";
-        var error = new PegParserError(PegParserError.UNEXPECTED, _failurePos, length, message);
+        var error = new PegParserError(PegParserError.UNEXPECTED, _failurePos, _failurePos, message);
         errors.add(error);
       } else {      
         var found = getc(_failurePos);      
-        var list = set.toList();
+        var list = names.toList();
         list.sort();
         var message = "Expected ${list.join(", ")} but found $found";
-        var error = new PegParserError(PegParserError.EXPECTED, _failurePos, length, message);
+        var error = new PegParserError(PegParserError.EXPECTED, _failurePos, _failurePos, message);
         errors.add(error);
-      }    
+      }        
     }
+    errors.sort((a, b) => a.position.compareTo(b.position));
     return errors;  
   }
   
@@ -2702,7 +2715,7 @@ class PegParser {
       // Lookahead (Globals)
       if (success) $$ = _parse_Globals();
       if (!success) {
-        // Expected: "%{"
+        // Expected: %{
         if (_cursor > _testing) _failure(_expect0);  
       }
       success = true; 
@@ -2718,7 +2731,7 @@ class PegParser {
       // Lookahead (Members)
       if (success) $$ = _parse_Members();
       if (!success) {
-        // Expected: "{"
+        // Expected: {
         if (_cursor > _testing) _failure(_expect1);  
       }
       success = true; 
@@ -2734,7 +2747,7 @@ class PegParser {
         // Lookahead (Definition)  
         if (success) $$ = _parse_Definition();      
         if (!success) {      
-          // Expected: "IDENTIFIER"      
+          // Expected: IDENTIFIER      
           if (_cursor > _testing) _failure(_expect2);  
         }  
         if (success) {
@@ -2782,7 +2795,7 @@ class PegParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "IDENTIFIER"
+      // Expected: IDENTIFIER
       _failure(_expect2);
     }
     return $$;
@@ -2800,8 +2813,9 @@ class PegParser {
     _cachePos = -1;
     _cacheRule = new List(_inputLen + 1);
     _cacheState = new List.filled(((_inputLen + 1) >> 5) + 1, 0);
-    _ch = -1;   
-    _expected = [];
+    _ch = -1;
+    _errors = <PegParserError>[];   
+    _expected = <String>[];
     _failurePos = -1;  
     success = true;      
     _testing = -1;
@@ -2827,15 +2841,26 @@ class PegParserError {
       
   static const int UNTERMINATED = 5;    
       
-  final int length;
+  final int hashCode = 0;
   
   final String message;
   
   final int position;
   
+  final int start;
+  
   final int type;
   
-  PegParserError(this.type, this.position, this.length, this.message);
+  PegParserError(this.type, this.position, this.start, this.message);
+  
+  bool operator ==(other) {
+    if (identical(this, other)) return true;
+    if (other is PegParserError) {
+      return type == other.type && position == other.position &&
+      start == other.start && message == other.message;  
+    }
+    return false;
+  }
   
 }
 

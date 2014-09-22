@@ -12,6 +12,7 @@ class {{CLASSNAME}} {
   {{#VARIABLES}}
   {{#CONSTRUCTORS}}
   {{#PROPERTIES}} 
+  {{#OPERATORS}}
   {{#METHODS}}
   {{#CODE}} 
 }
@@ -26,6 +27,8 @@ class {{CLASSNAME}} {
   Map<String, List<String>> _constructors;
 
   Map<String, List<String>> _methods;
+
+  Map<String, List<String>> _operators;
 
   Map<String, List<String>> _staticProperties;
 
@@ -47,6 +50,7 @@ class {{CLASSNAME}} {
     _constants = <String, List<String>>{};
     _constructors = <String, List<String>>{};
     _methods = <String, List<String>>{};
+    _operators = <String, List<String>>{};
     _staticProperties = <String, List<String>>{};
     _staticMethods = <String, List<String>>{};
     _properties = <String, List<String>>{};
@@ -90,6 +94,14 @@ class {{CLASSNAME}} {
     }
   }
 
+  void addOperator(DeclarationGenerator declaration) {
+    if (declaration == null) {
+      throw new ArgumentError("declaration: $declaration");
+    }
+
+    _addDeclaration(declaration, _operators);
+  }
+
   void addProperty(DeclarationGenerator declaration, [bool static = false]) {
     if (declaration == null) {
       throw new ArgumentError("declaration: $declaration");
@@ -120,6 +132,7 @@ class {{CLASSNAME}} {
     _generateDeclarations(block, "#CONSTANTS", _constants);
     _generateDeclarations(block, "#CONSTRUCTORS", _constructors);
     _generateDeclarations(block, "#METHODS", _methods);
+    _generateDeclarations(block, "#OPERATORS", _operators);
     _generateDeclarations(block, "#PROPERTIES", _properties);
     _generateDeclarations(block, "#STATIC_METHODS", _staticMethods);
     _generateDeclarations(block, "#STATIC_PROPERTIES", _staticProperties);

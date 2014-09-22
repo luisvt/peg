@@ -19,6 +19,7 @@ class FrontendAnalyzer {
     new ExpressionAbleNotConsumeInputResolver().resolve(rules);
     new LeftExpressionsResolver().resolve(rules);
     new RightExpressionsResolver().resolve(rules);
+    new ExpressionLengthResovler().resolve(rules);
     new StartCharactersResolver().resolve(rules);
     for (var i = 0; i <= 1; i++) {
       for (var rule in rules) {

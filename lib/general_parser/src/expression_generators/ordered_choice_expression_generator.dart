@@ -87,7 +87,7 @@ if (!$_SUCCESS && $_CURSOR > $_TESTING) {
     var expected = _expression.expectedLexemes;
     if (options.comment) {
       block.assign('#COMMENTS', '// $_expression');
-      block.assign('#COMMENT_EXPECTED', '// Expected: ${Utils.toPrintableList(expected).join(", ")}');
+      block.assign('#COMMENT_EXPECTED', '// Expected: ${expected.join(", ")}');
     }
 
     block.assign('EXPECTED', productionRuleGenerator.parserClassGenerator.addExpected(expected));
@@ -100,7 +100,7 @@ if (!$_SUCCESS && $_CURSOR > $_TESTING) {
     var expected = _expression.expectedLexemes;
     block.assign('EXPECTED', productionRuleGenerator.parserClassGenerator.addExpected(expected));
     if (options.comment) {
-      block.assign('#COMMENT_EXPECTED', '// Expected: ${Utils.toPrintableList(expected).join(", ")}');
+      block.assign('#COMMENT_EXPECTED', '// Expected: ${expected.join(", ")}');
     }
 
     return block.process();

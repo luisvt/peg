@@ -1,11 +1,11 @@
 part of peg.parser_generators.parser_error_class_generator;
 
 class ParserErrorClassGenerator extends ClassGenerator {
-  static const String LENGTH = "length";
-
   static const String MESSAGE = "message";
 
   static const String POSITION = "position";
+
+  static const String START = "start";
 
   static const String TYPE = "type";
 
@@ -38,11 +38,13 @@ class ParserErrorClassGenerator extends ClassGenerator {
     addConstant(new VariableGenerator(TYPE_MISSING, "static const int", value: "3"));
     addConstant(new VariableGenerator(TYPE_UNEXPECTED, "static const int", value: "4"));
     addConstant(new VariableGenerator(TYPE_UNTERMINATED, "static const int", value: "5"));
-    addVariable(new VariableGenerator(LENGTH, "final int"));
+    addVariable(new VariableGenerator("hashCode", "final int", value: "0"));
     addVariable(new VariableGenerator(MESSAGE, "final String"));
     addVariable(new VariableGenerator(POSITION, "final int"));
+    addVariable(new VariableGenerator(START, "final int"));
     addVariable(new VariableGenerator(TYPE, "final int"));
     addConstructor(new ClassContructorGenerator(name));
+    addOperator(new OperatorEqualsGenerator(name));
   }
 
   List<String> generate() {

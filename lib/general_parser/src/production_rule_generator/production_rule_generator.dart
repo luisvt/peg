@@ -45,7 +45,7 @@ if (--$_TOKEN_LEVEL == 0) {
 
   static String _templateTokenProlog = '''
 if ($_TOKEN_LEVEL++ == 0) {
-  $_TOKEN = {{TOKEN}};
+  $_TOKEN = {{TOKEN_ID}};
   $_TOKEN_START = $_CURSOR;
 }''';
 
@@ -205,8 +205,7 @@ dynamic {{NAME}}() {
     }
 
     var block = getTemplateBlock(_TEMPLATE_TOKEN_PROLOG);
-    var name = Utils.toPrintable(productionRule.getTokenName());
-    block.assign("TOKEN", "\"$name\"");
+    block.assign("TOKEN_ID", productionRule.tokenId);
     return block.process();
   }
 

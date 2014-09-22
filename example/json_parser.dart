@@ -50,70 +50,64 @@ num _parseNumber(minus, integer, frac, exp) {
 class JsonParser {
   static final List<String> _ascii = new List<String>.generate(128, (c) => new String.fromCharCode(c));
   
-  static final List<String> _expect0 = <String>["{"];
+  static final List<String> _expect0 = <String>["\'{\'"];
   
-  static final List<String> _expect1 = <String>["["];
+  static final List<String> _expect1 = <String>["\'[\'"];
   
-  static final List<String> _expect10 = <String>["}"];
+  static final List<String> _expect10 = <String>["\'}\'"];
   
-  static final List<String> _expect11 = <String>[":"];
+  static final List<String> _expect11 = <String>["\':\'"];
   
-  static final List<String> _expect12 = <String>["]"];
+  static final List<String> _expect12 = <String>["\']\'"];
   
   static final List<String> _expect13 = <String>["QUOTATION_MARK"];
   
-  static final List<String> _expect14 = <String>["."];
+  static final List<String> _expect14 = <String>["\'.\'"];
   
   static final List<String> _expect15 = <String>["E", "e"];
   
-  static final List<String> _expect16 = <String>["E"];
+  static final List<String> _expect16 = <String>["+", "-"];
   
-  static final List<String> _expect17 = <String>["-"];
+  static final List<String> _expect17 = <String>["DIGIT"];
   
-  static final List<String> _expect18 = <String>["+"];
+  static final List<String> _expect18 = <String>["EXP"];
   
-  static final List<String> _expect19 = <String>["+", "-"];
+  static final List<String> _expect19 = <String>["INT"];
   
-  static final List<String> _expect2 = <String>["[", "{"];
+  static final List<String> _expect2 = <String>["\'[\'", "\'{\'"];
   
-  static final List<String> _expect20 = <String>["DIGIT"];
+  static final List<String> _expect20 = <String>["\'\\\'"];
   
-  static final List<String> _expect21 = <String>["EXP"];
+  static final List<String> _expect21 = <String>["HEXDIG"];
   
-  static final List<String> _expect22 = <String>["INT"];
+  static final List<String> _expect22 = <String>["CHAR"];
   
-  static final List<String> _expect23 = <String>["\\"];
+  static final List<String> _expect23 = <String>["EOF"];
   
-  static final List<String> _expect24 = <String>["HEXDIG"];
+  static final List<String> _expect24 = <String>["UNESCAPED"];
   
-  static final List<String> _expect25 = <String>["CHAR"];
+  static final List<String> _expect25 = <String>["WS"];
   
-  static final List<String> _expect26 = <String>["EOF"];
+  static final List<String> _expect3 = <String>["\'false\'"];
   
-  static final List<String> _expect27 = <String>["UNESCAPED"];
+  static final List<String> _expect4 = <String>["\'null\'"];
   
-  static final List<String> _expect28 = <String>["WS"];
-  
-  static final List<String> _expect3 = <String>["false"];
-  
-  static final List<String> _expect4 = <String>["null"];
-  
-  static final List<String> _expect5 = <String>["true"];
+  static final List<String> _expect5 = <String>["\'true\'"];
   
   static final List<String> _expect6 = <String>["NUMBER"];
   
   static final List<String> _expect7 = <String>["STRING"];
   
-  static final List<String> _expect8 = <String>["NUMBER", "STRING", "[", "false", "null", "true", "{"];
+  static final List<String> _expect8 = <String>["\'[\'", "\'false\'", "\'null\'", "\'true\'", "\'{\'", "NUMBER", "STRING"];
   
-  static final List<String> _expect9 = <String>[","];
+  static final List<String> _expect9 = <String>["\',\'"];
   
   static final List<bool> _lookahead = _unmap([0x800013, 0x0, 0x100000, 0x600000, 0x7fe4, 0x10020000, 0x1ffc0820, 0x7e0, 0xfc0]);
   
-  // '\"',.generate() '/',.generate() '\\',.generate() 'b',.generate() 'f',.generate() 'n',.generate() 'r',.generate() 't'
+  // '\"', '/', '\\', 'b', 'f', 'n', 'r', 't'
   static final List<bool> _mapping0 = _unmap([0x2001, 0x8000000, 0x144044]);
   
-  // '\t',.generate() '\n',.generate() '\r',.generate() ' '
+  // '\t', '\n', '\r', ' '
   static final List<bool> _mapping1 = _unmap([0x800013]);
   
   // 'false'
@@ -124,6 +118,10 @@ class JsonParser {
   
   // 'true'
   static final List<int> _strings2 = <int>[116, 114, 117, 101];
+  
+  final List<int> _tokenFlags = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1];
+  
+  final List<String> _tokenNames = ["QUOTATION_MARK", "\'[\'", "\'{\'", "\'.\'", "\']\'", "\'}\'", "EXP", "\'false\'", "\'.\'", "INT", "\':\'", "\'null\'", "NUMBER", "STRING", "\'true\'", "\',\'", "CHAR", "DIGIT", "\'\\\'", "EOF", "HEXDIG", "UNESCAPED", "WS"];
   
   List _cache;
   
@@ -137,6 +135,8 @@ class JsonParser {
   
   int _cursor;
   
+  List<JsonParserError> _errors;
+  
   List<String> _expected;
   
   int _failurePos;
@@ -147,7 +147,7 @@ class JsonParser {
   
   int _testing;
   
-  String _token;
+  int _token;
   
   int _tokenLevel;
   
@@ -204,19 +204,22 @@ class JsonParser {
     if (_failurePos > _cursor) {
       return;
     }
-    if (_cursor > _failurePos) {    
+    if (_failurePos < _cursor) {    
       _expected = [];
      _failurePos = _cursor;
     }
     if (_token != null) {
-      if (_cursor > _tokenStart) {
-        // TODO:
-        var malformed = true;
-      } else if (_cursor == _inputLen) {
-        // TODO:
-        var unterminated = true;
+      var flag = _tokenFlags[_token];
+      var name = _tokenNames[_token];
+      if (_failurePos == _inputLen && (flag & 1) != 0) {             
+        var message = "Unterminated $name";
+        _errors.add(new JsonParserError(JsonParserError.UNEXPECTED, _failurePos, _tokenStart, message));            
       }
-      _expected.add(_token);
+      else if (_failurePos > _tokenStart && (flag & 1) != 0) {             
+        var message = "Malformed $name";
+        _errors.add(new JsonParserError(JsonParserError.MALFORMED, _failurePos, _tokenStart, message));            
+      }
+      _expected.add(name);        
     } else if (expected == null) {
       _expected.add(null);
     } else {
@@ -379,7 +382,7 @@ class JsonParser {
     // BEGIN_ARRAY <- "[" WS
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "[";  
+      _token = 1;  
       _tokenStart = _cursor;  
     }  
     // "[" WS
@@ -404,7 +407,7 @@ class JsonParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "["
+      // Expected: '['
       _failure(_expect1);
     }
     if (--_tokenLevel == 0) {
@@ -419,7 +422,7 @@ class JsonParser {
     // BEGIN_OBJECT <- "{" WS
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "{";  
+      _token = 2;  
       _tokenStart = _cursor;  
     }  
     // "{" WS
@@ -444,7 +447,7 @@ class JsonParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "{"
+      // Expected: '{'
       _failure(_expect0);
     }
     if (--_tokenLevel == 0) {
@@ -459,7 +462,7 @@ class JsonParser {
     // CHAR <- UNESCAPED / ESCAPE ["/\bfnrt] / ESCAPE "u" HEXDIG HEXDIG HEXDIG HEXDIG
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "CHAR";  
+      _token = 16;  
       _tokenStart = _cursor;  
     }  
     // UNESCAPED / ESCAPE ["/\bfnrt] / ESCAPE "u" HEXDIG HEXDIG HEXDIG HEXDIG
@@ -476,8 +479,8 @@ class JsonParser {
         // Lookahead (ESCAPE)
         if (success) $$ = _parse_ESCAPE();
         if (!success) {
-          // Expected: "\\"
-          if (_cursor > _testing) _failure(_expect23);  
+          // Expected: '\'
+          if (_cursor > _testing) _failure(_expect20);  
           break;  
         }
         var seq = new List(2)..[0] = $$;
@@ -509,8 +512,8 @@ class JsonParser {
         // Lookahead (ESCAPE)
         if (success) $$ = _parse_ESCAPE();
         if (!success) {
-          // Expected: "\\"
-          if (_cursor > _testing) _failure(_expect23);  
+          // Expected: '\'
+          if (_cursor > _testing) _failure(_expect20);  
           break;  
         }
         var seq = new List(6)..[0] = $$;
@@ -524,8 +527,8 @@ class JsonParser {
         // Lookahead (HEXDIG)
         if (success) $$ = _parse_HEXDIG();    
         if (!success) {    
-          // Expected: "HEXDIG"    
-          if (_cursor > _testing) _failure(_expect24);
+          // Expected: HEXDIG    
+          if (_cursor > _testing) _failure(_expect21);
           break;  
         }
         seq[2] = $$;
@@ -535,8 +538,8 @@ class JsonParser {
         // Lookahead (HEXDIG)
         if (success) $$ = _parse_HEXDIG();    
         if (!success) {    
-          // Expected: "HEXDIG"    
-          if (_cursor > _testing) _failure(_expect24);
+          // Expected: HEXDIG    
+          if (_cursor > _testing) _failure(_expect21);
           break;  
         }
         seq[3] = $$;
@@ -546,8 +549,8 @@ class JsonParser {
         // Lookahead (HEXDIG)
         if (success) $$ = _parse_HEXDIG();    
         if (!success) {    
-          // Expected: "HEXDIG"    
-          if (_cursor > _testing) _failure(_expect24);
+          // Expected: HEXDIG    
+          if (_cursor > _testing) _failure(_expect21);
           break;  
         }
         seq[4] = $$;
@@ -557,8 +560,8 @@ class JsonParser {
         // Lookahead (HEXDIG)
         if (success) $$ = _parse_HEXDIG();    
         if (!success) {    
-          // Expected: "HEXDIG"    
-          if (_cursor > _testing) _failure(_expect24);
+          // Expected: HEXDIG    
+          if (_cursor > _testing) _failure(_expect21);
           break;  
         }
         seq[5] = $$;
@@ -587,8 +590,8 @@ class JsonParser {
       break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "CHAR"
-      _failure(_expect25);
+      // Expected: CHAR
+      _failure(_expect22);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -602,7 +605,7 @@ class JsonParser {
     // DECIMAL_POINT <- "." WS
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = ".";  
+      _token = 3;  
       _tokenStart = _cursor;  
     }  
     // "." WS
@@ -634,7 +637,7 @@ class JsonParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "."
+      // Expected: '.'
       _failure(_expect14);
     }
     if (--_tokenLevel == 0) {
@@ -649,72 +652,14 @@ class JsonParser {
     // DIGIT <- [0-9]
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "DIGIT";  
+      _token = 17;  
       _tokenStart = _cursor;  
     }  
     // [0-9]
     $$ = _matchRange(48, 57);
     if (!success && _cursor > _testing) {
-      // Expected: "DIGIT"
-      _failure(_expect20);
-    }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
-    return $$;
-  }
-  
-  dynamic _parse_E() {
-    // TERMINAL
-    // E <- ("e" / "E") WS
-    var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = "E";  
-      _tokenStart = _cursor;  
-    }  
-    // ("e" / "E") WS
-    var ch0 = _ch, pos0 = _cursor;
-    while (true) {  
-      // "e" / "E"
-      while (true) {
-        // "e"
-        $$ = _matchChar(101, 'e');
-        if (success) break;
-        // "E"
-        $$ = _matchChar(69, 'E');
-        break;
-      }
-      if (!success && _cursor > _testing) {
-        // Expected: "e", "E"
-        _failure(_expect15);
-      }
-      if (!success) break;
-      var seq = new List(2)..[0] = $$;
-      // WS
-      $$ = null;
-      success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (WS is optional)
-      if (success) $$ = _parse_WS();
-      else success = true;
-      seq[1] = $$;
-      $$ = seq;
-      if (success) {    
-        // "e" / "E"
-        final $1 = seq[0];
-        // WS
-        final $2 = seq[1];
-        $$ = $1;    
-      }
-      break;  
-    }
-    if (!success) {
-      _ch = ch0;
-      _cursor = pos0;
-    }
-    if (!success && _cursor > _testing) {
-      // Expected: "E"
-      _failure(_expect16);
+      // Expected: DIGIT
+      _failure(_expect17);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -728,7 +673,7 @@ class JsonParser {
     // END_ARRAY <- "]" WS
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "]";  
+      _token = 4;  
       _tokenStart = _cursor;  
     }  
     // "]" WS
@@ -753,7 +698,7 @@ class JsonParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "]"
+      // Expected: ']'
       _failure(_expect12);
     }
     if (--_tokenLevel == 0) {
@@ -768,7 +713,7 @@ class JsonParser {
     // END_OBJECT <- "}" WS
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "}";  
+      _token = 5;  
       _tokenStart = _cursor;  
     }  
     // "}" WS
@@ -793,7 +738,7 @@ class JsonParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "}"
+      // Expected: '}'
       _failure(_expect10);
     }
     if (--_tokenLevel == 0) {
@@ -808,7 +753,7 @@ class JsonParser {
     // EOF <- !.
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "EOF";  
+      _token = 19;  
       _tokenStart = _cursor;  
     }  
     // !.
@@ -822,8 +767,8 @@ class JsonParser {
     $$ = null;
     success = !success;
     if (!success && _cursor > _testing) {
-      // Expected: "EOF"
-      _failure(_expect26);
+      // Expected: EOF
+      _failure(_expect23);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -837,14 +782,14 @@ class JsonParser {
     // ESCAPE <- "\\"
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "\\";  
+      _token = 18;  
       _tokenStart = _cursor;  
     }  
     // "\\"
     $$ = _matchChar(92, '\\');
     if (!success && _cursor > _testing) {
-      // Expected: "\\"
-      _failure(_expect23);
+      // Expected: '\'
+      _failure(_expect20);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -855,55 +800,45 @@ class JsonParser {
   
   dynamic _parse_EXP() {
     // TERMINAL
-    // EXP <- E (MINUS / PLUS)? DIGIT+ WS
+    // EXP <- ("e" / "E") ("-" / "+")? DIGIT+ WS
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "EXP";  
+      _token = 6;  
       _tokenStart = _cursor;  
     }  
-    // E (MINUS / PLUS)? DIGIT+ WS
+    // ("e" / "E") ("-" / "+")? DIGIT+ WS
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
-      // E
-      $$ = null;
-      success = _ch >= 69 && _ch <= 101 && _lookahead[_ch + 13];
-      // Lookahead (E)
-      if (success) $$ = _parse_E();    
-      if (!success) {    
-        // Expected: "E"    
-        if (_cursor > _testing) _failure(_expect16);
-        break;  
-      }
-      var seq = new List(4)..[0] = $$;
-      // (MINUS / PLUS)?
-      var testing0 = _testing;
-      _testing = _cursor;
-      // MINUS / PLUS
+      // "e" / "E"
       while (true) {
-        // MINUS
-        $$ = null;
-        success = _ch == 45; // '-'
-        // Lookahead (MINUS)
-        if (success) $$ = _parse_MINUS();
-        if (!success) {
-          // Expected: "-"
-          if (_cursor > _testing) _failure(_expect17);  
-        }
+        // "e"
+        $$ = _matchChar(101, 'e');
         if (success) break;
-        // PLUS
-        $$ = null;
-        success = _ch == 43; // '+'
-        // Lookahead (PLUS)
-        if (success) $$ = _parse_PLUS();
-        if (!success) {
-          // Expected: "+"
-          if (_cursor > _testing) _failure(_expect18);  
-        }
+        // "E"
+        $$ = _matchChar(69, 'E');
         break;
       }
       if (!success && _cursor > _testing) {
-        // Expected: "-", "+"
-        _failure(_expect19);
+        // Expected: e, E
+        _failure(_expect15);
+      }
+      if (!success) break;
+      var seq = new List(4)..[0] = $$;
+      // ("-" / "+")?
+      var testing0 = _testing;
+      _testing = _cursor;
+      // "-" / "+"
+      while (true) {
+        // "-"
+        $$ = _matchChar(45, '-');
+        if (success) break;
+        // "+"
+        $$ = _matchChar(43, '+');
+        break;
+      }
+      if (!success && _cursor > _testing) {
+        // Expected: -, +
+        _failure(_expect16);
       }
       success = true; 
       _testing = testing0;
@@ -918,8 +853,8 @@ class JsonParser {
         // Lookahead (DIGIT)  
         if (success) $$ = _parse_DIGIT();      
         if (!success) {      
-          // Expected: "DIGIT"      
-          if (_cursor > _testing) _failure(_expect20);  
+          // Expected: DIGIT      
+          if (_cursor > _testing) _failure(_expect17);  
         }  
         if (success) {
          if (first) {      
@@ -950,9 +885,9 @@ class JsonParser {
       seq[3] = $$;
       $$ = seq;
       if (success) {    
-        // E
+        // "e" / "E"
         final $1 = seq[0];
-        // (MINUS / PLUS)?
+        // ("-" / "+")?
         final $2 = seq[1];
         // DIGIT+
         final $3 = seq[2];
@@ -967,8 +902,8 @@ class JsonParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "EXP"
-      _failure(_expect21);
+      // Expected: EXP
+      _failure(_expect18);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -982,7 +917,7 @@ class JsonParser {
     // FALSE <- "false" WS
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "false";  
+      _token = 7;  
       _tokenStart = _cursor;  
     }  
     // "false" WS
@@ -1014,7 +949,7 @@ class JsonParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "false"
+      // Expected: 'false'
       _failure(_expect3);
     }
     if (--_tokenLevel == 0) {
@@ -1029,7 +964,7 @@ class JsonParser {
     // FRAC <- DECIMAL_POINT DIGIT+ WS
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = ".";  
+      _token = 8;  
       _tokenStart = _cursor;  
     }  
     // DECIMAL_POINT DIGIT+ WS
@@ -1041,7 +976,7 @@ class JsonParser {
       // Lookahead (DECIMAL_POINT)
       if (success) $$ = _parse_DECIMAL_POINT();
       if (!success) {
-        // Expected: "."
+        // Expected: '.'
         if (_cursor > _testing) _failure(_expect14);  
         break;  
       }
@@ -1055,8 +990,8 @@ class JsonParser {
         // Lookahead (DIGIT)  
         if (success) $$ = _parse_DIGIT();      
         if (!success) {      
-          // Expected: "DIGIT"      
-          if (_cursor > _testing) _failure(_expect20);  
+          // Expected: DIGIT      
+          if (_cursor > _testing) _failure(_expect17);  
         }  
         if (success) {
          if (first) {      
@@ -1102,7 +1037,7 @@ class JsonParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "."
+      // Expected: '.'
       _failure(_expect14);
     }
     if (--_tokenLevel == 0) {
@@ -1117,7 +1052,7 @@ class JsonParser {
     // HEXDIG <- DIGIT / [a-f] / [A-F]
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "HEXDIG";  
+      _token = 20;  
       _tokenStart = _cursor;  
     }  
     // DIGIT / [a-f] / [A-F]
@@ -1128,8 +1063,8 @@ class JsonParser {
       // Lookahead (DIGIT)
       if (success) $$ = _parse_DIGIT();    
       if (!success) {    
-        // Expected: "DIGIT"    
-        if (_cursor > _testing) _failure(_expect20);
+        // Expected: DIGIT    
+        if (_cursor > _testing) _failure(_expect17);
       }
       if (success) break;
       // [a-f]
@@ -1140,8 +1075,8 @@ class JsonParser {
       break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "HEXDIG"
-      _failure(_expect24);
+      // Expected: HEXDIG
+      _failure(_expect21);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -1155,7 +1090,7 @@ class JsonParser {
     // INT <- DIGIT+ WS
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "INT";  
+      _token = 9;  
       _tokenStart = _cursor;  
     }  
     // DIGIT+ WS
@@ -1170,8 +1105,8 @@ class JsonParser {
         // Lookahead (DIGIT)  
         if (success) $$ = _parse_DIGIT();      
         if (!success) {      
-          // Expected: "DIGIT"      
-          if (_cursor > _testing) _failure(_expect20);  
+          // Expected: DIGIT      
+          if (_cursor > _testing) _failure(_expect17);  
         }  
         if (success) {
          if (first) {      
@@ -1215,55 +1150,8 @@ class JsonParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "INT"
-      _failure(_expect22);
-    }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
-    return $$;
-  }
-  
-  dynamic _parse_MINUS() {
-    // TERMINAL
-    // MINUS <- "-" WS
-    var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = "-";  
-      _tokenStart = _cursor;  
-    }  
-    // "-" WS
-    var ch0 = _ch, pos0 = _cursor;
-    while (true) {  
-      // "-"
-      $$ = _matchChar(45, '-');
-      if (!success) break;
-      var seq = new List(2)..[0] = $$;
-      // WS
-      $$ = null;
-      success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (WS is optional)
-      if (success) $$ = _parse_WS();
-      else success = true;
-      seq[1] = $$;
-      $$ = seq;
-      if (success) {    
-        // "-"
-        final $1 = seq[0];
-        // WS
-        final $2 = seq[1];
-        $$ = $1;    
-      }
-      break;  
-    }
-    if (!success) {
-      _ch = ch0;
-      _cursor = pos0;
-    }
-    if (!success && _cursor > _testing) {
-      // Expected: "-"
-      _failure(_expect17);
+      // Expected: INT
+      _failure(_expect19);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -1277,7 +1165,7 @@ class JsonParser {
     // NAME_SEPARATOR <- ":" WS
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = ":";  
+      _token = 10;  
       _tokenStart = _cursor;  
     }  
     // ":" WS
@@ -1302,7 +1190,7 @@ class JsonParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: ":"
+      // Expected: ':'
       _failure(_expect11);
     }
     if (--_tokenLevel == 0) {
@@ -1317,7 +1205,7 @@ class JsonParser {
     // NULL <- "null" WS
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "null";  
+      _token = 11;  
       _tokenStart = _cursor;  
     }  
     // "null" WS
@@ -1349,7 +1237,7 @@ class JsonParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "null"
+      // Expected: 'null'
       _failure(_expect4);
     }
     if (--_tokenLevel == 0) {
@@ -1361,27 +1249,20 @@ class JsonParser {
   
   dynamic _parse_NUMBER() {
     // TERMINAL
-    // NUMBER <- MINUS? INT FRAC? EXP? WS
+    // NUMBER <- "-"? INT FRAC? EXP? WS
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "NUMBER";  
+      _token = 12;  
       _tokenStart = _cursor;  
     }  
-    // MINUS? INT FRAC? EXP? WS
+    // "-"? INT FRAC? EXP? WS
     var ch0 = _ch, pos0 = _cursor;
     while (true) {  
-      // MINUS?
+      // "-"?
       var testing0 = _testing;
       _testing = _cursor;
-      // MINUS
-      $$ = null;
-      success = _ch == 45; // '-'
-      // Lookahead (MINUS)
-      if (success) $$ = _parse_MINUS();
-      if (!success) {
-        // Expected: "-"
-        if (_cursor > _testing) _failure(_expect17);  
-      }
+      // "-"
+      $$ = _matchChar(45, '-');
       success = true; 
       _testing = testing0;
       if (!success) break;
@@ -1392,8 +1273,8 @@ class JsonParser {
       // Lookahead (INT)
       if (success) $$ = _parse_INT();    
       if (!success) {    
-        // Expected: "INT"    
-        if (_cursor > _testing) _failure(_expect22);
+        // Expected: INT    
+        if (_cursor > _testing) _failure(_expect19);
         break;  
       }
       seq[1] = $$;
@@ -1406,7 +1287,7 @@ class JsonParser {
       // Lookahead (FRAC)
       if (success) $$ = _parse_FRAC();
       if (!success) {
-        // Expected: "."
+        // Expected: '.'
         if (_cursor > _testing) _failure(_expect14);  
       }
       success = true; 
@@ -1422,8 +1303,8 @@ class JsonParser {
       // Lookahead (EXP)
       if (success) $$ = _parse_EXP();    
       if (!success) {    
-        // Expected: "EXP"    
-        if (_cursor > _testing) _failure(_expect21);
+        // Expected: EXP    
+        if (_cursor > _testing) _failure(_expect18);
       }
       success = true; 
       _testing = testing2;
@@ -1438,7 +1319,7 @@ class JsonParser {
       seq[4] = $$;
       $$ = seq;
       if (success) {    
-        // MINUS?
+        // "-"?
         final $1 = seq[0];
         // INT
         final $2 = seq[1];
@@ -1457,55 +1338,8 @@ class JsonParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "NUMBER"
+      // Expected: NUMBER
       _failure(_expect6);
-    }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
-    return $$;
-  }
-  
-  dynamic _parse_PLUS() {
-    // TERMINAL
-    // PLUS <- "+" WS
-    var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = "+";  
-      _tokenStart = _cursor;  
-    }  
-    // "+" WS
-    var ch0 = _ch, pos0 = _cursor;
-    while (true) {  
-      // "+"
-      $$ = _matchChar(43, '+');
-      if (!success) break;
-      var seq = new List(2)..[0] = $$;
-      // WS
-      $$ = null;
-      success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (WS is optional)
-      if (success) $$ = _parse_WS();
-      else success = true;
-      seq[1] = $$;
-      $$ = seq;
-      if (success) {    
-        // "+"
-        final $1 = seq[0];
-        // WS
-        final $2 = seq[1];
-        $$ = $1;    
-      }
-      break;  
-    }
-    if (!success) {
-      _ch = ch0;
-      _cursor = pos0;
-    }
-    if (!success && _cursor > _testing) {
-      // Expected: "+"
-      _failure(_expect18);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -1519,13 +1353,13 @@ class JsonParser {
     // QUOTATION_MARK <- ["]
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "QUOTATION_MARK";  
+      _token = 0;  
       _tokenStart = _cursor;  
     }  
     // ["]
     $$ = _matchChar(34, '\"');
     if (!success && _cursor > _testing) {
-      // Expected: "QUOTATION_MARK"
+      // Expected: QUOTATION_MARK
       _failure(_expect13);
     }
     if (--_tokenLevel == 0) {
@@ -1540,7 +1374,7 @@ class JsonParser {
     // STRING <- QUOTATION_MARK CHAR* QUOTATION_MARK WS
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "STRING";  
+      _token = 13;  
       _tokenStart = _cursor;  
     }  
     // QUOTATION_MARK CHAR* QUOTATION_MARK WS
@@ -1552,7 +1386,7 @@ class JsonParser {
       // Lookahead (QUOTATION_MARK)
       if (success) $$ = _parse_QUOTATION_MARK();
       if (!success) {
-        // Expected: "QUOTATION_MARK"
+        // Expected: QUOTATION_MARK
         if (_cursor > _testing) _failure(_expect13);  
         break;  
       }
@@ -1580,7 +1414,7 @@ class JsonParser {
       // Lookahead (QUOTATION_MARK)
       if (success) $$ = _parse_QUOTATION_MARK();
       if (!success) {
-        // Expected: "QUOTATION_MARK"
+        // Expected: QUOTATION_MARK
         if (_cursor > _testing) _failure(_expect13);  
         break;  
       }
@@ -1611,7 +1445,7 @@ class JsonParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "STRING"
+      // Expected: STRING
       _failure(_expect7);
     }
     if (--_tokenLevel == 0) {
@@ -1626,7 +1460,7 @@ class JsonParser {
     // TRUE <- "true" WS
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "true";  
+      _token = 14;  
       _tokenStart = _cursor;  
     }  
     // "true" WS
@@ -1658,7 +1492,7 @@ class JsonParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "true"
+      // Expected: 'true'
       _failure(_expect5);
     }
     if (--_tokenLevel == 0) {
@@ -1673,7 +1507,7 @@ class JsonParser {
     // UNESCAPED <- [ -!] / [#-\[] / [\]-~] / [\]-\u10ffff]
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "UNESCAPED";  
+      _token = 21;  
       _tokenStart = _cursor;  
     }  
     // [ -!] / [#-\[] / [\]-~] / [\]-\u10ffff]
@@ -1692,8 +1526,8 @@ class JsonParser {
       break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "UNESCAPED"
-      _failure(_expect27);
+      // Expected: UNESCAPED
+      _failure(_expect24);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -1707,7 +1541,7 @@ class JsonParser {
     // VALUE_SEPARATOR <- "," WS
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = ",";  
+      _token = 15;  
       _tokenStart = _cursor;  
     }  
     // "," WS
@@ -1732,7 +1566,7 @@ class JsonParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: ","
+      // Expected: ','
       _failure(_expect9);
     }
     if (--_tokenLevel == 0) {
@@ -1747,7 +1581,7 @@ class JsonParser {
     // WS <- [\t-\n\r ]*
     var $$;
     if (_tokenLevel++ == 0) {  
-      _token = "WS";  
+      _token = 22;  
       _tokenStart = _cursor;  
     }  
     // [\t-\n\r ]*
@@ -1766,8 +1600,8 @@ class JsonParser {
       }
     }
     if (!success && _cursor > _testing) {
-      // Expected: "WS"
-      _failure(_expect28);
+      // Expected: WS
+      _failure(_expect25);
     }
     if (--_tokenLevel == 0) {
       _token = null;
@@ -1789,7 +1623,7 @@ class JsonParser {
       // Lookahead (BEGIN_ARRAY)
       if (success) $$ = _parse_BEGIN_ARRAY();
       if (!success) {
-        // Expected: "["
+        // Expected: '['
         if (_cursor > _testing) _failure(_expect1);  
         break;  
       }
@@ -1806,7 +1640,7 @@ class JsonParser {
         // Lookahead (value)
         if (success) $$ = _parse_value();    
         if (!success) {    
-          // Expected: "false", "null", "true", "[", "NUMBER", "STRING", "{"    
+          // Expected: 'false', 'null', 'true', '[', NUMBER, STRING, '{'    
           if (_cursor > _testing) _failure(_expect8);
           break;  
         }
@@ -1824,7 +1658,7 @@ class JsonParser {
             // Lookahead (VALUE_SEPARATOR)
             if (success) $$ = _parse_VALUE_SEPARATOR();
             if (!success) {
-              // Expected: ","
+              // Expected: ','
               if (_cursor > _testing) _failure(_expect9);  
               break;  
             }
@@ -1835,7 +1669,7 @@ class JsonParser {
             // Lookahead (value)
             if (success) $$ = _parse_value();    
             if (!success) {    
-              // Expected: "false", "null", "true", "[", "NUMBER", "STRING", "{"    
+              // Expected: 'false', 'null', 'true', '[', NUMBER, STRING, '{'    
               if (_cursor > _testing) _failure(_expect8);
               break;  
             }
@@ -1855,7 +1689,7 @@ class JsonParser {
             _cursor = pos2;
           }
           if (!success && _cursor > _testing) {
-            // Expected: ","
+            // Expected: ','
             _failure(_expect9);
           }
           if (success) {  
@@ -1877,7 +1711,7 @@ class JsonParser {
         _cursor = pos1;
       }
       if (!success && _cursor > _testing) {
-        // Expected: "false", "null", "true", "[", "NUMBER", "STRING", "{"
+        // Expected: 'false', 'null', 'true', '[', NUMBER, STRING, '{'
         _failure(_expect8);
       }
       success = true; 
@@ -1890,7 +1724,7 @@ class JsonParser {
       // Lookahead (END_ARRAY)
       if (success) $$ = _parse_END_ARRAY();
       if (!success) {
-        // Expected: "]"
+        // Expected: ']'
         if (_cursor > _testing) _failure(_expect12);  
         break;  
       }
@@ -1912,7 +1746,7 @@ class JsonParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "["
+      // Expected: '['
       _failure(_expect1);
     }
     return $$;
@@ -1931,7 +1765,7 @@ class JsonParser {
       // Lookahead (STRING)
       if (success) $$ = _parse_STRING();
       if (!success) {
-        // Expected: "STRING"
+        // Expected: STRING
         if (_cursor > _testing) _failure(_expect7);  
         break;  
       }
@@ -1942,7 +1776,7 @@ class JsonParser {
       // Lookahead (NAME_SEPARATOR)
       if (success) $$ = _parse_NAME_SEPARATOR();
       if (!success) {
-        // Expected: ":"
+        // Expected: ':'
         if (_cursor > _testing) _failure(_expect11);  
         break;  
       }
@@ -1953,7 +1787,7 @@ class JsonParser {
       // Lookahead (value)
       if (success) $$ = _parse_value();    
       if (!success) {    
-        // Expected: "false", "null", "true", "[", "NUMBER", "STRING", "{"    
+        // Expected: 'false', 'null', 'true', '[', NUMBER, STRING, '{'    
         if (_cursor > _testing) _failure(_expect8);
         break;  
       }
@@ -1975,7 +1809,7 @@ class JsonParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "STRING"
+      // Expected: STRING
       _failure(_expect7);
     }
     return $$;
@@ -1994,7 +1828,7 @@ class JsonParser {
       // Lookahead (BEGIN_OBJECT)
       if (success) $$ = _parse_BEGIN_OBJECT();
       if (!success) {
-        // Expected: "{"
+        // Expected: '{'
         if (_cursor > _testing) _failure(_expect0);  
         break;  
       }
@@ -2011,7 +1845,7 @@ class JsonParser {
         // Lookahead (member)
         if (success) $$ = _parse_member();
         if (!success) {
-          // Expected: "STRING"
+          // Expected: STRING
           if (_cursor > _testing) _failure(_expect7);  
           break;  
         }
@@ -2029,7 +1863,7 @@ class JsonParser {
             // Lookahead (VALUE_SEPARATOR)
             if (success) $$ = _parse_VALUE_SEPARATOR();
             if (!success) {
-              // Expected: ","
+              // Expected: ','
               if (_cursor > _testing) _failure(_expect9);  
               break;  
             }
@@ -2040,7 +1874,7 @@ class JsonParser {
             // Lookahead (member)
             if (success) $$ = _parse_member();
             if (!success) {
-              // Expected: "STRING"
+              // Expected: STRING
               if (_cursor > _testing) _failure(_expect7);  
               break;  
             }
@@ -2060,7 +1894,7 @@ class JsonParser {
             _cursor = pos2;
           }
           if (!success && _cursor > _testing) {
-            // Expected: ","
+            // Expected: ','
             _failure(_expect9);
           }
           if (success) {  
@@ -2082,7 +1916,7 @@ class JsonParser {
         _cursor = pos1;
       }
       if (!success && _cursor > _testing) {
-        // Expected: "STRING"
+        // Expected: STRING
         _failure(_expect7);
       }
       success = true; 
@@ -2095,7 +1929,7 @@ class JsonParser {
       // Lookahead (END_OBJECT)
       if (success) $$ = _parse_END_OBJECT();
       if (!success) {
-        // Expected: "}"
+        // Expected: '}'
         if (_cursor > _testing) _failure(_expect10);  
         break;  
       }
@@ -2117,7 +1951,7 @@ class JsonParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "{"
+      // Expected: '{'
       _failure(_expect0);
     }
     return $$;
@@ -2135,7 +1969,7 @@ class JsonParser {
       // Lookahead (FALSE)
       if (success) $$ = _parse_FALSE();
       if (!success) {
-        // Expected: "false"
+        // Expected: 'false'
         if (_cursor > _testing) _failure(_expect3);  
       }
       if (success) break;
@@ -2145,7 +1979,7 @@ class JsonParser {
       // Lookahead (NULL)
       if (success) $$ = _parse_NULL();
       if (!success) {
-        // Expected: "null"
+        // Expected: 'null'
         if (_cursor > _testing) _failure(_expect4);  
       }
       if (success) break;
@@ -2155,7 +1989,7 @@ class JsonParser {
       // Lookahead (TRUE)
       if (success) $$ = _parse_TRUE();
       if (!success) {
-        // Expected: "true"
+        // Expected: 'true'
         if (_cursor > _testing) _failure(_expect5);  
       }
       if (success) break;
@@ -2165,7 +1999,7 @@ class JsonParser {
       // Lookahead (object)
       if (success) $$ = _parse_object();
       if (!success) {
-        // Expected: "{"
+        // Expected: '{'
         if (_cursor > _testing) _failure(_expect0);  
       }
       if (success) break;
@@ -2175,7 +2009,7 @@ class JsonParser {
       // Lookahead (array)
       if (success) $$ = _parse_array();
       if (!success) {
-        // Expected: "["
+        // Expected: '['
         if (_cursor > _testing) _failure(_expect1);  
       }
       if (success) break;
@@ -2185,7 +2019,7 @@ class JsonParser {
       // Lookahead (NUMBER)
       if (success) $$ = _parse_NUMBER();    
       if (!success) {    
-        // Expected: "NUMBER"    
+        // Expected: NUMBER    
         if (_cursor > _testing) _failure(_expect6);
       }
       if (success) break;
@@ -2195,13 +2029,13 @@ class JsonParser {
       // Lookahead (STRING)
       if (success) $$ = _parse_STRING();
       if (!success) {
-        // Expected: "STRING"
+        // Expected: STRING
         if (_cursor > _testing) _failure(_expect7);  
       }
       break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "false", "null", "true", "[", "NUMBER", "STRING", "{"
+      // Expected: 'false', 'null', 'true', '[', NUMBER, STRING, '{'
       _failure(_expect8);
     }
     return $$;
@@ -2307,26 +2141,30 @@ class JsonParser {
   
     var errors = <JsonParserError>[];
     if (_failurePos >= _cursor) {
-      var set = new Set<String>();  
-      set.addAll(_expected);
-      var length = 1;
-      if (_failurePos >= _inputLen) {
-        length = 0;
+      var set = new Set<JsonParserError>();
+      set.addAll(_errors);
+      for (var error in set) {
+        if (error.position >= _failurePos) {
+          errors.add(error);
+        }
       }
-      if (set.contains(null)) {
+      var names = new Set<String>();  
+      names.addAll(_expected);
+      if (names.contains(null)) {
         var string = getc(_failurePos);
         var message = "Unexpected $string";
-        var error = new JsonParserError(JsonParserError.UNEXPECTED, _failurePos, length, message);
+        var error = new JsonParserError(JsonParserError.UNEXPECTED, _failurePos, _failurePos, message);
         errors.add(error);
       } else {      
         var found = getc(_failurePos);      
-        var list = set.toList();
+        var list = names.toList();
         list.sort();
         var message = "Expected ${list.join(", ")} but found $found";
-        var error = new JsonParserError(JsonParserError.EXPECTED, _failurePos, length, message);
+        var error = new JsonParserError(JsonParserError.EXPECTED, _failurePos, _failurePos, message);
         errors.add(error);
-      }    
+      }        
     }
+    errors.sort((a, b) => a.position.compareTo(b.position));
     return errors;  
   }
   
@@ -2358,7 +2196,7 @@ class JsonParser {
         // Lookahead (object)
         if (success) $$ = _parse_object();
         if (!success) {
-          // Expected: "{"
+          // Expected: '{'
           if (_cursor > _testing) _failure(_expect0);  
         }
         if (success) break;
@@ -2368,13 +2206,13 @@ class JsonParser {
         // Lookahead (array)
         if (success) $$ = _parse_array();
         if (!success) {
-          // Expected: "["
+          // Expected: '['
           if (_cursor > _testing) _failure(_expect1);  
         }
         break;
       }
       if (!success && _cursor > _testing) {
-        // Expected: "{", "["
+        // Expected: '{', '['
         _failure(_expect2);
       }
       if (!success) break;
@@ -2400,7 +2238,7 @@ class JsonParser {
       _cursor = pos0;
     }
     if (!success && _cursor > _testing) {
-      // Expected: "{", "["
+      // Expected: '{', '['
       _failure(_expect2);
     }
     return $$;
@@ -2418,8 +2256,9 @@ class JsonParser {
     _cachePos = -1;
     _cacheRule = new List(_inputLen + 1);
     _cacheState = new List.filled(((_inputLen + 1) >> 5) + 1, 0);
-    _ch = -1;   
-    _expected = [];
+    _ch = -1;
+    _errors = <JsonParserError>[];   
+    _expected = <String>[];
     _failurePos = -1;  
     success = true;      
     _testing = -1;
@@ -2444,15 +2283,26 @@ class JsonParserError {
       
   static const int UNTERMINATED = 5;    
       
-  final int length;
+  final int hashCode = 0;
   
   final String message;
   
   final int position;
   
+  final int start;
+  
   final int type;
   
-  JsonParserError(this.type, this.position, this.length, this.message);
+  JsonParserError(this.type, this.position, this.start, this.message);
+  
+  bool operator ==(other) {
+    if (identical(this, other)) return true;
+    if (other is JsonParserError) {
+      return type == other.type && position == other.position &&
+      start == other.start && message == other.message;  
+    }
+    return false;
+  }
   
 }
 

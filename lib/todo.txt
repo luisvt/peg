@@ -13,6 +13,10 @@ Add public API of the parser generator
 
 =======================================
 
+Bug in _mapping comments
+
+=======================================
+
 Resolve fixed length terminals.
 
 =======================================

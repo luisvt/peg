@@ -163,7 +163,6 @@ class GeneralParserClassGenerator extends ParserClassGenerator {
       addMethod(new ProductionRuleGenerator(productionRule, this));
     }
 
-    addMethod(new MethodFailureGenerator());
     addMethod(new MethodMatchAnyGenerator());
     addMethod(new MethodMatchCharGenerator());
     addMethod(new MethodMatchMappingGenerator());
@@ -261,7 +260,7 @@ class GeneralParserClassGenerator extends ParserClassGenerator {
 
         String comment;
         if (options.comment) {
-          comment = "// ${commentList.join(",.generate() ")}";
+          comment = "// ${commentList.join(", ")}";
         }
 
         var packed = _pack(source);

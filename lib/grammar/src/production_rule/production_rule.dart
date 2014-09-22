@@ -17,9 +17,9 @@ class ProductionRule {
 
   final OrderedChoiceExpression expression;
 
-  bool isSlaveTerminal;
+  bool isLexeme;
 
-  bool isMasterTerminal;
+  bool isMorpheme;
 
   bool isStartingRule;
 
@@ -28,6 +28,8 @@ class ProductionRule {
   final String name;
 
   ProductionRule parent;
+
+  int tokenId;
 
   static void addCalls(ProductionRule caller, ProductionRule callee, bool direct) {
     if (caller == null) {
@@ -86,21 +88,6 @@ class ProductionRule {
 
   bool get isRecursive {
     return allCallers.contains(this);
-  }
-
-  // TODO: remove?
-  bool get isLexeme {
-    if (isTerminal) {
-      for (var caller in directCallers) {
-        if (caller.isTerminal) {
-          return true;
-        }
-      }
-
-      return false;
-    }
-
-    return false;
   }
 
   bool get isUsed {

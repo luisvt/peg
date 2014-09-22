@@ -170,7 +170,7 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
     if (options.comment) {
       var name = _expression.name;
       block.assign('#COMMENTS', '// ${_expression.name}');
-      block.assign('#COMMENT_EXPECTED', '// Expected: ${Utils.toPrintableList(expected).join(", ")}');
+      block.assign('#COMMENT_EXPECTED', '// Expected: ${expected.join(", ")}');
       block.assign('#LOOKAHEAD_COMMENTS', '// Lookahead ($name)');
     }
 
@@ -235,7 +235,7 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
       var printable = toPrintable(new String.fromCharCode(character));
       block.assign('COMMENT_CHARACTER', '// \'$printable\'');
       block.assign('#COMMENTS', '// ${_expression.name}');
-      block.assign('#COMMENT_EXPECTED', '// Expected: ${Utils.toPrintableList(expected).join(", ")}');
+      block.assign('#COMMENT_EXPECTED', '// Expected: ${expected.join(", ")}');
       block.assign('#LOOKAHEAD_COMMENTS', '// Lookahead ($name)');
     } else {
       block.assign('COMMENT_CHARACTER', '');

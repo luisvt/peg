@@ -1,6 +1,8 @@
 part of peg.parser_generators.parser_class_generator;
 
 abstract class ParserClassGenerator extends ClassGenerator {
+  static const int FLAG_TOKEN_VALUE = 1;
+
   static const String CACHE = "_cache";
 
   static const String CACHE_POS = "_cachePos";
@@ -15,6 +17,8 @@ abstract class ParserClassGenerator extends ClassGenerator {
 
   static const String EOF = "-1";
 
+  static const String ERRORS = "_errors";
+
   static const String EXPECTED = "_expected";
 
   static const String FAILURE_POS = "_failurePos";
@@ -27,7 +31,11 @@ abstract class ParserClassGenerator extends ClassGenerator {
 
   static const String TOKEN = "_token";
 
+  static const String TOKEN_FLAGS = "_tokenFlags";
+
   static const String TOKEN_LEVEL = "_tokenLevel";
+
+  static const String TOKEN_NAMES = "_tokenNames";
 
   static const String TOKEN_START = "_tokenStart";
 
@@ -47,11 +55,12 @@ abstract class ParserClassGenerator extends ClassGenerator {
 
   void _addCommonMembers() {
     addMethod(new MethodCompactGenerator());
-    addMethod(new MethodErrorsGenerator(ParserErrorClassGenerator.getName(name)));
+    addMethod(new MethodErrorsGenerator(this));
+    addMethod(new MethodFailureGenerator(this));
     addMethod(new MethodFlattenGenerator());
     addMethod(new MethodToCodePointGenerator());
     addMethod(new MethodToCodePointsGenerator());
-    addMethod(new MethodResetGenerator());
+    addMethod(new MethodResetGenerator(this));
     var grammar = parserGenerator.grammar;
     var options = parserGenerator.options;
     // Memoization
@@ -60,21 +69,50 @@ abstract class ParserClassGenerator extends ClassGenerator {
       addMethod(new MethodGetFromCacheGenerator());
     }
 
+    // Variables
+    var errorClass = ParserErrorClassGenerator.getName(name);
     addVariable(new VariableGenerator(CACHE, "List"));
     addVariable(new VariableGenerator(CACHE_POS, "int"));
     addVariable(new VariableGenerator(CACHE_RULE, "List<int>"));
     addVariable(new VariableGenerator(CACHE_STATE, "List<int>"));
     addVariable(new VariableGenerator(CH, "int"));
     addVariable(new VariableGenerator(CURSOR, "int"));
+    addVariable(new VariableGenerator(ERRORS, "List<$errorClass>"));
     addVariable(new VariableGenerator(EXPECTED, "List<String>"));
     addVariable(new VariableGenerator(FAILURE_POS, "int"));
     addVariable(new VariableGenerator(INPUT, "List<int>"));
     addVariable(new VariableGenerator(INPUT_LEN, "int"));
     addVariable(new VariableGenerator(SUCCESS, "bool"));
     addVariable(new VariableGenerator(TESTING, "int"));
-    addVariable(new VariableGenerator(TOKEN, "String"));
+    addVariable(new VariableGenerator(TOKEN, "int"));
     addVariable(new VariableGenerator(TOKEN_LEVEL, "int"));
     addVariable(new VariableGenerator(TOKEN_START, "int"));
     addVariable(new VariableGenerator(TEXT, "final String"));
+    // Generate tokens
+    var tokenFlags = <int, int>{};
+    var tokenNames = <int, String>{};
+    for (var productionRule in grammar.productionRules) {
+      if (productionRule.isTerminal) {
+        var flag = 0;
+        var tokenId = productionRule.tokenId;
+        if (productionRule.expression.length == null) {
+          flag |= FLAG_TOKEN_VALUE;
+        }
+
+        tokenFlags[tokenId] = flag;
+        tokenNames[tokenId] = productionRule.getTokenName();
+      }
+    }
+
+    var length = tokenFlags.length;
+    var flags = new List<int>(length);
+    var names = new List<String>(length);
+    for (var id in tokenFlags.keys) {
+      flags[id] = tokenFlags[id];
+      names[id] = "\"${Utils.toPrintable(tokenNames[id])}\"";
+    }
+
+    addVariable(new VariableGenerator(TOKEN_FLAGS, "final List<int>", value: "[${flags.join(", ")}]"), true);
+    addVariable(new VariableGenerator(TOKEN_NAMES, "final List<String>", value: "[${names.join(", ")}]"), true);
   }
 }

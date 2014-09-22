@@ -35,6 +35,10 @@ abstract class Expression {
 
   int flag = 0;
 
+  // null - not determined
+  // 0..n - fixed length
+  int length;
+
   // TODO: remove and reimplement all associated
   int level = 0;
 

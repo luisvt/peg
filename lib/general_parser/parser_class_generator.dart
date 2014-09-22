@@ -12,7 +12,6 @@ import 'package:peg/parser_generator/parser_generator_options.dart';
 import 'package:peg/utils/utils.dart';
 
 part 'src/parser_class_generator/parser_class_generator.dart';
-part 'src/parser_class_generator/method_failure_generator.dart';
 part 'src/parser_class_generator/method_match_any_generator.dart';
 part 'src/parser_class_generator/method_match_char_generator.dart';
 part 'src/parser_class_generator/method_match_mapping_generator.dart';

@@ -6,13 +6,19 @@ class TerminalRulesFinder {
     for (var rule in rules) {
       var expression = rule.expression;
       if (expression.startsWithAny) {
-        rule.isMasterTerminal = false;
-        rule.isSlaveTerminal = false;
+        rule.isLexeme = false;
+        rule.isMorpheme = false;
         rule.isTerminal = false;
       }
     }
 
     _reanalyze(rules);
+    var id = 0;
+    for (var rule in rules) {
+      if (rule.isTerminal) {
+        rule.tokenId = id++;
+      }
+    }
   }
 
   void _reanalyze(List<ProductionRule> rules) {
@@ -21,11 +27,11 @@ class TerminalRulesFinder {
     }
 
     for (var rule in rules) {
-      rule.isMasterTerminal = isMasterTerminal(rule);
+      rule.isLexeme = isMasterTerminal(rule);
     }
 
     for (var rule in rules) {
-      rule.isSlaveTerminal = isSlaveTerminal(rule);
+      rule.isMorpheme = isSlaveTerminal(rule);
     }
   }
 

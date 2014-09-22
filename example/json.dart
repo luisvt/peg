@@ -4,7 +4,7 @@ import "package:text/text.dart";
 import "json_parser.dart";
 
 void main() {
-  var result = parse('{"');
+  var result = parse('{"1": 1E ');
   print(result);
 }
 
