@@ -39,7 +39,7 @@ void main(List<String> args) {
   generatedFiles.add(README_MD);
   generatedFiles.add(ARITHMETIC_PEG_STAT_TXT);
 
-  FileUtils.rm(generatedFiles);
+  //FileUtils.rm(generatedFiles);
 
   var dartSdk = FileUtils.fullpath(Platform.environment["DART_SDK"]);
 
