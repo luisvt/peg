@@ -9,15 +9,20 @@ Status: Experimental
 
 Latest version always can be found at https://github.com/mezoni/peg
 
+**Main advantages:**
+
+- The generated parsers has no dependencies
+- The generated parsers has high performance
+
+The generated parsers intended for embedding into programs with the time-critical execution.
+
 **Features:**
 
 - Generation of detailed comments
-- Generated parsers has no dependencies
 - Grammar analytics
 - Grammar reporting
 - Grammar statistics
 - High quality generated source code
-- High performance of parsing process
 - Lookahead mapping tables
 - Memoization
 - Possibility to trace parsing 

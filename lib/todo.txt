@@ -14,15 +14,16 @@ Add public API of the parser generator
 =======================================
 
 Comment _getState transitions
-Comment _getState cases
+Comment _getState cases (DONE)
 
 =======================================
 
 Optimize the code which based on the transitions in ordered choice
 
-- Combine similar cases into multicase
+- Combine similar cases into multicase (DONE)
 - Optimize _getState through mapping
 - Optimize _getState for single character (DONE)
+- Optimize _getState for single range (DONE)
 
 =======================================
 
@@ -35,7 +36,7 @@ Optimize first in sequence expressions:
 - Character class
 - Literal with single character (DONE)
 
-Remov method next char
+Remove method next char (???)
 
 =======================================
 

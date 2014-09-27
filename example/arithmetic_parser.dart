@@ -68,13 +68,9 @@ class ArithmeticParser {
   
   static final List<List<int>> _transitions4 = [[40, 40], [48, 57]];
   
-  static final List<List<int>> _transitions5 = [[0, 1114111]];
+  static final List<List<int>> _transitions5 = [[9, 10, 13, 13, 32, 32]];
   
-  static final List<List<int>> _transitions6 = [[48, 57]];
-  
-  static final List<List<int>> _transitions7 = [[9, 10, 13, 13, 32, 32]];
-  
-  static final List<List<int>> _transitions8 = [[9, 10, 32, 32], [13, 13]];
+  static final List<List<int>> _transitions6 = [[9, 10, 32, 32], [13, 13]];
   
   List _cache;
   
@@ -496,11 +492,8 @@ class ArithmeticParser {
         // <= NUMBER
         break;
       // EOF
-      case 2:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 2:
       case -1:
         $$ = null;
         success = false;
@@ -552,11 +545,8 @@ class ArithmeticParser {
         // <= ")" SPACES # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -616,11 +606,8 @@ class ArithmeticParser {
         // <= "/" SPACES # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -641,9 +628,11 @@ class ArithmeticParser {
     var $$;
     _beginToken(2);  
     // => !. # Choice
-    switch (_getState(_transitions5)) {
+    switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 1 : -1) {
       // [\u0000-\u0010ffff]
+      // EOF
       case 0:
+      case 1:
         // => !.
         var ch0 = _ch, pos0 = _cursor, testing0 = _testing; 
         _testing = _inputLen + 1;
@@ -653,21 +642,6 @@ class ArithmeticParser {
         _ch = ch0;
         _cursor = pos0; 
         _testing = testing0;
-        $$ = null;
-        success = !success;
-        // <= !.
-        break;
-      // EOF
-      case 1:
-        // => !.
-        var ch1 = _ch, pos1 = _cursor, testing1 = _testing; 
-        _testing = _inputLen + 1;
-        // => .
-        $$ = _matchAny();
-        // <= .
-        _ch = ch1;
-        _cursor = pos1; 
-        _testing = testing1;
         $$ = null;
         success = !success;
         // <= !.
@@ -732,11 +706,8 @@ class ArithmeticParser {
         // <= "-" SPACES # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -796,11 +767,8 @@ class ArithmeticParser {
         // <= "*" SPACES # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -821,7 +789,7 @@ class ArithmeticParser {
     var $$;
     _beginToken(5);  
     // => [0-9]+ SPACES # Choice
-    switch (_getState(_transitions6)) {
+    switch (_ch >= 48 && _ch <= 57 ? 0 : _ch == -1 ? 1 : -1) {
       // [0-9]
       case 0:
         // => [0-9]+ SPACES # Sequence
@@ -876,11 +844,8 @@ class ArithmeticParser {
         // <= [0-9]+ SPACES # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -933,11 +898,8 @@ class ArithmeticParser {
         // <= "(" SPACES # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -997,11 +959,8 @@ class ArithmeticParser {
         // <= "+" SPACES # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -1029,9 +988,11 @@ class ArithmeticParser {
     }  
     _beginToken(8);    
     // => WS* # Choice
-    switch (_getState(_transitions7)) {
+    switch (_getState(_transitions5)) {
       // [\t-\n] [\r] [ ]
+      // EOF
       case 0:
+      case 1:
         // => WS*
         var testing0 = _testing; 
         for (var reps = []; ; ) {
@@ -1044,26 +1005,6 @@ class ArithmeticParser {
           } else {
             success = true;
             _testing = testing0;
-            $$ = reps;
-            break; 
-          }
-        }
-        // <= WS*
-        break;
-      // EOF
-      case 1:
-        // => WS*
-        var testing1 = _testing; 
-        for (var reps = []; ; ) {
-          _testing = _cursor;
-          // => WS
-          $$ = _parse_WS();
-          // <= WS
-          if (success) {  
-            reps.add($$);
-          } else {
-            success = true;
-            _testing = testing1;
             $$ = reps;
             break; 
           }
@@ -1125,11 +1066,8 @@ class ArithmeticParser {
                 // <= MINUS
                 break;
               // EOF
-              case 2:
-                $$ = null;
-                success = false;
-                break;
               // No matches
+              case 2:
               case -1:
                 $$ = null;
                 success = false;
@@ -1172,11 +1110,8 @@ class ArithmeticParser {
         }
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -1230,11 +1165,8 @@ class ArithmeticParser {
                 // <= DIV
                 break;
               // EOF
-              case 2:
-                $$ = null;
-                success = false;
-                break;
               // No matches
+              case 2:
               case -1:
                 $$ = null;
                 success = false;
@@ -1277,11 +1209,8 @@ class ArithmeticParser {
         }
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -1302,7 +1231,7 @@ class ArithmeticParser {
     var $$;
     _beginToken(9);  
     // => [\t-\n\r ] / "\r\n" # Choice
-    switch (_getState(_transitions8)) {
+    switch (_getState(_transitions6)) {
       // [\t-\n] [ ]
       case 0:
         // => [\t-\n\r ]
@@ -1323,11 +1252,8 @@ class ArithmeticParser {
         }
         break;
       // EOF
-      case 2:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 2:
       case -1:
         $$ = null;
         success = false;
@@ -1520,11 +1446,8 @@ class ArithmeticParser {
         // <= SPACES? Sentence EOF # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;

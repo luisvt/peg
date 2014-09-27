@@ -1,6 +1,7 @@
 library peg.general_parser.expressions_generators;
 
 import 'dart:collection';
+import 'package:collection/equality.dart';
 import 'package:lists/lists.dart';
 import 'package:peg/grammar/expressions.dart';
 import 'package:peg/generators/generators.dart';

@@ -1,6 +1,10 @@
+## 0.0.28
+
+- Improved implementation of the symbol transition code generation
+
 ## 0.0.27
 
-- Added initial support and implementation of the symbol transitions. The complex grammar should be parsed faster.  
+- Added initial support and implementation of the symbol transitions. The complex grammar should be parsed faster  
 
 ## 0.0.25
 

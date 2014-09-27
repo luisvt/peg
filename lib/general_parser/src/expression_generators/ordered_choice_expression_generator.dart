@@ -23,6 +23,8 @@ class OrderedChoiceExpressionGenerator extends ListExpressionGenerator {
 
   static const String _TEMPLATE_LAST = 'TEMPLATE_LAST';
 
+  static const String _TEMPLATE_MILTI_CASE = 'TEMPLATE_MILTI_CASE';
+
   static const String _TEMPLATE_OUTER = 'TEMPLATE_OUTER';
 
   static const String _TEMPLATE_PREDEFINED = 'TEMPLATE_PREDEFINED';
@@ -53,6 +55,12 @@ if ($_SUCCESS) break;''';
   static final String _templateLast = '''
 {{#EXPRESSION}}''';
 
+  static final String _templateMultiCase = '''
+{{#COMMENT}}
+{{#CASE}}
+  {{#EXPRESSIONS}}
+  break;''';
+
   static final String _templateOuter = '''
 while (true) {
   {{#EXPRESSIONS}}
@@ -82,6 +90,7 @@ switch ({{STATE}}) {
     addTemplate(_TEMPLATE_CASE, _templateCase);
     addTemplate(_TEMPLATE_INNER, _templateInner);
     addTemplate(_TEMPLATE_LAST, _templateLast);
+    addTemplate(_TEMPLATE_MILTI_CASE, _templateMultiCase);
     addTemplate(_TEMPLATE_OUTER, _templateOuter);
     addTemplate(_TEMPLATE_PREDEFINED, _templatePredefined);
     addTemplate(_TEMPLATE_SINGLE, _templateSingle);
@@ -186,18 +195,26 @@ switch ({{STATE}}) {
     }
 
     int singleCharacter;
+    RangeList singleRange;
     if (ranges.length == 1) {
       var transition = ranges.first;
       if (transition.length == 1) {
         var range = transition.first;
         if (range.start == range.end) {
           singleCharacter = range.start;
+        } else {
+          singleRange = range;
         }
       }
     }
 
     if (singleCharacter != null) {
       var state = "$_CH == $singleCharacter ? 0 : $_CH == -1 ? 1 : -1";
+      blockSwitch.assign("STATE", state);
+    } else if (singleRange != null) {
+      var start = singleRange.start;
+      var end = singleRange.end;
+      var state = "$_CH >= $start && $_CH <= $end ? 0 : $_CH == -1 ? 1 : -1";
       blockSwitch.assign("STATE", state);
     } else {
       var variableName = parserClassGenerator.addTransition(ranges);
@@ -208,7 +225,6 @@ switch ({{STATE}}) {
     var cases = <int, List<String>>{};
     var comments = <int, String>{};
     var length = states.length;
-    var blockCase = getTemplateBlock(_TEMPLATE_CASE);
     for (var i = 0; i < length; i++) {
       var expressions = states[i];
       cases[i] = _generateExpressions(expressions);
@@ -230,7 +246,8 @@ switch ({{STATE}}) {
     }
 
     // EOF list
-    var eof = <Expression>[];
+    //var eof = <Expression>[];
+    var eof = new _List<Expression>();
     Expression optional;
     for (var expression in _expression.expressions) {
       if (expression.canMatchEof) {
@@ -244,9 +261,22 @@ switch ({{STATE}}) {
       }
     }
 
+    var equality = new DeepCollectionEquality();
     comments[states.length] = "EOF";
     if (!eof.isEmpty) {
-      cases[states.length] = _generateExpressions(eof);
+      int state;
+      for (var key in map.keys) {
+        if (equality.equals(eof, key)) {
+          state = map[key];
+          break;
+        }
+      }
+
+      if (state != null) {
+        cases[states.length] = cases[state];
+      } else {
+        cases[states.length] = _generateExpressions(eof);
+      }
     } else {
       cases[states.length] = _generatePredefined("null", false);
     }
@@ -264,6 +294,46 @@ switch ({{STATE}}) {
       cases[-1] = _generatePredefined("null", false);
     }
 
+    var multiCases = <List<int>>[];
+    for (var key in cases.keys) {
+      var orginal = cases[key];
+      var found = false;
+      for (var indexes in multiCases) {
+        for (var index in indexes) {
+          var other = cases[index];
+          if (equality.equals(orginal, other)) {
+            indexes.add(key);
+            found = true;
+            break;
+          }
+        }
+      }
+
+      if (!found) {
+        multiCases.add([key]);
+      } else {
+      }
+    }
+
+    var blockMultiCase = getTemplateBlock(_TEMPLATE_MILTI_CASE);
+    for (var keys in multiCases) {
+      var block = blockMultiCase.clone();
+      for (var key in keys) {
+        block.assign("#CASE", "case $key:");
+        if (options.comment) {
+          var comment = comments[key];
+          if (comment != null) {
+            block.assign("#COMMENT", "// $comment");
+          }
+        }
+      }
+
+      block.assign("#EXPRESSIONS", cases[keys.first]);
+      blockSwitch.assign("#CASES", block.process());
+    }
+
+    /*
+    var blockCase = getTemplateBlock(_TEMPLATE_CASE);
     for (var key in cases.keys) {
       var block = blockCase.clone();
       if (options.comment) {
@@ -277,6 +347,7 @@ switch ({{STATE}}) {
       block.assign("#EXPRESSIONS", cases[key]);
       blockSwitch.assign("#CASES", block.process());
     }
+    */
 
     return blockSwitch.process();
   }

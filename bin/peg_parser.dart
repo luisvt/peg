@@ -145,17 +145,15 @@ class PegParser {
   
   static final List<List<int>> _transitions1 = [[0, 122, 124, 1114111], [123, 123]];
   
-  static final List<List<int>> _transitions10 = [[34, 34], [39, 39]];
+  static final List<List<int>> _transitions10 = [[48, 57], [65, 90, 95, 95, 97, 122]];
   
-  static final List<List<int>> _transitions11 = [[48, 57], [65, 90, 95, 95, 97, 122]];
+  static final List<List<int>> _transitions11 = [[9, 9, 32, 32], [10, 10, 13, 13]];
   
-  static final List<List<int>> _transitions12 = [[9, 9, 32, 32], [10, 10, 13, 13]];
+  static final List<List<int>> _transitions12 = [[9, 10, 13, 13, 32, 32, 35, 35]];
   
-  static final List<List<int>> _transitions13 = [[9, 10, 13, 13, 32, 32, 35, 35]];
+  static final List<List<int>> _transitions13 = [[9, 10, 13, 13, 32, 32], [35, 35]];
   
-  static final List<List<int>> _transitions14 = [[9, 10, 13, 13, 32, 32], [35, 35]];
-  
-  static final List<List<int>> _transitions15 = [[10, 10], [13, 13]];
+  static final List<List<int>> _transitions14 = [[10, 10], [13, 13]];
   
   static final List<List<int>> _transitions2 = [[65, 90, 95, 95, 97, 122]];
   
@@ -171,7 +169,7 @@ class PegParser {
   
   static final List<List<int>> _transitions8 = [[0, 91, 93, 1114111], [92, 92]];
   
-  static final List<List<int>> _transitions9 = [[0, 1114111]];
+  static final List<List<int>> _transitions9 = [[34, 34], [39, 39]];
   
   List _cache;
   
@@ -523,11 +521,8 @@ class PegParser {
         // <= "&" SPACING # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -614,11 +609,8 @@ class PegParser {
         // <= "{" ActionBody* "}" SPACING # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -726,11 +718,8 @@ class PegParser {
         }
         break;
       // EOF
-      case 2:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 2:
       case -1:
         $$ = null;
         success = false;
@@ -906,11 +895,8 @@ class PegParser {
         }
         break;
       // EOF
-      case 2:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 2:
       case -1:
         $$ = null;
         success = false;
@@ -953,7 +939,7 @@ class PegParser {
           for (var reps = []; ; ) {
             _testing = _cursor;
             // => !"]" RANGE # Choice
-            switch (_getState(_transitions9)) {
+            switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 1 : -1) {
               // [\u0000-\u0010ffff]
               case 0:
                 // => !"]" RANGE # Sequence
@@ -995,11 +981,8 @@ class PegParser {
                 // <= !"]" RANGE # Sequence
                 break;
               // EOF
-              case 1:
-                $$ = null;
-                success = false;
-                break;
               // No matches
+              case 1:
               case -1:
                 $$ = null;
                 success = false;
@@ -1053,11 +1036,8 @@ class PegParser {
         // <= "[" (!"]" RANGE)* "]" SPACING # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -1110,11 +1090,8 @@ class PegParser {
         // <= ")" SPACING # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -1157,7 +1134,7 @@ class PegParser {
           for (var reps = []; ; ) {
             _testing = _cursor;
             // => !EOL . # Choice
-            switch (_getState(_transitions9)) {
+            switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 1 : -1) {
               // [\u0000-\u0010ffff]
               case 0:
                 // => !EOL . # Sequence
@@ -1192,11 +1169,8 @@ class PegParser {
                 // <= !EOL . # Sequence
                 break;
               // EOF
-              case 1:
-                $$ = null;
-                success = false;
-                break;
               // No matches
+              case 1:
               case -1:
                 $$ = null;
                 success = false;
@@ -1240,11 +1214,8 @@ class PegParser {
         // <= "#" (!EOL .)* EOL? # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -1297,11 +1268,8 @@ class PegParser {
         // <= "." SPACING # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -1361,11 +1329,8 @@ class PegParser {
         // <= IDENTIFIER LEFTARROW Expression # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -1385,9 +1350,11 @@ class PegParser {
     var $$;
     _beginToken(3);  
     // => !. # Choice
-    switch (_getState(_transitions9)) {
+    switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 1 : -1) {
       // [\u0000-\u0010ffff]
+      // EOF
       case 0:
+      case 1:
         // => !.
         var ch0 = _ch, pos0 = _cursor, testing0 = _testing; 
         _testing = _inputLen + 1;
@@ -1397,21 +1364,6 @@ class PegParser {
         _ch = ch0;
         _cursor = pos0; 
         _testing = testing0;
-        $$ = null;
-        success = !success;
-        // <= !.
-        break;
-      // EOF
-      case 1:
-        // => !.
-        var ch1 = _ch, pos1 = _cursor, testing1 = _testing; 
-        _testing = _inputLen + 1;
-        // => .
-        $$ = _matchAny();
-        // <= .
-        _ch = ch1;
-        _cursor = pos1; 
-        _testing = testing1;
         $$ = null;
         success = !success;
         // <= !.
@@ -1437,7 +1389,7 @@ class PegParser {
     var $$;
     _beginToken(24);  
     // => "\r\n" / [\n\r] # Choice
-    switch (_getState(_transitions15)) {
+    switch (_getState(_transitions14)) {
       // [\n]
       case 0:
         // => [\n\r]
@@ -1458,11 +1410,8 @@ class PegParser {
         }
         break;
       // EOF
-      case 2:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 2:
       case -1:
         $$ = null;
         success = false;
@@ -1531,11 +1480,8 @@ class PegParser {
                 // <= SLASH Sequence # Sequence
                 break;
               // EOF
-              case 1:
-                $$ = null;
-                success = false;
-                break;
               // No matches
+              case 1:
               case -1:
                 $$ = null;
                 success = false;
@@ -1575,11 +1521,8 @@ class PegParser {
         // <= Sequence (SLASH Sequence)* # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -1660,11 +1603,8 @@ class PegParser {
         // <= "%{" GLOBALS_BODY* "}%" SPACING # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -1685,7 +1625,7 @@ class PegParser {
     var $$;
     _beginToken(5);  
     // => !"}%" . # Choice
-    switch (_getState(_transitions9)) {
+    switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 1 : -1) {
       // [\u0000-\u0010ffff]
       case 0:
         // => !"}%" . # Sequence
@@ -1727,11 +1667,8 @@ class PegParser {
         // <= !"}%" . # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -1820,11 +1757,8 @@ class PegParser {
         // <= [\] "u" [0-9A-Fa-f]+ # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -1899,11 +1833,8 @@ class PegParser {
         // <= IDENT_START IDENT_CONT* SPACING # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -1924,7 +1855,7 @@ class PegParser {
     var $$;
     _beginToken(8);  
     // => IDENT_START / [0-9] # Choice
-    switch (_getState(_transitions11)) {
+    switch (_getState(_transitions10)) {
       // [0-9]
       case 0:
         // => [0-9]
@@ -1938,11 +1869,8 @@ class PegParser {
         // <= IDENT_START
         break;
       // EOF
-      case 2:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 2:
       case -1:
         $$ = null;
         success = false;
@@ -1971,11 +1899,8 @@ class PegParser {
         // <= [A-Z_a-z]
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -2022,11 +1947,8 @@ class PegParser {
         // <= "<-" SPACING # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -2047,7 +1969,7 @@ class PegParser {
     var $$;
     _beginToken(2);  
     // => "\'" (!"\'" CHAR)* "\'" SPACING / "\"" (!"\"" CHAR)* "\"" SPACING # Choice
-    switch (_getState(_transitions10)) {
+    switch (_getState(_transitions9)) {
       // [\"]
       case 0:
         // => "\"" (!"\"" CHAR)* "\"" SPACING # Sequence
@@ -2069,7 +1991,7 @@ class PegParser {
           for (var reps = []; ; ) {
             _testing = _cursor;
             // => !"\"" CHAR # Choice
-            switch (_getState(_transitions9)) {
+            switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 1 : -1) {
               // [\u0000-\u0010ffff]
               case 0:
                 // => !"\"" CHAR # Sequence
@@ -2111,11 +2033,8 @@ class PegParser {
                 // <= !"\"" CHAR # Sequence
                 break;
               // EOF
-              case 1:
-                $$ = null;
-                success = false;
-                break;
               // No matches
+              case 1:
               case -1:
                 $$ = null;
                 success = false;
@@ -2189,7 +2108,7 @@ class PegParser {
           for (var reps = []; ; ) {
             _testing = _cursor;
             // => !"\'" CHAR # Choice
-            switch (_getState(_transitions9)) {
+            switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 1 : -1) {
               // [\u0000-\u0010ffff]
               case 0:
                 // => !"\'" CHAR # Sequence
@@ -2231,11 +2150,8 @@ class PegParser {
                 // <= !"\'" CHAR # Sequence
                 break;
               // EOF
-              case 1:
-                $$ = null;
-                success = false;
-                break;
               // No matches
+              case 1:
               case -1:
                 $$ = null;
                 success = false;
@@ -2289,11 +2205,8 @@ class PegParser {
         // <= "\'" (!"\'" CHAR)* "\'" SPACING # Sequence
         break;
       // EOF
-      case 2:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 2:
       case -1:
         $$ = null;
         success = false;
@@ -2380,11 +2293,8 @@ class PegParser {
         // <= "{" ActionBody* "}" SPACING # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -2443,11 +2353,8 @@ class PegParser {
         // <= "!" SPACING # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -2500,11 +2407,8 @@ class PegParser {
         // <= "(" SPACING # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -2564,11 +2468,8 @@ class PegParser {
         // <= "+" SPACING # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -2612,11 +2513,8 @@ class PegParser {
               // <= AND
               break;
             // EOF
-            case 2:
-              $$ = null;
-              success = false;
-              break;
             // No matches
+            case 2:
             case -1:
               $$ = null;
               success = false;
@@ -2667,11 +2565,8 @@ class PegParser {
         // <= (AND / NOT)? Suffix Action? # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -2793,11 +2688,8 @@ class PegParser {
         // <= CLASS
         break;
       // EOF
-      case 5:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 5:
       case -1:
         $$ = null;
         success = false;
@@ -2856,11 +2748,8 @@ class PegParser {
         // <= "?" SPACING # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -2881,7 +2770,7 @@ class PegParser {
     var $$;
     _beginToken(10);  
     // => CHAR "-" CHAR / CHAR # Choice
-    switch (_getState(_transitions9)) {
+    switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 1 : -1) {
       // [\u0000-\u0010ffff]
       case 0:
         while (true) {
@@ -2933,11 +2822,8 @@ class PegParser {
         }
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -2990,11 +2876,8 @@ class PegParser {
         // <= "/" SPACING # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -3015,7 +2898,7 @@ class PegParser {
     var $$;
     _beginToken(22);  
     // => [\t ] / EOL # Choice
-    switch (_getState(_transitions12)) {
+    switch (_getState(_transitions11)) {
       // [\t] [ ]
       case 0:
         // => [\t ]
@@ -3029,11 +2912,8 @@ class PegParser {
         // <= EOL
         break;
       // EOF
-      case 2:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 2:
       case -1:
         $$ = null;
         success = false;
@@ -3054,15 +2934,17 @@ class PegParser {
     var $$;
     _beginToken(23);  
     // => (SPACE / COMMENT)* # Choice
-    switch (_getState(_transitions13)) {
+    switch (_getState(_transitions12)) {
       // [\t-\n] [\r] [ ] [#]
+      // EOF
       case 0:
+      case 1:
         // => (SPACE / COMMENT)*
         var testing0 = _testing; 
         for (var reps = []; ; ) {
           _testing = _cursor;
           // => SPACE / COMMENT # Choice
-          switch (_getState(_transitions14)) {
+          switch (_getState(_transitions13)) {
             // [\t-\n] [\r] [ ]
             case 0:
               // => SPACE
@@ -3076,11 +2958,8 @@ class PegParser {
               // <= COMMENT
               break;
             // EOF
-            case 2:
-              $$ = null;
-              success = false;
-              break;
             // No matches
+            case 2:
             case -1:
               $$ = null;
               success = false;
@@ -3096,53 +2975,6 @@ class PegParser {
           } else {
             success = true;
             _testing = testing0;
-            $$ = reps;
-            break; 
-          }
-        }
-        // <= (SPACE / COMMENT)*
-        break;
-      // EOF
-      case 1:
-        // => (SPACE / COMMENT)*
-        var testing1 = _testing; 
-        for (var reps = []; ; ) {
-          _testing = _cursor;
-          // => SPACE / COMMENT # Choice
-          switch (_getState(_transitions14)) {
-            // [\t-\n] [\r] [ ]
-            case 0:
-              // => SPACE
-              $$ = _parse_SPACE();
-              // <= SPACE
-              break;
-            // [#]
-            case 1:
-              // => COMMENT
-              $$ = _parse_COMMENT();
-              // <= COMMENT
-              break;
-            // EOF
-            case 2:
-              $$ = null;
-              success = false;
-              break;
-            // No matches
-            case -1:
-              $$ = null;
-              success = false;
-              break;
-          }
-          if (!success && _cursor > _testing) {
-            // Expected: SPACE, '#'
-            _failure(_expect30);
-          }
-          // <= SPACE / COMMENT # Choice
-          if (success) {  
-            reps.add($$);
-          } else {
-            success = true;
-            _testing = testing1;
             $$ = reps;
             break; 
           }
@@ -3209,11 +3041,8 @@ class PegParser {
         // <= "*" SPACING # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -3268,11 +3097,8 @@ class PegParser {
         }
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -3326,11 +3152,8 @@ class PegParser {
               // <= QUESTION
               break;
             // EOF
-            case 3:
-              $$ = null;
-              success = false;
-              break;
             // No matches
+            case 3:
             case -1:
               $$ = null;
               success = false;
@@ -3363,11 +3186,8 @@ class PegParser {
         // <= Primary (QUESTION / STAR / PLUS)? # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
@@ -3607,11 +3427,8 @@ class PegParser {
         // <= SPACING? GLOBALS? Members? Definition+ EOF # Sequence
         break;
       // EOF
-      case 1:
-        $$ = null;
-        success = false;
-        break;
       // No matches
+      case 1:
       case -1:
         $$ = null;
         success = false;
