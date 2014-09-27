@@ -1,6 +1,16 @@
 part of peg.general_parser.expressions_generators;
 
 class LiteralExpressionGenerator extends ExpressionGenerator {
+  static const String _CH = ParserClassGenerator.CH;
+
+  static const String _CURSOR = ParserClassGenerator.CURSOR;
+
+  static const String _EOF = ParserClassGenerator.EOF;
+
+  static const String _INPUT = ParserClassGenerator.INPUT;
+
+  static const String _INPUT_LEN = ParserClassGenerator.INPUT_LEN;
+
   static const String _MATCH_CHAR = MethodMatchCharGenerator.NAME;
 
   static const String _MATCH_STRING = MethodMatchStringGenerator.NAME;
@@ -11,22 +21,38 @@ class LiteralExpressionGenerator extends ExpressionGenerator {
 
   static const String _TEMPLATE_CHARACTER = 'TEMPLATE_CHARACTER';
 
+  static const String _TEMPLATE_CHARACTER_INLINE = 'TEMPLATE_CHARACTER_INLINE';
+
   static const String _TEMPLATE_EMPTY = 'TEMPLATE_EMPTY';
 
   static const String _TEMPLATE_STRING = 'TEMPLATE_STRING';
 
   static final String _templateEmpty = '''
-// {{#COMMENTS}}
+{{#COMMENT_IN}}
 $_SUCCESS = true;
-$_RESULT = \'\';''';
+$_RESULT = \'\';
+{{#COMMENT_OUT}}''';
 
   static final String _templateString = '''
-{{#COMMENTS}}
-$_RESULT = $_MATCH_STRING({{RUNES}}, '{{STRING}}');''';
+{{#COMMENT_IN}}
+$_RESULT = $_MATCH_STRING({{CODE_POINTS}}, '{{STRING}}');
+{{#COMMENT_OUT}}''';
 
   static final String _templateCharacter = '''
-{{#COMMENTS}}
-$_RESULT = $_MATCH_CHAR({{RUNE}}, '{{STRING}}');''';
+{{#COMMENT_IN}}
+$_RESULT = $_MATCH_CHAR({{CODE_POINT}}, '{{STRING}}');
+{{#COMMENT_OUT}}''';
+
+  static final String _templateCharacterInline = '''
+{{#COMMENT_IN}}
+$_RESULT = '{{STRING}}';
+$_SUCCESS = true;
+if (++$_CURSOR < $_INPUT_LEN) {
+  $_CH = $_INPUT[$_CURSOR];
+} else {
+  $_CH = $_EOF;
+}
+{{#COMMENT_OUT}}''';
 
   LiteralExpression _expression;
 
@@ -36,6 +62,7 @@ $_RESULT = $_MATCH_CHAR({{RUNE}}, '{{STRING}}');''';
     }
 
     addTemplate(_TEMPLATE_CHARACTER, _templateCharacter);
+    addTemplate(_TEMPLATE_CHARACTER_INLINE, _templateCharacterInline);
     addTemplate(_TEMPLATE_EMPTY, _templateEmpty);
     addTemplate(_TEMPLATE_STRING, _templateString);
   }
@@ -61,15 +88,34 @@ $_RESULT = $_MATCH_CHAR({{RUNE}}, '{{STRING}}');''';
   }
 
   List<String> _generateCharacter() {
+    if (isFirstNonRepeating(_expression)) {
+      return _generateCharacterInline();
+    }
+
     var block = getTemplateBlock(_TEMPLATE_CHARACTER);
     var text = _expression.text;
     var character = text.runes.toList()[0];
     var string = Utils.charToString(character);
     if (options.comment) {
-      block.assign('#COMMENTS', '// $_expression');
+      block.assign('#COMMENT_IN', '// => $_expression');
+      block.assign('#COMMENT_OUT', '// <= $_expression');
     }
 
-    block.assign('RUNE', character);
+    block.assign('CODE_POINT', character);
+    block.assign('STRING', string);
+    return block.process();
+  }
+
+  List<String> _generateCharacterInline() {
+    var block = getTemplateBlock(_TEMPLATE_CHARACTER_INLINE);
+    var text = _expression.text;
+    var character = text.runes.toList()[0];
+    var string = Utils.charToString(character);
+    if (options.comment) {
+      block.assign('#COMMENT_IN', '// => $_expression');
+      block.assign('#COMMENT_OUT', '// <= $_expression');
+    }
+
     block.assign('STRING', string);
     return block.process();
   }
@@ -79,7 +125,8 @@ $_RESULT = $_MATCH_CHAR({{RUNE}}, '{{STRING}}');''';
     var literal = [];
     var text = _expression.text;
     if (options.comment) {
-      block.assign('#COMMENTS', '// $_expression');
+      block.assign('#COMMENT_IN', '// => $_expression');
+      block.assign('#COMMENT_OUT', '// <= $_expression');
     }
 
     for (var charCode in text.codeUnits) {
@@ -87,7 +134,7 @@ $_RESULT = $_MATCH_CHAR({{RUNE}}, '{{STRING}}');''';
     }
 
     var strings = productionRuleGenerator.parserClassGenerator.addString(text);
-    block.assign('RUNES', strings);
+    block.assign('CODE_POINTS', strings);
     block.assign('STRING', literal.join());
     return block.process();
   }

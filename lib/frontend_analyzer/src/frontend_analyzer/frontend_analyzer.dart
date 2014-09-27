@@ -21,6 +21,7 @@ class FrontendAnalyzer {
     new RightExpressionsResolver().resolve(rules);
     new ExpressionLengthResovler().resolve(rules);
     new StartCharactersResolver().resolve(rules);
+    new ExpressionMatchesEofResolver().resolve(rules);
     for (var i = 0; i <= 1; i++) {
       for (var rule in rules) {
         rule.expression.accept(new InvocationsResolver(i == 0));
@@ -28,7 +29,7 @@ class FrontendAnalyzer {
     }
 
     new TerminalRulesFinder().find(rules);
-    new ExpectationResolver().resolve(rules);
+    new ExpectedLexemesResolver().resolve(rules);
     new ExpressionWithActionsResolver().resolve(rules);
     new StartingRulesFinder().find(rules);
 

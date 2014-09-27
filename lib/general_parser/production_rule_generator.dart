@@ -8,7 +8,6 @@ import 'package:peg/grammar/production_rule.dart';
 import 'package:peg/parser_generator/parser_class_generator.dart';
 import 'package:peg/parser_generator/parser_generator_options.dart';
 import 'package:peg/trace/trace.dart';
-import 'package:peg/utils/utils.dart';
 import 'package:template_block/template_block.dart';
 
 part 'src/production_rule_generator/production_rule_generator.dart';

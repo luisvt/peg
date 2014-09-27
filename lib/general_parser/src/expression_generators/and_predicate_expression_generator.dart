@@ -18,14 +18,15 @@ class AndPredicateExpressionGenerator extends UnaryExpressionGenerator {
   static const String _TEMPLATE = 'TEMPLATE';
 
   static final String _template = '''
-{{#COMMENTS}}
+{{#COMMENT_IN}}
 var {{CH}} = $_CH, {{POS}} = $_CURSOR, {{TESTING}} = $_TESTING;
 $_TESTING = $_INPUT_LEN + 1;
 {{#EXPRESSION}}
 $_CH = {{CH}};
 $_CURSOR = {{POS}}; 
 $_TESTING = {{TESTING}};
-$_RESULT = null;''';
+$_RESULT = null;
+{{#COMMENT_OUT}}''';
 
   AndPredicateExpressionGenerator(Expression expression, ProductionRuleGenerator productionRuleGenerator) : super(expression, productionRuleGenerator) {
     if (expression is! AndPredicateExpression) {
@@ -42,7 +43,8 @@ $_RESULT = null;''';
     var pos = productionRuleGenerator.allocateBlockVariable(ExpressionGenerator.POS);
     var testing = productionRuleGenerator.allocateBlockVariable(ExpressionGenerator.TESTING);
     if (options.comment) {
-      block.assign('#COMMENTS', '// $_expression');
+      block.assign('#COMMENT_IN', '// => $_expression');
+      block.assign('#COMMENT_OUT', '// <= $_expression');
     }
 
     block.assign('CH', ch);

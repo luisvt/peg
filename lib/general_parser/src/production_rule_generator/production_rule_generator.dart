@@ -5,9 +5,13 @@ class ProductionRuleGenerator extends DeclarationGenerator {
 
   static const String _ADD_TO_CACHE = MethodAddToCacheGenerator.NAME;
 
+  static const String _BEGIN_TOKEN = MethodBeginTokenGenerator.NAME;
+
   static const String _CACHE_POS = ParserClassGenerator.CACHE_POS;
 
   static const String _CURSOR = ParserClassGenerator.CURSOR;
+
+  static const String _END_TOKEN = MethodEndTokenGenerator.NAME;
 
   static const String _GET_FROM_CACHE = MethodGetFromCacheGenerator.NAME;
 
@@ -38,16 +42,10 @@ class ProductionRuleGenerator extends DeclarationGenerator {
   static const String PREFIX_PARSE = 'parse_';
 
   static String _templateTokenEpilog = '''
-if (--$_TOKEN_LEVEL == 0) {
-  $_TOKEN = null;
-  $_TOKEN_START = null;
-}''';
+$_END_TOKEN();''';
 
   static String _templateTokenProlog = '''
-if ($_TOKEN_LEVEL++ == 0) {
-  $_TOKEN = {{TOKEN_ID}};
-  $_TOKEN_START = $_CURSOR;
-}''';
+$_BEGIN_TOKEN({{TOKEN_ID}});''';
 
   static String _templateWithCache = '''
 dynamic {{NAME}}() {
@@ -74,7 +72,7 @@ dynamic {{NAME}}() {
   static String _templateWithoutCache = '''
 dynamic {{NAME}}() {
   {{#COMMENTS}}
-  {{#ENTER}}  
+  {{#ENTER}}    
   {{#VARIABLES}}
   {{#TOKEN_PROLOG}}  
   {{#EXPRESSION}}
@@ -90,6 +88,7 @@ dynamic {{NAME}}() {
 
   Map<String, int> _blockVariables = new Map<String, int>();
 
+  //OrderedChoiceExpressionGenerator _expressionGenerator;
   OrderedChoiceExpressionGenerator _expressionGenerator;
 
   List<Generator> generators = [];
@@ -110,6 +109,7 @@ dynamic {{NAME}}() {
 
     _parserGenerator = parserClassGenerator.parserGenerator;
     _options = _parserGenerator.options;
+    //_expressionGenerator = new OrderedChoiceExpressionGenerator(productionRule.expression, this);
     _expressionGenerator = new OrderedChoiceExpressionGenerator(productionRule.expression, this);
     addTemplate(_TEMPLATE_TOKEN_EPILOG, _templateTokenEpilog);
     addTemplate(_TEMPLATE_TOKEN_PROLOG, _templateTokenProlog);
@@ -229,7 +229,7 @@ dynamic {{NAME}}() {
     var block = getTemplateBlock(_TEMPLATE_WITH_CACHE);
     var methodName = getMethodName(productionRule);
     if (_options.comment) {
-      var lexical = productionRule.isTerminal ? 'TERMINAL' : 'NONTERMINAL';
+      var lexical = _getLexicalType();
       block.assign('#COMMENTS', '// $lexical');
       block.assign('#COMMENTS', '// $productionRule');
     }
@@ -257,7 +257,7 @@ dynamic {{NAME}}() {
     var block = getTemplateBlock(_TEMPLATE_WITHOUT_CACHE);
     var methodName = getMethodName(productionRule);
     if (_options.comment) {
-      var lexical = productionRule.isTerminal ? 'TERMINAL' : 'NONTERMINAL';
+      var lexical = _getLexicalType();
       block.assign('#COMMENTS', '// $lexical');
       block.assign('#COMMENTS', '// $productionRule');
     }
@@ -276,5 +276,25 @@ dynamic {{NAME}}() {
     //block.assign('#FLAGS', _setFlag());
     block.assign('NAME', methodName);
     return block.process();
+  }
+
+  String _getLexicalType() {
+    if (!productionRule.isTerminal) {
+      return 'NONTERMINAL';
+    }
+
+    if (productionRule.isLexeme && productionRule.isMorpheme) {
+      return 'LEXEME & MORPHEME';
+    }
+
+    if (productionRule.isLexeme) {
+      return 'LEXEME';
+    }
+
+    if (productionRule.isMorpheme) {
+      return 'MORPHEME';
+    }
+
+    return '';
   }
 }

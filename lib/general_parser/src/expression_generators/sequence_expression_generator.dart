@@ -47,7 +47,7 @@ $_RESULT = seq;
 {{#ACTION}}''';
 
   static final String _templateOuter = '''
-{{#COMMENTS}}
+{{#COMMENT_IN}}
 var {{CH}} = $_CH, {{POS}} = $_CURSOR;
 while (true) {  
   {{#EXPRESSIONS}}
@@ -56,11 +56,14 @@ while (true) {
 if (!$_SUCCESS) {
   $_CH = {{CH}};
   $_CURSOR = {{POS}};
-}''';
+}
+{{#COMMENT_OUT}}''';
 
   static final String _templateSingle = '''
+{{#COMMENT_IN}}
 {{#EXPRESSION}}
-{{#ACTION}}''';
+{{#ACTION}}
+{{#COMMENT_OUT}}''';
 
   SequenceExpression _expression;
 
@@ -135,7 +138,8 @@ if (!$_SUCCESS) {
     }
 
     if (options.comment) {
-      block.assign('#COMMENTS', '// $_expression');
+      block.assign('#COMMENT_IN', '// => $_expression # Sequence');
+      block.assign('#COMMENT_OUT', '// <= $_expression # Sequence');
     }
 
     block.assign('CH', ch);
@@ -175,6 +179,12 @@ if (!$_SUCCESS) {
 
   List<String> _generateSingle() {
     var block = getTemplateBlock(_TEMPLATE_SINGLE);
+    if (options.comment) {
+      // TODO: Remove
+      //block.assign('#COMMENT_IN', '// => $_expression # Sequence');
+      //block.assign('#COMMENT_OUT', '// <= $_expression # Sequence');
+    }
+
     block.assign('#EXPRESSION', _generators[0].generate());
     block.assign('#ACTION', _generateAction(_expression.expressions[0]));
     return block.process();

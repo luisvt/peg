@@ -12,7 +12,7 @@ class ZeroOrMoreExpressionGenerator extends UnaryExpressionGenerator {
   static const String _TEMPLATE = '_TEMPLATE';
 
   static final String _template = '''
-{{#COMMENTS}}
+{{#COMMENT_IN}}
 var {{TESTING}} = $_TESTING; 
 for (var reps = []; ; ) {
   $_TESTING = $_CURSOR;
@@ -25,7 +25,8 @@ for (var reps = []; ; ) {
     $_RESULT = reps;
     break; 
   }
-}''';
+}
+{{#COMMENT_OUT}}''';
 
   ZeroOrMoreExpressionGenerator(Expression expression, ProductionRuleGenerator productionRuleGenerator) : super(expression, productionRuleGenerator) {
     if (expression is! ZeroOrMoreExpression) {
@@ -40,7 +41,8 @@ for (var reps = []; ; ) {
     var testing = productionRuleGenerator.allocateBlockVariable(ExpressionGenerator.TESTING);
     block.assign('#EXPRESSION', _generators[0].generate());
     if (options.comment) {
-      block.assign('#COMMENTS', '// $_expression');
+      block.assign('#COMMENT_IN', '// => $_expression');
+      block.assign('#COMMENT_OUT', '// <= $_expression');
     }
 
     block.assign('TESTING', testing);

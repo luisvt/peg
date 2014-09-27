@@ -34,8 +34,9 @@ class RuleExpressionGenerator extends ExpressionGenerator {
   static const String _TEMPLATE_PROLOG = '_TEMPLATE_PROLOG';
 
   static final String _template = '''
-{{#COMMENTS}}
-$_RESULT = {{RULE}}();''';
+{{#COMMENT_IN}}
+$_RESULT = {{RULE}}();
+{{#COMMENT_OUT}}''';
 
   static final String _templateElse = '''
 else $_SUCCESS = true;''';
@@ -48,7 +49,7 @@ else {
 
   // Non optional rule with start characters in lookahead
   static final String _templateLookahead = '''
-{{#COMMENTS}}
+{{#COMMENT_IN}}
 $_RESULT = null;
 $_SUCCESS = $_CH >= {{MIN}} && $_CH <= {{MAX}} && $_LOOKAHEAD[$_CH + {{POSITION}}];
 {{#LOOKAHEAD_COMMENTS}}
@@ -58,18 +59,20 @@ if (!$_SUCCESS) {
   {{#COMMENT_EXPECTED}}    
   if ($_CURSOR > $_TESTING) $_FAILURE({{EXPECTED}});
   {{#BREAK}}  
-}''';
+}
+{{#COMMENT_OUT}}''';
 
   // Optional rule with start characters in lookahead
   static final String _templateLookaheadOptional = '''
-{{#COMMENTS}}
+{{#COMMENT_IN}}
 $_RESULT = null;
 $_SUCCESS = $_CH >= {{MIN}} && $_CH <= {{MAX}} && $_LOOKAHEAD[$_CH + {{POSITION}}];
-{{#PROLOG}}''';
+{{#PROLOG}}
+{{#COMMENT_OUT}}''';
 
   // Non optional rule with one start character
   static final String _templateOne = '''
-{{#COMMENTS}}
+{{#COMMENT_IN}}
 $_RESULT = null;
 $_SUCCESS = $_CH == {{CHARACTER}}; {{COMMENT_CHARACTER}}
 {{#LOOKAHEAD_COMMENTS}}
@@ -79,14 +82,16 @@ if (!$_SUCCESS) {
   {{#COMMENT_EXPECTED}}
   if ($_CURSOR > $_TESTING) $_FAILURE({{EXPECTED}});  
   {{#BREAK}}  
-}''';
+}
+{{#COMMENT_OUT}}''';
 
   // Optional rule with one start character
   static final String _templateOneOptional = '''
-{{#COMMENTS}}
+{{#COMMENT_IN}}
 $_RESULT = null;
 $_SUCCESS = $_CH == {{CHARACTER}}; {{COMMENT_CHARACTER}}
-{{#PROLOG}}''';
+{{#PROLOG}}
+{{#COMMENT_OUT}}''';
 
   static final String _templateProlog = '''
 {{#LOOKAHEAD_COMMENTS}}
@@ -153,7 +158,8 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
     var rule = _expression.rule;
     block.assign('RULE', '${_getProductionRuleName()}');
     if (options.comment) {
-      block.assign('#COMMENTS', '// ${_expression.name}');
+      block.assign('#COMMENT_IN', '// => ${_expression.name}');
+      block.assign('#COMMENT_OUT', '// <= ${_expression.name}');
     }
 
     return block.process();
@@ -169,7 +175,8 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
     var startCharacters = ruleExpression.startCharacters;
     if (options.comment) {
       var name = _expression.name;
-      block.assign('#COMMENTS', '// ${_expression.name}');
+      block.assign('#COMMENT_IN', '// => ${_expression.name}');
+      block.assign('#COMMENT_OUT', '// <= ${_expression.name}');
       block.assign('#COMMENT_EXPECTED', '// Expected: ${expected.join(", ")}');
       block.assign('#LOOKAHEAD_COMMENTS', '// Lookahead ($name)');
     }
@@ -203,7 +210,8 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
     var startCharacters = ruleExpression.startCharacters;
     if (options.comment) {
       var comments = [];
-      block.assign('#COMMENTS', '// ${_expression.name}');
+      block.assign('#COMMENT_IN', '// => ${_expression.name}');
+      block.assign('#COMMENT_OUT', '// <= ${_expression.name}');
     }
 
     ///*
@@ -234,7 +242,8 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
       var name = _expression.name;
       var printable = toPrintable(new String.fromCharCode(character));
       block.assign('COMMENT_CHARACTER', '// \'$printable\'');
-      block.assign('#COMMENTS', '// ${_expression.name}');
+      block.assign('#COMMENT_IN', '// => ${_expression.name}');
+      block.assign('#COMMENT_OUT', '// <= ${_expression.name}');
       block.assign('#COMMENT_EXPECTED', '// Expected: ${expected.join(", ")}');
       block.assign('#LOOKAHEAD_COMMENTS', '// Lookahead ($name)');
     } else {
@@ -264,7 +273,8 @@ if ($_SUCCESS) $_RESULT = {{RULE}}();
     if (options.comment) {
       var printable = toPrintable(new String.fromCharCode(character));
       block.assign('COMMENT_CHARACTER', '// \'$printable\'');
-      block.assign('#COMMENTS', '// ${_expression.name}');
+      block.assign('#COMMENT_IN', '// => ${_expression.name}');
+      block.assign('#COMMENT_OUT', '// <= ${_expression.name}');
     } else {
       block.assign('COMMENT_CHARACTER', '');
     }

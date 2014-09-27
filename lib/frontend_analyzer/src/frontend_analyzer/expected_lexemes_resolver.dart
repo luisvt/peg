@@ -1,6 +1,6 @@
 part of peg.frontend_analyzer.frontend_analyzer;
 
-class ExpectationResolver extends ExpressionResolver {
+class ExpectedLexemesResolver extends ExpressionResolver {
   Object visitAndPredicate(AndPredicateExpression expression) {
     var child = expression.expression;
     child.accept(this);

@@ -48,8 +48,9 @@ num _parseNumber(minus, integer, frac, exp) {
 
 }%
 
+# value
 jsonText <-
-  WS? (object / array) EOF { $$ = $2; }
+  WS? value EOF { $$ = $2; }
 
 value <-
   FALSE
@@ -62,7 +63,7 @@ value <-
 
 object <-
   BEGIN_OBJECT (member (VALUE_SEPARATOR member { $$ = $2; })*)? END_OBJECT  
-  { $$ = _flatten($2).fold({}, (p, c) => p..[c.key] = c.value); }
+  { $$ = _normalize([$2]).fold({}, (p, c) => p..[c.key] = c.value); }
 
 member <-
   STRING NAME_SEPARATOR value
@@ -70,7 +71,7 @@ member <-
 
 array <-
   BEGIN_ARRAY (value (VALUE_SEPARATOR value { $$ = $2; })*)? END_ARRAY
-  { $$ = _flatten($2).fold([], (p, c) => p..add(c)); }
+  { $$ = _normalize([$2]).fold([], (p, c) => p..add(c)); }
 
 QUOTATION_MARK <-
   ["]
@@ -100,7 +101,7 @@ FRAC <-
   DECIMAL_POINT DIGIT+ WS { $$ = _flatten([$1, $2]).join(); }
 
 INT <-
-  DIGIT+ WS { $$ = _flatten($1).join(); }
+  DIGIT+ WS { $$ = _flatten([$1]).join(); }
 
 NAME_SEPARATOR <-
   ':' WS
@@ -112,7 +113,7 @@ NUMBER <-
   '-'? INT FRAC? EXP? WS { $$ = _parseNumber($1, $2, $3, $4); }
 
 STRING <-
-  QUOTATION_MARK CHAR* QUOTATION_MARK WS { $$ = _flatten($2).join(); }
+  QUOTATION_MARK CHAR* QUOTATION_MARK WS { $$ = _flatten([$2]).join(); }
 
 TRUE <-
   "true" WS { $$ = true; }

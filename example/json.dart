@@ -15,7 +15,7 @@ dynamic parse(String string) {
     var text = new Text(string);
     for (var error in parser.errors()) {
       var location = text.locationAt(error.position);
-      var message = "Parser error at ${location.line}:${location.column}. ${error.message}";
+      var message = "Parser error at $location. ${error.message}";
       print(message);
     }
 

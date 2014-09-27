@@ -8,8 +8,9 @@ class AnyCharacterExpressionGenerator extends ExpressionGenerator {
   static const String _TEMPLATE = 'TEMPLATE';
 
   static final String _template = '''
-{{#COMMENTS}}
-$_RESULT = $_MATCH_ANY();''';
+{{#COMMENT_IN}}
+$_RESULT = $_MATCH_ANY();
+{{#COMMENT_OUT}}''';
 
   AnyCharacterExpressionGenerator(Expression expression, ProductionRuleGenerator productionRuleGenerator) : super(expression, productionRuleGenerator) {
     if (expression is! AnyCharacterExpression) {
@@ -22,7 +23,8 @@ $_RESULT = $_MATCH_ANY();''';
   List<String> generate() {
     var block = getTemplateBlock(_TEMPLATE);
     if (options.comment) {
-      block.assign('#COMMENTS', '// $_expression');
+      block.assign('#COMMENT_IN', '// => $_expression');
+      block.assign('#COMMENT_OUT', '// <= $_expression');
     }
 
     return block.process();

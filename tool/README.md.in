@@ -7,15 +7,6 @@ Version: {{VERSION}}
 
 Status: Experimental
 
-!!!NEW FEATURE!!!
-
-Added the new parser generator: interpreter parser (NOT YET READY FOR USE).
-
-**Advantages:**
-
- - Less source code size of the generated parser (the more complex grammar, the more noticeable difference in the size of)
- - Higher performance (with an upcoming the symbols transitions it will be much better)
-
 Latest version always can be found at https://github.com/mezoni/peg
 
 **Features:**

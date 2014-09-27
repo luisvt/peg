@@ -1,7 +1,7 @@
 part of peg.general_parser.parser_class_generator;
 
-class MethodMatchStringGenerator extends DeclarationGenerator {
-  static const String NAME = "_matchString";
+class MethodNextCharGenerator extends DeclarationGenerator {
+  static const String NAME = "_nextChar";
 
   static const String _CH = ParserClassGenerator.CH;
 
@@ -18,33 +18,16 @@ class MethodMatchStringGenerator extends DeclarationGenerator {
   static const String _TEMPLATE = "TEMPLATE";
 
   static final String _template = '''
-String $NAME(List<int> codePoints, String string) {
-  var length = codePoints.length;  
-  $_SUCCESS = $_CURSOR + length <= $_INPUT_LEN;
-  if ($_SUCCESS) {
-    for (var i = 0; i < length; i++) {
-      if (codePoints[i] != $_INPUT[$_CURSOR + i]) {
-        $_SUCCESS = false;
-        break;
-      }
-    }
+void $NAME() {
+  if (++$_CURSOR < $_INPUT_LEN) {
+    $_CH = $_INPUT[$_CURSOR];
   } else {
-    $_SUCCESS = false;
+    $_CH = $_EOF;
   }  
-  if ($_SUCCESS) {
-    $_CURSOR += length;      
-    if ($_CURSOR < $_INPUT_LEN) {
-      $_CH = $_INPUT[$_CURSOR];
-    } else {
-      $_CH = $_EOF;
-    }    
-    return string;      
-  }  
-  return null; 
 }
 ''';
 
-  MethodMatchStringGenerator() {
+  MethodNextCharGenerator() {
     addTemplate(_TEMPLATE, _template);
   }
 

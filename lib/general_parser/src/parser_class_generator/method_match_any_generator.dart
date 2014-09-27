@@ -11,15 +11,11 @@ class MethodMatchAnyGenerator extends DeclarationGenerator {
 
   static const String _EOF = ParserClassGenerator.EOF;
 
-  static const String _FAILURE = MethodFailureGenerator.NAME;
-
   static const String _INPUT = ParserClassGenerator.INPUT;
 
   static const String _INPUT_LEN = ParserClassGenerator.INPUT_LEN;
 
   static const String _SUCCESS = ParserClassGenerator.SUCCESS;
-
-  static const String _TESTING = ParserClassGenerator.TESTING;
 
   static const String _TEMPLATE = "TEMPLATE";
 

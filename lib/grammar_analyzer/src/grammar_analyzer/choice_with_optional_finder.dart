@@ -18,6 +18,7 @@ class ChoiceWithOptionalFinder extends UnifyingExpressionVisitor {
       return null;
     }
 
+    // TODO: Warrning should be produced only when exprs goes after optional
     for (var child in expressions) {
       if (child.isOptional) {
         var owner = expression.owner;

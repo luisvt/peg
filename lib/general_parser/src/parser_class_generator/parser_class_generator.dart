@@ -15,6 +15,8 @@ class GeneralParserClassGenerator extends ParserClassGenerator {
 
   static const String STRINGS = "_strings";
 
+  static const String TRANSITIONS = "_transitions";
+
   static const String _UNMAP = MethodUnmapGenerator.NAME;
 
   final Grammar grammar;
@@ -36,6 +38,8 @@ class GeneralParserClassGenerator extends ParserClassGenerator {
   List<SparseBoolList> _ranges = <SparseBoolList>[];
 
   List<String> _strings = <String>[];
+
+  List<List<List<int>>> _transitions = <List<List<int>>>[];
 
   GeneralParserClassGenerator(String name, this.grammar, this.parserGenerator) : super(name) {
     if (grammar == null) {
@@ -151,7 +155,57 @@ class GeneralParserClassGenerator extends ParserClassGenerator {
       _strings.add(string);
     }
 
-    return '$STRINGS${i}';
+    return '$STRINGS$i';
+  }
+
+  String addTransition(List<List<RangeList>> transitions) {
+    var i = _transitions.length;
+    var list = <List<int>>[];
+    for (var transition in transitions) {
+      var ranges = <int>[];
+      for (var range in transition) {
+        ranges.add(range.start);
+        ranges.add(range.end);
+      }
+
+      list.add(ranges);
+    }
+
+    var length = _transitions.length;
+    for (var i = 0; i < length; i++) {
+      var ranges = _transitions[i];
+      if (ranges.length == list.length) {
+        var length2 = ranges.length;
+        var failed = false;
+        for (var j = 0; j < length2; j++) {
+          var l1 = ranges[j];
+          var l2 = list[j];
+          var length3 = l1.length;
+          if (l2.length != length3) {
+            failed = true;
+            break;
+          }
+
+          for (var k = 0; k < length3; k++) {
+            if (l1[k] != l2[k]) {
+              failed = true;
+              break;
+            }
+          }
+
+          if (failed) {
+            break;
+          }
+        }
+
+        if (!failed) {
+          return '$TRANSITIONS$i';
+        }
+      }
+    }
+
+    _transitions.add(list);
+    return '$TRANSITIONS$i';
   }
 
   List<String> generate() {
@@ -163,12 +217,16 @@ class GeneralParserClassGenerator extends ParserClassGenerator {
       addMethod(new ProductionRuleGenerator(productionRule, this));
     }
 
+    addMethod(new MethodBeginTokenGenerator());
+    addMethod(new MethodEndTokenGenerator());
+    addMethod(new MethodGetStateGenerator());
     addMethod(new MethodMatchAnyGenerator());
     addMethod(new MethodMatchCharGenerator());
     addMethod(new MethodMatchMappingGenerator());
     addMethod(new MethodMatchRangeGenerator());
     addMethod(new MethodMatchRangesGenerator());
     addMethod(new MethodMatchStringGenerator());
+    addMethod(new MethodNextCharGenerator());
     addMethod(new MethodUnmapGenerator());
     // Trace
     if (options.trace) {
@@ -307,6 +365,14 @@ class GeneralParserClassGenerator extends ParserClassGenerator {
 
         var value = "<String>[${expected.join(', ')}]";
         addVariable(new VariableGenerator("$EXPECT$i", "static final List<String>", value: value), true);
+      }
+    }
+
+    if (!_transitions.isEmpty) {
+      var length = _transitions.length;
+      for (var i = 0; i < length; i++) {
+        var value = Utils.listToPrintableString(_transitions[i]);
+        addVariable(new VariableGenerator("$TRANSITIONS$i", "static final List<List<int>>", value: value), true);
       }
     }
   }

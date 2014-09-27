@@ -3,9 +3,11 @@ part of peg.general_parser.expressions_generators;
 class CharacterClassExpressionGenerator extends ExpressionGenerator {
   static const String _CH = ParserClassGenerator.CH;
 
-  static const String _CUSROR = ParserClassGenerator.CURSOR;
+  static const String _CURSOR = ParserClassGenerator.CURSOR;
 
-  static const String _FAILURE = MethodFailureGenerator.NAME;
+  static const String _EOF = ParserClassGenerator.EOF;
+
+  static const String _INPUT = ParserClassGenerator.INPUT;
 
   static const String _INPUT_LEN = ParserClassGenerator.INPUT_LEN;
 
@@ -21,13 +23,13 @@ class CharacterClassExpressionGenerator extends ExpressionGenerator {
 
   static const String _SUCCESS = ParserClassGenerator.SUCCESS;
 
-  static const String _TESTING = ParserClassGenerator.TESTING;
-
   static const String _TEMPLATE_ASCII = 'TEMPLATE_ASCII';
 
   static const String _TEMPLATE_ASCII_NON_ASCII = 'TEMPLATE_ASCII_NON_ASCII';
 
   static const String _TEMPLATE_CHARACTER = 'TEMPLATE_CHARACTER';
+
+  static const String _TEMPLATE_CHARACTER_INLINE = 'TEMPLATE_CHARACTER_INLINE';
 
   static const String _TEMPLATE_EMPTY = 'TEMPLATE_EMPTY';
 
@@ -36,32 +38,49 @@ class CharacterClassExpressionGenerator extends ExpressionGenerator {
   static const String _TEMPLATE_RANGES = 'TEMPLATE_RANGES';
 
   static final String _templateAscii = '''
-{{#COMMENTS}}
-$_RESULT = $_MATCH_MAPPING({{MIN}}, {{MAX}}, {{MAPPING}});''';
+{{#COMMENT_IN}}
+$_RESULT = $_MATCH_MAPPING({{MIN}}, {{MAX}}, {{MAPPING}});
+{{#COMMENT_OUT}}''';
 
   static final String _templateAsciiAndNonAscii = '''
-{{#COMMENTS}}
+{{#COMMENT_IN}}
 $_RESULT = $_MATCH_MAPPING({{MIN}}, {{MAX}}, {{MAPPING}});
 if (!$_SUCCESS) {
   $_RESULT = $_MATCH_RANGES({{RANGES}});
-}''';
+}
+{{#COMMENT_OUT}}''';
 
   static final String _templateCharacter = '''
-{{#COMMENTS}}
-$_RESULT = $_MATCH_CHAR({{RUNE}}, '{{STRING}}');''';
+{{#COMMENT_IN}}
+$_RESULT = $_MATCH_CHAR({{RUNE}}, '{{STRING}}');
+{{#COMMENT_OUT}}''';
+
+  static final String _templateCharacterInline = '''
+{{#COMMENT_IN}}
+$_RESULT = '{{STRING}}';
+$_SUCCESS = true;
+if (++$_CURSOR < $_INPUT_LEN) {
+  $_CH = $_INPUT[$_CURSOR];
+} else {
+  $_CH = $_EOF;
+}
+{{#COMMENT_OUT}}''';
 
   static final String _templateEmpty = '''
-// {{#COMMENTS}}
+{{#COMMENT_IN}}
 $_SUCCESS = true;
-$_RESULT = \'\';''';
+$_RESULT = \'\';
+{{#COMMENT_OUT}}''';
 
   static final String _templateRange = '''
-{{#COMMENTS}}
-$_RESULT = $_MATCH_RANGE({{MIN}}, {{MAX}});''';
+{{#COMMENT_IN}}
+$_RESULT = $_MATCH_RANGE({{MIN}}, {{MAX}});
+{{#COMMENT_OUT}}''';
 
   static final String _templateRanges = '''
-{{#COMMENTS}}
-$_RESULT = $_MATCH_RANGES({{RANGES}});''';
+{{#COMMENT_IN}}
+$_RESULT = $_MATCH_RANGES({{RANGES}});
+{{#COMMENT_OUT}}''';
 
   SparseBoolList _ascii;
 
@@ -85,6 +104,7 @@ $_RESULT = $_MATCH_RANGES({{RANGES}});''';
     addTemplate(_TEMPLATE_ASCII, _templateAscii);
     addTemplate(_TEMPLATE_ASCII_NON_ASCII, _templateAsciiAndNonAscii);
     addTemplate(_TEMPLATE_CHARACTER, _templateCharacter);
+    addTemplate(_TEMPLATE_CHARACTER_INLINE, _templateCharacterInline);
     addTemplate(_TEMPLATE_EMPTY, _templateEmpty);
     addTemplate(_TEMPLATE_RANGE, _templateRange);
     addTemplate(_TEMPLATE_RANGES, _templateRanges);
@@ -124,6 +144,10 @@ $_RESULT = $_MATCH_RANGES({{RANGES}});''';
   }
 
   List<String> generate() {
+    if (_expression.positionInSequence == 0) {
+      // TODO: Optimize
+    }
+
     if (_singleCharacter != null) {
       return _generateCharacter();
     } else if (_singleRange != null) {
@@ -141,9 +165,10 @@ $_RESULT = $_MATCH_RANGES({{RANGES}});''';
 
   List<String> _generateAscii() {
     var block = getTemplateBlock(_TEMPLATE_ASCII);
-    var range = productionRuleGenerator.parserClassGenerator.addMapping(_ascii);
+    var range = parserClassGenerator.addMapping(_ascii);
     if (options.comment) {
-      block.assign('#COMMENTS', '// $_expression');
+      block.assign('#COMMENT_IN', '// => $_expression');
+      block.assign('#COMMENT_OUT', '// <= $_expression');
     }
 
     block.assign('MAX', _ascii.end);
@@ -157,7 +182,8 @@ $_RESULT = $_MATCH_RANGES({{RANGES}});''';
     var mapping = parserClassGenerator.addMapping(_ascii);
     var ranges = parserClassGenerator.addRanges(_nonAscii);
     if (options.comment) {
-      block.assign('#COMMENTS', '// $_expression');
+      block.assign('#COMMENT_IN', '// => $_expression');
+      block.assign('#COMMENT_OUT', '// <= $_expression');
     }
 
     block.assign('MAX', _ascii.end);
@@ -168,9 +194,14 @@ $_RESULT = $_MATCH_RANGES({{RANGES}});''';
   }
 
   List<String> _generateCharacter() {
+    if (isFirstNonRepeating(_expression)) {
+      return _generateCharacterInline();
+    }
+
     var block = getTemplateBlock(_TEMPLATE_CHARACTER);
     if (options.comment) {
-      block.assign('#COMMENTS', '// $_expression');
+      block.assign('#COMMENT_IN', '// => $_expression');
+      block.assign('#COMMENT_OUT', '// <= $_expression');
     }
 
     var string = Utils.charToString(_singleCharacter);
@@ -179,10 +210,23 @@ $_RESULT = $_MATCH_RANGES({{RANGES}});''';
     return block.process();
   }
 
+  List<String> _generateCharacterInline() {
+    var block = getTemplateBlock(_TEMPLATE_CHARACTER_INLINE);
+    var string = Utils.charToString(_singleCharacter);
+    if (options.comment) {
+      block.assign('#COMMENT_IN', '// => $_expression');
+      block.assign('#COMMENT_OUT', '// <= $_expression');
+    }
+
+    block.assign('STRING', string);
+    return block.process();
+  }
+
   List<String> _generateEmpty() {
     var block = getTemplateBlock(_TEMPLATE_EMPTY);
     if (options.comment) {
-      block.assign('#COMMENTS', '// $_expression');
+      block.assign('#COMMENT_IN', '// => $_expression');
+      block.assign('#COMMENT_OUT', '// <= $_expression');
     }
 
     return block.process();
@@ -191,7 +235,8 @@ $_RESULT = $_MATCH_RANGES({{RANGES}});''';
   List<String> _generateRange() {
     var block = getTemplateBlock(_TEMPLATE_RANGE);
     if (options.comment) {
-      block.assign('#COMMENTS', '// $_expression');
+      block.assign('#COMMENT_IN', '// => $_expression');
+      block.assign('#COMMENT_OUT', '// <= $_expression');
     }
 
     block.assign('MAX', _singleRange.end);
@@ -201,9 +246,10 @@ $_RESULT = $_MATCH_RANGES({{RANGES}});''';
 
   List<String> _generateRanges() {
     var block = getTemplateBlock(_TEMPLATE_RANGES);
-    var ranges = productionRuleGenerator.parserClassGenerator.addRanges(_nonAscii);
+    var ranges = parserClassGenerator.addRanges(_nonAscii);
     if (options.comment) {
-      block.assign('#COMMENTS', '// $_expression');
+      block.assign('#COMMENT_IN', '// => $_expression');
+      block.assign('#COMMENT_OUT', '// <= $_expression');
     }
 
     block.assign('RANGES', ranges);

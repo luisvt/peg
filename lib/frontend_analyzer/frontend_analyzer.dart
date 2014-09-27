@@ -9,11 +9,12 @@ import 'package:peg/grammar/expression_visitors.dart';
 import 'package:strings/strings.dart';
 
 part 'src/frontend_analyzer/automaton_resolver.dart';
-part 'src/frontend_analyzer/expectation_resolver.dart';
+part 'src/frontend_analyzer/expected_lexemes_resolver.dart';
 part 'src/frontend_analyzer/expression_able_not_consume_input_resolver.dart';
 part 'src/frontend_analyzer/expression_callers_resolver.dart';
 part 'src/frontend_analyzer/expression_length_resolver.dart';
 part 'src/frontend_analyzer/expression_level_resolver.dart';
+part 'src/frontend_analyzer/expression_matches_eof_resolver.dart';
 part 'src/frontend_analyzer/expression_resolver.dart';
 part 'src/frontend_analyzer/expression_hierarchy_resolver.dart';
 part 'src/frontend_analyzer/expression_ownership_resolver.dart';

@@ -12,7 +12,7 @@ class OneOrMoreExpressionGenerator extends UnaryExpressionGenerator {
   static const String _TEMPLATE = 'TEMPLATE';
 
   static final String _template = '''
-{{#COMMENTS}}
+{{#COMMENT_IN}}
 var {{TESTING}};
 for (var first = true, reps; ;) {  
   {{#EXPRESSION}}  
@@ -33,7 +33,8 @@ for (var first = true, reps; ;) {
     } else $_RESULT = null;
     break;
   }  
-}''';
+}
+{{#COMMENT_OUT}}''';
 
   OneOrMoreExpressionGenerator(Expression expression, ProductionRuleGenerator productionRuleGenerator) : super(expression, productionRuleGenerator) {
     if (expression is! OneOrMoreExpression) {
@@ -47,7 +48,8 @@ for (var first = true, reps; ;) {
     var block = getTemplateBlock(_TEMPLATE);
     var testing = productionRuleGenerator.allocateBlockVariable(ExpressionGenerator.TESTING);
     if (options.comment) {
-      block.assign('#COMMENTS', '// $_expression');
+      block.assign('#COMMENT_IN', '// => $_expression');
+      block.assign('#COMMENT_OUT', '// <= $_expression');
     }
 
     block.assign('TESTING', testing);

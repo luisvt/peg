@@ -1,5 +1,6 @@
 library peg.general_parser.expressions_generators;
 
+import 'dart:collection';
 import 'package:lists/lists.dart';
 import 'package:peg/grammar/expressions.dart';
 import 'package:peg/generators/generators.dart';

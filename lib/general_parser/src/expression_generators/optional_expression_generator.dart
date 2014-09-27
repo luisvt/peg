@@ -10,12 +10,13 @@ class OptionalExpressionGenerator extends UnaryExpressionGenerator {
   static const String _TEMPLATE = 'TEMPLATE';
 
   static final String _template = '''
-{{#COMMENTS}}
+{{#COMMENT_IN}}
 var {{TESTING}} = $_TESTING;
 $_TESTING = $_CURSOR;
 {{#EXPRESSION}}
 $_SUCCESS = true; 
-$_TESTING = {{TESTING}};''';
+$_TESTING = {{TESTING}};
+{{#COMMENT_OUT}}''';
 
   OptionalExpressionGenerator(Expression expression, ProductionRuleGenerator productionRuleGenerator) : super(expression, productionRuleGenerator) {
     if (expression is! OptionalExpression) {
@@ -29,7 +30,8 @@ $_TESTING = {{TESTING}};''';
     var block = getTemplateBlock(_TEMPLATE);
     var testing = productionRuleGenerator.allocateBlockVariable(ExpressionGenerator.TESTING);
     if (options.comment) {
-      block.assign('#COMMENTS', '// $_expression');
+      block.assign('#COMMENT_IN', '// => $_expression');
+      block.assign('#COMMENT_OUT', '// <= $_expression');
     }
 
     block.assign('TESTING', testing);

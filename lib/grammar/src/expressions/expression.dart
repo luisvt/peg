@@ -3,11 +3,13 @@ part of peg.grammar.expressions;
 abstract class Expression {
   static const int FLAG_ABLE_NOT_CONSUME_INPUT = 1;
 
-  static const int FLAG_IS_OPTIONAL = 2;
+  static const int FLAG_CAN_MATCH_EOF = 2;
 
-  static const int FLAG_HAS_ACTIONS = 4;
+  static const int FLAG_IS_OPTIONAL = 4;
 
-  static const int FLAG_REPETITION = 8;
+  static const int FLAG_HAS_ACTIONS = 8;
+
+  static const int FLAG_REPETITION = 16;
 
   static final GroupedRangeList<bool> asciiGroup = new GroupedRangeList<bool>(0, 127, true);
 
@@ -54,6 +56,10 @@ abstract class Expression {
   SparseBoolList startCharacters = new SparseBoolList();
 
   Expression previous;
+
+  bool get canMatchEof {
+    return (flag & FLAG_CAN_MATCH_EOF) != 0;
+  }
 
   bool get hasActions {
     return (flag & FLAG_HAS_ACTIONS) != 0;

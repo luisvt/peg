@@ -1,7 +1,11 @@
+## 0.0.27
+
+- Added initial support and implementation of the symbol transitions. The complex grammar should be parsed faster.  
+
 ## 0.0.25
 
 - Fixed a very small bug in the creation of the parser error
-- Improved statistic information in the command `stat` 
+- Improved statistic information in the command `stat`
 
 ## 0.0.24
 

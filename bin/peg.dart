@@ -28,6 +28,9 @@ class Program {
       name = camelize(basename) + 'Parser';
     }
 
+    // TODO: Temporarily disable lookahead
+    lookahead = false;
+
     var parser = _getParser(filename);
     var grammar = _parseGrammar(parser);
     var options = new ParserGeneratorOptions();
@@ -93,7 +96,7 @@ class Program {
       var text = new Text(parser.text);
       for (var error in parser.errors()) {
         var location = text.locationAt(error.position);
-        var message = "Parser error at ${location.line}:${location.column}. ${error.message}";
+        var message = "Parser error at $location. ${error.message}";
         print(message);
       }
 
@@ -126,7 +129,9 @@ class Program {
         print('--------------------------------');
         print('${rule.name}:');
         var type = "Nonterminal";
-        if (rule.isLexeme) {
+        if (rule.isLexeme && rule.isMorpheme) {
+          type = "Lexeme & morpheme";
+        } else if (rule.isLexeme) {
           type = "Lexeme";
         } else if (rule.isMorpheme) {
           type = "Morpheme";

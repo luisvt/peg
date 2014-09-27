@@ -82,6 +82,18 @@ class Utils {
     return strings;
   }
 
+  static String listToPrintableString(List list) {
+    var strings = <String>[];
+    for (var element in list) {
+      if (element is List) {
+        strings.add(listToPrintableString(element));
+      } else {
+        strings.add(toPrintable(element.toString()));
+      }
+    }
+    return "[${strings.join(", ")}]";
+  }
+
   static String splitCamelCase(String string) {
     if (string == null) {
       throw new ArgumentError('string: $string');

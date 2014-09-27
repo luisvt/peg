@@ -1,40 +1,14 @@
 part of peg.frontend_analyzer.frontend_analyzer;
 
-class StartCharactersResolver extends ExpressionResolver {
+class ExpressionMatchesEofResolver extends ExpressionResolver {
   Object visitAndPredicate(AndPredicateExpression expression) {
     _visitChild(expression);
     return null;
   }
 
-  Object visitAnyCharacter(AnyCharacterExpression expression) {
-    if (expression.level == 0) {
-      expression.startCharacters.addGroup(Expression.unicodeGroup);
-    }
-
-    return null;
-  }
-
-  Object visitCharacterClass(CharacterClassExpression expression) {
-    if (expression.level == 0) {
-      var startCharacters = expression.startCharacters;
-      for (var group in expression.ranges.groups) {
-        startCharacters.addGroup(group);
-      }
-    }
-
-    return null;
-  }
-
   Object visitLiteral(LiteralExpression expression) {
-    if (expression.level == 0) {
-      var text = expression.text;
-      if (text.isEmpty) {
-        expression.startCharacters.addGroup(Expression.unicodeGroup);
-      } else {
-        var charCode = text.codeUnits[0];
-        var group = new GroupedRangeList<bool>(charCode, charCode, true);
-        expression.startCharacters.addGroup(group);
-      }
+    if (expression.text.isEmpty) {
+      expression.flag |= Expression.FLAG_CAN_MATCH_EOF;
     }
 
     return null;
@@ -43,13 +17,12 @@ class StartCharactersResolver extends ExpressionResolver {
   Object visitNotPredicate(NotPredicateExpression expression) {
     var child = expression.expression;
     child.accept(this);
-    var next = _getNextExpression(expression);
-    var startCharacters = expression.startCharacters;
-    if (next == null) {
-      startCharacters.addGroup(Expression.unicodeGroup);
+    if (_matchAllUnicode(child.startCharacters)) {
+      expression.flag |= Expression.FLAG_CAN_MATCH_EOF;
     } else {
-      for (var group in next.startCharacters.groups) {
-        startCharacters.addGroup(group);
+      var next = _getNextExpression(expression);
+      if (_matchAllUnicode(child.startCharacters)) {
+        expression.flag |= Expression.FLAG_CAN_MATCH_EOF;
       }
     }
 
@@ -62,11 +35,6 @@ class StartCharactersResolver extends ExpressionResolver {
   }
 
   Object visitOptional(OptionalExpression expression) {
-    var next = _getNextExpression(expression);
-    if (next != null) {
-      _applyData(next, expression);
-    }
-
     _visitChild(expression);
     return null;
   }
@@ -91,6 +59,7 @@ class StartCharactersResolver extends ExpressionResolver {
     if (rule != null) {
       var ruleExpression = rule.expression;
       ruleExpression.accept(this);
+      expression.flag |= rule.expression.flag & Expression.FLAG_CAN_MATCH_EOF;
       _applyData(ruleExpression, expression);
     }
 
@@ -113,19 +82,20 @@ class StartCharactersResolver extends ExpressionResolver {
   }
 
   Object visitZeroOrMore(ZeroOrMoreExpression expression) {
-    var next = _getNextExpression(expression);
-    if (next != null) {
-      _applyData(next, expression);
-    }
-
     _visitChild(expression);
     return null;
   }
 
+  Object _visitChild(UnaryExpression expression) {
+    var child = expression.expression;
+    child.accept(this);
+    _applyData(child, expression);
+    return null;
+  }
+
   Object _applyData(Expression from, Expression to) {
-    var startCharacters = to.startCharacters;
-    for (var group in from.startCharacters.groups) {
-      startCharacters.addGroup(group);
+    if (from.canMatchEof) {
+      to.flag |= Expression.FLAG_CAN_MATCH_EOF;
     }
 
     return null;
@@ -145,9 +115,15 @@ class StartCharactersResolver extends ExpressionResolver {
     return null;
   }
 
-  Object _visitChild(UnaryExpression expression) {
-    var child = expression.expression;
-    child.accept(this);
-    return _applyData(child, expression);
+  bool _matchAllUnicode(SparseBoolList startCharacters) {
+    if (startCharacters.groupCount == 1) {
+      var first = startCharacters.groups.first;
+      if (first.start == Expression.unicodeGroup.start && first.end == Expression.unicodeGroup.end) {
+        return true;
+      }
+    }
+
+    return false;
   }
+
 }

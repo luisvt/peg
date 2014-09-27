@@ -58,6 +58,7 @@ abstract class ParserClassGenerator extends ClassGenerator {
     addMethod(new MethodErrorsGenerator(this));
     addMethod(new MethodFailureGenerator(this));
     addMethod(new MethodFlattenGenerator());
+    addMethod(new MethodNormalizeGenerator());
     addMethod(new MethodToCodePointGenerator());
     addMethod(new MethodToCodePointsGenerator());
     addMethod(new MethodResetGenerator(this));

@@ -50,59 +50,57 @@ num _parseNumber(minus, integer, frac, exp) {
 class JsonParser {
   static final List<String> _ascii = new List<String>.generate(128, (c) => new String.fromCharCode(c));
   
-  static final List<String> _expect0 = <String>["\'{\'"];
+  static final List<String> _expect0 = <String>["\'[\'", "\'false\'", "\'null\'", "\'true\'", "\'{\'", "NUMBER", "STRING"];
   
-  static final List<String> _expect1 = <String>["\'[\'"];
+  static final List<String> _expect1 = <String>["\'{\'"];
   
-  static final List<String> _expect10 = <String>["\'}\'"];
+  static final List<String> _expect10 = <String>["E", "e"];
   
-  static final List<String> _expect11 = <String>["\':\'"];
+  static final List<String> _expect11 = <String>["+", "-"];
   
-  static final List<String> _expect12 = <String>["\']\'"];
+  static final List<String> _expect12 = <String>["\'false\'"];
   
-  static final List<String> _expect13 = <String>["QUOTATION_MARK"];
+  static final List<String> _expect13 = <String>["INT"];
   
-  static final List<String> _expect14 = <String>["\'.\'"];
+  static final List<String> _expect14 = <String>["\':\'"];
   
-  static final List<String> _expect15 = <String>["E", "e"];
+  static final List<String> _expect15 = <String>["\'null\'"];
   
-  static final List<String> _expect16 = <String>["+", "-"];
+  static final List<String> _expect16 = <String>["NUMBER"];
   
-  static final List<String> _expect17 = <String>["DIGIT"];
+  static final List<String> _expect17 = <String>["\'true\'"];
   
-  static final List<String> _expect18 = <String>["EXP"];
+  static final List<String> _expect18 = <String>["CHAR"];
   
-  static final List<String> _expect19 = <String>["INT"];
+  static final List<String> _expect19 = <String>["DIGIT"];
   
-  static final List<String> _expect2 = <String>["\'[\'", "\'{\'"];
+  static final List<String> _expect2 = <String>["STRING"];
   
   static final List<String> _expect20 = <String>["\'\\\'"];
   
-  static final List<String> _expect21 = <String>["HEXDIG"];
+  static final List<String> _expect21 = <String>["EOF"];
   
-  static final List<String> _expect22 = <String>["CHAR"];
+  static final List<String> _expect22 = <String>["HEXDIG"];
   
-  static final List<String> _expect23 = <String>["EOF"];
+  static final List<String> _expect23 = <String>["UNESCAPED"];
   
-  static final List<String> _expect24 = <String>["UNESCAPED"];
+  static final List<String> _expect24 = <String>["WS"];
   
-  static final List<String> _expect25 = <String>["WS"];
+  static final List<String> _expect3 = <String>["\',\'"];
   
-  static final List<String> _expect3 = <String>["\'false\'"];
+  static final List<String> _expect4 = <String>["\'[\'"];
   
-  static final List<String> _expect4 = <String>["\'null\'"];
+  static final List<String> _expect5 = <String>["QUOTATION_MARK"];
   
-  static final List<String> _expect5 = <String>["\'true\'"];
+  static final List<String> _expect6 = <String>["\'.\'"];
   
-  static final List<String> _expect6 = <String>["NUMBER"];
+  static final List<String> _expect7 = <String>["\']\'"];
   
-  static final List<String> _expect7 = <String>["STRING"];
+  static final List<String> _expect8 = <String>["\'}\'"];
   
-  static final List<String> _expect8 = <String>["\'[\'", "\'false\'", "\'null\'", "\'true\'", "\'{\'", "NUMBER", "STRING"];
+  static final List<String> _expect9 = <String>["EXP"];
   
-  static final List<String> _expect9 = <String>["\',\'"];
-  
-  static final List<bool> _lookahead = _unmap([0x800013, 0x0, 0x100000, 0x600000, 0x7fe4, 0x10020000, 0x1ffc0820, 0x7e0, 0xfc0]);
+  static final List<bool> _lookahead = _unmap([0x2800013, 0x3ff20, 0x100000, 0x7fe04101, 0x3f01, 0xfe00, 0x10000]);
   
   // '\"', '/', '\\', 'b', 'f', 'n', 'r', 't'
   static final List<bool> _mapping0 = _unmap([0x2001, 0x8000000, 0x144044]);
@@ -122,6 +120,32 @@ class JsonParser {
   final List<int> _tokenFlags = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1];
   
   final List<String> _tokenNames = ["QUOTATION_MARK", "\'[\'", "\'{\'", "\'.\'", "\']\'", "\'}\'", "EXP", "\'false\'", "\'.\'", "INT", "\':\'", "\'null\'", "NUMBER", "STRING", "\'true\'", "\',\'", "CHAR", "DIGIT", "\'\\\'", "EOF", "HEXDIG", "UNESCAPED", "WS"];
+  
+  static final List<List<int>> _transitions0 = [[9, 10, 13, 13, 32, 32, 34, 34, 45, 45, 48, 57, 91, 91, 102, 102, 110, 110, 116, 116, 123, 123]];
+  
+  static final List<List<int>> _transitions1 = [[34, 34], [45, 45, 48, 57], [91, 91], [102, 102], [110, 110], [116, 116], [123, 123]];
+  
+  static final List<List<int>> _transitions10 = [[48, 57], [65, 70], [97, 102]];
+  
+  static final List<List<int>> _transitions11 = [[32, 33], [35, 91], [93, 126], [127, 1114111]];
+  
+  static final List<List<int>> _transitions12 = [[9, 10, 13, 13, 32, 32]];
+  
+  static final List<List<int>> _transitions2 = [[34, 34, 45, 45, 48, 57, 91, 91, 102, 102, 110, 110, 116, 116, 123, 123]];
+  
+  static final List<List<int>> _transitions3 = [[69, 69, 101, 101]];
+  
+  static final List<List<int>> _transitions4 = [[69, 69], [101, 101]];
+  
+  static final List<List<int>> _transitions5 = [[43, 43], [45, 45]];
+  
+  static final List<List<int>> _transitions6 = [[48, 57]];
+  
+  static final List<List<int>> _transitions7 = [[45, 45, 48, 57]];
+  
+  static final List<List<int>> _transitions8 = [[32, 33, 35, 91, 93, 1114111], [92, 92]];
+  
+  static final List<List<int>> _transitions9 = [[0, 1114111]];
   
   List _cache;
   
@@ -169,6 +193,13 @@ class JsonParser {
     reset(0);    
   }
   
+  void _beginToken(int tokenId) {
+    if (_tokenLevel++ == 0) {
+      _token = tokenId;
+      _tokenStart = _cursor;
+    }  
+  }
+  
   Iterable _compact(Iterable iterable) {  
     if (iterable is List) {
       var hasNull = false;
@@ -198,6 +229,13 @@ class JsonParser {
       }
     }
     return result;  
+  }
+  
+  void _endToken() {
+    if (--_tokenLevel == 0) {
+      _token = null;
+      _tokenStart = null;
+    }    
   }
   
   void _failure([List<String> expected]) {  
@@ -251,6 +289,28 @@ class JsonParser {
       }
     }
     return [value];
+  }
+  
+  int _getState(List<List<int>> transitions) {
+    var count = transitions.length;
+    var state = 0;
+    for ( ; state < count; state++) {
+      var ranges = transitions[state];
+      var length = ranges.length;
+      for (var i = 0; i < length; i += 2) {
+        if (_ch >= ranges[i]) {
+          if (_ch <= ranges[i + 1]) {
+            return state;
+          }
+        } else {
+          break;
+        }      
+      } 
+    }
+    if (_ch == -1) {
+      return state;
+    }
+    return -1;  
   }
   
   String _matchAny() {
@@ -329,9 +389,9 @@ class JsonParser {
   
   String _matchRanges(List<int> ranges) {
     var length = ranges.length;
-    for (var i = 0; i < length; i += 2) {
-      if (_ch <= ranges[i + 1]) {
-        if (_ch >= ranges[i]) {
+    for (var i = 0; i < length; i += 2) {    
+      if (_ch >= ranges[i]) {
+        if (_ch <= ranges[i + 1]) {
           String result;
           if (_ch < 128) {
             result = _ascii[_ch];  
@@ -352,12 +412,12 @@ class JsonParser {
     return null;  
   }
   
-  String _matchString(List<int> runes, String string) {
-    var length = runes.length;  
-    success = true;  
-    if (_cursor + length <= _inputLen) {
+  String _matchString(List<int> codePoints, String string) {
+    var length = codePoints.length;  
+    success = _cursor + length <= _inputLen;
+    if (success) {
       for (var i = 0; i < length; i++) {
-        if (runes[i] != _input[_cursor + i]) {
+        if (codePoints[i] != _input[_cursor + i]) {
           success = false;
           break;
         }
@@ -377,1236 +437,1578 @@ class JsonParser {
     return null; 
   }
   
+  void _nextChar() {
+    if (++_cursor < _inputLen) {
+      _ch = _input[_cursor];
+    } else {
+      _ch = -1;
+    }  
+  }
+  
+  List _normalize(dynamic value) {
+    if (value == null) {
+      return [];
+    }
+    return _flatten(_compact(value));
+  }
+  
   dynamic _parse_BEGIN_ARRAY() {
-    // TERMINAL
+    // LEXEME
     // BEGIN_ARRAY <- "[" WS
     var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = 1;  
-      _tokenStart = _cursor;  
-    }  
-    // "[" WS
-    var ch0 = _ch, pos0 = _cursor;
-    while (true) {  
-      // "["
-      $$ = _matchChar(91, '[');
-      if (!success) break;
-      var seq = new List(2)..[0] = $$;
-      // WS
-      $$ = null;
-      success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (WS is optional)
-      if (success) $$ = _parse_WS();
-      else success = true;
-      seq[1] = $$;
-      $$ = seq;
-      break;  
-    }
-    if (!success) {
-      _ch = ch0;
-      _cursor = pos0;
+    _beginToken(1);  
+    // => "[" WS # Choice
+    switch (_ch == 91 ? 0 : _ch == -1 ? 1 : -1) {
+      // [
+      case 0:
+        // => "[" WS # Sequence
+        var ch0 = _ch, pos0 = _cursor;
+        while (true) {  
+          // => "["
+          $$ = '[';
+          success = true;
+          if (++_cursor < _inputLen) {
+            _ch = _input[_cursor];
+          } else {
+            _ch = -1;
+          }
+          // <= "["
+          if (!success) break;
+          var seq = new List(2)..[0] = $$;
+          // => WS
+          $$ = _parse_WS();
+          // <= WS
+          if (!success) break;
+          seq[1] = $$;
+          $$ = seq;
+          break;  
+        }
+        if (!success) {
+          _ch = ch0;
+          _cursor = pos0;
+        }
+        // <= "[" WS # Sequence
+        break;
+      // EOF
+      case 1:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
     }
     if (!success && _cursor > _testing) {
       // Expected: '['
-      _failure(_expect1);
+      _failure(_expect4);
     }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
+    // <= "[" WS # Choice
+    _endToken();
     return $$;
   }
   
   dynamic _parse_BEGIN_OBJECT() {
-    // TERMINAL
+    // LEXEME
     // BEGIN_OBJECT <- "{" WS
     var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = 2;  
-      _tokenStart = _cursor;  
-    }  
-    // "{" WS
-    var ch0 = _ch, pos0 = _cursor;
-    while (true) {  
-      // "{"
-      $$ = _matchChar(123, '{');
-      if (!success) break;
-      var seq = new List(2)..[0] = $$;
-      // WS
-      $$ = null;
-      success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (WS is optional)
-      if (success) $$ = _parse_WS();
-      else success = true;
-      seq[1] = $$;
-      $$ = seq;
-      break;  
-    }
-    if (!success) {
-      _ch = ch0;
-      _cursor = pos0;
+    _beginToken(2);  
+    // => "{" WS # Choice
+    switch (_ch == 123 ? 0 : _ch == -1 ? 1 : -1) {
+      // {
+      case 0:
+        // => "{" WS # Sequence
+        var ch0 = _ch, pos0 = _cursor;
+        while (true) {  
+          // => "{"
+          $$ = '{';
+          success = true;
+          if (++_cursor < _inputLen) {
+            _ch = _input[_cursor];
+          } else {
+            _ch = -1;
+          }
+          // <= "{"
+          if (!success) break;
+          var seq = new List(2)..[0] = $$;
+          // => WS
+          $$ = _parse_WS();
+          // <= WS
+          if (!success) break;
+          seq[1] = $$;
+          $$ = seq;
+          break;  
+        }
+        if (!success) {
+          _ch = ch0;
+          _cursor = pos0;
+        }
+        // <= "{" WS # Sequence
+        break;
+      // EOF
+      case 1:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
     }
     if (!success && _cursor > _testing) {
       // Expected: '{'
-      _failure(_expect0);
+      _failure(_expect1);
     }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
+    // <= "{" WS # Choice
+    _endToken();
     return $$;
   }
   
   dynamic _parse_CHAR() {
-    // TERMINAL
+    // MORPHEME
     // CHAR <- UNESCAPED / ESCAPE ["/\bfnrt] / ESCAPE "u" HEXDIG HEXDIG HEXDIG HEXDIG
     var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = 16;  
-      _tokenStart = _cursor;  
-    }  
-    // UNESCAPED / ESCAPE ["/\bfnrt] / ESCAPE "u" HEXDIG HEXDIG HEXDIG HEXDIG
-    while (true) {
-      // UNESCAPED
-      $$ = _parse_UNESCAPED();
-      if (success) break;
-      // ESCAPE ["/\bfnrt]
-      var ch0 = _ch, pos0 = _cursor;
-      while (true) {  
-        // ESCAPE
+    _beginToken(16);  
+    // => UNESCAPED / ESCAPE ["/\bfnrt] / ESCAPE "u" HEXDIG HEXDIG HEXDIG HEXDIG # Choice
+    switch (_getState(_transitions8)) {
+      //  -! #-[ ]-\u0010ffff
+      case 0:
+        // => UNESCAPED
+        $$ = _parse_UNESCAPED();
+        // <= UNESCAPED
+        break;
+      // \\
+      case 1:
+        while (true) {
+          // => ESCAPE ["/\bfnrt] # Sequence
+          var ch0 = _ch, pos0 = _cursor;
+          while (true) {  
+            // => ESCAPE
+            $$ = _parse_ESCAPE();
+            // <= ESCAPE
+            if (!success) break;
+            var seq = new List(2)..[0] = $$;
+            // => ["/\bfnrt]
+            $$ = _matchMapping(34, 116, _mapping0);
+            // <= ["/\bfnrt]
+            if (!success) break;
+            seq[1] = $$;
+            $$ = seq;
+            if (success) {    
+              // ESCAPE
+              final $1 = seq[0];
+              // ["/\bfnrt]
+              final $2 = seq[1];
+              $$ = _escape($2);    
+            }
+            break;  
+          }
+          if (!success) {
+            _ch = ch0;
+            _cursor = pos0;
+          }
+          // <= ESCAPE ["/\bfnrt] # Sequence
+          if (success) break;
+          // => ESCAPE "u" HEXDIG HEXDIG HEXDIG HEXDIG # Sequence
+          var ch1 = _ch, pos1 = _cursor;
+          while (true) {  
+            // => ESCAPE
+            $$ = _parse_ESCAPE();
+            // <= ESCAPE
+            if (!success) break;
+            var seq = new List(6)..[0] = $$;
+            // => "u"
+            $$ = _matchChar(117, 'u');
+            // <= "u"
+            if (!success) break;
+            seq[1] = $$;
+            // => HEXDIG
+            $$ = _parse_HEXDIG();
+            // <= HEXDIG
+            if (!success) break;
+            seq[2] = $$;
+            // => HEXDIG
+            $$ = _parse_HEXDIG();
+            // <= HEXDIG
+            if (!success) break;
+            seq[3] = $$;
+            // => HEXDIG
+            $$ = _parse_HEXDIG();
+            // <= HEXDIG
+            if (!success) break;
+            seq[4] = $$;
+            // => HEXDIG
+            $$ = _parse_HEXDIG();
+            // <= HEXDIG
+            if (!success) break;
+            seq[5] = $$;
+            $$ = seq;
+            if (success) {    
+              // ESCAPE
+              final $1 = seq[0];
+              // "u"
+              final $2 = seq[1];
+              // HEXDIG
+              final $3 = seq[2];
+              // HEXDIG
+              final $4 = seq[3];
+              // HEXDIG
+              final $5 = seq[4];
+              // HEXDIG
+              final $6 = seq[5];
+              $$ = _hex2str([$3, $4, $5, $6].join());    
+            }
+            break;  
+          }
+          if (!success) {
+            _ch = ch1;
+            _cursor = pos1;
+          }
+          // <= ESCAPE "u" HEXDIG HEXDIG HEXDIG HEXDIG # Sequence
+          break;
+        }
+        break;
+      // EOF
+      case 2:
         $$ = null;
-        success = _ch == 92; // '\'
-        // Lookahead (ESCAPE)
-        if (success) $$ = _parse_ESCAPE();
-        if (!success) {
-          // Expected: '\'
-          if (_cursor > _testing) _failure(_expect20);  
-          break;  
-        }
-        var seq = new List(2)..[0] = $$;
-        // ["/\bfnrt]
-        $$ = _matchMapping(34, 116, _mapping0);
-        if (!success) break;
-        seq[1] = $$;
-        $$ = seq;
-        if (success) {    
-          // ESCAPE
-          final $1 = seq[0];
-          // ["/\bfnrt]
-          final $2 = seq[1];
-          $$ = _escape($2);    
-        }
-        break;  
-      }
-      if (!success) {
-        _ch = ch0;
-        _cursor = pos0;
-      }
-      if (success) break;
-      // ESCAPE "u" HEXDIG HEXDIG HEXDIG HEXDIG
-      var ch1 = _ch, pos1 = _cursor;
-      while (true) {  
-        // ESCAPE
+        success = false;
+        break;
+      // No matches
+      case -1:
         $$ = null;
-        success = _ch == 92; // '\'
-        // Lookahead (ESCAPE)
-        if (success) $$ = _parse_ESCAPE();
-        if (!success) {
-          // Expected: '\'
-          if (_cursor > _testing) _failure(_expect20);  
-          break;  
-        }
-        var seq = new List(6)..[0] = $$;
-        // "u"
-        $$ = _matchChar(117, 'u');
-        if (!success) break;
-        seq[1] = $$;
-        // HEXDIG
-        $$ = null;
-        success = _ch >= 48 && _ch <= 102 && _lookahead[_ch + 157];
-        // Lookahead (HEXDIG)
-        if (success) $$ = _parse_HEXDIG();    
-        if (!success) {    
-          // Expected: HEXDIG    
-          if (_cursor > _testing) _failure(_expect21);
-          break;  
-        }
-        seq[2] = $$;
-        // HEXDIG
-        $$ = null;
-        success = _ch >= 48 && _ch <= 102 && _lookahead[_ch + 157];
-        // Lookahead (HEXDIG)
-        if (success) $$ = _parse_HEXDIG();    
-        if (!success) {    
-          // Expected: HEXDIG    
-          if (_cursor > _testing) _failure(_expect21);
-          break;  
-        }
-        seq[3] = $$;
-        // HEXDIG
-        $$ = null;
-        success = _ch >= 48 && _ch <= 102 && _lookahead[_ch + 157];
-        // Lookahead (HEXDIG)
-        if (success) $$ = _parse_HEXDIG();    
-        if (!success) {    
-          // Expected: HEXDIG    
-          if (_cursor > _testing) _failure(_expect21);
-          break;  
-        }
-        seq[4] = $$;
-        // HEXDIG
-        $$ = null;
-        success = _ch >= 48 && _ch <= 102 && _lookahead[_ch + 157];
-        // Lookahead (HEXDIG)
-        if (success) $$ = _parse_HEXDIG();    
-        if (!success) {    
-          // Expected: HEXDIG    
-          if (_cursor > _testing) _failure(_expect21);
-          break;  
-        }
-        seq[5] = $$;
-        $$ = seq;
-        if (success) {    
-          // ESCAPE
-          final $1 = seq[0];
-          // "u"
-          final $2 = seq[1];
-          // HEXDIG
-          final $3 = seq[2];
-          // HEXDIG
-          final $4 = seq[3];
-          // HEXDIG
-          final $5 = seq[4];
-          // HEXDIG
-          final $6 = seq[5];
-          $$ = _hex2str([$3, $4, $5, $6].join());    
-        }
-        break;  
-      }
-      if (!success) {
-        _ch = ch1;
-        _cursor = pos1;
-      }
-      break;
+        success = false;
+        break;
     }
     if (!success && _cursor > _testing) {
       // Expected: CHAR
-      _failure(_expect22);
+      _failure(_expect18);
     }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
+    // <= UNESCAPED / ESCAPE ["/\bfnrt] / ESCAPE "u" HEXDIG HEXDIG HEXDIG HEXDIG # Choice
+    _endToken();
     return $$;
   }
   
   dynamic _parse_DECIMAL_POINT() {
-    // TERMINAL
+    // MORPHEME
     // DECIMAL_POINT <- "." WS
     var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = 3;  
-      _tokenStart = _cursor;  
-    }  
-    // "." WS
-    var ch0 = _ch, pos0 = _cursor;
-    while (true) {  
-      // "."
-      $$ = _matchChar(46, '.');
-      if (!success) break;
-      var seq = new List(2)..[0] = $$;
-      // WS
-      $$ = null;
-      success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (WS is optional)
-      if (success) $$ = _parse_WS();
-      else success = true;
-      seq[1] = $$;
-      $$ = seq;
-      if (success) {    
-        // "."
-        final $1 = seq[0];
-        // WS
-        final $2 = seq[1];
-        $$ = $1;    
-      }
-      break;  
-    }
-    if (!success) {
-      _ch = ch0;
-      _cursor = pos0;
+    _beginToken(3);  
+    // => "." WS # Choice
+    switch (_ch == 46 ? 0 : _ch == -1 ? 1 : -1) {
+      // .
+      case 0:
+        // => "." WS # Sequence
+        var ch0 = _ch, pos0 = _cursor;
+        while (true) {  
+          // => "."
+          $$ = '.';
+          success = true;
+          if (++_cursor < _inputLen) {
+            _ch = _input[_cursor];
+          } else {
+            _ch = -1;
+          }
+          // <= "."
+          if (!success) break;
+          var seq = new List(2)..[0] = $$;
+          // => WS
+          $$ = _parse_WS();
+          // <= WS
+          if (!success) break;
+          seq[1] = $$;
+          $$ = seq;
+          if (success) {    
+            // "."
+            final $1 = seq[0];
+            // WS
+            final $2 = seq[1];
+            $$ = $1;    
+          }
+          break;  
+        }
+        if (!success) {
+          _ch = ch0;
+          _cursor = pos0;
+        }
+        // <= "." WS # Sequence
+        break;
+      // EOF
+      case 1:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
     }
     if (!success && _cursor > _testing) {
       // Expected: '.'
-      _failure(_expect14);
+      _failure(_expect6);
     }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
+    // <= "." WS # Choice
+    _endToken();
     return $$;
   }
   
   dynamic _parse_DIGIT() {
-    // TERMINAL
+    // MORPHEME
     // DIGIT <- [0-9]
     var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = 17;  
-      _tokenStart = _cursor;  
-    }  
-    // [0-9]
-    $$ = _matchRange(48, 57);
+    _beginToken(17);  
+    // => [0-9] # Choice
+    switch (_getState(_transitions6)) {
+      // 0-9
+      case 0:
+        // => [0-9]
+        $$ = _matchRange(48, 57);
+        // <= [0-9]
+        break;
+      // EOF
+      case 1:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
+    }
     if (!success && _cursor > _testing) {
       // Expected: DIGIT
-      _failure(_expect17);
+      _failure(_expect19);
     }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
+    // <= [0-9] # Choice
+    _endToken();
     return $$;
   }
   
   dynamic _parse_END_ARRAY() {
-    // TERMINAL
+    // LEXEME
     // END_ARRAY <- "]" WS
     var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = 4;  
-      _tokenStart = _cursor;  
-    }  
-    // "]" WS
-    var ch0 = _ch, pos0 = _cursor;
-    while (true) {  
-      // "]"
-      $$ = _matchChar(93, ']');
-      if (!success) break;
-      var seq = new List(2)..[0] = $$;
-      // WS
-      $$ = null;
-      success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (WS is optional)
-      if (success) $$ = _parse_WS();
-      else success = true;
-      seq[1] = $$;
-      $$ = seq;
-      break;  
-    }
-    if (!success) {
-      _ch = ch0;
-      _cursor = pos0;
+    _beginToken(4);  
+    // => "]" WS # Choice
+    switch (_ch == 93 ? 0 : _ch == -1 ? 1 : -1) {
+      // ]
+      case 0:
+        // => "]" WS # Sequence
+        var ch0 = _ch, pos0 = _cursor;
+        while (true) {  
+          // => "]"
+          $$ = ']';
+          success = true;
+          if (++_cursor < _inputLen) {
+            _ch = _input[_cursor];
+          } else {
+            _ch = -1;
+          }
+          // <= "]"
+          if (!success) break;
+          var seq = new List(2)..[0] = $$;
+          // => WS
+          $$ = _parse_WS();
+          // <= WS
+          if (!success) break;
+          seq[1] = $$;
+          $$ = seq;
+          break;  
+        }
+        if (!success) {
+          _ch = ch0;
+          _cursor = pos0;
+        }
+        // <= "]" WS # Sequence
+        break;
+      // EOF
+      case 1:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
     }
     if (!success && _cursor > _testing) {
       // Expected: ']'
-      _failure(_expect12);
+      _failure(_expect7);
     }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
+    // <= "]" WS # Choice
+    _endToken();
     return $$;
   }
   
   dynamic _parse_END_OBJECT() {
-    // TERMINAL
+    // LEXEME
     // END_OBJECT <- "}" WS
     var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = 5;  
-      _tokenStart = _cursor;  
-    }  
-    // "}" WS
-    var ch0 = _ch, pos0 = _cursor;
-    while (true) {  
-      // "}"
-      $$ = _matchChar(125, '}');
-      if (!success) break;
-      var seq = new List(2)..[0] = $$;
-      // WS
-      $$ = null;
-      success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (WS is optional)
-      if (success) $$ = _parse_WS();
-      else success = true;
-      seq[1] = $$;
-      $$ = seq;
-      break;  
-    }
-    if (!success) {
-      _ch = ch0;
-      _cursor = pos0;
+    _beginToken(5);  
+    // => "}" WS # Choice
+    switch (_ch == 125 ? 0 : _ch == -1 ? 1 : -1) {
+      // }
+      case 0:
+        // => "}" WS # Sequence
+        var ch0 = _ch, pos0 = _cursor;
+        while (true) {  
+          // => "}"
+          $$ = '}';
+          success = true;
+          if (++_cursor < _inputLen) {
+            _ch = _input[_cursor];
+          } else {
+            _ch = -1;
+          }
+          // <= "}"
+          if (!success) break;
+          var seq = new List(2)..[0] = $$;
+          // => WS
+          $$ = _parse_WS();
+          // <= WS
+          if (!success) break;
+          seq[1] = $$;
+          $$ = seq;
+          break;  
+        }
+        if (!success) {
+          _ch = ch0;
+          _cursor = pos0;
+        }
+        // <= "}" WS # Sequence
+        break;
+      // EOF
+      case 1:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
     }
     if (!success && _cursor > _testing) {
       // Expected: '}'
-      _failure(_expect10);
+      _failure(_expect8);
     }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
+    // <= "}" WS # Choice
+    _endToken();
     return $$;
   }
   
   dynamic _parse_EOF() {
-    // TERMINAL
+    // LEXEME
     // EOF <- !.
     var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = 19;  
-      _tokenStart = _cursor;  
-    }  
-    // !.
-    var ch0 = _ch, pos0 = _cursor, testing0 = _testing; 
-    _testing = _inputLen + 1;
-    // .
-    $$ = _matchAny();
-    _ch = ch0;
-    _cursor = pos0; 
-    _testing = testing0;
-    $$ = null;
-    success = !success;
+    _beginToken(19);  
+    // => !. # Choice
+    switch (_getState(_transitions9)) {
+      // \u0000-\u0010ffff
+      case 0:
+        // => !.
+        var ch0 = _ch, pos0 = _cursor, testing0 = _testing; 
+        _testing = _inputLen + 1;
+        // => .
+        $$ = _matchAny();
+        // <= .
+        _ch = ch0;
+        _cursor = pos0; 
+        _testing = testing0;
+        $$ = null;
+        success = !success;
+        // <= !.
+        break;
+      // EOF
+      case 1:
+        // => !.
+        var ch1 = _ch, pos1 = _cursor, testing1 = _testing; 
+        _testing = _inputLen + 1;
+        // => .
+        $$ = _matchAny();
+        // <= .
+        _ch = ch1;
+        _cursor = pos1; 
+        _testing = testing1;
+        $$ = null;
+        success = !success;
+        // <= !.
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
+    }
     if (!success && _cursor > _testing) {
       // Expected: EOF
-      _failure(_expect23);
+      _failure(_expect21);
     }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
+    // <= !. # Choice
+    _endToken();
     return $$;
   }
   
   dynamic _parse_ESCAPE() {
-    // TERMINAL
+    // MORPHEME
     // ESCAPE <- "\\"
     var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = 18;  
-      _tokenStart = _cursor;  
-    }  
-    // "\\"
-    $$ = _matchChar(92, '\\');
+    _beginToken(18);  
+    // => "\\" # Choice
+    switch (_ch == 92 ? 0 : _ch == -1 ? 1 : -1) {
+      // \\
+      case 0:
+        // => "\\"
+        $$ = '\\';
+        success = true;
+        if (++_cursor < _inputLen) {
+          _ch = _input[_cursor];
+        } else {
+          _ch = -1;
+        }
+        // <= "\\"
+        break;
+      // EOF
+      case 1:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
+    }
     if (!success && _cursor > _testing) {
       // Expected: '\'
       _failure(_expect20);
     }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
+    // <= "\\" # Choice
+    _endToken();
     return $$;
   }
   
   dynamic _parse_EXP() {
-    // TERMINAL
+    // MORPHEME
     // EXP <- ("e" / "E") ("-" / "+")? DIGIT+ WS
     var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = 6;  
-      _tokenStart = _cursor;  
-    }  
-    // ("e" / "E") ("-" / "+")? DIGIT+ WS
-    var ch0 = _ch, pos0 = _cursor;
-    while (true) {  
-      // "e" / "E"
-      while (true) {
-        // "e"
-        $$ = _matchChar(101, 'e');
-        if (success) break;
-        // "E"
-        $$ = _matchChar(69, 'E');
-        break;
-      }
-      if (!success && _cursor > _testing) {
-        // Expected: e, E
-        _failure(_expect15);
-      }
-      if (!success) break;
-      var seq = new List(4)..[0] = $$;
-      // ("-" / "+")?
-      var testing0 = _testing;
-      _testing = _cursor;
-      // "-" / "+"
-      while (true) {
-        // "-"
-        $$ = _matchChar(45, '-');
-        if (success) break;
-        // "+"
-        $$ = _matchChar(43, '+');
-        break;
-      }
-      if (!success && _cursor > _testing) {
-        // Expected: -, +
-        _failure(_expect16);
-      }
-      success = true; 
-      _testing = testing0;
-      if (!success) break;
-      seq[1] = $$;
-      // DIGIT+
-      var testing1;
-      for (var first = true, reps; ;) {  
-        // DIGIT  
-        $$ = null;  
-        success = _ch >= 48 && _ch <= 57 && _lookahead[_ch + 81];  
-        // Lookahead (DIGIT)  
-        if (success) $$ = _parse_DIGIT();      
-        if (!success) {      
-          // Expected: DIGIT      
-          if (_cursor > _testing) _failure(_expect17);  
-        }  
-        if (success) {
-         if (first) {      
-            first = false;
-            reps = [$$];
-            testing1 = _testing;                  
-          } else {
-            reps.add($$);
+    _beginToken(6);  
+    // => ("e" / "E") ("-" / "+")? DIGIT+ WS # Choice
+    switch (_getState(_transitions3)) {
+      // E e
+      case 0:
+        // => ("e" / "E") ("-" / "+")? DIGIT+ WS # Sequence
+        var ch0 = _ch, pos0 = _cursor;
+        while (true) {  
+          // => "e" / "E" # Choice
+          switch (_getState(_transitions4)) {
+            // E
+            case 0:
+              // => "E"
+              $$ = 'E';
+              success = true;
+              if (++_cursor < _inputLen) {
+                _ch = _input[_cursor];
+              } else {
+                _ch = -1;
+              }
+              // <= "E"
+              break;
+            // e
+            case 1:
+              // => "e"
+              $$ = 'e';
+              success = true;
+              if (++_cursor < _inputLen) {
+                _ch = _input[_cursor];
+              } else {
+                _ch = -1;
+              }
+              // <= "e"
+              break;
+            // EOF
+            case 2:
+              $$ = null;
+              success = false;
+              break;
+            // No matches
+            case -1:
+              $$ = null;
+              success = false;
+              break;
           }
-          _testing = _cursor;   
-        } else {
-          success = !first;
-          if (success) {      
-            _testing = testing1;
-            $$ = reps;      
-          } else $$ = null;
-          break;
-        }  
-      }
-      if (!success) break;
-      seq[2] = $$;
-      // WS
-      $$ = null;
-      success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (WS is optional)
-      if (success) $$ = _parse_WS();
-      else success = true;
-      seq[3] = $$;
-      $$ = seq;
-      if (success) {    
-        // "e" / "E"
-        final $1 = seq[0];
-        // ("-" / "+")?
-        final $2 = seq[1];
-        // DIGIT+
-        final $3 = seq[2];
-        // WS
-        final $4 = seq[3];
-        $$ = _flatten(_compact([$1, $2, $3])).join();    
-      }
-      break;  
-    }
-    if (!success) {
-      _ch = ch0;
-      _cursor = pos0;
+          if (!success && _cursor > _testing) {
+            // Expected: e, E
+            _failure(_expect10);
+          }
+          // <= "e" / "E" # Choice
+          if (!success) break;
+          var seq = new List(4)..[0] = $$;
+          // => ("-" / "+")?
+          var testing0 = _testing;
+          _testing = _cursor;
+          // => "-" / "+" # Choice
+          switch (_getState(_transitions5)) {
+            // +
+            case 0:
+              // => "+"
+              $$ = '+';
+              success = true;
+              if (++_cursor < _inputLen) {
+                _ch = _input[_cursor];
+              } else {
+                _ch = -1;
+              }
+              // <= "+"
+              break;
+            // -
+            case 1:
+              // => "-"
+              $$ = '-';
+              success = true;
+              if (++_cursor < _inputLen) {
+                _ch = _input[_cursor];
+              } else {
+                _ch = -1;
+              }
+              // <= "-"
+              break;
+            // EOF
+            case 2:
+              $$ = null;
+              success = false;
+              break;
+            // No matches
+            case -1:
+              $$ = null;
+              success = false;
+              break;
+          }
+          if (!success && _cursor > _testing) {
+            // Expected: -, +
+            _failure(_expect11);
+          }
+          // <= "-" / "+" # Choice
+          success = true; 
+          _testing = testing0;
+          // <= ("-" / "+")?
+          if (!success) break;
+          seq[1] = $$;
+          // => DIGIT+
+          var testing1;
+          for (var first = true, reps; ;) {  
+            // => DIGIT  
+            $$ = _parse_DIGIT();  
+            // <= DIGIT  
+            if (success) {
+             if (first) {      
+                first = false;
+                reps = [$$];
+                testing1 = _testing;                  
+              } else {
+                reps.add($$);
+              }
+              _testing = _cursor;   
+            } else {
+              success = !first;
+              if (success) {      
+                _testing = testing1;
+                $$ = reps;      
+              } else $$ = null;
+              break;
+            }  
+          }
+          // <= DIGIT+
+          if (!success) break;
+          seq[2] = $$;
+          // => WS
+          $$ = _parse_WS();
+          // <= WS
+          if (!success) break;
+          seq[3] = $$;
+          $$ = seq;
+          if (success) {    
+            // "e" / "E"
+            final $1 = seq[0];
+            // ("-" / "+")?
+            final $2 = seq[1];
+            // DIGIT+
+            final $3 = seq[2];
+            // WS
+            final $4 = seq[3];
+            $$ = _flatten(_compact([$1, $2, $3])).join();    
+          }
+          break;  
+        }
+        if (!success) {
+          _ch = ch0;
+          _cursor = pos0;
+        }
+        // <= ("e" / "E") ("-" / "+")? DIGIT+ WS # Sequence
+        break;
+      // EOF
+      case 1:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
     }
     if (!success && _cursor > _testing) {
       // Expected: EXP
-      _failure(_expect18);
+      _failure(_expect9);
     }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
+    // <= ("e" / "E") ("-" / "+")? DIGIT+ WS # Choice
+    _endToken();
     return $$;
   }
   
   dynamic _parse_FALSE() {
-    // TERMINAL
+    // LEXEME
     // FALSE <- "false" WS
     var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = 7;  
-      _tokenStart = _cursor;  
-    }  
-    // "false" WS
-    var ch0 = _ch, pos0 = _cursor;
-    while (true) {  
-      // "false"
-      $$ = _matchString(_strings0, 'false');
-      if (!success) break;
-      var seq = new List(2)..[0] = $$;
-      // WS
-      $$ = null;
-      success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (WS is optional)
-      if (success) $$ = _parse_WS();
-      else success = true;
-      seq[1] = $$;
-      $$ = seq;
-      if (success) {    
-        // "false"
-        final $1 = seq[0];
-        // WS
-        final $2 = seq[1];
-        $$ = false;    
-      }
-      break;  
-    }
-    if (!success) {
-      _ch = ch0;
-      _cursor = pos0;
+    _beginToken(7);  
+    // => "false" WS # Choice
+    switch (_ch == 102 ? 0 : _ch == -1 ? 1 : -1) {
+      // f
+      case 0:
+        // => "false" WS # Sequence
+        var ch0 = _ch, pos0 = _cursor;
+        while (true) {  
+          // => "false"
+          $$ = _matchString(_strings0, 'false');
+          // <= "false"
+          if (!success) break;
+          var seq = new List(2)..[0] = $$;
+          // => WS
+          $$ = _parse_WS();
+          // <= WS
+          if (!success) break;
+          seq[1] = $$;
+          $$ = seq;
+          if (success) {    
+            // "false"
+            final $1 = seq[0];
+            // WS
+            final $2 = seq[1];
+            $$ = false;    
+          }
+          break;  
+        }
+        if (!success) {
+          _ch = ch0;
+          _cursor = pos0;
+        }
+        // <= "false" WS # Sequence
+        break;
+      // EOF
+      case 1:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
     }
     if (!success && _cursor > _testing) {
       // Expected: 'false'
-      _failure(_expect3);
+      _failure(_expect12);
     }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
+    // <= "false" WS # Choice
+    _endToken();
     return $$;
   }
   
   dynamic _parse_FRAC() {
-    // TERMINAL
+    // MORPHEME
     // FRAC <- DECIMAL_POINT DIGIT+ WS
     var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = 8;  
-      _tokenStart = _cursor;  
-    }  
-    // DECIMAL_POINT DIGIT+ WS
-    var ch0 = _ch, pos0 = _cursor;
-    while (true) {  
-      // DECIMAL_POINT
-      $$ = null;
-      success = _ch == 46; // '.'
-      // Lookahead (DECIMAL_POINT)
-      if (success) $$ = _parse_DECIMAL_POINT();
-      if (!success) {
-        // Expected: '.'
-        if (_cursor > _testing) _failure(_expect14);  
-        break;  
-      }
-      var seq = new List(3)..[0] = $$;
-      // DIGIT+
-      var testing0;
-      for (var first = true, reps; ;) {  
-        // DIGIT  
-        $$ = null;  
-        success = _ch >= 48 && _ch <= 57 && _lookahead[_ch + 81];  
-        // Lookahead (DIGIT)  
-        if (success) $$ = _parse_DIGIT();      
-        if (!success) {      
-          // Expected: DIGIT      
-          if (_cursor > _testing) _failure(_expect17);  
-        }  
-        if (success) {
-         if (first) {      
-            first = false;
-            reps = [$$];
-            testing0 = _testing;                  
-          } else {
-            reps.add($$);
+    _beginToken(8);  
+    // => DECIMAL_POINT DIGIT+ WS # Choice
+    switch (_ch == 46 ? 0 : _ch == -1 ? 1 : -1) {
+      // .
+      case 0:
+        // => DECIMAL_POINT DIGIT+ WS # Sequence
+        var ch0 = _ch, pos0 = _cursor;
+        while (true) {  
+          // => DECIMAL_POINT
+          $$ = _parse_DECIMAL_POINT();
+          // <= DECIMAL_POINT
+          if (!success) break;
+          var seq = new List(3)..[0] = $$;
+          // => DIGIT+
+          var testing0;
+          for (var first = true, reps; ;) {  
+            // => DIGIT  
+            $$ = _parse_DIGIT();  
+            // <= DIGIT  
+            if (success) {
+             if (first) {      
+                first = false;
+                reps = [$$];
+                testing0 = _testing;                  
+              } else {
+                reps.add($$);
+              }
+              _testing = _cursor;   
+            } else {
+              success = !first;
+              if (success) {      
+                _testing = testing0;
+                $$ = reps;      
+              } else $$ = null;
+              break;
+            }  
           }
-          _testing = _cursor;   
-        } else {
-          success = !first;
-          if (success) {      
-            _testing = testing0;
-            $$ = reps;      
-          } else $$ = null;
-          break;
-        }  
-      }
-      if (!success) break;
-      seq[1] = $$;
-      // WS
-      $$ = null;
-      success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (WS is optional)
-      if (success) $$ = _parse_WS();
-      else success = true;
-      seq[2] = $$;
-      $$ = seq;
-      if (success) {    
-        // DECIMAL_POINT
-        final $1 = seq[0];
-        // DIGIT+
-        final $2 = seq[1];
-        // WS
-        final $3 = seq[2];
-        $$ = _flatten([$1, $2]).join();    
-      }
-      break;  
-    }
-    if (!success) {
-      _ch = ch0;
-      _cursor = pos0;
+          // <= DIGIT+
+          if (!success) break;
+          seq[1] = $$;
+          // => WS
+          $$ = _parse_WS();
+          // <= WS
+          if (!success) break;
+          seq[2] = $$;
+          $$ = seq;
+          if (success) {    
+            // DECIMAL_POINT
+            final $1 = seq[0];
+            // DIGIT+
+            final $2 = seq[1];
+            // WS
+            final $3 = seq[2];
+            $$ = _flatten([$1, $2]).join();    
+          }
+          break;  
+        }
+        if (!success) {
+          _ch = ch0;
+          _cursor = pos0;
+        }
+        // <= DECIMAL_POINT DIGIT+ WS # Sequence
+        break;
+      // EOF
+      case 1:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
     }
     if (!success && _cursor > _testing) {
       // Expected: '.'
-      _failure(_expect14);
+      _failure(_expect6);
     }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
+    // <= DECIMAL_POINT DIGIT+ WS # Choice
+    _endToken();
     return $$;
   }
   
   dynamic _parse_HEXDIG() {
-    // TERMINAL
+    // MORPHEME
     // HEXDIG <- DIGIT / [a-f] / [A-F]
     var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = 20;  
-      _tokenStart = _cursor;  
-    }  
-    // DIGIT / [a-f] / [A-F]
-    while (true) {
-      // DIGIT
-      $$ = null;
-      success = _ch >= 48 && _ch <= 57 && _lookahead[_ch + 81];
-      // Lookahead (DIGIT)
-      if (success) $$ = _parse_DIGIT();    
-      if (!success) {    
-        // Expected: DIGIT    
-        if (_cursor > _testing) _failure(_expect17);
-      }
-      if (success) break;
-      // [a-f]
-      $$ = _matchRange(97, 102);
-      if (success) break;
-      // [A-F]
-      $$ = _matchRange(65, 70);
-      break;
+    _beginToken(20);  
+    // => DIGIT / [a-f] / [A-F] # Choice
+    switch (_getState(_transitions10)) {
+      // 0-9
+      case 0:
+        // => DIGIT
+        $$ = _parse_DIGIT();
+        // <= DIGIT
+        break;
+      // A-F
+      case 1:
+        // => [A-F]
+        $$ = _matchRange(65, 70);
+        // <= [A-F]
+        break;
+      // a-f
+      case 2:
+        // => [a-f]
+        $$ = _matchRange(97, 102);
+        // <= [a-f]
+        break;
+      // EOF
+      case 3:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
     }
     if (!success && _cursor > _testing) {
       // Expected: HEXDIG
-      _failure(_expect21);
+      _failure(_expect22);
     }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
+    // <= DIGIT / [a-f] / [A-F] # Choice
+    _endToken();
     return $$;
   }
   
   dynamic _parse_INT() {
-    // TERMINAL
+    // MORPHEME
     // INT <- DIGIT+ WS
     var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = 9;  
-      _tokenStart = _cursor;  
-    }  
-    // DIGIT+ WS
-    var ch0 = _ch, pos0 = _cursor;
-    while (true) {  
-      // DIGIT+
-      var testing0;
-      for (var first = true, reps; ;) {  
-        // DIGIT  
-        $$ = null;  
-        success = _ch >= 48 && _ch <= 57 && _lookahead[_ch + 81];  
-        // Lookahead (DIGIT)  
-        if (success) $$ = _parse_DIGIT();      
-        if (!success) {      
-          // Expected: DIGIT      
-          if (_cursor > _testing) _failure(_expect17);  
-        }  
-        if (success) {
-         if (first) {      
-            first = false;
-            reps = [$$];
-            testing0 = _testing;                  
-          } else {
-            reps.add($$);
+    _beginToken(9);  
+    // => DIGIT+ WS # Choice
+    switch (_getState(_transitions6)) {
+      // 0-9
+      case 0:
+        // => DIGIT+ WS # Sequence
+        var ch0 = _ch, pos0 = _cursor;
+        while (true) {  
+          // => DIGIT+
+          var testing0;
+          for (var first = true, reps; ;) {  
+            // => DIGIT  
+            $$ = _parse_DIGIT();  
+            // <= DIGIT  
+            if (success) {
+             if (first) {      
+                first = false;
+                reps = [$$];
+                testing0 = _testing;                  
+              } else {
+                reps.add($$);
+              }
+              _testing = _cursor;   
+            } else {
+              success = !first;
+              if (success) {      
+                _testing = testing0;
+                $$ = reps;      
+              } else $$ = null;
+              break;
+            }  
           }
-          _testing = _cursor;   
-        } else {
-          success = !first;
-          if (success) {      
-            _testing = testing0;
-            $$ = reps;      
-          } else $$ = null;
-          break;
-        }  
-      }
-      if (!success) break;
-      var seq = new List(2)..[0] = $$;
-      // WS
-      $$ = null;
-      success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (WS is optional)
-      if (success) $$ = _parse_WS();
-      else success = true;
-      seq[1] = $$;
-      $$ = seq;
-      if (success) {    
-        // DIGIT+
-        final $1 = seq[0];
-        // WS
-        final $2 = seq[1];
-        $$ = _flatten($1).join();    
-      }
-      break;  
-    }
-    if (!success) {
-      _ch = ch0;
-      _cursor = pos0;
+          // <= DIGIT+
+          if (!success) break;
+          var seq = new List(2)..[0] = $$;
+          // => WS
+          $$ = _parse_WS();
+          // <= WS
+          if (!success) break;
+          seq[1] = $$;
+          $$ = seq;
+          if (success) {    
+            // DIGIT+
+            final $1 = seq[0];
+            // WS
+            final $2 = seq[1];
+            $$ = _flatten([$1]).join();    
+          }
+          break;  
+        }
+        if (!success) {
+          _ch = ch0;
+          _cursor = pos0;
+        }
+        // <= DIGIT+ WS # Sequence
+        break;
+      // EOF
+      case 1:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
     }
     if (!success && _cursor > _testing) {
       // Expected: INT
-      _failure(_expect19);
+      _failure(_expect13);
     }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
+    // <= DIGIT+ WS # Choice
+    _endToken();
     return $$;
   }
   
   dynamic _parse_NAME_SEPARATOR() {
-    // TERMINAL
+    // LEXEME
     // NAME_SEPARATOR <- ":" WS
     var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = 10;  
-      _tokenStart = _cursor;  
-    }  
-    // ":" WS
-    var ch0 = _ch, pos0 = _cursor;
-    while (true) {  
-      // ":"
-      $$ = _matchChar(58, ':');
-      if (!success) break;
-      var seq = new List(2)..[0] = $$;
-      // WS
-      $$ = null;
-      success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (WS is optional)
-      if (success) $$ = _parse_WS();
-      else success = true;
-      seq[1] = $$;
-      $$ = seq;
-      break;  
-    }
-    if (!success) {
-      _ch = ch0;
-      _cursor = pos0;
+    _beginToken(10);  
+    // => ":" WS # Choice
+    switch (_ch == 58 ? 0 : _ch == -1 ? 1 : -1) {
+      // :
+      case 0:
+        // => ":" WS # Sequence
+        var ch0 = _ch, pos0 = _cursor;
+        while (true) {  
+          // => ":"
+          $$ = ':';
+          success = true;
+          if (++_cursor < _inputLen) {
+            _ch = _input[_cursor];
+          } else {
+            _ch = -1;
+          }
+          // <= ":"
+          if (!success) break;
+          var seq = new List(2)..[0] = $$;
+          // => WS
+          $$ = _parse_WS();
+          // <= WS
+          if (!success) break;
+          seq[1] = $$;
+          $$ = seq;
+          break;  
+        }
+        if (!success) {
+          _ch = ch0;
+          _cursor = pos0;
+        }
+        // <= ":" WS # Sequence
+        break;
+      // EOF
+      case 1:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
     }
     if (!success && _cursor > _testing) {
       // Expected: ':'
-      _failure(_expect11);
+      _failure(_expect14);
     }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
+    // <= ":" WS # Choice
+    _endToken();
     return $$;
   }
   
   dynamic _parse_NULL() {
-    // TERMINAL
+    // LEXEME
     // NULL <- "null" WS
     var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = 11;  
-      _tokenStart = _cursor;  
-    }  
-    // "null" WS
-    var ch0 = _ch, pos0 = _cursor;
-    while (true) {  
-      // "null"
-      $$ = _matchString(_strings1, 'null');
-      if (!success) break;
-      var seq = new List(2)..[0] = $$;
-      // WS
-      $$ = null;
-      success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (WS is optional)
-      if (success) $$ = _parse_WS();
-      else success = true;
-      seq[1] = $$;
-      $$ = seq;
-      if (success) {    
-        // "null"
-        final $1 = seq[0];
-        // WS
-        final $2 = seq[1];
-        $$ = null;    
-      }
-      break;  
-    }
-    if (!success) {
-      _ch = ch0;
-      _cursor = pos0;
+    _beginToken(11);  
+    // => "null" WS # Choice
+    switch (_ch == 110 ? 0 : _ch == -1 ? 1 : -1) {
+      // n
+      case 0:
+        // => "null" WS # Sequence
+        var ch0 = _ch, pos0 = _cursor;
+        while (true) {  
+          // => "null"
+          $$ = _matchString(_strings1, 'null');
+          // <= "null"
+          if (!success) break;
+          var seq = new List(2)..[0] = $$;
+          // => WS
+          $$ = _parse_WS();
+          // <= WS
+          if (!success) break;
+          seq[1] = $$;
+          $$ = seq;
+          if (success) {    
+            // "null"
+            final $1 = seq[0];
+            // WS
+            final $2 = seq[1];
+            $$ = null;    
+          }
+          break;  
+        }
+        if (!success) {
+          _ch = ch0;
+          _cursor = pos0;
+        }
+        // <= "null" WS # Sequence
+        break;
+      // EOF
+      case 1:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
     }
     if (!success && _cursor > _testing) {
       // Expected: 'null'
-      _failure(_expect4);
+      _failure(_expect15);
     }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
+    // <= "null" WS # Choice
+    _endToken();
     return $$;
   }
   
   dynamic _parse_NUMBER() {
-    // TERMINAL
+    // LEXEME
     // NUMBER <- "-"? INT FRAC? EXP? WS
     var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = 12;  
-      _tokenStart = _cursor;  
-    }  
-    // "-"? INT FRAC? EXP? WS
-    var ch0 = _ch, pos0 = _cursor;
-    while (true) {  
-      // "-"?
-      var testing0 = _testing;
-      _testing = _cursor;
-      // "-"
-      $$ = _matchChar(45, '-');
-      success = true; 
-      _testing = testing0;
-      if (!success) break;
-      var seq = new List(5)..[0] = $$;
-      // INT
-      $$ = null;
-      success = _ch >= 48 && _ch <= 57 && _lookahead[_ch + 81];
-      // Lookahead (INT)
-      if (success) $$ = _parse_INT();    
-      if (!success) {    
-        // Expected: INT    
-        if (_cursor > _testing) _failure(_expect19);
-        break;  
-      }
-      seq[1] = $$;
-      // FRAC?
-      var testing1 = _testing;
-      _testing = _cursor;
-      // FRAC
-      $$ = null;
-      success = _ch == 46; // '.'
-      // Lookahead (FRAC)
-      if (success) $$ = _parse_FRAC();
-      if (!success) {
-        // Expected: '.'
-        if (_cursor > _testing) _failure(_expect14);  
-      }
-      success = true; 
-      _testing = testing1;
-      if (!success) break;
-      seq[2] = $$;
-      // EXP?
-      var testing2 = _testing;
-      _testing = _cursor;
-      // EXP
-      $$ = null;
-      success = _ch >= 69 && _ch <= 101 && _lookahead[_ch + 13];
-      // Lookahead (EXP)
-      if (success) $$ = _parse_EXP();    
-      if (!success) {    
-        // Expected: EXP    
-        if (_cursor > _testing) _failure(_expect18);
-      }
-      success = true; 
-      _testing = testing2;
-      if (!success) break;
-      seq[3] = $$;
-      // WS
-      $$ = null;
-      success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (WS is optional)
-      if (success) $$ = _parse_WS();
-      else success = true;
-      seq[4] = $$;
-      $$ = seq;
-      if (success) {    
-        // "-"?
-        final $1 = seq[0];
-        // INT
-        final $2 = seq[1];
-        // FRAC?
-        final $3 = seq[2];
-        // EXP?
-        final $4 = seq[3];
-        // WS
-        final $5 = seq[4];
-        $$ = _parseNumber($1, $2, $3, $4);    
-      }
-      break;  
-    }
-    if (!success) {
-      _ch = ch0;
-      _cursor = pos0;
+    _beginToken(12);  
+    // => "-"? INT FRAC? EXP? WS # Choice
+    switch (_getState(_transitions7)) {
+      // - 0-9
+      case 0:
+        // => "-"? INT FRAC? EXP? WS # Sequence
+        var ch0 = _ch, pos0 = _cursor;
+        while (true) {  
+          // => "-"?
+          var testing0 = _testing;
+          _testing = _cursor;
+          // => "-"
+          $$ = _matchChar(45, '-');
+          // <= "-"
+          success = true; 
+          _testing = testing0;
+          // <= "-"?
+          if (!success) break;
+          var seq = new List(5)..[0] = $$;
+          // => INT
+          $$ = _parse_INT();
+          // <= INT
+          if (!success) break;
+          seq[1] = $$;
+          // => FRAC?
+          var testing1 = _testing;
+          _testing = _cursor;
+          // => FRAC
+          $$ = _parse_FRAC();
+          // <= FRAC
+          success = true; 
+          _testing = testing1;
+          // <= FRAC?
+          if (!success) break;
+          seq[2] = $$;
+          // => EXP?
+          var testing2 = _testing;
+          _testing = _cursor;
+          // => EXP
+          $$ = _parse_EXP();
+          // <= EXP
+          success = true; 
+          _testing = testing2;
+          // <= EXP?
+          if (!success) break;
+          seq[3] = $$;
+          // => WS
+          $$ = _parse_WS();
+          // <= WS
+          if (!success) break;
+          seq[4] = $$;
+          $$ = seq;
+          if (success) {    
+            // "-"?
+            final $1 = seq[0];
+            // INT
+            final $2 = seq[1];
+            // FRAC?
+            final $3 = seq[2];
+            // EXP?
+            final $4 = seq[3];
+            // WS
+            final $5 = seq[4];
+            $$ = _parseNumber($1, $2, $3, $4);    
+          }
+          break;  
+        }
+        if (!success) {
+          _ch = ch0;
+          _cursor = pos0;
+        }
+        // <= "-"? INT FRAC? EXP? WS # Sequence
+        break;
+      // EOF
+      case 1:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
     }
     if (!success && _cursor > _testing) {
       // Expected: NUMBER
-      _failure(_expect6);
+      _failure(_expect16);
     }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
+    // <= "-"? INT FRAC? EXP? WS # Choice
+    _endToken();
     return $$;
   }
   
   dynamic _parse_QUOTATION_MARK() {
-    // TERMINAL
+    // MORPHEME
     // QUOTATION_MARK <- ["]
     var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = 0;  
-      _tokenStart = _cursor;  
-    }  
-    // ["]
-    $$ = _matchChar(34, '\"');
+    _beginToken(0);  
+    // => ["] # Choice
+    switch (_ch == 34 ? 0 : _ch == -1 ? 1 : -1) {
+      // \"
+      case 0:
+        // => ["]
+        $$ = '\"';
+        success = true;
+        if (++_cursor < _inputLen) {
+          _ch = _input[_cursor];
+        } else {
+          _ch = -1;
+        }
+        // <= ["]
+        break;
+      // EOF
+      case 1:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
+    }
     if (!success && _cursor > _testing) {
       // Expected: QUOTATION_MARK
-      _failure(_expect13);
+      _failure(_expect5);
     }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
+    // <= ["] # Choice
+    _endToken();
     return $$;
   }
   
   dynamic _parse_STRING() {
-    // TERMINAL
+    // LEXEME
     // STRING <- QUOTATION_MARK CHAR* QUOTATION_MARK WS
     var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = 13;  
-      _tokenStart = _cursor;  
-    }  
-    // QUOTATION_MARK CHAR* QUOTATION_MARK WS
-    var ch0 = _ch, pos0 = _cursor;
-    while (true) {  
-      // QUOTATION_MARK
-      $$ = null;
-      success = _ch == 34; // '"'
-      // Lookahead (QUOTATION_MARK)
-      if (success) $$ = _parse_QUOTATION_MARK();
-      if (!success) {
-        // Expected: QUOTATION_MARK
-        if (_cursor > _testing) _failure(_expect13);  
-        break;  
-      }
-      var seq = new List(4)..[0] = $$;
-      // CHAR*
-      var testing0 = _testing; 
-      for (var reps = []; ; ) {
-        _testing = _cursor;
-        // CHAR
-        $$ = _parse_CHAR();
-        if (success) {  
-          reps.add($$);
-        } else {
-          success = true;
-          _testing = testing0;
-          $$ = reps;
-          break; 
+    _beginToken(13);  
+    // => QUOTATION_MARK CHAR* QUOTATION_MARK WS # Choice
+    switch (_ch == 34 ? 0 : _ch == -1 ? 1 : -1) {
+      // \"
+      case 0:
+        // => QUOTATION_MARK CHAR* QUOTATION_MARK WS # Sequence
+        var ch0 = _ch, pos0 = _cursor;
+        while (true) {  
+          // => QUOTATION_MARK
+          $$ = _parse_QUOTATION_MARK();
+          // <= QUOTATION_MARK
+          if (!success) break;
+          var seq = new List(4)..[0] = $$;
+          // => CHAR*
+          var testing0 = _testing; 
+          for (var reps = []; ; ) {
+            _testing = _cursor;
+            // => CHAR
+            $$ = _parse_CHAR();
+            // <= CHAR
+            if (success) {  
+              reps.add($$);
+            } else {
+              success = true;
+              _testing = testing0;
+              $$ = reps;
+              break; 
+            }
+          }
+          // <= CHAR*
+          if (!success) break;
+          seq[1] = $$;
+          // => QUOTATION_MARK
+          $$ = _parse_QUOTATION_MARK();
+          // <= QUOTATION_MARK
+          if (!success) break;
+          seq[2] = $$;
+          // => WS
+          $$ = _parse_WS();
+          // <= WS
+          if (!success) break;
+          seq[3] = $$;
+          $$ = seq;
+          if (success) {    
+            // QUOTATION_MARK
+            final $1 = seq[0];
+            // CHAR*
+            final $2 = seq[1];
+            // QUOTATION_MARK
+            final $3 = seq[2];
+            // WS
+            final $4 = seq[3];
+            $$ = _flatten([$2]).join();    
+          }
+          break;  
         }
-      }
-      if (!success) break;
-      seq[1] = $$;
-      // QUOTATION_MARK
-      $$ = null;
-      success = _ch == 34; // '"'
-      // Lookahead (QUOTATION_MARK)
-      if (success) $$ = _parse_QUOTATION_MARK();
-      if (!success) {
-        // Expected: QUOTATION_MARK
-        if (_cursor > _testing) _failure(_expect13);  
-        break;  
-      }
-      seq[2] = $$;
-      // WS
-      $$ = null;
-      success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (WS is optional)
-      if (success) $$ = _parse_WS();
-      else success = true;
-      seq[3] = $$;
-      $$ = seq;
-      if (success) {    
-        // QUOTATION_MARK
-        final $1 = seq[0];
-        // CHAR*
-        final $2 = seq[1];
-        // QUOTATION_MARK
-        final $3 = seq[2];
-        // WS
-        final $4 = seq[3];
-        $$ = _flatten($2).join();    
-      }
-      break;  
-    }
-    if (!success) {
-      _ch = ch0;
-      _cursor = pos0;
+        if (!success) {
+          _ch = ch0;
+          _cursor = pos0;
+        }
+        // <= QUOTATION_MARK CHAR* QUOTATION_MARK WS # Sequence
+        break;
+      // EOF
+      case 1:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
     }
     if (!success && _cursor > _testing) {
       // Expected: STRING
-      _failure(_expect7);
+      _failure(_expect2);
     }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
+    // <= QUOTATION_MARK CHAR* QUOTATION_MARK WS # Choice
+    _endToken();
     return $$;
   }
   
   dynamic _parse_TRUE() {
-    // TERMINAL
+    // LEXEME
     // TRUE <- "true" WS
     var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = 14;  
-      _tokenStart = _cursor;  
-    }  
-    // "true" WS
-    var ch0 = _ch, pos0 = _cursor;
-    while (true) {  
-      // "true"
-      $$ = _matchString(_strings2, 'true');
-      if (!success) break;
-      var seq = new List(2)..[0] = $$;
-      // WS
-      $$ = null;
-      success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (WS is optional)
-      if (success) $$ = _parse_WS();
-      else success = true;
-      seq[1] = $$;
-      $$ = seq;
-      if (success) {    
-        // "true"
-        final $1 = seq[0];
-        // WS
-        final $2 = seq[1];
-        $$ = true;    
-      }
-      break;  
-    }
-    if (!success) {
-      _ch = ch0;
-      _cursor = pos0;
+    _beginToken(14);  
+    // => "true" WS # Choice
+    switch (_ch == 116 ? 0 : _ch == -1 ? 1 : -1) {
+      // t
+      case 0:
+        // => "true" WS # Sequence
+        var ch0 = _ch, pos0 = _cursor;
+        while (true) {  
+          // => "true"
+          $$ = _matchString(_strings2, 'true');
+          // <= "true"
+          if (!success) break;
+          var seq = new List(2)..[0] = $$;
+          // => WS
+          $$ = _parse_WS();
+          // <= WS
+          if (!success) break;
+          seq[1] = $$;
+          $$ = seq;
+          if (success) {    
+            // "true"
+            final $1 = seq[0];
+            // WS
+            final $2 = seq[1];
+            $$ = true;    
+          }
+          break;  
+        }
+        if (!success) {
+          _ch = ch0;
+          _cursor = pos0;
+        }
+        // <= "true" WS # Sequence
+        break;
+      // EOF
+      case 1:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
     }
     if (!success && _cursor > _testing) {
       // Expected: 'true'
-      _failure(_expect5);
+      _failure(_expect17);
     }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
+    // <= "true" WS # Choice
+    _endToken();
     return $$;
   }
   
   dynamic _parse_UNESCAPED() {
-    // TERMINAL
+    // MORPHEME
     // UNESCAPED <- [ -!] / [#-\[] / [\]-~] / [\]-\u10ffff]
     var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = 21;  
-      _tokenStart = _cursor;  
-    }  
-    // [ -!] / [#-\[] / [\]-~] / [\]-\u10ffff]
-    while (true) {
-      // [ -!]
-      $$ = _matchRange(32, 33);
-      if (success) break;
-      // [#-\[]
-      $$ = _matchRange(35, 91);
-      if (success) break;
-      // [\]-~]
-      $$ = _matchRange(93, 126);
-      if (success) break;
-      // [\]-\u10ffff]
-      $$ = _matchRange(93, 1114111);
-      break;
+    _beginToken(21);  
+    // => [ -!] / [#-\[] / [\]-~] / [\]-\u10ffff] # Choice
+    switch (_getState(_transitions11)) {
+      //  -!
+      case 0:
+        // => [ -!]
+        $$ = _matchRange(32, 33);
+        // <= [ -!]
+        break;
+      // #-[
+      case 1:
+        // => [#-\[]
+        $$ = _matchRange(35, 91);
+        // <= [#-\[]
+        break;
+      // ]-~
+      case 2:
+        while (true) {
+          // => [\]-~]
+          $$ = _matchRange(93, 126);
+          // <= [\]-~]
+          if (success) break;
+          // => [\]-\u10ffff]
+          $$ = _matchRange(93, 1114111);
+          // <= [\]-\u10ffff]
+          break;
+        }
+        break;
+      // \u007f-\u0010ffff
+      case 3:
+        // => [\]-\u10ffff]
+        $$ = _matchRange(93, 1114111);
+        // <= [\]-\u10ffff]
+        break;
+      // EOF
+      case 4:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
     }
     if (!success && _cursor > _testing) {
       // Expected: UNESCAPED
-      _failure(_expect24);
+      _failure(_expect23);
     }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
+    // <= [ -!] / [#-\[] / [\]-~] / [\]-\u10ffff] # Choice
+    _endToken();
     return $$;
   }
   
   dynamic _parse_VALUE_SEPARATOR() {
-    // TERMINAL
+    // LEXEME
     // VALUE_SEPARATOR <- "," WS
     var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = 15;  
-      _tokenStart = _cursor;  
-    }  
-    // "," WS
-    var ch0 = _ch, pos0 = _cursor;
-    while (true) {  
-      // ","
-      $$ = _matchChar(44, ',');
-      if (!success) break;
-      var seq = new List(2)..[0] = $$;
-      // WS
-      $$ = null;
-      success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (WS is optional)
-      if (success) $$ = _parse_WS();
-      else success = true;
-      seq[1] = $$;
-      $$ = seq;
-      break;  
-    }
-    if (!success) {
-      _ch = ch0;
-      _cursor = pos0;
+    _beginToken(15);  
+    // => "," WS # Choice
+    switch (_ch == 44 ? 0 : _ch == -1 ? 1 : -1) {
+      // ,
+      case 0:
+        // => "," WS # Sequence
+        var ch0 = _ch, pos0 = _cursor;
+        while (true) {  
+          // => ","
+          $$ = ',';
+          success = true;
+          if (++_cursor < _inputLen) {
+            _ch = _input[_cursor];
+          } else {
+            _ch = -1;
+          }
+          // <= ","
+          if (!success) break;
+          var seq = new List(2)..[0] = $$;
+          // => WS
+          $$ = _parse_WS();
+          // <= WS
+          if (!success) break;
+          seq[1] = $$;
+          $$ = seq;
+          break;  
+        }
+        if (!success) {
+          _ch = ch0;
+          _cursor = pos0;
+        }
+        // <= "," WS # Sequence
+        break;
+      // EOF
+      case 1:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
     }
     if (!success && _cursor > _testing) {
       // Expected: ','
-      _failure(_expect9);
+      _failure(_expect3);
     }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
+    // <= "," WS # Choice
+    _endToken();
     return $$;
   }
   
   dynamic _parse_WS() {
-    // TERMINAL
+    // LEXEME & MORPHEME
     // WS <- [\t-\n\r ]*
     var $$;
-    if (_tokenLevel++ == 0) {  
-      _token = 22;  
-      _tokenStart = _cursor;  
-    }  
-    // [\t-\n\r ]*
-    var testing0 = _testing; 
-    for (var reps = []; ; ) {
-      _testing = _cursor;
-      // [\t-\n\r ]
-      $$ = _matchMapping(9, 32, _mapping1);
-      if (success) {  
-        reps.add($$);
-      } else {
+    _beginToken(22);  
+    // => [\t-\n\r ]* # Choice
+    switch (_getState(_transitions12)) {
+      // \t-\n \r  
+      case 0:
+        // => [\t-\n\r ]*
+        var testing0 = _testing; 
+        for (var reps = []; ; ) {
+          _testing = _cursor;
+          // => [\t-\n\r ]
+          $$ = _matchMapping(9, 32, _mapping1);
+          // <= [\t-\n\r ]
+          if (success) {  
+            reps.add($$);
+          } else {
+            success = true;
+            _testing = testing0;
+            $$ = reps;
+            break; 
+          }
+        }
+        // <= [\t-\n\r ]*
+        break;
+      // EOF
+      case 1:
+        // => [\t-\n\r ]*
+        var testing1 = _testing; 
+        for (var reps = []; ; ) {
+          _testing = _cursor;
+          // => [\t-\n\r ]
+          $$ = _matchMapping(9, 32, _mapping1);
+          // <= [\t-\n\r ]
+          if (success) {  
+            reps.add($$);
+          } else {
+            success = true;
+            _testing = testing1;
+            $$ = reps;
+            break; 
+          }
+        }
+        // <= [\t-\n\r ]*
+        break;
+      // No matches
+      case -1:
+        $$ = null;
         success = true;
-        _testing = testing0;
-        $$ = reps;
-        break; 
-      }
+        break;
     }
     if (!success && _cursor > _testing) {
       // Expected: WS
-      _failure(_expect25);
+      _failure(_expect24);
     }
-    if (--_tokenLevel == 0) {
-      _token = null;
-      _tokenStart = null;
-    }
+    // <= [\t-\n\r ]* # Choice
+    _endToken();
     return $$;
   }
   
@@ -1614,141 +2016,167 @@ class JsonParser {
     // NONTERMINAL
     // array <- BEGIN_ARRAY (value (VALUE_SEPARATOR value)*)? END_ARRAY
     var $$;
-    // BEGIN_ARRAY (value (VALUE_SEPARATOR value)*)? END_ARRAY
-    var ch0 = _ch, pos0 = _cursor;
-    while (true) {  
-      // BEGIN_ARRAY
-      $$ = null;
-      success = _ch == 91; // '['
-      // Lookahead (BEGIN_ARRAY)
-      if (success) $$ = _parse_BEGIN_ARRAY();
-      if (!success) {
-        // Expected: '['
-        if (_cursor > _testing) _failure(_expect1);  
-        break;  
-      }
-      var seq = new List(3)..[0] = $$;
-      // (value (VALUE_SEPARATOR value)*)?
-      var testing0 = _testing;
-      _testing = _cursor;
-      // value (VALUE_SEPARATOR value)*
-      var ch1 = _ch, pos1 = _cursor;
-      while (true) {  
-        // value
-        $$ = null;
-        success = _ch >= 34 && _ch <= 123 && _lookahead[_ch + 81];
-        // Lookahead (value)
-        if (success) $$ = _parse_value();    
-        if (!success) {    
-          // Expected: 'false', 'null', 'true', '[', NUMBER, STRING, '{'    
-          if (_cursor > _testing) _failure(_expect8);
-          break;  
-        }
-        var seq = new List(2)..[0] = $$;
-        // (VALUE_SEPARATOR value)*
-        var testing1 = _testing; 
-        for (var reps = []; ; ) {
+    // => BEGIN_ARRAY (value (VALUE_SEPARATOR value)*)? END_ARRAY # Choice
+    switch (_ch == 91 ? 0 : _ch == -1 ? 1 : -1) {
+      // [
+      case 0:
+        // => BEGIN_ARRAY (value (VALUE_SEPARATOR value)*)? END_ARRAY # Sequence
+        var ch0 = _ch, pos0 = _cursor;
+        while (true) {  
+          // => BEGIN_ARRAY
+          $$ = _parse_BEGIN_ARRAY();
+          // <= BEGIN_ARRAY
+          if (!success) break;
+          var seq = new List(3)..[0] = $$;
+          // => (value (VALUE_SEPARATOR value)*)?
+          var testing0 = _testing;
           _testing = _cursor;
-          // VALUE_SEPARATOR value
-          var ch2 = _ch, pos2 = _cursor;
-          while (true) {  
-            // VALUE_SEPARATOR
-            $$ = null;
-            success = _ch == 44; // ','
-            // Lookahead (VALUE_SEPARATOR)
-            if (success) $$ = _parse_VALUE_SEPARATOR();
-            if (!success) {
-              // Expected: ','
-              if (_cursor > _testing) _failure(_expect9);  
-              break;  
-            }
-            var seq = new List(2)..[0] = $$;
-            // value
-            $$ = null;
-            success = _ch >= 34 && _ch <= 123 && _lookahead[_ch + 81];
-            // Lookahead (value)
-            if (success) $$ = _parse_value();    
-            if (!success) {    
-              // Expected: 'false', 'null', 'true', '[', NUMBER, STRING, '{'    
-              if (_cursor > _testing) _failure(_expect8);
-              break;  
-            }
-            seq[1] = $$;
-            $$ = seq;
-            if (success) {    
-              // VALUE_SEPARATOR
-              final $1 = seq[0];
-              // value
-              final $2 = seq[1];
-              $$ = $2;    
-            }
-            break;  
-          }
-          if (!success) {
-            _ch = ch2;
-            _cursor = pos2;
+          // => value (VALUE_SEPARATOR value)* # Choice
+          switch (_getState(_transitions2)) {
+            // \" - 0-9 [ f n t {
+            case 0:
+              // => value (VALUE_SEPARATOR value)* # Sequence
+              var ch1 = _ch, pos1 = _cursor;
+              while (true) {  
+                // => value
+                $$ = _parse_value();
+                // <= value
+                if (!success) break;
+                var seq = new List(2)..[0] = $$;
+                // => (VALUE_SEPARATOR value)*
+                var testing1 = _testing; 
+                for (var reps = []; ; ) {
+                  _testing = _cursor;
+                  // => VALUE_SEPARATOR value # Choice
+                  switch (_ch == 44 ? 0 : _ch == -1 ? 1 : -1) {
+                    // ,
+                    case 0:
+                      // => VALUE_SEPARATOR value # Sequence
+                      var ch2 = _ch, pos2 = _cursor;
+                      while (true) {  
+                        // => VALUE_SEPARATOR
+                        $$ = _parse_VALUE_SEPARATOR();
+                        // <= VALUE_SEPARATOR
+                        if (!success) break;
+                        var seq = new List(2)..[0] = $$;
+                        // => value
+                        $$ = _parse_value();
+                        // <= value
+                        if (!success) break;
+                        seq[1] = $$;
+                        $$ = seq;
+                        if (success) {    
+                          // VALUE_SEPARATOR
+                          final $1 = seq[0];
+                          // value
+                          final $2 = seq[1];
+                          $$ = $2;    
+                        }
+                        break;  
+                      }
+                      if (!success) {
+                        _ch = ch2;
+                        _cursor = pos2;
+                      }
+                      // <= VALUE_SEPARATOR value # Sequence
+                      break;
+                    // EOF
+                    case 1:
+                      $$ = null;
+                      success = false;
+                      break;
+                    // No matches
+                    case -1:
+                      $$ = null;
+                      success = false;
+                      break;
+                  }
+                  if (!success && _cursor > _testing) {
+                    // Expected: ','
+                    _failure(_expect3);
+                  }
+                  // <= VALUE_SEPARATOR value # Choice
+                  if (success) {  
+                    reps.add($$);
+                  } else {
+                    success = true;
+                    _testing = testing1;
+                    $$ = reps;
+                    break; 
+                  }
+                }
+                // <= (VALUE_SEPARATOR value)*
+                if (!success) break;
+                seq[1] = $$;
+                $$ = seq;
+                break;  
+              }
+              if (!success) {
+                _ch = ch1;
+                _cursor = pos1;
+              }
+              // <= value (VALUE_SEPARATOR value)* # Sequence
+              break;
+            // EOF
+            case 1:
+              $$ = null;
+              success = false;
+              break;
+            // No matches
+            case -1:
+              $$ = null;
+              success = false;
+              break;
           }
           if (!success && _cursor > _testing) {
-            // Expected: ','
-            _failure(_expect9);
+            // Expected: 'false', 'null', 'true', '{', '[', NUMBER, STRING
+            _failure(_expect0);
           }
-          if (success) {  
-            reps.add($$);
-          } else {
-            success = true;
-            _testing = testing1;
-            $$ = reps;
-            break; 
+          // <= value (VALUE_SEPARATOR value)* # Choice
+          success = true; 
+          _testing = testing0;
+          // <= (value (VALUE_SEPARATOR value)*)?
+          if (!success) break;
+          seq[1] = $$;
+          // => END_ARRAY
+          $$ = _parse_END_ARRAY();
+          // <= END_ARRAY
+          if (!success) break;
+          seq[2] = $$;
+          $$ = seq;
+          if (success) {    
+            // BEGIN_ARRAY
+            final $1 = seq[0];
+            // (value (VALUE_SEPARATOR value)*)?
+            final $2 = seq[1];
+            // END_ARRAY
+            final $3 = seq[2];
+            $$ = _normalize([$2]).fold([], (p, c) => p..add(c));    
           }
+          break;  
         }
-        if (!success) break;
-        seq[1] = $$;
-        $$ = seq;
-        break;  
-      }
-      if (!success) {
-        _ch = ch1;
-        _cursor = pos1;
-      }
-      if (!success && _cursor > _testing) {
-        // Expected: 'false', 'null', 'true', '[', NUMBER, STRING, '{'
-        _failure(_expect8);
-      }
-      success = true; 
-      _testing = testing0;
-      if (!success) break;
-      seq[1] = $$;
-      // END_ARRAY
-      $$ = null;
-      success = _ch == 93; // ']'
-      // Lookahead (END_ARRAY)
-      if (success) $$ = _parse_END_ARRAY();
-      if (!success) {
-        // Expected: ']'
-        if (_cursor > _testing) _failure(_expect12);  
-        break;  
-      }
-      seq[2] = $$;
-      $$ = seq;
-      if (success) {    
-        // BEGIN_ARRAY
-        final $1 = seq[0];
-        // (value (VALUE_SEPARATOR value)*)?
-        final $2 = seq[1];
-        // END_ARRAY
-        final $3 = seq[2];
-        $$ = _flatten($2).fold([], (p, c) => p..add(c));    
-      }
-      break;  
-    }
-    if (!success) {
-      _ch = ch0;
-      _cursor = pos0;
+        if (!success) {
+          _ch = ch0;
+          _cursor = pos0;
+        }
+        // <= BEGIN_ARRAY (value (VALUE_SEPARATOR value)*)? END_ARRAY # Sequence
+        break;
+      // EOF
+      case 1:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
     }
     if (!success && _cursor > _testing) {
       // Expected: '['
-      _failure(_expect1);
+      _failure(_expect4);
     }
+    // <= BEGIN_ARRAY (value (VALUE_SEPARATOR value)*)? END_ARRAY # Choice
     return $$;
   }
   
@@ -1756,62 +2184,62 @@ class JsonParser {
     // NONTERMINAL
     // member <- STRING NAME_SEPARATOR value
     var $$;
-    // STRING NAME_SEPARATOR value
-    var ch0 = _ch, pos0 = _cursor;
-    while (true) {  
-      // STRING
-      $$ = null;
-      success = _ch == 34; // '"'
-      // Lookahead (STRING)
-      if (success) $$ = _parse_STRING();
-      if (!success) {
-        // Expected: STRING
-        if (_cursor > _testing) _failure(_expect7);  
-        break;  
-      }
-      var seq = new List(3)..[0] = $$;
-      // NAME_SEPARATOR
-      $$ = null;
-      success = _ch == 58; // ':'
-      // Lookahead (NAME_SEPARATOR)
-      if (success) $$ = _parse_NAME_SEPARATOR();
-      if (!success) {
-        // Expected: ':'
-        if (_cursor > _testing) _failure(_expect11);  
-        break;  
-      }
-      seq[1] = $$;
-      // value
-      $$ = null;
-      success = _ch >= 34 && _ch <= 123 && _lookahead[_ch + 81];
-      // Lookahead (value)
-      if (success) $$ = _parse_value();    
-      if (!success) {    
-        // Expected: 'false', 'null', 'true', '[', NUMBER, STRING, '{'    
-        if (_cursor > _testing) _failure(_expect8);
-        break;  
-      }
-      seq[2] = $$;
-      $$ = seq;
-      if (success) {    
-        // STRING
-        final $1 = seq[0];
-        // NAME_SEPARATOR
-        final $2 = seq[1];
-        // value
-        final $3 = seq[2];
-        $$ = new _KeyValuePair($1, $3);    
-      }
-      break;  
-    }
-    if (!success) {
-      _ch = ch0;
-      _cursor = pos0;
+    // => STRING NAME_SEPARATOR value # Choice
+    switch (_ch == 34 ? 0 : _ch == -1 ? 1 : -1) {
+      // \"
+      case 0:
+        // => STRING NAME_SEPARATOR value # Sequence
+        var ch0 = _ch, pos0 = _cursor;
+        while (true) {  
+          // => STRING
+          $$ = _parse_STRING();
+          // <= STRING
+          if (!success) break;
+          var seq = new List(3)..[0] = $$;
+          // => NAME_SEPARATOR
+          $$ = _parse_NAME_SEPARATOR();
+          // <= NAME_SEPARATOR
+          if (!success) break;
+          seq[1] = $$;
+          // => value
+          $$ = _parse_value();
+          // <= value
+          if (!success) break;
+          seq[2] = $$;
+          $$ = seq;
+          if (success) {    
+            // STRING
+            final $1 = seq[0];
+            // NAME_SEPARATOR
+            final $2 = seq[1];
+            // value
+            final $3 = seq[2];
+            $$ = new _KeyValuePair($1, $3);    
+          }
+          break;  
+        }
+        if (!success) {
+          _ch = ch0;
+          _cursor = pos0;
+        }
+        // <= STRING NAME_SEPARATOR value # Sequence
+        break;
+      // EOF
+      case 1:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
     }
     if (!success && _cursor > _testing) {
       // Expected: STRING
-      _failure(_expect7);
+      _failure(_expect2);
     }
+    // <= STRING NAME_SEPARATOR value # Choice
     return $$;
   }
   
@@ -1819,141 +2247,167 @@ class JsonParser {
     // NONTERMINAL
     // object <- BEGIN_OBJECT (member (VALUE_SEPARATOR member)*)? END_OBJECT
     var $$;
-    // BEGIN_OBJECT (member (VALUE_SEPARATOR member)*)? END_OBJECT
-    var ch0 = _ch, pos0 = _cursor;
-    while (true) {  
-      // BEGIN_OBJECT
-      $$ = null;
-      success = _ch == 123; // '{'
-      // Lookahead (BEGIN_OBJECT)
-      if (success) $$ = _parse_BEGIN_OBJECT();
-      if (!success) {
-        // Expected: '{'
-        if (_cursor > _testing) _failure(_expect0);  
-        break;  
-      }
-      var seq = new List(3)..[0] = $$;
-      // (member (VALUE_SEPARATOR member)*)?
-      var testing0 = _testing;
-      _testing = _cursor;
-      // member (VALUE_SEPARATOR member)*
-      var ch1 = _ch, pos1 = _cursor;
-      while (true) {  
-        // member
-        $$ = null;
-        success = _ch == 34; // '"'
-        // Lookahead (member)
-        if (success) $$ = _parse_member();
-        if (!success) {
-          // Expected: STRING
-          if (_cursor > _testing) _failure(_expect7);  
-          break;  
-        }
-        var seq = new List(2)..[0] = $$;
-        // (VALUE_SEPARATOR member)*
-        var testing1 = _testing; 
-        for (var reps = []; ; ) {
+    // => BEGIN_OBJECT (member (VALUE_SEPARATOR member)*)? END_OBJECT # Choice
+    switch (_ch == 123 ? 0 : _ch == -1 ? 1 : -1) {
+      // {
+      case 0:
+        // => BEGIN_OBJECT (member (VALUE_SEPARATOR member)*)? END_OBJECT # Sequence
+        var ch0 = _ch, pos0 = _cursor;
+        while (true) {  
+          // => BEGIN_OBJECT
+          $$ = _parse_BEGIN_OBJECT();
+          // <= BEGIN_OBJECT
+          if (!success) break;
+          var seq = new List(3)..[0] = $$;
+          // => (member (VALUE_SEPARATOR member)*)?
+          var testing0 = _testing;
           _testing = _cursor;
-          // VALUE_SEPARATOR member
-          var ch2 = _ch, pos2 = _cursor;
-          while (true) {  
-            // VALUE_SEPARATOR
-            $$ = null;
-            success = _ch == 44; // ','
-            // Lookahead (VALUE_SEPARATOR)
-            if (success) $$ = _parse_VALUE_SEPARATOR();
-            if (!success) {
-              // Expected: ','
-              if (_cursor > _testing) _failure(_expect9);  
-              break;  
-            }
-            var seq = new List(2)..[0] = $$;
-            // member
-            $$ = null;
-            success = _ch == 34; // '"'
-            // Lookahead (member)
-            if (success) $$ = _parse_member();
-            if (!success) {
-              // Expected: STRING
-              if (_cursor > _testing) _failure(_expect7);  
-              break;  
-            }
-            seq[1] = $$;
-            $$ = seq;
-            if (success) {    
-              // VALUE_SEPARATOR
-              final $1 = seq[0];
-              // member
-              final $2 = seq[1];
-              $$ = $2;    
-            }
-            break;  
-          }
-          if (!success) {
-            _ch = ch2;
-            _cursor = pos2;
+          // => member (VALUE_SEPARATOR member)* # Choice
+          switch (_ch == 34 ? 0 : _ch == -1 ? 1 : -1) {
+            // \"
+            case 0:
+              // => member (VALUE_SEPARATOR member)* # Sequence
+              var ch1 = _ch, pos1 = _cursor;
+              while (true) {  
+                // => member
+                $$ = _parse_member();
+                // <= member
+                if (!success) break;
+                var seq = new List(2)..[0] = $$;
+                // => (VALUE_SEPARATOR member)*
+                var testing1 = _testing; 
+                for (var reps = []; ; ) {
+                  _testing = _cursor;
+                  // => VALUE_SEPARATOR member # Choice
+                  switch (_ch == 44 ? 0 : _ch == -1 ? 1 : -1) {
+                    // ,
+                    case 0:
+                      // => VALUE_SEPARATOR member # Sequence
+                      var ch2 = _ch, pos2 = _cursor;
+                      while (true) {  
+                        // => VALUE_SEPARATOR
+                        $$ = _parse_VALUE_SEPARATOR();
+                        // <= VALUE_SEPARATOR
+                        if (!success) break;
+                        var seq = new List(2)..[0] = $$;
+                        // => member
+                        $$ = _parse_member();
+                        // <= member
+                        if (!success) break;
+                        seq[1] = $$;
+                        $$ = seq;
+                        if (success) {    
+                          // VALUE_SEPARATOR
+                          final $1 = seq[0];
+                          // member
+                          final $2 = seq[1];
+                          $$ = $2;    
+                        }
+                        break;  
+                      }
+                      if (!success) {
+                        _ch = ch2;
+                        _cursor = pos2;
+                      }
+                      // <= VALUE_SEPARATOR member # Sequence
+                      break;
+                    // EOF
+                    case 1:
+                      $$ = null;
+                      success = false;
+                      break;
+                    // No matches
+                    case -1:
+                      $$ = null;
+                      success = false;
+                      break;
+                  }
+                  if (!success && _cursor > _testing) {
+                    // Expected: ','
+                    _failure(_expect3);
+                  }
+                  // <= VALUE_SEPARATOR member # Choice
+                  if (success) {  
+                    reps.add($$);
+                  } else {
+                    success = true;
+                    _testing = testing1;
+                    $$ = reps;
+                    break; 
+                  }
+                }
+                // <= (VALUE_SEPARATOR member)*
+                if (!success) break;
+                seq[1] = $$;
+                $$ = seq;
+                break;  
+              }
+              if (!success) {
+                _ch = ch1;
+                _cursor = pos1;
+              }
+              // <= member (VALUE_SEPARATOR member)* # Sequence
+              break;
+            // EOF
+            case 1:
+              $$ = null;
+              success = false;
+              break;
+            // No matches
+            case -1:
+              $$ = null;
+              success = false;
+              break;
           }
           if (!success && _cursor > _testing) {
-            // Expected: ','
-            _failure(_expect9);
+            // Expected: STRING
+            _failure(_expect2);
           }
-          if (success) {  
-            reps.add($$);
-          } else {
-            success = true;
-            _testing = testing1;
-            $$ = reps;
-            break; 
+          // <= member (VALUE_SEPARATOR member)* # Choice
+          success = true; 
+          _testing = testing0;
+          // <= (member (VALUE_SEPARATOR member)*)?
+          if (!success) break;
+          seq[1] = $$;
+          // => END_OBJECT
+          $$ = _parse_END_OBJECT();
+          // <= END_OBJECT
+          if (!success) break;
+          seq[2] = $$;
+          $$ = seq;
+          if (success) {    
+            // BEGIN_OBJECT
+            final $1 = seq[0];
+            // (member (VALUE_SEPARATOR member)*)?
+            final $2 = seq[1];
+            // END_OBJECT
+            final $3 = seq[2];
+            $$ = _normalize([$2]).fold({}, (p, c) => p..[c.key] = c.value);    
           }
+          break;  
         }
-        if (!success) break;
-        seq[1] = $$;
-        $$ = seq;
-        break;  
-      }
-      if (!success) {
-        _ch = ch1;
-        _cursor = pos1;
-      }
-      if (!success && _cursor > _testing) {
-        // Expected: STRING
-        _failure(_expect7);
-      }
-      success = true; 
-      _testing = testing0;
-      if (!success) break;
-      seq[1] = $$;
-      // END_OBJECT
-      $$ = null;
-      success = _ch == 125; // '}'
-      // Lookahead (END_OBJECT)
-      if (success) $$ = _parse_END_OBJECT();
-      if (!success) {
-        // Expected: '}'
-        if (_cursor > _testing) _failure(_expect10);  
-        break;  
-      }
-      seq[2] = $$;
-      $$ = seq;
-      if (success) {    
-        // BEGIN_OBJECT
-        final $1 = seq[0];
-        // (member (VALUE_SEPARATOR member)*)?
-        final $2 = seq[1];
-        // END_OBJECT
-        final $3 = seq[2];
-        $$ = _flatten($2).fold({}, (p, c) => p..[c.key] = c.value);    
-      }
-      break;  
-    }
-    if (!success) {
-      _ch = ch0;
-      _cursor = pos0;
+        if (!success) {
+          _ch = ch0;
+          _cursor = pos0;
+        }
+        // <= BEGIN_OBJECT (member (VALUE_SEPARATOR member)*)? END_OBJECT # Sequence
+        break;
+      // EOF
+      case 1:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
     }
     if (!success && _cursor > _testing) {
       // Expected: '{'
-      _failure(_expect0);
+      _failure(_expect1);
     }
+    // <= BEGIN_OBJECT (member (VALUE_SEPARATOR member)*)? END_OBJECT # Choice
     return $$;
   }
   
@@ -1961,83 +2415,66 @@ class JsonParser {
     // NONTERMINAL
     // value <- FALSE / NULL / TRUE / object / array / NUMBER / STRING
     var $$;
-    // FALSE / NULL / TRUE / object / array / NUMBER / STRING
-    while (true) {
-      // FALSE
-      $$ = null;
-      success = _ch == 102; // 'f'
-      // Lookahead (FALSE)
-      if (success) $$ = _parse_FALSE();
-      if (!success) {
-        // Expected: 'false'
-        if (_cursor > _testing) _failure(_expect3);  
-      }
-      if (success) break;
-      // NULL
-      $$ = null;
-      success = _ch == 110; // 'n'
-      // Lookahead (NULL)
-      if (success) $$ = _parse_NULL();
-      if (!success) {
-        // Expected: 'null'
-        if (_cursor > _testing) _failure(_expect4);  
-      }
-      if (success) break;
-      // TRUE
-      $$ = null;
-      success = _ch == 116; // 't'
-      // Lookahead (TRUE)
-      if (success) $$ = _parse_TRUE();
-      if (!success) {
-        // Expected: 'true'
-        if (_cursor > _testing) _failure(_expect5);  
-      }
-      if (success) break;
-      // object
-      $$ = null;
-      success = _ch == 123; // '{'
-      // Lookahead (object)
-      if (success) $$ = _parse_object();
-      if (!success) {
-        // Expected: '{'
-        if (_cursor > _testing) _failure(_expect0);  
-      }
-      if (success) break;
-      // array
-      $$ = null;
-      success = _ch == 91; // '['
-      // Lookahead (array)
-      if (success) $$ = _parse_array();
-      if (!success) {
-        // Expected: '['
-        if (_cursor > _testing) _failure(_expect1);  
-      }
-      if (success) break;
-      // NUMBER
-      $$ = null;
-      success = _ch >= 45 && _ch <= 57 && _lookahead[_ch + 81];
-      // Lookahead (NUMBER)
-      if (success) $$ = _parse_NUMBER();    
-      if (!success) {    
-        // Expected: NUMBER    
-        if (_cursor > _testing) _failure(_expect6);
-      }
-      if (success) break;
-      // STRING
-      $$ = null;
-      success = _ch == 34; // '"'
-      // Lookahead (STRING)
-      if (success) $$ = _parse_STRING();
-      if (!success) {
-        // Expected: STRING
-        if (_cursor > _testing) _failure(_expect7);  
-      }
-      break;
+    // => FALSE / NULL / TRUE / object / array / NUMBER / STRING # Choice
+    switch (_getState(_transitions1)) {
+      // \"
+      case 0:
+        // => STRING
+        $$ = _parse_STRING();
+        // <= STRING
+        break;
+      // - 0-9
+      case 1:
+        // => NUMBER
+        $$ = _parse_NUMBER();
+        // <= NUMBER
+        break;
+      // [
+      case 2:
+        // => array
+        $$ = _parse_array();
+        // <= array
+        break;
+      // f
+      case 3:
+        // => FALSE
+        $$ = _parse_FALSE();
+        // <= FALSE
+        break;
+      // n
+      case 4:
+        // => NULL
+        $$ = _parse_NULL();
+        // <= NULL
+        break;
+      // t
+      case 5:
+        // => TRUE
+        $$ = _parse_TRUE();
+        // <= TRUE
+        break;
+      // {
+      case 6:
+        // => object
+        $$ = _parse_object();
+        // <= object
+        break;
+      // EOF
+      case 7:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: 'false', 'null', 'true', '[', NUMBER, STRING, '{'
-      _failure(_expect8);
+      // Expected: 'false', 'null', 'true', '{', '[', NUMBER, STRING
+      _failure(_expect0);
     }
+    // <= FALSE / NULL / TRUE / object / array / NUMBER / STRING # Choice
     return $$;
   }
   
@@ -2170,77 +2607,70 @@ class JsonParser {
   
   dynamic parse_jsonText() {
     // NONTERMINAL
-    // jsonText <- WS? (object / array) EOF
+    // jsonText <- WS? value EOF
     var $$;
-    // WS? (object / array) EOF
-    var ch0 = _ch, pos0 = _cursor;
-    while (true) {  
-      // WS?
-      var testing0 = _testing;
-      _testing = _cursor;
-      // WS
-      $$ = null;
-      success = _ch >= 9 && _ch <= 32 && _lookahead[_ch + -9];
-      // Lookahead (WS is optional)
-      if (success) $$ = _parse_WS();
-      else success = true;
-      success = true; 
-      _testing = testing0;
-      if (!success) break;
-      var seq = new List(3)..[0] = $$;
-      // object / array
-      while (true) {
-        // object
-        $$ = null;
-        success = _ch == 123; // '{'
-        // Lookahead (object)
-        if (success) $$ = _parse_object();
-        if (!success) {
-          // Expected: '{'
-          if (_cursor > _testing) _failure(_expect0);  
+    // => WS? value EOF # Choice
+    switch (_getState(_transitions0)) {
+      // \t-\n \r   \" - 0-9 [ f n t {
+      case 0:
+        // => WS? value EOF # Sequence
+        var ch0 = _ch, pos0 = _cursor;
+        while (true) {  
+          // => WS?
+          var testing0 = _testing;
+          _testing = _cursor;
+          // => WS
+          $$ = _parse_WS();
+          // <= WS
+          success = true; 
+          _testing = testing0;
+          // <= WS?
+          if (!success) break;
+          var seq = new List(3)..[0] = $$;
+          // => value
+          $$ = _parse_value();
+          // <= value
+          if (!success) break;
+          seq[1] = $$;
+          // => EOF
+          $$ = _parse_EOF();
+          // <= EOF
+          if (!success) break;
+          seq[2] = $$;
+          $$ = seq;
+          if (success) {    
+            // WS?
+            final $1 = seq[0];
+            // value
+            final $2 = seq[1];
+            // EOF
+            final $3 = seq[2];
+            $$ = $2;    
+          }
+          break;  
         }
-        if (success) break;
-        // array
-        $$ = null;
-        success = _ch == 91; // '['
-        // Lookahead (array)
-        if (success) $$ = _parse_array();
         if (!success) {
-          // Expected: '['
-          if (_cursor > _testing) _failure(_expect1);  
+          _ch = ch0;
+          _cursor = pos0;
         }
+        // <= WS? value EOF # Sequence
         break;
-      }
-      if (!success && _cursor > _testing) {
-        // Expected: '{', '['
-        _failure(_expect2);
-      }
-      if (!success) break;
-      seq[1] = $$;
       // EOF
-      $$ = _parse_EOF();
-      if (!success) break;
-      seq[2] = $$;
-      $$ = seq;
-      if (success) {    
-        // WS?
-        final $1 = seq[0];
-        // object / array
-        final $2 = seq[1];
-        // EOF
-        final $3 = seq[2];
-        $$ = $2;    
-      }
-      break;  
-    }
-    if (!success) {
-      _ch = ch0;
-      _cursor = pos0;
+      case 1:
+        $$ = null;
+        success = false;
+        break;
+      // No matches
+      case -1:
+        $$ = null;
+        success = false;
+        break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: '{', '['
-      _failure(_expect2);
+      // Expected: 'false', 'null', 'true', '{', '[', NUMBER, STRING
+      _failure(_expect0);
     }
+    // <= WS? value EOF # Choice
     return $$;
   }
   

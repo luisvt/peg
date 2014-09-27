@@ -14,6 +14,7 @@ part 'src/parser_class_generator/method_errors_generator.dart';
 part 'src/parser_class_generator/method_failure_generator.dart';
 part 'src/parser_class_generator/method_flatten_generator.dart';
 part 'src/parser_class_generator/method_get_from_cache_generator.dart';
+part 'src/parser_class_generator/method_normalize_generator.dart';
 part 'src/parser_class_generator/method_reset_generator.dart';
 part 'src/parser_class_generator/method_to_code_points_generator.dart';
 part 'src/parser_class_generator/method_to_code_point_generator.dart';

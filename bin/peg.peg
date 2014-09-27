@@ -42,10 +42,6 @@ Expression _suffix(String suffix, Expression expression) {
 
 }%
 
-{
-List _normalize(Iterable sequence) => _flatten(_compact(sequence));
-}
-
 Grammar <-
   SPACING? GLOBALS? Members? Definition+ EOF { $$ = new Grammar($4, $2, $3); }
 
@@ -92,7 +88,7 @@ CLASS <-
   '[' (!']' RANGE { $$ = $2; })* ']' SPACING { $$ = new CharacterClassExpression($2); }
 
 LITERAL <-
-  "'" (!"'" CHAR { $$ = $2; })* "'" SPACING { $$ = new LiteralExpression(new String.fromCharCodes($2)); } 
+  "'" (!"'" CHAR { $$ = $2; })* "'" SPACING    { $$ = new LiteralExpression(new String.fromCharCodes($2)); } 
   / '"' (!'"' CHAR { $$ = $2; })* '"' SPACING  { $$ = new LiteralExpression(new String.fromCharCodes($2)); }  
 
 EOF <-

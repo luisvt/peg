@@ -83,6 +83,7 @@ EOF:
  All callers:
   Expr
  Start characters:
+  [\u0000-\u10ffff]
  Expected lexemes:
   EOF
 --------------------------------
@@ -209,7 +210,7 @@ PLUS:
   '+'
 --------------------------------
 SPACES:
- Type: Lexeme
+ Type: Lexeme & morpheme
  Direct callees:
   WS
  All callees:

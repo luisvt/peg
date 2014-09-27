@@ -13,11 +13,34 @@ Add public API of the parser generator
 
 =======================================
 
-Bug in _mapping comments
+Comment _getState transitions
+Comment _getState cases
 
 =======================================
 
-Resolve fixed length terminals.
+Optimize the code which based on the transitions in ordered choice
+
+- Combine similar cases into multicase
+- Optimize _getState through mapping
+- Optimize _getState for single character (DONE)
+
+=======================================
+
+Write better resolver of rules which should be memoized
+
+=======================================
+
+Optimize first in sequence expressions:
+- AnyCharacter
+- Character class
+- Literal with single character (DONE)
+
+Remov method next char
+
+=======================================
+
+Test choice with opional expression
+  Warrning should be produced only when exprs goes after optional
 
 =======================================
 
@@ -48,36 +71,11 @@ Add "memoizationId" to ProductionRule
 
 =======================================
 
-Add conception of parser errors
-
-Add member "get:errors" into generated parser class
-
-abstract class XXXParserError {
-  ParserErrorTypes type;
-  int position;
-  String to String();
-}
-
-class XXXParserErrorTypes {
-  static const ParserErrorTypes XXX;
-}
-
-=======================================
-
 Add public API of the parser generator
 
 =======================================
 
 Add support of "error recovering"
-
-=======================================
-
-Add detection and error reporing of unterminated tokens (terminals)
-
-=======================================
-
-Make public
-_calcucatePos
 
 =======================================
 
@@ -114,10 +112,6 @@ MayFail
 
 ========================================
 
-Remove Utils.charToString() and other related to strings
-
-========================================
-
 optimize lookahead expressions
 (_ch >= 48 && _ch <= 57 && _lookahead[_ch + 81])
 (_ch == 48 || _ch == 57) {
@@ -133,10 +127,6 @@ TEST: choice with optional expression
 
 AND action:
  & { $$ = true; }
-
-========================================
-
-REFACTOR constructors
 
 ========================================
 

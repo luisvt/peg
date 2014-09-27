@@ -18,7 +18,7 @@ class NotPredicateExpressionGenerator extends UnaryExpressionGenerator {
   static const String _TEMPLATE = 'TEMPLATE';
 
   static final String _template = '''
-{{#COMMENTS}}
+{{#COMMENT_IN}}
 var {{CH}} = $_CH, {{POS}} = $_CURSOR, {{TESTING}} = $_TESTING; 
 $_TESTING = $_INPUT_LEN + 1;
 {{#EXPRESSION}}
@@ -26,7 +26,8 @@ $_CH = {{CH}};
 $_CURSOR = {{POS}}; 
 $_TESTING = {{TESTING}};
 $_RESULT = null;
-$_SUCCESS = !$_SUCCESS;''';
+$_SUCCESS = !$_SUCCESS;
+{{#COMMENT_OUT}}''';
 
   NotPredicateExpressionGenerator(Expression expression, ProductionRuleGenerator productionRuleGenerator) : super(expression, productionRuleGenerator) {
     if (expression is! NotPredicateExpression) {
@@ -43,7 +44,8 @@ $_SUCCESS = !$_SUCCESS;''';
     var testing = productionRuleGenerator.allocateBlockVariable(ExpressionGenerator.TESTING);
     block.assign('#EXPRESSION', _generators[0].generate());
     if (options.comment) {
-      block.assign('#COMMENTS', '// $_expression');
+      block.assign('#COMMENT_IN', '// => $_expression');
+      block.assign('#COMMENT_OUT', '// <= $_expression');
     }
 
     block.assign('CH', ch);
