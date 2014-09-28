@@ -81,14 +81,15 @@ if (++$_CURSOR < $_INPUT_LEN) {
   List<String> _generateEmpty() {
     var block = getTemplateBlock(_TEMPLATE_EMPTY);
     if (options.comment) {
-      block.assign('#COMMENTS', '// $_expression');
+      block.assign('#COMMENT_IN', '// => $_expression');
+      block.assign('#COMMENT_OUT', '// <= $_expression');
     }
 
     return block.process();
   }
 
   List<String> _generateCharacter() {
-    if (isFirstNonRepeating(_expression)) {
+    if (isFirstBarrage(_expression)) {
       return _generateCharacterInline();
     }
 

@@ -27,13 +27,12 @@ class RightExpressionsResolver extends ExpressionResolver {
     }
 
     processed.add(expression);
-
     for (var child in expression.expressions) {
       child.accept(this);
       _applyData(child, expression);
     }
 
-    processed.remove(expression);
+    //processed.remove(expression);
     return null;
   }
 

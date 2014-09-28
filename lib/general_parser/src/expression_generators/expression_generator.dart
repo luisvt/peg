@@ -42,7 +42,7 @@ abstract class ExpressionGenerator extends TemplateGenerator {
 
   GeneralParserClassGenerator get parserClassGenerator => _parserClassGenerator;
 
-  bool isFirstNonRepeating(Expression expression) {
+  bool isFirstBarrage(Expression expression) {
     if (expression == null) {
       throw new ArgumentError("expression: $expression");
     }
@@ -61,7 +61,7 @@ abstract class ExpressionGenerator extends TemplateGenerator {
       //case ExpressionTypes.AND_PREDICATE:
       //case ExpressionTypes.NOT_PREDICATE:
       case ExpressionTypes.SEQUENCE:
-        return isFirstNonRepeating(parent);
+        return isFirstBarrage(parent);
       case ExpressionTypes.ORDERED_CHOICE:
         return true;
     }

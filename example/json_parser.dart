@@ -303,10 +303,10 @@ class JsonParser {
         }      
       } 
     }
-    if (_ch == -1) {
+    if (_ch != -1) {
       return state;
     }
-    return -1;  
+    return state + 1;  
   }
   
   String _matchAny() {
@@ -454,7 +454,7 @@ class JsonParser {
     var $$;
     _beginToken(1);  
     // => "[" WS # Choice
-    switch (_ch == 91 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch == 91 ? 0 : _ch == -1 ? 2 : 1) {
       // [[]
       case 0:
         // => "[" WS # Sequence
@@ -485,10 +485,10 @@ class JsonParser {
         }
         // <= "[" WS # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -508,7 +508,7 @@ class JsonParser {
     var $$;
     _beginToken(2);  
     // => "{" WS # Choice
-    switch (_ch == 123 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch == 123 ? 0 : _ch == -1 ? 2 : 1) {
       // [{]
       case 0:
         // => "{" WS # Sequence
@@ -539,10 +539,10 @@ class JsonParser {
         }
         // <= "{" WS # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -660,10 +660,10 @@ class JsonParser {
           break;
         }
         break;
-      // EOF
       // No matches
+      // EOF
       case 2:
-      case -1:
+      case 3:
         $$ = null;
         success = false;
         break;
@@ -683,7 +683,7 @@ class JsonParser {
     var $$;
     _beginToken(3);  
     // => "." WS # Choice
-    switch (_ch == 46 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch == 46 ? 0 : _ch == -1 ? 2 : 1) {
       // [.]
       case 0:
         // => "." WS # Sequence
@@ -721,10 +721,10 @@ class JsonParser {
         }
         // <= "." WS # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -744,17 +744,17 @@ class JsonParser {
     var $$;
     _beginToken(17);  
     // => [0-9] # Choice
-    switch (_ch >= 48 && _ch <= 57 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch >= 48 && _ch <= 57 ? 0 : _ch == -1 ? 2 : 1) {
       // [0-9]
       case 0:
         // => [0-9]
         $$ = _matchRange(48, 57);
         // <= [0-9]
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -774,7 +774,7 @@ class JsonParser {
     var $$;
     _beginToken(4);  
     // => "]" WS # Choice
-    switch (_ch == 93 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch == 93 ? 0 : _ch == -1 ? 2 : 1) {
       // []]
       case 0:
         // => "]" WS # Sequence
@@ -805,10 +805,10 @@ class JsonParser {
         }
         // <= "]" WS # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -828,7 +828,7 @@ class JsonParser {
     var $$;
     _beginToken(5);  
     // => "}" WS # Choice
-    switch (_ch == 125 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch == 125 ? 0 : _ch == -1 ? 2 : 1) {
       // [}]
       case 0:
         // => "}" WS # Sequence
@@ -859,10 +859,10 @@ class JsonParser {
         }
         // <= "}" WS # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -882,11 +882,11 @@ class JsonParser {
     var $$;
     _beginToken(19);  
     // => !. # Choice
-    switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
       // [\u0000-\u0010ffff]
       // EOF
       case 0:
-      case 1:
+      case 2:
         // => !.
         var ch0 = _ch, pos0 = _cursor, testing0 = _testing; 
         _testing = _inputLen + 1;
@@ -901,7 +901,7 @@ class JsonParser {
         // <= !.
         break;
       // No matches
-      case -1:
+      case 1:
         $$ = null;
         success = false;
         break;
@@ -921,7 +921,7 @@ class JsonParser {
     var $$;
     _beginToken(18);  
     // => "\\" # Choice
-    switch (_ch == 92 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch == 92 ? 0 : _ch == -1 ? 2 : 1) {
       // [\\]
       case 0:
         // => "\\"
@@ -934,10 +934,10 @@ class JsonParser {
         }
         // <= "\\"
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -989,10 +989,10 @@ class JsonParser {
               }
               // <= "e"
               break;
-            // EOF
             // No matches
+            // EOF
             case 2:
-            case -1:
+            case 3:
               $$ = null;
               success = false;
               break;
@@ -1033,10 +1033,10 @@ class JsonParser {
               }
               // <= "-"
               break;
-            // EOF
             // No matches
+            // EOF
             case 2:
-            case -1:
+            case 3:
               $$ = null;
               success = false;
               break;
@@ -1103,10 +1103,10 @@ class JsonParser {
         }
         // <= ("e" / "E") ("-" / "+")? DIGIT+ WS # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -1126,7 +1126,7 @@ class JsonParser {
     var $$;
     _beginToken(7);  
     // => "false" WS # Choice
-    switch (_ch == 102 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch == 102 ? 0 : _ch == -1 ? 2 : 1) {
       // [f]
       case 0:
         // => "false" WS # Sequence
@@ -1158,10 +1158,10 @@ class JsonParser {
         }
         // <= "false" WS # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -1181,7 +1181,7 @@ class JsonParser {
     var $$;
     _beginToken(8);  
     // => DECIMAL_POINT DIGIT+ WS # Choice
-    switch (_ch == 46 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch == 46 ? 0 : _ch == -1 ? 2 : 1) {
       // [.]
       case 0:
         // => DECIMAL_POINT DIGIT+ WS # Sequence
@@ -1242,10 +1242,10 @@ class JsonParser {
         }
         // <= DECIMAL_POINT DIGIT+ WS # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -1284,10 +1284,10 @@ class JsonParser {
         $$ = _matchRange(97, 102);
         // <= [a-f]
         break;
-      // EOF
       // No matches
+      // EOF
       case 3:
-      case -1:
+      case 4:
         $$ = null;
         success = false;
         break;
@@ -1307,7 +1307,7 @@ class JsonParser {
     var $$;
     _beginToken(9);  
     // => DIGIT+ WS # Choice
-    switch (_ch >= 48 && _ch <= 57 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch >= 48 && _ch <= 57 ? 0 : _ch == -1 ? 2 : 1) {
       // [0-9]
       case 0:
         // => DIGIT+ WS # Sequence
@@ -1361,10 +1361,10 @@ class JsonParser {
         }
         // <= DIGIT+ WS # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -1384,7 +1384,7 @@ class JsonParser {
     var $$;
     _beginToken(10);  
     // => ":" WS # Choice
-    switch (_ch == 58 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch == 58 ? 0 : _ch == -1 ? 2 : 1) {
       // [:]
       case 0:
         // => ":" WS # Sequence
@@ -1415,10 +1415,10 @@ class JsonParser {
         }
         // <= ":" WS # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -1438,7 +1438,7 @@ class JsonParser {
     var $$;
     _beginToken(11);  
     // => "null" WS # Choice
-    switch (_ch == 110 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch == 110 ? 0 : _ch == -1 ? 2 : 1) {
       // [n]
       case 0:
         // => "null" WS # Sequence
@@ -1470,10 +1470,10 @@ class JsonParser {
         }
         // <= "null" WS # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -1564,10 +1564,10 @@ class JsonParser {
         }
         // <= "-"? INT FRAC? EXP? WS # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -1587,7 +1587,7 @@ class JsonParser {
     var $$;
     _beginToken(0);  
     // => ["] # Choice
-    switch (_ch == 34 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch == 34 ? 0 : _ch == -1 ? 2 : 1) {
       // [\"]
       case 0:
         // => ["]
@@ -1600,10 +1600,10 @@ class JsonParser {
         }
         // <= ["]
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -1623,7 +1623,7 @@ class JsonParser {
     var $$;
     _beginToken(13);  
     // => QUOTATION_MARK CHAR* QUOTATION_MARK WS # Choice
-    switch (_ch == 34 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch == 34 ? 0 : _ch == -1 ? 2 : 1) {
       // [\"]
       case 0:
         // => QUOTATION_MARK CHAR* QUOTATION_MARK WS # Sequence
@@ -1683,10 +1683,10 @@ class JsonParser {
         }
         // <= QUOTATION_MARK CHAR* QUOTATION_MARK WS # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -1706,7 +1706,7 @@ class JsonParser {
     var $$;
     _beginToken(14);  
     // => "true" WS # Choice
-    switch (_ch == 116 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch == 116 ? 0 : _ch == -1 ? 2 : 1) {
       // [t]
       case 0:
         // => "true" WS # Sequence
@@ -1738,10 +1738,10 @@ class JsonParser {
         }
         // <= "true" WS # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -1793,10 +1793,10 @@ class JsonParser {
         $$ = _matchRange(93, 1114111);
         // <= [\]-\u10ffff]
         break;
-      // EOF
       // No matches
+      // EOF
       case 4:
-      case -1:
+      case 5:
         $$ = null;
         success = false;
         break;
@@ -1816,7 +1816,7 @@ class JsonParser {
     var $$;
     _beginToken(15);  
     // => "," WS # Choice
-    switch (_ch == 44 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch == 44 ? 0 : _ch == -1 ? 2 : 1) {
       // [,]
       case 0:
         // => "," WS # Sequence
@@ -1847,10 +1847,10 @@ class JsonParser {
         }
         // <= "," WS # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -1874,7 +1874,7 @@ class JsonParser {
       // [\t-\n] [\r] [ ]
       // EOF
       case 0:
-      case 1:
+      case 2:
         // => [\t-\n\r ]*
         var testing0 = _testing; 
         for (var reps = []; ; ) {
@@ -1894,7 +1894,7 @@ class JsonParser {
         // <= [\t-\n\r ]*
         break;
       // No matches
-      case -1:
+      case 1:
         $$ = null;
         success = true;
         break;
@@ -1913,7 +1913,7 @@ class JsonParser {
     // array <- BEGIN_ARRAY (value (VALUE_SEPARATOR value)*)? END_ARRAY
     var $$;
     // => BEGIN_ARRAY (value (VALUE_SEPARATOR value)*)? END_ARRAY # Choice
-    switch (_ch == 91 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch == 91 ? 0 : _ch == -1 ? 2 : 1) {
       // [[]
       case 0:
         // => BEGIN_ARRAY (value (VALUE_SEPARATOR value)*)? END_ARRAY # Sequence
@@ -1944,7 +1944,7 @@ class JsonParser {
                 for (var reps = []; ; ) {
                   _testing = _cursor;
                   // => VALUE_SEPARATOR value # Choice
-                  switch (_ch == 44 ? 0 : _ch == -1 ? 1 : -1) {
+                  switch (_ch == 44 ? 0 : _ch == -1 ? 2 : 1) {
                     // [,]
                     case 0:
                       // => VALUE_SEPARATOR value # Sequence
@@ -1976,10 +1976,10 @@ class JsonParser {
                       }
                       // <= VALUE_SEPARATOR value # Sequence
                       break;
-                    // EOF
                     // No matches
+                    // EOF
                     case 1:
-                    case -1:
+                    case 2:
                       $$ = null;
                       success = false;
                       break;
@@ -2010,10 +2010,10 @@ class JsonParser {
               }
               // <= value (VALUE_SEPARATOR value)* # Sequence
               break;
-            // EOF
             // No matches
+            // EOF
             case 1:
-            case -1:
+            case 2:
               $$ = null;
               success = false;
               break;
@@ -2051,10 +2051,10 @@ class JsonParser {
         }
         // <= BEGIN_ARRAY (value (VALUE_SEPARATOR value)*)? END_ARRAY # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -2072,7 +2072,7 @@ class JsonParser {
     // member <- STRING NAME_SEPARATOR value
     var $$;
     // => STRING NAME_SEPARATOR value # Choice
-    switch (_ch == 34 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch == 34 ? 0 : _ch == -1 ? 2 : 1) {
       // [\"]
       case 0:
         // => STRING NAME_SEPARATOR value # Sequence
@@ -2111,10 +2111,10 @@ class JsonParser {
         }
         // <= STRING NAME_SEPARATOR value # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -2132,7 +2132,7 @@ class JsonParser {
     // object <- BEGIN_OBJECT (member (VALUE_SEPARATOR member)*)? END_OBJECT
     var $$;
     // => BEGIN_OBJECT (member (VALUE_SEPARATOR member)*)? END_OBJECT # Choice
-    switch (_ch == 123 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch == 123 ? 0 : _ch == -1 ? 2 : 1) {
       // [{]
       case 0:
         // => BEGIN_OBJECT (member (VALUE_SEPARATOR member)*)? END_OBJECT # Sequence
@@ -2147,7 +2147,7 @@ class JsonParser {
           var testing0 = _testing;
           _testing = _cursor;
           // => member (VALUE_SEPARATOR member)* # Choice
-          switch (_ch == 34 ? 0 : _ch == -1 ? 1 : -1) {
+          switch (_ch == 34 ? 0 : _ch == -1 ? 2 : 1) {
             // [\"]
             case 0:
               // => member (VALUE_SEPARATOR member)* # Sequence
@@ -2163,7 +2163,7 @@ class JsonParser {
                 for (var reps = []; ; ) {
                   _testing = _cursor;
                   // => VALUE_SEPARATOR member # Choice
-                  switch (_ch == 44 ? 0 : _ch == -1 ? 1 : -1) {
+                  switch (_ch == 44 ? 0 : _ch == -1 ? 2 : 1) {
                     // [,]
                     case 0:
                       // => VALUE_SEPARATOR member # Sequence
@@ -2195,10 +2195,10 @@ class JsonParser {
                       }
                       // <= VALUE_SEPARATOR member # Sequence
                       break;
-                    // EOF
                     // No matches
+                    // EOF
                     case 1:
-                    case -1:
+                    case 2:
                       $$ = null;
                       success = false;
                       break;
@@ -2229,10 +2229,10 @@ class JsonParser {
               }
               // <= member (VALUE_SEPARATOR member)* # Sequence
               break;
-            // EOF
             // No matches
+            // EOF
             case 1:
-            case -1:
+            case 2:
               $$ = null;
               success = false;
               break;
@@ -2270,10 +2270,10 @@ class JsonParser {
         }
         // <= BEGIN_OBJECT (member (VALUE_SEPARATOR member)*)? END_OBJECT # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -2334,10 +2334,10 @@ class JsonParser {
         $$ = _parse_object();
         // <= object
         break;
-      // EOF
       // No matches
+      // EOF
       case 7:
-      case -1:
+      case 8:
         $$ = null;
         success = false;
         break;
@@ -2527,10 +2527,10 @@ class JsonParser {
         }
         // <= WS? value EOF # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;

@@ -24,7 +24,7 @@ class RepetitionExpressionsResolver extends ExpressionResolver {
       expression.flag |= child.flag & Expression.FLAG_REPETITION;
     }
 
-    processed.remove(expression);
+    //processed.remove(expression);
     return null;
   }
 

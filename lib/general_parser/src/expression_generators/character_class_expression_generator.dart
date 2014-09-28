@@ -1,6 +1,8 @@
 part of peg.general_parser.expressions_generators;
 
 class CharacterClassExpressionGenerator extends ExpressionGenerator {
+  static const String _ASCII = GeneralParserClassGenerator.ASCII;
+
   static const String _CH = ParserClassGenerator.CH;
 
   static const String _CURSOR = ParserClassGenerator.CURSOR;
@@ -34,6 +36,8 @@ class CharacterClassExpressionGenerator extends ExpressionGenerator {
   static const String _TEMPLATE_EMPTY = 'TEMPLATE_EMPTY';
 
   static const String _TEMPLATE_RANGE = 'TEMPLATE_RANGE';
+
+  static const String _TEMPLATE_RANGE_INLINE = 'TEMPLATE_RANGE_INLINE';
 
   static const String _TEMPLATE_RANGES = 'TEMPLATE_RANGES';
 
@@ -77,6 +81,23 @@ $_RESULT = \'\';
 $_RESULT = $_MATCH_RANGE({{MIN}}, {{MAX}});
 {{#COMMENT_OUT}}''';
 
+  static final String _templateRangeInline = '''
+{{#COMMENT_IN}}
+$_SUCCESS = $_CH != -1;
+if ($_SUCCESS) {
+  if ($_CH < 128) {
+    $_RESULT = $_ASCII[$_CH];  
+  } else {
+    $_RESULT = new String.fromCharCode($_CH);
+  }        
+  if (++$_CURSOR < $_INPUT_LEN) {
+    $_CH = $_INPUT[$_CURSOR];
+  } else {
+    $_CH = $_EOF;
+  }  
+} else $_RESULT = null;
+{{#COMMENT_OUT}}''';
+
   static final String _templateRanges = '''
 {{#COMMENT_IN}}
 $_RESULT = $_MATCH_RANGES({{RANGES}});
@@ -107,6 +128,7 @@ $_RESULT = $_MATCH_RANGES({{RANGES}});
     addTemplate(_TEMPLATE_CHARACTER_INLINE, _templateCharacterInline);
     addTemplate(_TEMPLATE_EMPTY, _templateEmpty);
     addTemplate(_TEMPLATE_RANGE, _templateRange);
+    addTemplate(_TEMPLATE_RANGE_INLINE, _templateRangeInline);
     addTemplate(_TEMPLATE_RANGES, _templateRanges);
     var ranges = _expression.ranges;
     _ascii = new SparseBoolList();
@@ -194,7 +216,7 @@ $_RESULT = $_MATCH_RANGES({{RANGES}});
   }
 
   List<String> _generateCharacter() {
-    if (isFirstNonRepeating(_expression)) {
+    if (isFirstBarrage(_expression)) {
       return _generateCharacterInline();
     }
 
@@ -233,6 +255,10 @@ $_RESULT = $_MATCH_RANGES({{RANGES}});
   }
 
   List<String> _generateRange() {
+    if (isFirstBarrage(_expression)) {
+      //return _generateRangeInline();
+    }
+
     var block = getTemplateBlock(_TEMPLATE_RANGE);
     if (options.comment) {
       block.assign('#COMMENT_IN', '// => $_expression');
@@ -241,6 +267,16 @@ $_RESULT = $_MATCH_RANGES({{RANGES}});
 
     block.assign('MAX', _singleRange.end);
     block.assign('MIN', _singleRange.start);
+    return block.process();
+  }
+
+  List<String> _generateRangeInline() {
+    var block = getTemplateBlock(_TEMPLATE_RANGE_INLINE);
+    if (options.comment) {
+      block.assign('#COMMENT_IN', '// => $_expression');
+      block.assign('#COMMENT_OUT', '// <= $_expression');
+    }
+
     return block.process();
   }
 

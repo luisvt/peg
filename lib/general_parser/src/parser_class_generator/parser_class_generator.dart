@@ -339,7 +339,7 @@ class GeneralParserClassGenerator extends ParserClassGenerator {
         }
 
         var value = "<int>[${list.join(', ')}]";
-        addVariable(new VariableGenerator("$RANGES$i", "static final List<int>", value: ""), true);
+        addVariable(new VariableGenerator("$RANGES$i", "static final List<int>", value: value), true);
       }
     }
 

@@ -14,25 +14,30 @@ class FrontendAnalyzer {
       rule.expression.accept(new ExpressionOwnershipResolver());
     }
 
-    new OptionalExpressionsResolver().resolve(rules);
-    new RepetitionExpressionsResolver().resolve(rules);
-    new ExpressionAbleNotConsumeInputResolver().resolve(rules);
-    new LeftExpressionsResolver().resolve(rules);
-    new RightExpressionsResolver().resolve(rules);
-    new ExpressionLengthResovler().resolve(rules);
-    new StartCharactersResolver().resolve(rules);
-    new ExpressionMatchesEofResolver().resolve(rules);
     for (var i = 0; i <= 1; i++) {
       for (var rule in rules) {
         rule.expression.accept(new InvocationsResolver(i == 0));
       }
     }
 
-    new TerminalRulesFinder().find(rules);
-    new ExpectedLexemesResolver().resolve(rules);
-    new ExpressionWithActionsResolver().resolve(rules);
-    new StartingRulesFinder().find(rules);
+    var startingRules = new StartingRulesFinder().find(rules);
 
+    new OptionalExpressionsResolver().resolve(startingRules);
+    new RepetitionExpressionsResolver().resolve(startingRules);
+    new ExpressionAbleNotConsumeInputResolver().resolve(startingRules);
+    new LeftExpressionsResolver().resolve(startingRules);
+    new RightExpressionsResolver().resolve(startingRules);
+    new ExpressionLengthResovler().resolve(startingRules);
+    new StartCharactersResolver().resolve(startingRules);
+    new ExpressionMatchesEofResolver().resolve(startingRules);
+
+    // TODO: Use startingRules
+    new TerminalRulesFinder().find(rules);
+    // TODO: Optimize NotPredicate in ExpectedLexemesResolver
+    new ExpectedLexemesResolver().resolve(rules);
+    new ExpressionWithActionsResolver().resolve(startingRules);
+
+    /*
     // Exprerimental
     for (var rule in rules) {
       if (rule.directCallers.length == 0) {
@@ -42,6 +47,7 @@ class FrontendAnalyzer {
         //print("==============");
       }
     }
+    */
   }
 
   void _print(ExpressionState state, Set<ExpressionState> reported) {

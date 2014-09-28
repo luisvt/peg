@@ -33,7 +33,7 @@ class OptionalExpressionsResolver extends ExpressionResolver {
       expression.flag |= child.flag & Expression.FLAG_IS_OPTIONAL;
     }
 
-    processed.remove(expression);
+    //processed.remove(expression);
     return null;
   }
 

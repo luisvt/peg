@@ -5,11 +5,6 @@ class TerminalRulesFinder {
     _reanalyze(rules);
     for (var rule in rules) {
       var expression = rule.expression;
-      if (expression.startsWithAny) {
-        //rule.isLexeme = false;
-        //rule.isMorpheme = false;
-        //rule.isTerminal = false;
-      }
     }
 
     _reanalyze(rules);

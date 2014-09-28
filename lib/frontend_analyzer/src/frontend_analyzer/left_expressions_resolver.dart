@@ -32,7 +32,7 @@ class LeftExpressionsResolver extends ExpressionResolver {
       _applyData(child, expression);
     }
 
-    processed.remove(expression);
+    //processed.remove(expression);
     return null;
   }
 
@@ -71,8 +71,6 @@ class LeftExpressionsResolver extends ExpressionResolver {
 
   Object _applyData(Expression from, Expression to) {
     to.directLeftExpressions.add(from);
-    // TODO: to.directLeftExpressions.addAll(from.directLeftExpressions);
-    //to.directLeftExpressions.addAll(from.directLeftExpressions);
     to.allLeftExpressions.add(from);
     to.allLeftExpressions.addAll(from.allLeftExpressions);
     return null;

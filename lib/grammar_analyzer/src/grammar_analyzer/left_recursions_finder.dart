@@ -10,8 +10,11 @@ class LeftRecursionsFinder extends UnifyingExpressionVisitor {
       var list = new List<RuleExpression>();
       //for(var expression in ruleExpression.allLeftExpressions) {
       for (var expression in ruleExpression.directLeftExpressions) {
-        if (expression is RuleExpression) {
-          list.add(expression);
+        if (expression is SequenceExpression) {
+          var first = expression.expressions.first;
+          if (first is RuleExpression) {
+            list.add(first);
+          }
         }
       }
 
@@ -91,7 +94,7 @@ class LeftRecursionsFinder extends UnifyingExpressionVisitor {
         if (!processed.contains(left)) {
           processed.add(left);
           var recursion = _findRecursion(rule, left, processed, leftRules);
-          processed.remove(left);
+          //processed.remove(left);
           if (recursion.length != 0) {
             for (var cyclic in recursion) {
               var after = [expression];

@@ -52,7 +52,7 @@ class ExpressionAbleNotConsumeInputResolver extends ExpressionResolver {
       _applyData(child, expression);
     }
 
-    processed.remove(expression);
+    //processed.remove(expression);
     return null;
   }
 

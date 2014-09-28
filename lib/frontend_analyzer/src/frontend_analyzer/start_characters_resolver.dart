@@ -43,16 +43,7 @@ class StartCharactersResolver extends ExpressionResolver {
   Object visitNotPredicate(NotPredicateExpression expression) {
     var child = expression.expression;
     child.accept(this);
-    var next = _getNextExpression(expression);
-    var startCharacters = expression.startCharacters;
-    if (next == null) {
-      startCharacters.addGroup(Expression.unicodeGroup);
-    } else {
-      for (var group in next.startCharacters.groups) {
-        startCharacters.addGroup(group);
-      }
-    }
-
+    expression.startCharacters.addGroup(Expression.unicodeGroup);
     return null;
   }
 
@@ -62,11 +53,6 @@ class StartCharactersResolver extends ExpressionResolver {
   }
 
   Object visitOptional(OptionalExpression expression) {
-    var next = _getNextExpression(expression);
-    if (next != null) {
-      _applyData(next, expression);
-    }
-
     _visitChild(expression);
     return null;
   }
@@ -82,7 +68,7 @@ class StartCharactersResolver extends ExpressionResolver {
       _applyData(child, expression);
     }
 
-    processed.remove(expression);
+    //processed.remove(expression);
     return null;
   }
 
@@ -98,14 +84,37 @@ class StartCharactersResolver extends ExpressionResolver {
   }
 
   Object visitSequence(SequenceExpression expression) {
-    var skip = false;
-    for (var child in expression.expressions) {
-      child.accept(this);
-      if (!skip) {
-        _applyData(child, expression);
-        if (!child.isOptional) {
-          skip = true;
+    var passes = 1;
+    Expression prev;
+    for (var i = 0; i < passes; i++) {
+      prev = null;
+      var skip = false;
+      for (var child in expression.expressions) {
+        child.accept(this);
+        if (prev != null) {
+          var type = prev.type;
+          switch (type) {
+            case ExpressionTypes.NOT_PREDICATE:
+            case ExpressionTypes.OPTIONAL:
+            case ExpressionTypes.ZERO_OR_MORE:
+              if (type == ExpressionTypes.NOT_PREDICATE) {
+                prev.startCharacters.clear();
+              }
+
+              _applyData(child, prev);
+              passes = 2;
+              break;
+          }
         }
+
+        if (!skip) {
+          _applyData(child, expression);
+          if (!child.isOptional) {
+            skip = true;
+          }
+        }
+
+        prev = child;
       }
     }
 
@@ -113,11 +122,6 @@ class StartCharactersResolver extends ExpressionResolver {
   }
 
   Object visitZeroOrMore(ZeroOrMoreExpression expression) {
-    var next = _getNextExpression(expression);
-    if (next != null) {
-      _applyData(next, expression);
-    }
-
     _visitChild(expression);
     return null;
   }
@@ -126,20 +130,6 @@ class StartCharactersResolver extends ExpressionResolver {
     var startCharacters = to.startCharacters;
     for (var group in from.startCharacters.groups) {
       startCharacters.addGroup(group);
-    }
-
-    return null;
-  }
-
-  Expression _getNextExpression(Expression expression) {
-    var parent = expression.parent;
-    if (parent is SequenceExpression) {
-      var position = expression.positionInSequence;
-      if (position < parent.expressions.length - 1) {
-        return parent.expressions[position + 1];
-      } else if (parent.parent is OrderedChoiceExpression) {
-        return _getNextExpression(parent.parent);
-      }
     }
 
     return null;

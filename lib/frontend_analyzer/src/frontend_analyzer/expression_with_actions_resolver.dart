@@ -55,7 +55,7 @@ class ExpressionWithActionsResolver extends ExpressionResolver {
       _visitChild(expression, child);
     }
 
-    processed.remove(expression);
+    //processed.remove(expression);
     return null;
   }
 

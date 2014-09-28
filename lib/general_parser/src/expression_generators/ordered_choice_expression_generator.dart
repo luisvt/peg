@@ -194,6 +194,8 @@ switch ({{STATE}}) {
       }
     }
 
+    final int eofState = states.length + 1;
+    final int failState = states.length;
     int singleCharacter;
     RangeList singleRange;
     if (ranges.length == 1) {
@@ -209,12 +211,12 @@ switch ({{STATE}}) {
     }
 
     if (singleCharacter != null) {
-      var state = "$_CH == $singleCharacter ? 0 : $_CH == -1 ? 1 : -1";
+      var state = "$_CH == $singleCharacter ? 0 : $_CH == -1 ? $eofState : $failState";
       blockSwitch.assign("STATE", state);
     } else if (singleRange != null) {
       var start = singleRange.start;
       var end = singleRange.end;
-      var state = "$_CH >= $start && $_CH <= $end ? 0 : $_CH == -1 ? 1 : -1";
+      var state = "$_CH >= $start && $_CH <= $end ? 0 : $_CH == -1 ? $eofState : $failState";
       blockSwitch.assign("STATE", state);
     } else {
       var variableName = parserClassGenerator.addTransition(ranges);
@@ -246,7 +248,6 @@ switch ({{STATE}}) {
     }
 
     // EOF list
-    //var eof = <Expression>[];
     var eof = new _List<Expression>();
     Expression optional;
     for (var expression in _expression.expressions) {
@@ -261,8 +262,22 @@ switch ({{STATE}}) {
       }
     }
 
+    comments[failState] = "No matches";
+    if (optional != null) {
+      if (optional is ZeroOrMoreExpression) {
+        // TODO: Not tested
+        cases[failState] = _generatePredefined("[]", true);
+      } else {
+        cases[failState] = _generatePredefined("null", true);
+      }
+
+    } else {
+      cases[failState] = _generatePredefined("null", false);
+    }
+
     var equality = new DeepCollectionEquality();
-    comments[states.length] = "EOF";
+    comments[eofState] = "EOF";
+    // Reduce EOF state code
     if (!eof.isEmpty) {
       int state;
       for (var key in map.keys) {
@@ -273,25 +288,12 @@ switch ({{STATE}}) {
       }
 
       if (state != null) {
-        cases[states.length] = cases[state];
+        cases[eofState] = cases[state];
       } else {
-        cases[states.length] = _generateExpressions(eof);
+        cases[eofState] = _generateExpressions(eof);
       }
     } else {
-      cases[states.length] = _generatePredefined("null", false);
-    }
-
-    comments[-1] = "No matches";
-    if (optional != null) {
-      if (optional is ZeroOrMoreExpression) {
-        // TODO: Not tested
-        cases[-1] = _generatePredefined("[]", true);
-      } else {
-        cases[-1] = _generatePredefined("null", true);
-      }
-
-    } else {
-      cases[-1] = _generatePredefined("null", false);
+      cases[eofState] = _generatePredefined("null", false);
     }
 
     var multiCases = <List<int>>[];
@@ -311,7 +313,6 @@ switch ({{STATE}}) {
 
       if (!found) {
         multiCases.add([key]);
-      } else {
       }
     }
 
@@ -331,23 +332,6 @@ switch ({{STATE}}) {
       block.assign("#EXPRESSIONS", cases[keys.first]);
       blockSwitch.assign("#CASES", block.process());
     }
-
-    /*
-    var blockCase = getTemplateBlock(_TEMPLATE_CASE);
-    for (var key in cases.keys) {
-      var block = blockCase.clone();
-      if (options.comment) {
-        var comment = comments[key];
-        if (comment != null) {
-          block.assign("#COMMENT", "// $comment");
-        }
-      }
-
-      block.assign("VALUE", key);
-      block.assign("#EXPRESSIONS", cases[key]);
-      blockSwitch.assign("#CASES", block.process());
-    }
-    */
 
     return blockSwitch.process();
   }

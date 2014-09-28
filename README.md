@@ -3,7 +3,7 @@
 
 PEG (Parsing expression grammar) parsers generator.
 
-Version: 0.0.28
+Version: 0.0.29
 
 Status: Experimental
 
@@ -537,10 +537,10 @@ class ArithmeticParser {
         }      
       } 
     }
-    if (_ch == -1) {
+    if (_ch != -1) {
       return state;
     }
-    return -1;  
+    return state + 1;  
   }
   
   String _matchAny() {
@@ -732,10 +732,10 @@ class ArithmeticParser {
         $$ = _parse_NUMBER();
         // <= NUMBER
         break;
-      // EOF
       // No matches
+      // EOF
       case 2:
-      case -1:
+      case 3:
         $$ = null;
         success = false;
         break;
@@ -754,7 +754,7 @@ class ArithmeticParser {
     var $$;
     _beginToken(0);  
     // => ")" SPACES # Choice
-    switch (_ch == 41 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch == 41 ? 0 : _ch == -1 ? 2 : 1) {
       // [)]
       case 0:
         // => ")" SPACES # Sequence
@@ -785,10 +785,10 @@ class ArithmeticParser {
         }
         // <= ")" SPACES # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -808,7 +808,7 @@ class ArithmeticParser {
     var $$;
     _beginToken(1);  
     // => "/" SPACES # Choice
-    switch (_ch == 47 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch == 47 ? 0 : _ch == -1 ? 2 : 1) {
       // [/]
       case 0:
         // => "/" SPACES # Sequence
@@ -846,10 +846,10 @@ class ArithmeticParser {
         }
         // <= "/" SPACES # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -869,11 +869,11 @@ class ArithmeticParser {
     var $$;
     _beginToken(2);  
     // => !. # Choice
-    switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
       // [\u0000-\u0010ffff]
       // EOF
       case 0:
-      case 1:
+      case 2:
         // => !.
         var ch0 = _ch, pos0 = _cursor, testing0 = _testing; 
         _testing = _inputLen + 1;
@@ -888,7 +888,7 @@ class ArithmeticParser {
         // <= !.
         break;
       // No matches
-      case -1:
+      case 1:
         $$ = null;
         success = false;
         break;
@@ -908,7 +908,7 @@ class ArithmeticParser {
     var $$;
     _beginToken(3);  
     // => "-" SPACES # Choice
-    switch (_ch == 45 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch == 45 ? 0 : _ch == -1 ? 2 : 1) {
       // [-]
       case 0:
         // => "-" SPACES # Sequence
@@ -946,10 +946,10 @@ class ArithmeticParser {
         }
         // <= "-" SPACES # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -969,7 +969,7 @@ class ArithmeticParser {
     var $$;
     _beginToken(4);  
     // => "*" SPACES # Choice
-    switch (_ch == 42 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch == 42 ? 0 : _ch == -1 ? 2 : 1) {
       // [*]
       case 0:
         // => "*" SPACES # Sequence
@@ -1007,10 +1007,10 @@ class ArithmeticParser {
         }
         // <= "*" SPACES # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -1030,7 +1030,7 @@ class ArithmeticParser {
     var $$;
     _beginToken(5);  
     // => [0-9]+ SPACES # Choice
-    switch (_ch >= 48 && _ch <= 57 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch >= 48 && _ch <= 57 ? 0 : _ch == -1 ? 2 : 1) {
       // [0-9]
       case 0:
         // => [0-9]+ SPACES # Sequence
@@ -1084,10 +1084,10 @@ class ArithmeticParser {
         }
         // <= [0-9]+ SPACES # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -1107,7 +1107,7 @@ class ArithmeticParser {
     var $$;
     _beginToken(6);  
     // => "(" SPACES # Choice
-    switch (_ch == 40 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch == 40 ? 0 : _ch == -1 ? 2 : 1) {
       // [(]
       case 0:
         // => "(" SPACES # Sequence
@@ -1138,10 +1138,10 @@ class ArithmeticParser {
         }
         // <= "(" SPACES # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -1161,7 +1161,7 @@ class ArithmeticParser {
     var $$;
     _beginToken(7);  
     // => "+" SPACES # Choice
-    switch (_ch == 43 ? 0 : _ch == -1 ? 1 : -1) {
+    switch (_ch == 43 ? 0 : _ch == -1 ? 2 : 1) {
       // [+]
       case 0:
         // => "+" SPACES # Sequence
@@ -1199,10 +1199,10 @@ class ArithmeticParser {
         }
         // <= "+" SPACES # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -1233,7 +1233,7 @@ class ArithmeticParser {
       // [\t-\n] [\r] [ ]
       // EOF
       case 0:
-      case 1:
+      case 2:
         // => WS*
         var testing0 = _testing; 
         for (var reps = []; ; ) {
@@ -1253,7 +1253,7 @@ class ArithmeticParser {
         // <= WS*
         break;
       // No matches
-      case -1:
+      case 1:
         $$ = null;
         success = true;
         break;
@@ -1306,10 +1306,10 @@ class ArithmeticParser {
                 $$ = _parse_MINUS();
                 // <= MINUS
                 break;
-              // EOF
               // No matches
+              // EOF
               case 2:
-              case -1:
+              case 3:
                 $$ = null;
                 success = false;
                 break;
@@ -1350,10 +1350,10 @@ class ArithmeticParser {
           break;
         }
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -1405,10 +1405,10 @@ class ArithmeticParser {
                 $$ = _parse_DIV();
                 // <= DIV
                 break;
-              // EOF
               // No matches
+              // EOF
               case 2:
-              case -1:
+              case 3:
                 $$ = null;
                 success = false;
                 break;
@@ -1449,10 +1449,10 @@ class ArithmeticParser {
           break;
         }
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;
@@ -1492,10 +1492,10 @@ class ArithmeticParser {
           break;
         }
         break;
-      // EOF
       // No matches
+      // EOF
       case 2:
-      case -1:
+      case 3:
         $$ = null;
         success = false;
         break;
@@ -1686,10 +1686,10 @@ class ArithmeticParser {
         }
         // <= SPACES? Sentence EOF # Sequence
         break;
-      // EOF
       // No matches
+      // EOF
       case 1:
-      case -1:
+      case 2:
         $$ = null;
         success = false;
         break;

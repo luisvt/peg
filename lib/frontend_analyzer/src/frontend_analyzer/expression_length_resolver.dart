@@ -51,7 +51,7 @@ class ExpressionLengthResovler extends ExpressionResolver {
     }
 
     expression.length = length;
-    processed.remove(expression);
+    //processed.remove(expression);
     return null;
   }
 

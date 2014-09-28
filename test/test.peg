@@ -1,5 +1,2 @@
-a <- 'a' / b / a 
-b <- 'b' / c / b
-c <- 'c' / d / c
-d <- 'd' / e / d
-e <- 'e' / a
+x <- a
+a <- 'a' / a 'a'

@@ -101,7 +101,7 @@ class ExpectedLexemesResolver extends ExpressionResolver {
       owner.expectedStrings = expression.expectedStrings;
     }
 
-    processed.remove(expression);
+    //processed.remove(expression);
     return null;
   }
 

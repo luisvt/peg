@@ -32,10 +32,10 @@ int $NAME(List<List<int>> transitions) {
       }      
     } 
   }
-  if (_ch == -1) {
+  if (_ch != -1) {
     return state;
   }
-  return -1;  
+  return state + 1;  
 }
 ''';
 

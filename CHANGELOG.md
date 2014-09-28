@@ -1,3 +1,7 @@
+## 0.0.29
+
+- Fixed bug in `LeftRecursionsFinder`
+
 ## 0.0.28
 
 - Improved implementation of the symbol transition code generation

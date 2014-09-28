@@ -10,6 +10,7 @@ abstract class ExpressionResolver extends UnifyingExpressionVisitor {
     for (var i = 0; i < 2; i++) {
       level = i;
       for (var rule in rules) {
+        processed.clear();
         rule.expression.accept(this);
       }
     }

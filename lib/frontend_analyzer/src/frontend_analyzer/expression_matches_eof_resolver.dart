@@ -17,15 +17,7 @@ class ExpressionMatchesEofResolver extends ExpressionResolver {
   Object visitNotPredicate(NotPredicateExpression expression) {
     var child = expression.expression;
     child.accept(this);
-    if (_matchAllUnicode(child.startCharacters)) {
-      expression.flag |= Expression.FLAG_CAN_MATCH_EOF;
-    } else {
-      var next = _getNextExpression(expression);
-      if (_matchAllUnicode(child.startCharacters)) {
-        expression.flag |= Expression.FLAG_CAN_MATCH_EOF;
-      }
-    }
-
+    expression.flag |= Expression.FLAG_CAN_MATCH_EOF;
     return null;
   }
 
@@ -50,7 +42,7 @@ class ExpressionMatchesEofResolver extends ExpressionResolver {
       _applyData(child, expression);
     }
 
-    processed.remove(expression);
+    //processed.remove(expression);
     return null;
   }
 
@@ -100,30 +92,4 @@ class ExpressionMatchesEofResolver extends ExpressionResolver {
 
     return null;
   }
-
-  Expression _getNextExpression(Expression expression) {
-    var parent = expression.parent;
-    if (parent is SequenceExpression) {
-      var position = expression.positionInSequence;
-      if (position < parent.expressions.length - 1) {
-        return parent.expressions[position + 1];
-      } else if (parent.parent is OrderedChoiceExpression) {
-        return _getNextExpression(parent.parent);
-      }
-    }
-
-    return null;
-  }
-
-  bool _matchAllUnicode(SparseBoolList startCharacters) {
-    if (startCharacters.groupCount == 1) {
-      var first = startCharacters.groups.first;
-      if (first.start == Expression.unicodeGroup.start && first.end == Expression.unicodeGroup.end) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
 }
