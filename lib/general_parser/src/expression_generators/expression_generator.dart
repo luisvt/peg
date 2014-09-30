@@ -5,6 +5,8 @@ abstract class ExpressionGenerator extends TemplateGenerator {
 
   static const String POS = "pos";
 
+  static const String START_POS = "startPos";
+
   static const String TESTING = "testing";
 
   static const String _RESULT = ProductionRuleGenerator.VARIABLE_RESULT;

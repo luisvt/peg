@@ -15,8 +15,15 @@ class Utils {
       return [];
     }
 
-    code = code.substring(1, code.lastIndexOf("}"));
-    code = code.trimRight();
+    //code = code.trimRight();
+    var end = code.length - 1;
+    for ( ; end >= 0; end--) {
+      if (code.codeUnitAt(end) != 32) {
+        break;
+      }
+    }
+
+    code = code.substring(0, end + 1);
     code = code.replaceAll('\r\n', '\n');
     code = code.replaceAll('\r', '\n');
     code = code.replaceAll('\t', '  ');

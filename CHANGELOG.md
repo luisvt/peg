@@ -1,3 +1,9 @@
+## 0.0.30
+
+- Minor (speed up) changes in `json` grammar. From now the generated `json_parser` is a fast enough parser, given the fact that it is the generated PEG parser
+- Minor (speed up) changes in `peg` grammar
+- Minor (speed up) changes in expression resolvers
+
 ## 0.0.29
 
 - Fixed bug in `LeftRecursionsFinder`

@@ -7,6 +7,8 @@ class SequenceExpressionGenerator extends ListExpressionGenerator {
 
   static const String _RESULT = ProductionRuleGenerator.VARIABLE_RESULT;
 
+  static const String _START_POS = ParserClassGenerator.START_POS;
+
   static const String _SUCCESS = ParserClassGenerator.SUCCESS;
 
   static const String _TEMPLATE_ACTION = 'TEMPLATE_ACTION';
@@ -24,7 +26,7 @@ class SequenceExpressionGenerator extends ListExpressionGenerator {
   static final String _templateAction = '''
 if ($_SUCCESS) {    
   {{#VARIABLES}}
-  {{#CODE}}    
+  {{#CODE}}
 }''';
 
   static final String _templateFirst = '''
@@ -48,21 +50,25 @@ $_RESULT = seq;
 
   static final String _templateOuter = '''
 {{#COMMENT_IN}}
-var {{CH}} = $_CH, {{POS}} = $_CURSOR;
+var {{CH}} = $_CH, {{POS}} = $_CURSOR, {{START_POS}} = $_START_POS;
+$_START_POS = $_CURSOR;
 while (true) {  
   {{#EXPRESSIONS}}
-  break;  
+  break;
 }
 if (!$_SUCCESS) {
   $_CH = {{CH}};
   $_CURSOR = {{POS}};
 }
+$_START_POS = {{START_POS}};
 {{#COMMENT_OUT}}''';
 
   static final String _templateSingle = '''
 {{#COMMENT_IN}}
+var {{START_POS}} = $_START_POS;
 {{#EXPRESSION}}
 {{#ACTION}}
+$_START_POS = {{START_POS}};
 {{#COMMENT_OUT}}''';
 
   SequenceExpression _expression;
@@ -110,6 +116,7 @@ if (!$_SUCCESS) {
     var length = expressions.length;
     var ch = productionRuleGenerator.allocateBlockVariable(ExpressionGenerator.CH);
     var pos = productionRuleGenerator.allocateBlockVariable(ExpressionGenerator.POS);
+    var startPos = productionRuleGenerator.allocateBlockVariable(ExpressionGenerator.START_POS);
     for (var i = 0; i < length; i++) {
       TemplateBlock inner;
       var generator = _generators[i];
@@ -144,6 +151,7 @@ if (!$_SUCCESS) {
 
     block.assign('CH', ch);
     block.assign('POS', pos);
+    block.assign('START_POS', startPos);
     return block.process();
   }
 
@@ -179,6 +187,7 @@ if (!$_SUCCESS) {
 
   List<String> _generateSingle() {
     var block = getTemplateBlock(_TEMPLATE_SINGLE);
+    var startPos = productionRuleGenerator.allocateBlockVariable(ExpressionGenerator.START_POS);
     if (options.comment) {
       // TODO: Remove
       //block.assign('#COMMENT_IN', '// => $_expression # Sequence');
@@ -187,6 +196,7 @@ if (!$_SUCCESS) {
 
     block.assign('#EXPRESSION', _generators[0].generate());
     block.assign('#ACTION', _generateAction(_expression.expressions[0]));
+    block.assign('START_POS', startPos);
     return block.process();
   }
 }

@@ -27,6 +27,8 @@ abstract class ParserClassGenerator extends ClassGenerator {
 
   static const String INPUT_LEN = "_inputLen";
 
+  static const String START_POS = "_startPos";
+
   static const String SUCCESS = "success";
 
   static const String TOKEN = "_token";
@@ -54,14 +56,14 @@ abstract class ParserClassGenerator extends ClassGenerator {
   ParserGenerator get parserGenerator;
 
   void _addCommonMembers() {
-    addMethod(new MethodCompactGenerator());
     addMethod(new MethodErrorsGenerator(this));
     addMethod(new MethodFailureGenerator(this));
     addMethod(new MethodFlattenGenerator());
-    addMethod(new MethodNormalizeGenerator());
+    addMethod(new MethodListGenerator());
+    addMethod(new MethodResetGenerator(this));
+    addMethod(new MethodTextGenerator());
     addMethod(new MethodToCodePointGenerator());
     addMethod(new MethodToCodePointsGenerator());
-    addMethod(new MethodResetGenerator(this));
     var grammar = parserGenerator.grammar;
     var options = parserGenerator.options;
     // Memoization
@@ -83,6 +85,7 @@ abstract class ParserClassGenerator extends ClassGenerator {
     addVariable(new VariableGenerator(FAILURE_POS, "int"));
     addVariable(new VariableGenerator(INPUT, "List<int>"));
     addVariable(new VariableGenerator(INPUT_LEN, "int"));
+    addVariable(new VariableGenerator(START_POS, "int"));
     addVariable(new VariableGenerator(SUCCESS, "bool"));
     addVariable(new VariableGenerator(TESTING, "int"));
     addVariable(new VariableGenerator(TOKEN, "int"));

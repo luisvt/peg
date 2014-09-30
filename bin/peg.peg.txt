@@ -4,7 +4,7 @@ Members <- "{" ActionBody* "}" SPACING
 
 Action <- "{" ActionBody* "}" SPACING
 
-ActionBody <- Action / !"}" .
+ActionBody <- "{" ActionBody* "}" / !"}" .
 
 Definition <- IDENTIFIER LEFTARROW Expression
 

@@ -46,14 +46,14 @@ Grammar <-
   SPACING? GLOBALS? Members? Definition+ EOF { $$ = new Grammar($4, $2, $3); }
 
 Members <-
-  '{' ActionBody* '}' SPACING { $$ = _normalize([$1, $2, $3, $4]).join(); }
+  '{' ActionBody* '}' SPACING { $$ = $2.join(); }
   
 Action <-
-  '{' ActionBody* '}' SPACING { $$ = _normalize([$1, $2, $3, $4]).join(); }
+  '{' ActionBody* '}' SPACING { $$ = $2.join(); }
 
 ActionBody <-
-  Action
-  / !'}' . { $$ = $2; }  
+  '{' ActionBody* '}' { $$ = _text(); }
+  / !'}' .            { $$ = _text(); }  
 
 Definition <-
   IDENTIFIER LEFTARROW Expression { $$ = new ProductionRule($1, $3); }
@@ -95,10 +95,10 @@ EOF <-
   !.
 
 GLOBALS <-
-  '%{' GLOBALS_BODY* '}%' SPACING { $$ = _normalize(["{", $2, "}", $4]).join(); }
+  '%{' GLOBALS_BODY* '}%' SPACING { $$ = $2.join(); }
 
 GLOBALS_BODY <-
-  !'}%' . { $$ = $2; }
+  !'}%' . { $$ = _text(); }
 
 IDENTIFIER <-
   IDENT_START IDENT_CONT* SPACING { $$ = _flatten([$1, $2]).join(); }

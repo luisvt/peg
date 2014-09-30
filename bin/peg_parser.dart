@@ -41,12 +41,13 @@ Expression _suffix(String suffix, Expression expression) {
   }
   return expression;
 }
+
 class PegParser {
   static final List<String> _ascii = new List<String>.generate(128, (c) => new String.fromCharCode(c));
   
   static final List<String> _expect0 = <String>["IDENTIFIER"];
   
-  static final List<String> _expect1 = <String>["{"];
+  static final List<String> _expect1 = <String>["\'{\'"];
   
   static final List<String> _expect10 = <String>["LITERAL"];
   
@@ -68,7 +69,7 @@ class PegParser {
   
   static final List<String> _expect19 = <String>["\'?\'"];
   
-  static final List<String> _expect2 = <String>[null, "{"];
+  static final List<String> _expect2 = <String>["ActionBody"];
   
   static final List<String> _expect20 = <String>["\'*\'"];
   
@@ -137,9 +138,9 @@ class PegParser {
   // '\r\n'
   static final List<int> _strings3 = <int>[13, 10];
   
-  final List<int> _tokenFlags = [1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+  final List<int> _tokenFlags = [1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
   
-  final List<String> _tokenNames = ["CHAR", "\'[\'", "LITERAL", "EOF", "\'%{\'", "GLOBALS_BODY", "IDENTIFIER", "IDENT_START", "IDENT_CONT", "\'<-\'", "RANGE", "\'/\'", "\'&\'", "\'!\'", "\'?\'", "\'*\'", "\'+\'", "\'(\'", "\')\'", "\'.\'", "HEX_NUMBER", "\'#\'", "SPACE", "SPACING", "EOL"];
+  final List<String> _tokenNames = ["\'{\'", "\'{\'", "ActionBody", "CHAR", "\'[\'", "LITERAL", "EOF", "\'%{\'", "GLOBALS_BODY", "IDENTIFIER", "IDENT_START", "IDENT_CONT", "\'<-\'", "RANGE", "\'/\'", "\'&\'", "\'!\'", "\'?\'", "\'*\'", "\'+\'", "\'(\'", "\')\'", "\'.\'", "HEX_NUMBER", "\'#\'", "SPACE", "SPACING", "EOL"];
   
   static final List<List<int>> _transitions0 = [[9, 10, 13, 13, 32, 32, 35, 35, 37, 37, 65, 90, 95, 95, 97, 123]];
   
@@ -193,6 +194,8 @@ class PegParser {
   
   int _inputLen;
   
+  int _startPos;
+  
   int _testing;
   
   int _token;
@@ -222,37 +225,6 @@ class PegParser {
       _token = tokenId;
       _tokenStart = _cursor;
     }  
-  }
-  
-  Iterable _compact(Iterable iterable) {  
-    if (iterable is List) {
-      var hasNull = false;
-      var length = iterable.length;
-      for (var i = 0; i < length; i++) {
-        if (iterable[i] == null) {
-          hasNull = true;
-          break;
-        }
-      }
-      if (!hasNull) {
-        return iterable;
-      }
-      var result = [];
-      for (var i = 0; i < length; i++) {
-        var element = iterable[i];
-        if (element != null) {
-          result.add(element);
-        }
-      }
-      return result;
-    }   
-    var result = [];
-    for (var element in iterable) {   
-      if (element != null) {
-        result.add(element);
-      }
-    }
-    return result;  
   }
   
   void _endToken() {
@@ -335,6 +307,16 @@ class PegParser {
       return state;
     }
     return state + 1;  
+  }
+  
+  List _list(Object first, List next) {
+    var length = next.length;
+    var list = new List(length + 1);
+    list[0] = first;
+    for (var i = 0; i < length; i++) {
+      list[i + 1] = next[i][1];
+    }
+    return list;
   }
   
   String _matchAny() {
@@ -469,24 +451,18 @@ class PegParser {
     }  
   }
   
-  List _normalize(dynamic value) {
-    if (value == null) {
-      return [];
-    }
-    return _flatten(_compact(value));
-  }
-  
   dynamic _parse_AND() {
     // LEXEME
     // AND <- "&" SPACING
     var $$;
-    _beginToken(12);  
+    _beginToken(15);  
     // => "&" SPACING # Choice
     switch (_ch == 38 ? 0 : _ch == -1 ? 2 : 1) {
       // [&]
       case 0:
         // => "&" SPACING # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => "&"
           $$ = '&';
@@ -510,14 +486,15 @@ class PegParser {
             final $1 = seq[0];
             // SPACING
             final $2 = seq[1];
-            $$ = $1;    
+            $$ = $1;
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= "&" SPACING # Sequence
         break;
       // No matches
@@ -538,15 +515,17 @@ class PegParser {
   }
   
   dynamic _parse_Action() {
-    // NONTERMINAL
+    // LEXEME
     // Action <- "{" ActionBody* "}" SPACING
     var $$;
+    _beginToken(1);  
     // => "{" ActionBody* "}" SPACING # Choice
     switch (_ch == 123 ? 0 : _ch == -1 ? 2 : 1) {
       // [{]
       case 0:
         // => "{" ActionBody* "}" SPACING # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => "{"
           $$ = '{';
@@ -598,14 +577,15 @@ class PegParser {
             final $3 = seq[2];
             // SPACING
             final $4 = seq[3];
-            $$ = _normalize([$1, $2, $3, $4]).join();    
+            $$ = $2.join();
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= "{" ActionBody* "}" SPACING # Sequence
         break;
       // No matches
@@ -617,25 +597,28 @@ class PegParser {
         break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: {
+      // Expected: '{'
       _failure(_expect1);
     }
     // <= "{" ActionBody* "}" SPACING # Choice
+    _endToken();
     return $$;
   }
   
   dynamic _parse_ActionBody() {
-    // NONTERMINAL
-    // ActionBody <- Action / !"}" .
+    // MORPHEME
+    // ActionBody <- "{" ActionBody* "}" / !"}" .
     var $$;
-    // => Action / !"}" . # Choice
+    _beginToken(2);  
+    // => "{" ActionBody* "}" / !"}" . # Choice
     switch (_getState(_transitions1)) {
       // [\u0000-z] [|-\u0010ffff]
       // EOF
       case 0:
       case 3:
         // => !"}" . # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => !"}"
           var ch1 = _ch, pos1 = _cursor, testing0 = _testing; 
@@ -662,35 +645,91 @@ class PegParser {
             final $1 = seq[0];
             // .
             final $2 = seq[1];
-            $$ = $2;    
+            $$ = _text();
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= !"}" . # Sequence
         break;
       // [{]
       case 1:
         while (true) {
-          // => Action
-          $$ = _parse_Action();
-          // <= Action
+          // => "{" ActionBody* "}" # Sequence
+          var ch2 = _ch, pos2 = _cursor, startPos1 = _startPos;
+          _startPos = _cursor;
+          while (true) {  
+            // => "{"
+            $$ = '{';
+            success = true;
+            if (++_cursor < _inputLen) {
+              _ch = _input[_cursor];
+            } else {
+              _ch = -1;
+            }
+            // <= "{"
+            if (!success) break;
+            var seq = new List(3)..[0] = $$;
+            // => ActionBody*
+            var testing1 = _testing; 
+            for (var reps = []; ; ) {
+              _testing = _cursor;
+              // => ActionBody
+              $$ = _parse_ActionBody();
+              // <= ActionBody
+              if (success) {  
+                reps.add($$);
+              } else {
+                success = true;
+                _testing = testing1;
+                $$ = reps;
+                break; 
+              }
+            }
+            // <= ActionBody*
+            if (!success) break;
+            seq[1] = $$;
+            // => "}"
+            $$ = _matchChar(125, '}');
+            // <= "}"
+            if (!success) break;
+            seq[2] = $$;
+            $$ = seq;
+            if (success) {    
+              // "{"
+              final $1 = seq[0];
+              // ActionBody*
+              final $2 = seq[1];
+              // "}"
+              final $3 = seq[2];
+              $$ = _text();
+            }
+            break;
+          }
+          if (!success) {
+            _ch = ch2;
+            _cursor = pos2;
+          }
+          _startPos = startPos1;
+          // <= "{" ActionBody* "}" # Sequence
           if (success) break;
           // => !"}" . # Sequence
-          var ch2 = _ch, pos2 = _cursor;
+          var ch3 = _ch, pos3 = _cursor, startPos2 = _startPos;
+          _startPos = _cursor;
           while (true) {  
             // => !"}"
-            var ch3 = _ch, pos3 = _cursor, testing1 = _testing; 
+            var ch4 = _ch, pos4 = _cursor, testing2 = _testing; 
             _testing = _inputLen + 1;
             // => "}"
             $$ = _matchChar(125, '}');
             // <= "}"
-            _ch = ch3;
-            _cursor = pos3; 
-            _testing = testing1;
+            _ch = ch4;
+            _cursor = pos4; 
+            _testing = testing2;
             $$ = null;
             success = !success;
             // <= !"}"
@@ -707,14 +746,15 @@ class PegParser {
               final $1 = seq[0];
               // .
               final $2 = seq[1];
-              $$ = $2;    
+              $$ = _text();
             }
-            break;  
+            break;
           }
           if (!success) {
-            _ch = ch2;
-            _cursor = pos2;
+            _ch = ch3;
+            _cursor = pos3;
           }
+          _startPos = startPos2;
           // <= !"}" . # Sequence
           break;
         }
@@ -726,10 +766,11 @@ class PegParser {
         break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: {, null
+      // Expected: ActionBody
       _failure(_expect2);
     }
-    // <= Action / !"}" . # Choice
+    // <= "{" ActionBody* "}" / !"}" . # Choice
+    _endToken();
     return $$;
   }
   
@@ -737,7 +778,7 @@ class PegParser {
     // MORPHEME
     // CHAR <- "\\" ["'\-\[-\]nrt] / HEX_NUMBER / !"\\" !EOL .
     var $$;
-    _beginToken(0);  
+    _beginToken(3);  
     // => "\\" ["'\-\[-\]nrt] / HEX_NUMBER / !"\\" !EOL . # Choice
     switch (_getState(_transitions8)) {
       // [\u0000-[] []-\u0010ffff]
@@ -745,7 +786,8 @@ class PegParser {
       case 0:
       case 3:
         // => !"\\" !EOL . # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => !"\\"
           var ch1 = _ch, pos1 = _cursor, testing0 = _testing; 
@@ -788,21 +830,23 @@ class PegParser {
             final $2 = seq[1];
             // .
             final $3 = seq[2];
-            $$ = _toCodePoint($3);    
+            $$ = _toCodePoint($3);
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= !"\\" !EOL . # Sequence
         break;
       // [\\]
       case 1:
         while (true) {
           // => "\\" ["'\-\[-\]nrt] # Sequence
-          var ch3 = _ch, pos3 = _cursor;
+          var ch3 = _ch, pos3 = _cursor, startPos1 = _startPos;
+          _startPos = _cursor;
           while (true) {  
             // => "\\"
             $$ = '\\';
@@ -826,22 +870,26 @@ class PegParser {
               final $1 = seq[0];
               // ["'\-\[-\]nrt]
               final $2 = seq[1];
-              $$ = _escape($2.codeUnitAt(0));    
+              $$ = _escape($2.codeUnitAt(0));
             }
-            break;  
+            break;
           }
           if (!success) {
             _ch = ch3;
             _cursor = pos3;
           }
+          _startPos = startPos1;
           // <= "\\" ["'\-\[-\]nrt] # Sequence
           if (success) break;
+          var startPos2 = _startPos;
           // => HEX_NUMBER
           $$ = _parse_HEX_NUMBER();
           // <= HEX_NUMBER
+          _startPos = startPos2;
           if (success) break;
           // => !"\\" !EOL . # Sequence
-          var ch4 = _ch, pos4 = _cursor;
+          var ch4 = _ch, pos4 = _cursor, startPos3 = _startPos;
+          _startPos = _cursor;
           while (true) {  
             // => !"\\"
             var ch5 = _ch, pos5 = _cursor, testing2 = _testing; 
@@ -884,14 +932,15 @@ class PegParser {
               final $2 = seq[1];
               // .
               final $3 = seq[2];
-              $$ = _toCodePoint($3);    
+              $$ = _toCodePoint($3);
             }
-            break;  
+            break;
           }
           if (!success) {
             _ch = ch4;
             _cursor = pos4;
           }
+          _startPos = startPos3;
           // <= !"\\" !EOL . # Sequence
           break;
         }
@@ -915,13 +964,14 @@ class PegParser {
     // LEXEME
     // CLASS <- "[" (!"]" RANGE)* "]" SPACING
     var $$;
-    _beginToken(1);  
+    _beginToken(4);  
     // => "[" (!"]" RANGE)* "]" SPACING # Choice
     switch (_ch == 91 ? 0 : _ch == -1 ? 2 : 1) {
       // [[]
       case 0:
         // => "[" (!"]" RANGE)* "]" SPACING # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => "["
           $$ = '[';
@@ -945,7 +995,8 @@ class PegParser {
               case 0:
               case 2:
                 // => !"]" RANGE # Sequence
-                var ch1 = _ch, pos1 = _cursor;
+                var ch1 = _ch, pos1 = _cursor, startPos1 = _startPos;
+                _startPos = _cursor;
                 while (true) {  
                   // => !"]"
                   var ch2 = _ch, pos2 = _cursor, testing1 = _testing; 
@@ -972,14 +1023,15 @@ class PegParser {
                     final $1 = seq[0];
                     // RANGE
                     final $2 = seq[1];
-                    $$ = $2;    
+                    $$ = $2;
                   }
-                  break;  
+                  break;
                 }
                 if (!success) {
                   _ch = ch1;
                   _cursor = pos1;
                 }
+                _startPos = startPos1;
                 // <= !"]" RANGE # Sequence
                 break;
               // No matches
@@ -1025,14 +1077,15 @@ class PegParser {
             final $3 = seq[2];
             // SPACING
             final $4 = seq[3];
-            $$ = new CharacterClassExpression($2);    
+            $$ = new CharacterClassExpression($2);
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= "[" (!"]" RANGE)* "]" SPACING # Sequence
         break;
       // No matches
@@ -1056,13 +1109,14 @@ class PegParser {
     // LEXEME
     // CLOSE <- ")" SPACING
     var $$;
-    _beginToken(18);  
+    _beginToken(21);  
     // => ")" SPACING # Choice
     switch (_ch == 41 ? 0 : _ch == -1 ? 2 : 1) {
       // [)]
       case 0:
         // => ")" SPACING # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => ")"
           $$ = ')';
@@ -1081,12 +1135,13 @@ class PegParser {
           if (!success) break;
           seq[1] = $$;
           $$ = seq;
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= ")" SPACING # Sequence
         break;
       // No matches
@@ -1110,13 +1165,14 @@ class PegParser {
     // MORPHEME
     // COMMENT <- "#" (!EOL .)* EOL?
     var $$;
-    _beginToken(21);  
+    _beginToken(24);  
     // => "#" (!EOL .)* EOL? # Choice
     switch (_ch == 35 ? 0 : _ch == -1 ? 2 : 1) {
       // [#]
       case 0:
         // => "#" (!EOL .)* EOL? # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => "#"
           $$ = '#';
@@ -1140,7 +1196,8 @@ class PegParser {
               case 0:
               case 2:
                 // => !EOL . # Sequence
-                var ch1 = _ch, pos1 = _cursor;
+                var ch1 = _ch, pos1 = _cursor, startPos1 = _startPos;
+                _startPos = _cursor;
                 while (true) {  
                   // => !EOL
                   var ch2 = _ch, pos2 = _cursor, testing1 = _testing; 
@@ -1162,12 +1219,13 @@ class PegParser {
                   if (!success) break;
                   seq[1] = $$;
                   $$ = seq;
-                  break;  
+                  break;
                 }
                 if (!success) {
                   _ch = ch1;
                   _cursor = pos1;
                 }
+                _startPos = startPos1;
                 // <= !EOL . # Sequence
                 break;
               // No matches
@@ -1205,12 +1263,13 @@ class PegParser {
           if (!success) break;
           seq[2] = $$;
           $$ = seq;
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= "#" (!EOL .)* EOL? # Sequence
         break;
       // No matches
@@ -1234,13 +1293,14 @@ class PegParser {
     // LEXEME
     // DOT <- "." SPACING
     var $$;
-    _beginToken(19);  
+    _beginToken(22);  
     // => "." SPACING # Choice
     switch (_ch == 46 ? 0 : _ch == -1 ? 2 : 1) {
       // [.]
       case 0:
         // => "." SPACING # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => "."
           $$ = '.';
@@ -1259,12 +1319,13 @@ class PegParser {
           if (!success) break;
           seq[1] = $$;
           $$ = seq;
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= "." SPACING # Sequence
         break;
       // No matches
@@ -1293,7 +1354,8 @@ class PegParser {
       // [A-Z] [_] [a-z]
       case 0:
         // => IDENTIFIER LEFTARROW Expression # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => IDENTIFIER
           $$ = _parse_IDENTIFIER();
@@ -1318,14 +1380,15 @@ class PegParser {
             final $2 = seq[1];
             // Expression
             final $3 = seq[2];
-            $$ = new ProductionRule($1, $3);    
+            $$ = new ProductionRule($1, $3);
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= IDENTIFIER LEFTARROW Expression # Sequence
         break;
       // No matches
@@ -1348,13 +1411,14 @@ class PegParser {
     // LEXEME
     // EOF <- !.
     var $$;
-    _beginToken(3);  
+    _beginToken(6);  
     // => !. # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
       // [\u0000-\u0010ffff]
       // EOF
       case 0:
       case 2:
+        var startPos0 = _startPos;
         // => !.
         var ch0 = _ch, pos0 = _cursor, testing0 = _testing; 
         _testing = _inputLen + 1;
@@ -1367,6 +1431,7 @@ class PegParser {
         $$ = null;
         success = !success;
         // <= !.
+        _startPos = startPos0;
         break;
       // No matches
       case 1:
@@ -1387,25 +1452,31 @@ class PegParser {
     // MORPHEME
     // EOL <- "\r\n" / [\n\r]
     var $$;
-    _beginToken(24);  
+    _beginToken(27);  
     // => "\r\n" / [\n\r] # Choice
     switch (_getState(_transitions14)) {
       // [\n]
       case 0:
+        var startPos0 = _startPos;
         // => [\n\r]
         $$ = _matchMapping(10, 13, _mapping4);
         // <= [\n\r]
+        _startPos = startPos0;
         break;
       // [\r]
       case 1:
         while (true) {
+          var startPos1 = _startPos;
           // => "\r\n"
           $$ = _matchString(_strings3, '\r\n');
           // <= "\r\n"
+          _startPos = startPos1;
           if (success) break;
+          var startPos2 = _startPos;
           // => [\n\r]
           $$ = _matchMapping(10, 13, _mapping4);
           // <= [\n\r]
+          _startPos = startPos2;
           break;
         }
         break;
@@ -1435,7 +1506,8 @@ class PegParser {
       // [!-\"] [&-(] [.] [A-[] [_] [a-z]
       case 0:
         // => Sequence (SLASH Sequence)* # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => Sequence
           $$ = _parse_Sequence();
@@ -1451,7 +1523,8 @@ class PegParser {
               // [/]
               case 0:
                 // => SLASH Sequence # Sequence
-                var ch1 = _ch, pos1 = _cursor;
+                var ch1 = _ch, pos1 = _cursor, startPos1 = _startPos;
+                _startPos = _cursor;
                 while (true) {  
                   // => SLASH
                   $$ = _parse_SLASH();
@@ -1469,14 +1542,15 @@ class PegParser {
                     final $1 = seq[0];
                     // Sequence
                     final $2 = seq[1];
-                    $$ = $2;    
+                    $$ = $2;
                   }
-                  break;  
+                  break;
                 }
                 if (!success) {
                   _ch = ch1;
                   _cursor = pos1;
                 }
+                _startPos = startPos1;
                 // <= SLASH Sequence # Sequence
                 break;
               // No matches
@@ -1510,14 +1584,15 @@ class PegParser {
             final $1 = seq[0];
             // (SLASH Sequence)*
             final $2 = seq[1];
-            $$ = new OrderedChoiceExpression(_flatten([$1, $2]));    
+            $$ = new OrderedChoiceExpression(_flatten([$1, $2]));
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= Sequence (SLASH Sequence)* # Sequence
         break;
       // No matches
@@ -1540,13 +1615,14 @@ class PegParser {
     // LEXEME
     // GLOBALS <- "%{" GLOBALS_BODY* "}%" SPACING
     var $$;
-    _beginToken(4);  
+    _beginToken(7);  
     // => "%{" GLOBALS_BODY* "}%" SPACING # Choice
     switch (_ch == 37 ? 0 : _ch == -1 ? 2 : 1) {
       // [%]
       case 0:
         // => "%{" GLOBALS_BODY* "}%" SPACING # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => "%{"
           $$ = _matchString(_strings0, '%{');
@@ -1592,14 +1668,15 @@ class PegParser {
             final $3 = seq[2];
             // SPACING
             final $4 = seq[3];
-            $$ = _normalize(["{", $2, "}", $4]).join();    
+            $$ = $2.join();
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= "%{" GLOBALS_BODY* "}%" SPACING # Sequence
         break;
       // No matches
@@ -1623,7 +1700,7 @@ class PegParser {
     // MORPHEME
     // GLOBALS_BODY <- !"}%" .
     var $$;
-    _beginToken(5);  
+    _beginToken(8);  
     // => !"}%" . # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
       // [\u0000-\u0010ffff]
@@ -1631,7 +1708,8 @@ class PegParser {
       case 0:
       case 2:
         // => !"}%" . # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => !"}%"
           var ch1 = _ch, pos1 = _cursor, testing0 = _testing; 
@@ -1658,14 +1736,15 @@ class PegParser {
             final $1 = seq[0];
             // .
             final $2 = seq[1];
-            $$ = $2;    
+            $$ = _text();
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= !"}%" . # Sequence
         break;
       // No matches
@@ -1687,13 +1766,14 @@ class PegParser {
     // MORPHEME
     // HEX_NUMBER <- [\] "u" [0-9A-Fa-f]+
     var $$;
-    _beginToken(20);  
+    _beginToken(23);  
     // => [\] "u" [0-9A-Fa-f]+ # Choice
     switch (_ch == 92 ? 0 : _ch == -1 ? 2 : 1) {
       // [\\]
       case 0:
         // => [\] "u" [0-9A-Fa-f]+ # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => [\]
           $$ = '\\';
@@ -1746,14 +1826,15 @@ class PegParser {
             final $2 = seq[1];
             // [0-9A-Fa-f]+
             final $3 = seq[2];
-            $$ = int.parse($3.join(), radix: 16);    
+            $$ = int.parse($3.join(), radix: 16);
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= [\] "u" [0-9A-Fa-f]+ # Sequence
         break;
       // No matches
@@ -1777,13 +1858,14 @@ class PegParser {
     // LEXEME
     // IDENTIFIER <- IDENT_START IDENT_CONT* SPACING
     var $$;
-    _beginToken(6);  
+    _beginToken(9);  
     // => IDENT_START IDENT_CONT* SPACING # Choice
     switch (_getState(_transitions2)) {
       // [A-Z] [_] [a-z]
       case 0:
         // => IDENT_START IDENT_CONT* SPACING # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => IDENT_START
           $$ = _parse_IDENT_START();
@@ -1822,14 +1904,15 @@ class PegParser {
             final $2 = seq[1];
             // SPACING
             final $3 = seq[2];
-            $$ = _flatten([$1, $2]).join();    
+            $$ = _flatten([$1, $2]).join();
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= IDENT_START IDENT_CONT* SPACING # Sequence
         break;
       // No matches
@@ -1853,20 +1936,24 @@ class PegParser {
     // MORPHEME
     // IDENT_CONT <- IDENT_START / [0-9]
     var $$;
-    _beginToken(8);  
+    _beginToken(11);  
     // => IDENT_START / [0-9] # Choice
     switch (_getState(_transitions10)) {
       // [0-9]
       case 0:
+        var startPos0 = _startPos;
         // => [0-9]
         $$ = _matchRange(48, 57);
         // <= [0-9]
+        _startPos = startPos0;
         break;
       // [A-Z] [_] [a-z]
       case 1:
+        var startPos1 = _startPos;
         // => IDENT_START
         $$ = _parse_IDENT_START();
         // <= IDENT_START
+        _startPos = startPos1;
         break;
       // No matches
       // EOF
@@ -1889,14 +1976,16 @@ class PegParser {
     // MORPHEME
     // IDENT_START <- [A-Z_a-z]
     var $$;
-    _beginToken(7);  
+    _beginToken(10);  
     // => [A-Z_a-z] # Choice
     switch (_getState(_transitions2)) {
       // [A-Z] [_] [a-z]
       case 0:
+        var startPos0 = _startPos;
         // => [A-Z_a-z]
         $$ = _matchMapping(65, 122, _mapping1);
         // <= [A-Z_a-z]
+        _startPos = startPos0;
         break;
       // No matches
       // EOF
@@ -1919,13 +2008,14 @@ class PegParser {
     // LEXEME
     // LEFTARROW <- "<-" SPACING
     var $$;
-    _beginToken(9);  
+    _beginToken(12);  
     // => "<-" SPACING # Choice
     switch (_ch == 60 ? 0 : _ch == -1 ? 2 : 1) {
       // [<]
       case 0:
         // => "<-" SPACING # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => "<-"
           $$ = _matchString(_strings2, '<-');
@@ -1938,12 +2028,13 @@ class PegParser {
           if (!success) break;
           seq[1] = $$;
           $$ = seq;
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= "<-" SPACING # Sequence
         break;
       // No matches
@@ -1967,13 +2058,14 @@ class PegParser {
     // LEXEME
     // LITERAL <- "\'" (!"\'" CHAR)* "\'" SPACING / "\"" (!"\"" CHAR)* "\"" SPACING
     var $$;
-    _beginToken(2);  
+    _beginToken(5);  
     // => "\'" (!"\'" CHAR)* "\'" SPACING / "\"" (!"\"" CHAR)* "\"" SPACING # Choice
     switch (_getState(_transitions9)) {
       // [\"]
       case 0:
         // => "\"" (!"\"" CHAR)* "\"" SPACING # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => "\""
           $$ = '\"';
@@ -1997,7 +2089,8 @@ class PegParser {
               case 0:
               case 2:
                 // => !"\"" CHAR # Sequence
-                var ch1 = _ch, pos1 = _cursor;
+                var ch1 = _ch, pos1 = _cursor, startPos1 = _startPos;
+                _startPos = _cursor;
                 while (true) {  
                   // => !"\""
                   var ch2 = _ch, pos2 = _cursor, testing1 = _testing; 
@@ -2024,14 +2117,15 @@ class PegParser {
                     final $1 = seq[0];
                     // CHAR
                     final $2 = seq[1];
-                    $$ = $2;    
+                    $$ = $2;
                   }
-                  break;  
+                  break;
                 }
                 if (!success) {
                   _ch = ch1;
                   _cursor = pos1;
                 }
+                _startPos = startPos1;
                 // <= !"\"" CHAR # Sequence
                 break;
               // No matches
@@ -2077,20 +2171,22 @@ class PegParser {
             final $3 = seq[2];
             // SPACING
             final $4 = seq[3];
-            $$ = new LiteralExpression(new String.fromCharCodes($2));    
+            $$ = new LiteralExpression(new String.fromCharCodes($2));
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= "\"" (!"\"" CHAR)* "\"" SPACING # Sequence
         break;
       // [\']
       case 1:
         // => "\'" (!"\'" CHAR)* "\'" SPACING # Sequence
-        var ch3 = _ch, pos3 = _cursor;
+        var ch3 = _ch, pos3 = _cursor, startPos2 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => "\'"
           $$ = '\'';
@@ -2114,7 +2210,8 @@ class PegParser {
               case 0:
               case 2:
                 // => !"\'" CHAR # Sequence
-                var ch4 = _ch, pos4 = _cursor;
+                var ch4 = _ch, pos4 = _cursor, startPos3 = _startPos;
+                _startPos = _cursor;
                 while (true) {  
                   // => !"\'"
                   var ch5 = _ch, pos5 = _cursor, testing3 = _testing; 
@@ -2141,14 +2238,15 @@ class PegParser {
                     final $1 = seq[0];
                     // CHAR
                     final $2 = seq[1];
-                    $$ = $2;    
+                    $$ = $2;
                   }
-                  break;  
+                  break;
                 }
                 if (!success) {
                   _ch = ch4;
                   _cursor = pos4;
                 }
+                _startPos = startPos3;
                 // <= !"\'" CHAR # Sequence
                 break;
               // No matches
@@ -2194,14 +2292,15 @@ class PegParser {
             final $3 = seq[2];
             // SPACING
             final $4 = seq[3];
-            $$ = new LiteralExpression(new String.fromCharCodes($2));    
+            $$ = new LiteralExpression(new String.fromCharCodes($2));
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch3;
           _cursor = pos3;
         }
+        _startPos = startPos2;
         // <= "\'" (!"\'" CHAR)* "\'" SPACING # Sequence
         break;
       // No matches
@@ -2222,15 +2321,17 @@ class PegParser {
   }
   
   dynamic _parse_Members() {
-    // NONTERMINAL
+    // LEXEME
     // Members <- "{" ActionBody* "}" SPACING
     var $$;
+    _beginToken(0);  
     // => "{" ActionBody* "}" SPACING # Choice
     switch (_ch == 123 ? 0 : _ch == -1 ? 2 : 1) {
       // [{]
       case 0:
         // => "{" ActionBody* "}" SPACING # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => "{"
           $$ = '{';
@@ -2282,14 +2383,15 @@ class PegParser {
             final $3 = seq[2];
             // SPACING
             final $4 = seq[3];
-            $$ = _normalize([$1, $2, $3, $4]).join();    
+            $$ = $2.join();
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= "{" ActionBody* "}" SPACING # Sequence
         break;
       // No matches
@@ -2301,10 +2403,11 @@ class PegParser {
         break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: {
+      // Expected: '{'
       _failure(_expect1);
     }
     // <= "{" ActionBody* "}" SPACING # Choice
+    _endToken();
     return $$;
   }
   
@@ -2312,13 +2415,14 @@ class PegParser {
     // LEXEME
     // NOT <- "!" SPACING
     var $$;
-    _beginToken(13);  
+    _beginToken(16);  
     // => "!" SPACING # Choice
     switch (_ch == 33 ? 0 : _ch == -1 ? 2 : 1) {
       // [!]
       case 0:
         // => "!" SPACING # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => "!"
           $$ = '!';
@@ -2342,14 +2446,15 @@ class PegParser {
             final $1 = seq[0];
             // SPACING
             final $2 = seq[1];
-            $$ = $1;    
+            $$ = $1;
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= "!" SPACING # Sequence
         break;
       // No matches
@@ -2373,13 +2478,14 @@ class PegParser {
     // LEXEME
     // OPEN <- "(" SPACING
     var $$;
-    _beginToken(17);  
+    _beginToken(20);  
     // => "(" SPACING # Choice
     switch (_ch == 40 ? 0 : _ch == -1 ? 2 : 1) {
       // [(]
       case 0:
         // => "(" SPACING # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => "("
           $$ = '(';
@@ -2398,12 +2504,13 @@ class PegParser {
           if (!success) break;
           seq[1] = $$;
           $$ = seq;
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= "(" SPACING # Sequence
         break;
       // No matches
@@ -2427,13 +2534,14 @@ class PegParser {
     // LEXEME
     // PLUS <- "+" SPACING
     var $$;
-    _beginToken(16);  
+    _beginToken(19);  
     // => "+" SPACING # Choice
     switch (_ch == 43 ? 0 : _ch == -1 ? 2 : 1) {
       // [+]
       case 0:
         // => "+" SPACING # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => "+"
           $$ = '+';
@@ -2457,14 +2565,15 @@ class PegParser {
             final $1 = seq[0];
             // SPACING
             final $2 = seq[1];
-            $$ = $1;    
+            $$ = $1;
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= "+" SPACING # Sequence
         break;
       // No matches
@@ -2493,7 +2602,8 @@ class PegParser {
       // [!-\"] [&-(] [.] [A-[] [_] [a-z]
       case 0:
         // => (AND / NOT)? Suffix Action? # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => (AND / NOT)?
           var testing0 = _testing;
@@ -2502,15 +2612,19 @@ class PegParser {
           switch (_getState(_transitions4)) {
             // [!]
             case 0:
+              var startPos1 = _startPos;
               // => NOT
               $$ = _parse_NOT();
               // <= NOT
+              _startPos = startPos1;
               break;
             // [&]
             case 1:
+              var startPos2 = _startPos;
               // => AND
               $$ = _parse_AND();
               // <= AND
+              _startPos = startPos2;
               break;
             // No matches
             // EOF
@@ -2554,14 +2668,15 @@ class PegParser {
             final $2 = seq[1];
             // Action?
             final $3 = seq[2];
-            $$ = _prefix($1, $2, $3);    
+            $$ = _prefix($1, $2, $3);
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= (AND / NOT)? Suffix Action? # Sequence
         break;
       // No matches
@@ -2588,14 +2703,17 @@ class PegParser {
     switch (_getState(_transitions7)) {
       // [\"] [\']
       case 0:
+        var startPos0 = _startPos;
         // => LITERAL
         $$ = _parse_LITERAL();
         // <= LITERAL
+        _startPos = startPos0;
         break;
       // [(]
       case 1:
         // => OPEN Expression CLOSE # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos1 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => OPEN
           $$ = _parse_OPEN();
@@ -2620,31 +2738,35 @@ class PegParser {
             final $2 = seq[1];
             // CLOSE
             final $3 = seq[2];
-            $$ = $2;    
+            $$ = $2;
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos1;
         // <= OPEN Expression CLOSE # Sequence
         break;
       // [.]
       case 2:
+        var startPos2 = _startPos;
         // => DOT
         $$ = _parse_DOT();
         // <= DOT
         if (success) {    
           // DOT
           final $1 = $$;
-          $$ = new AnyCharacterExpression();    
+          $$ = new AnyCharacterExpression();
         }
+        _startPos = startPos2;
         break;
       // [A-Z] [_] [a-z]
       case 3:
         // => IDENTIFIER !LEFTARROW # Sequence
-        var ch1 = _ch, pos1 = _cursor;
+        var ch1 = _ch, pos1 = _cursor, startPos3 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => IDENTIFIER
           $$ = _parse_IDENTIFIER();
@@ -2671,21 +2793,24 @@ class PegParser {
             final $1 = seq[0];
             // !LEFTARROW
             final $2 = seq[1];
-            $$ = new RuleExpression($1);    
+            $$ = new RuleExpression($1);
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch1;
           _cursor = pos1;
         }
+        _startPos = startPos3;
         // <= IDENTIFIER !LEFTARROW # Sequence
         break;
       // [[]
       case 4:
+        var startPos4 = _startPos;
         // => CLASS
         $$ = _parse_CLASS();
         // <= CLASS
+        _startPos = startPos4;
         break;
       // No matches
       // EOF
@@ -2707,13 +2832,14 @@ class PegParser {
     // LEXEME
     // QUESTION <- "?" SPACING
     var $$;
-    _beginToken(14);  
+    _beginToken(17);  
     // => "?" SPACING # Choice
     switch (_ch == 63 ? 0 : _ch == -1 ? 2 : 1) {
       // [?]
       case 0:
         // => "?" SPACING # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => "?"
           $$ = '?';
@@ -2737,14 +2863,15 @@ class PegParser {
             final $1 = seq[0];
             // SPACING
             final $2 = seq[1];
-            $$ = $1;    
+            $$ = $1;
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= "?" SPACING # Sequence
         break;
       // No matches
@@ -2768,7 +2895,7 @@ class PegParser {
     // MORPHEME
     // RANGE <- CHAR "-" CHAR / CHAR
     var $$;
-    _beginToken(10);  
+    _beginToken(13);  
     // => CHAR "-" CHAR / CHAR # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
       // [\u0000-\u0010ffff]
@@ -2777,7 +2904,8 @@ class PegParser {
       case 2:
         while (true) {
           // => CHAR "-" CHAR # Sequence
-          var ch0 = _ch, pos0 = _cursor;
+          var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+          _startPos = _cursor;
           while (true) {  
             // => CHAR
             $$ = _parse_CHAR();
@@ -2802,24 +2930,27 @@ class PegParser {
               final $2 = seq[1];
               // CHAR
               final $3 = seq[2];
-              $$ = [$1, $3];    
+              $$ = [$1, $3];
             }
-            break;  
+            break;
           }
           if (!success) {
             _ch = ch0;
             _cursor = pos0;
           }
+          _startPos = startPos0;
           // <= CHAR "-" CHAR # Sequence
           if (success) break;
+          var startPos1 = _startPos;
           // => CHAR
           $$ = _parse_CHAR();
           // <= CHAR
           if (success) {    
             // CHAR
             final $1 = $$;
-            $$ = [$1, $1];    
+            $$ = [$1, $1];
           }
+          _startPos = startPos1;
           break;
         }
         break;
@@ -2842,13 +2973,14 @@ class PegParser {
     // LEXEME
     // SLASH <- "/" SPACING
     var $$;
-    _beginToken(11);  
+    _beginToken(14);  
     // => "/" SPACING # Choice
     switch (_ch == 47 ? 0 : _ch == -1 ? 2 : 1) {
       // [/]
       case 0:
         // => "/" SPACING # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => "/"
           $$ = '/';
@@ -2867,12 +2999,13 @@ class PegParser {
           if (!success) break;
           seq[1] = $$;
           $$ = seq;
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= "/" SPACING # Sequence
         break;
       // No matches
@@ -2896,20 +3029,24 @@ class PegParser {
     // MORPHEME
     // SPACE <- [\t ] / EOL
     var $$;
-    _beginToken(22);  
+    _beginToken(25);  
     // => [\t ] / EOL # Choice
     switch (_getState(_transitions11)) {
       // [\t] [ ]
       case 0:
+        var startPos0 = _startPos;
         // => [\t ]
         $$ = _matchMapping(9, 32, _mapping3);
         // <= [\t ]
+        _startPos = startPos0;
         break;
       // [\n] [\r]
       case 1:
+        var startPos1 = _startPos;
         // => EOL
         $$ = _parse_EOL();
         // <= EOL
+        _startPos = startPos1;
         break;
       // No matches
       // EOF
@@ -2932,13 +3069,14 @@ class PegParser {
     // LEXEME & MORPHEME
     // SPACING <- (SPACE / COMMENT)*
     var $$;
-    _beginToken(23);  
+    _beginToken(26);  
     // => (SPACE / COMMENT)* # Choice
     switch (_getState(_transitions12)) {
       // [\t-\n] [\r] [ ] [#]
       // EOF
       case 0:
       case 2:
+        var startPos0 = _startPos;
         // => (SPACE / COMMENT)*
         var testing0 = _testing; 
         for (var reps = []; ; ) {
@@ -2947,15 +3085,19 @@ class PegParser {
           switch (_getState(_transitions13)) {
             // [\t-\n] [\r] [ ]
             case 0:
+              var startPos1 = _startPos;
               // => SPACE
               $$ = _parse_SPACE();
               // <= SPACE
+              _startPos = startPos1;
               break;
             // [#]
             case 1:
+              var startPos2 = _startPos;
               // => COMMENT
               $$ = _parse_COMMENT();
               // <= COMMENT
+              _startPos = startPos2;
               break;
             // No matches
             // EOF
@@ -2980,6 +3122,7 @@ class PegParser {
           }
         }
         // <= (SPACE / COMMENT)*
+        _startPos = startPos0;
         break;
       // No matches
       case 1:
@@ -3000,13 +3143,14 @@ class PegParser {
     // LEXEME
     // STAR <- "*" SPACING
     var $$;
-    _beginToken(15);  
+    _beginToken(18);  
     // => "*" SPACING # Choice
     switch (_ch == 42 ? 0 : _ch == -1 ? 2 : 1) {
       // [*]
       case 0:
         // => "*" SPACING # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => "*"
           $$ = '*';
@@ -3030,14 +3174,15 @@ class PegParser {
             final $1 = seq[0];
             // SPACING
             final $2 = seq[1];
-            $$ = $1;    
+            $$ = $1;
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= "*" SPACING # Sequence
         break;
       // No matches
@@ -3065,6 +3210,7 @@ class PegParser {
     switch (_getState(_transitions3)) {
       // [!-\"] [&-(] [.] [A-[] [_] [a-z]
       case 0:
+        var startPos0 = _startPos;
         // => Prefix+
         var testing0;
         for (var first = true, reps; ;) {  
@@ -3093,8 +3239,9 @@ class PegParser {
         if (success) {    
           // Prefix+
           final $1 = $$;
-          $$ = new SequenceExpression($1);    
+          $$ = new SequenceExpression($1);
         }
+        _startPos = startPos0;
         break;
       // No matches
       // EOF
@@ -3121,7 +3268,8 @@ class PegParser {
       // [\"] [\'-(] [.] [A-[] [_] [a-z]
       case 0:
         // => Primary (QUESTION / STAR / PLUS)? # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => Primary
           $$ = _parse_Primary();
@@ -3135,21 +3283,27 @@ class PegParser {
           switch (_getState(_transitions6)) {
             // [*]
             case 0:
+              var startPos1 = _startPos;
               // => STAR
               $$ = _parse_STAR();
               // <= STAR
+              _startPos = startPos1;
               break;
             // [+]
             case 1:
+              var startPos2 = _startPos;
               // => PLUS
               $$ = _parse_PLUS();
               // <= PLUS
+              _startPos = startPos2;
               break;
             // [?]
             case 2:
+              var startPos3 = _startPos;
               // => QUESTION
               $$ = _parse_QUESTION();
               // <= QUESTION
+              _startPos = startPos3;
               break;
             // No matches
             // EOF
@@ -3175,14 +3329,15 @@ class PegParser {
             final $1 = seq[0];
             // (QUESTION / STAR / PLUS)?
             final $2 = seq[1];
-            $$ = _suffix($2, $1);    
+            $$ = _suffix($2, $1);
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= Primary (QUESTION / STAR / PLUS)? # Sequence
         break;
       // No matches
@@ -3199,6 +3354,10 @@ class PegParser {
     }
     // <= Primary (QUESTION / STAR / PLUS)? # Choice
     return $$;
+  }
+  
+  String _text() { 
+    return text.substring(_startPos, _cursor);  
   }
   
   int _toCodePoint(String string) {
@@ -3337,7 +3496,8 @@ class PegParser {
       // [\t-\n] [\r] [ ] [#] [%] [A-Z] [_] [a-{]
       case 0:
         // => SPACING? GLOBALS? Members? Definition+ EOF # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => SPACING?
           var testing0 = _testing;
@@ -3416,14 +3576,15 @@ class PegParser {
             final $4 = seq[3];
             // EOF
             final $5 = seq[4];
-            $$ = new Grammar($4, $2, $3);    
+            $$ = new Grammar($4, $2, $3);
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= SPACING? GLOBALS? Members? Definition+ EOF # Sequence
         break;
       // No matches
@@ -3457,15 +3618,16 @@ class PegParser {
     _ch = -1;
     _errors = <PegParserError>[];   
     _expected = <String>[];
-    _failurePos = -1;  
-    success = true;      
+    _failurePos = -1;
+    _startPos = pos;        
     _testing = -1;
     _token = null;
     _tokenLevel = 0;
     _tokenStart = null;
     if (_cursor < _inputLen) {
       _ch = _input[_cursor];
-    }    
+    }
+    success = true;    
   }
   
 }

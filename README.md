@@ -3,7 +3,7 @@
 
 PEG (Parsing expression grammar) parsers generator.
 
-Version: 0.0.29
+Version: 0.0.30
 
 Status: Experimental
 
@@ -92,7 +92,7 @@ Members <- "{" ActionBody* "}" SPACING
 
 Action <- "{" ActionBody* "}" SPACING
 
-ActionBody <- Action / !"}" .
+ActionBody <- "{" ActionBody* "}" / !"}" .
 
 Definition <- IDENTIFIER LEFTARROW Expression
 
@@ -258,6 +258,7 @@ num _binop(num left, num right, String op) {
       throw "Unsupported operation $op";  
   }
 }
+
 class ArithmeticParser {
   static final List<String> _ascii = new List<String>.generate(128, (c) => new String.fromCharCode(c));
   
@@ -335,6 +336,8 @@ class ArithmeticParser {
   
   int _inputLen;
   
+  int _startPos;
+  
   int _testing;
   
   int _token;
@@ -389,37 +392,6 @@ class ArithmeticParser {
       _token = tokenId;
       _tokenStart = _cursor;
     }  
-  }
-  
-  Iterable _compact(Iterable iterable) {  
-    if (iterable is List) {
-      var hasNull = false;
-      var length = iterable.length;
-      for (var i = 0; i < length; i++) {
-        if (iterable[i] == null) {
-          hasNull = true;
-          break;
-        }
-      }
-      if (!hasNull) {
-        return iterable;
-      }
-      var result = [];
-      for (var i = 0; i < length; i++) {
-        var element = iterable[i];
-        if (element != null) {
-          result.add(element);
-        }
-      }
-      return result;
-    }   
-    var result = [];
-    for (var element in iterable) {   
-      if (element != null) {
-        result.add(element);
-      }
-    }
-    return result;  
   }
   
   void _endToken() {
@@ -541,6 +513,16 @@ class ArithmeticParser {
       return state;
     }
     return state + 1;  
+  }
+  
+  List _list(Object first, List next) {
+    var length = next.length;
+    var list = new List(length + 1);
+    list[0] = first;
+    for (var i = 0; i < length; i++) {
+      list[i + 1] = next[i][1];
+    }
+    return list;
   }
   
   String _matchAny() {
@@ -675,13 +657,6 @@ class ArithmeticParser {
     }  
   }
   
-  List _normalize(dynamic value) {
-    if (value == null) {
-      return [];
-    }
-    return _flatten(_compact(value));
-  }
-  
   dynamic _parse_Atom() {
     // NONTERMINAL
     // Atom <- NUMBER / OPEN Sentence CLOSE
@@ -691,7 +666,8 @@ class ArithmeticParser {
       // [(]
       case 0:
         // => OPEN Sentence CLOSE # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => OPEN
           $$ = _parse_OPEN();
@@ -716,21 +692,24 @@ class ArithmeticParser {
             final $2 = seq[1];
             // CLOSE
             final $3 = seq[2];
-            $$ = $2;    
+            $$ = $2;
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= OPEN Sentence CLOSE # Sequence
         break;
       // [0-9]
       case 1:
+        var startPos1 = _startPos;
         // => NUMBER
         $$ = _parse_NUMBER();
         // <= NUMBER
+        _startPos = startPos1;
         break;
       // No matches
       // EOF
@@ -758,7 +737,8 @@ class ArithmeticParser {
       // [)]
       case 0:
         // => ")" SPACES # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => ")"
           $$ = ')';
@@ -777,12 +757,13 @@ class ArithmeticParser {
           if (!success) break;
           seq[1] = $$;
           $$ = seq;
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= ")" SPACES # Sequence
         break;
       // No matches
@@ -812,7 +793,8 @@ class ArithmeticParser {
       // [/]
       case 0:
         // => "/" SPACES # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => "/"
           $$ = '/';
@@ -836,14 +818,15 @@ class ArithmeticParser {
             final $1 = seq[0];
             // SPACES
             final $2 = seq[1];
-            $$ = $1;    
+            $$ = $1;
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= "/" SPACES # Sequence
         break;
       // No matches
@@ -874,6 +857,7 @@ class ArithmeticParser {
       // EOF
       case 0:
       case 2:
+        var startPos0 = _startPos;
         // => !.
         var ch0 = _ch, pos0 = _cursor, testing0 = _testing; 
         _testing = _inputLen + 1;
@@ -886,6 +870,7 @@ class ArithmeticParser {
         $$ = null;
         success = !success;
         // <= !.
+        _startPos = startPos0;
         break;
       // No matches
       case 1:
@@ -912,7 +897,8 @@ class ArithmeticParser {
       // [-]
       case 0:
         // => "-" SPACES # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => "-"
           $$ = '-';
@@ -936,14 +922,15 @@ class ArithmeticParser {
             final $1 = seq[0];
             // SPACES
             final $2 = seq[1];
-            $$ = $1;    
+            $$ = $1;
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= "-" SPACES # Sequence
         break;
       // No matches
@@ -973,7 +960,8 @@ class ArithmeticParser {
       // [*]
       case 0:
         // => "*" SPACES # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => "*"
           $$ = '*';
@@ -997,14 +985,15 @@ class ArithmeticParser {
             final $1 = seq[0];
             // SPACES
             final $2 = seq[1];
-            $$ = $1;    
+            $$ = $1;
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= "*" SPACES # Sequence
         break;
       // No matches
@@ -1034,7 +1023,8 @@ class ArithmeticParser {
       // [0-9]
       case 0:
         // => [0-9]+ SPACES # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => [0-9]+
           var testing0;
@@ -1074,14 +1064,15 @@ class ArithmeticParser {
             final $1 = seq[0];
             // SPACES
             final $2 = seq[1];
-            $$ = int.parse($1.join());    
+            $$ = int.parse($1.join());
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= [0-9]+ SPACES # Sequence
         break;
       // No matches
@@ -1111,7 +1102,8 @@ class ArithmeticParser {
       // [(]
       case 0:
         // => "(" SPACES # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => "("
           $$ = '(';
@@ -1130,12 +1122,13 @@ class ArithmeticParser {
           if (!success) break;
           seq[1] = $$;
           $$ = seq;
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= "(" SPACES # Sequence
         break;
       // No matches
@@ -1165,7 +1158,8 @@ class ArithmeticParser {
       // [+]
       case 0:
         // => "+" SPACES # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => "+"
           $$ = '+';
@@ -1189,14 +1183,15 @@ class ArithmeticParser {
             final $1 = seq[0];
             // SPACES
             final $2 = seq[1];
-            $$ = $1;    
+            $$ = $1;
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= "+" SPACES # Sequence
         break;
       // No matches
@@ -1234,6 +1229,7 @@ class ArithmeticParser {
       // EOF
       case 0:
       case 2:
+        var startPos0 = _startPos;
         // => WS*
         var testing0 = _testing; 
         for (var reps = []; ; ) {
@@ -1251,6 +1247,7 @@ class ArithmeticParser {
           }
         }
         // <= WS*
+        _startPos = startPos0;
         break;
       // No matches
       case 1:
@@ -1285,7 +1282,8 @@ class ArithmeticParser {
       case 0:
         while (true) {
           // => Term (PLUS / MINUS) Sentence # Sequence
-          var ch0 = _ch, pos0 = _cursor;
+          var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+          _startPos = _cursor;
           while (true) {  
             // => Term
             $$ = _parse_Term();
@@ -1296,15 +1294,19 @@ class ArithmeticParser {
             switch (_getState(_transitions2)) {
               // [+]
               case 0:
+                var startPos1 = _startPos;
                 // => PLUS
                 $$ = _parse_PLUS();
                 // <= PLUS
+                _startPos = startPos1;
                 break;
               // [-]
               case 1:
+                var startPos2 = _startPos;
                 // => MINUS
                 $$ = _parse_MINUS();
                 // <= MINUS
+                _startPos = startPos2;
                 break;
               // No matches
               // EOF
@@ -1334,19 +1336,22 @@ class ArithmeticParser {
               final $2 = seq[1];
               // Sentence
               final $3 = seq[2];
-              $$ = _binop($1, $3, $2);    
+              $$ = _binop($1, $3, $2);
             }
-            break;  
+            break;
           }
           if (!success) {
             _ch = ch0;
             _cursor = pos0;
           }
+          _startPos = startPos0;
           // <= Term (PLUS / MINUS) Sentence # Sequence
           if (success) break;
+          var startPos3 = _startPos;
           // => Term
           $$ = _parse_Term();
           // <= Term
+          _startPos = startPos3;
           break;
         }
         break;
@@ -1384,7 +1389,8 @@ class ArithmeticParser {
       case 0:
         while (true) {
           // => Atom (MUL / DIV) Term # Sequence
-          var ch0 = _ch, pos0 = _cursor;
+          var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+          _startPos = _cursor;
           while (true) {  
             // => Atom
             $$ = _parse_Atom();
@@ -1395,15 +1401,19 @@ class ArithmeticParser {
             switch (_getState(_transitions3)) {
               // [*]
               case 0:
+                var startPos1 = _startPos;
                 // => MUL
                 $$ = _parse_MUL();
                 // <= MUL
+                _startPos = startPos1;
                 break;
               // [/]
               case 1:
+                var startPos2 = _startPos;
                 // => DIV
                 $$ = _parse_DIV();
                 // <= DIV
+                _startPos = startPos2;
                 break;
               // No matches
               // EOF
@@ -1433,19 +1443,22 @@ class ArithmeticParser {
               final $2 = seq[1];
               // Term
               final $3 = seq[2];
-              $$ = _binop($1, $3, $2);    
+              $$ = _binop($1, $3, $2);
             }
-            break;  
+            break;
           }
           if (!success) {
             _ch = ch0;
             _cursor = pos0;
           }
+          _startPos = startPos0;
           // <= Atom (MUL / DIV) Term # Sequence
           if (success) break;
+          var startPos3 = _startPos;
           // => Atom
           $$ = _parse_Atom();
           // <= Atom
+          _startPos = startPos3;
           break;
         }
         break;
@@ -1475,20 +1488,26 @@ class ArithmeticParser {
     switch (_getState(_transitions6)) {
       // [\t-\n] [ ]
       case 0:
+        var startPos0 = _startPos;
         // => [\t-\n\r ]
         $$ = _matchMapping(9, 32, _mapping0);
         // <= [\t-\n\r ]
+        _startPos = startPos0;
         break;
       // [\r]
       case 1:
         while (true) {
+          var startPos1 = _startPos;
           // => [\t-\n\r ]
           $$ = _matchMapping(9, 32, _mapping0);
           // <= [\t-\n\r ]
+          _startPos = startPos1;
           if (success) break;
+          var startPos2 = _startPos;
           // => "\r\n"
           $$ = _matchString(_strings0, '\r\n');
           // <= "\r\n"
+          _startPos = startPos2;
           break;
         }
         break;
@@ -1507,6 +1526,10 @@ class ArithmeticParser {
     // <= [\t-\n\r ] / "\r\n" # Choice
     _endToken();
     return $$;
+  }
+  
+  String _text() { 
+    return text.substring(_startPos, _cursor);  
   }
   
   int _toCodePoint(String string) {
@@ -1645,7 +1668,8 @@ class ArithmeticParser {
       // [\t-\n] [\r] [ ] [(] [0-9]
       case 0:
         // => SPACES? Sentence EOF # Sequence
-        var ch0 = _ch, pos0 = _cursor;
+        var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
+        _startPos = _cursor;
         while (true) {  
           // => SPACES?
           var testing0 = _testing;
@@ -1676,14 +1700,15 @@ class ArithmeticParser {
             final $2 = seq[1];
             // EOF
             final $3 = seq[2];
-            $$ = $2;    
+            $$ = $2;
           }
-          break;  
+          break;
         }
         if (!success) {
           _ch = ch0;
           _cursor = pos0;
         }
+        _startPos = startPos0;
         // <= SPACES? Sentence EOF # Sequence
         break;
       // No matches
@@ -1717,15 +1742,16 @@ class ArithmeticParser {
     _ch = -1;
     _errors = <ArithmeticParserError>[];   
     _expected = <String>[];
-    _failurePos = -1;  
-    success = true;      
+    _failurePos = -1;
+    _startPos = pos;        
     _testing = -1;
     _token = null;
     _tokenLevel = 0;
     _tokenStart = null;
     if (_cursor < _inputLen) {
       _ch = _input[_cursor];
-    }    
+    }
+    success = true;    
   }
   
 }

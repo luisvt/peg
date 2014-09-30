@@ -27,6 +27,8 @@ class MethodResetGenerator extends DeclarationGenerator {
 
   static const String _INPUT_LEN = ParserClassGenerator.INPUT_LEN;
 
+  static const String _START_POS = ParserClassGenerator.START_POS;
+
   static const String _SUCCESS = ParserClassGenerator.SUCCESS;
 
   static const String _TESTING = ParserClassGenerator.TESTING;
@@ -55,15 +57,16 @@ void $NAME(int pos) {
   $_CH = $_EOF;
   $_ERRORS = <{{ERROR_CLASS}}>[];   
   $_EXPECTED = <String>[];
-  $_FAILURE_POS = -1;  
-  $_SUCCESS = true;      
+  $_FAILURE_POS = -1;
+  $_START_POS = pos;        
   $_TESTING = -1;
   $_TOKEN = null;
   $_TOKEN_LEVEL = 0;
   $_TOKEN_START = null;
   if ($_CURSOR < $_INPUT_LEN) {
     $_CH = $_INPUT[$_CURSOR];
-  }    
+  }
+  $_SUCCESS = true;    
 }
 ''';
 

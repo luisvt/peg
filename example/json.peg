@@ -34,18 +34,6 @@ String _escape(String string) {
   }
   return string;
 }
-
-num _parseNumber(minus, integer, frac, exp) {
-  var sign = minus == null ? 1 : -1;  
-  if (frac != null || exp != null) {
-    frac = frac == null ? "" : frac;
-    exp = exp == null ? "" : exp;
-    return double.parse("$integer$frac$exp") * sign;
-  } else {
-    return int.parse(integer) * sign;
-  }
-}
-
 }%
 
 # value
@@ -62,16 +50,19 @@ value <-
   / STRING
 
 object <-
-  BEGIN_OBJECT (member (VALUE_SEPARATOR member { $$ = $2; })*)? END_OBJECT  
-  { $$ = _normalize([$2]).fold({}, (p, c) => p..[c.key] = c.value); }
+  BEGIN_OBJECT members? END_OBJECT { $$ = $2.fold({}, (p, c) => p..[c.key] = c.value); }
+
+members <-
+  member (VALUE_SEPARATOR member)* { $$ = _list($1, $2); }
 
 member <-
-  STRING NAME_SEPARATOR value
-  { $$ = new _KeyValuePair($1, $3); }
+  STRING NAME_SEPARATOR value { $$ = new _KeyValuePair($1, $3); }
 
 array <-
-  BEGIN_ARRAY (value (VALUE_SEPARATOR value { $$ = $2; })*)? END_ARRAY
-  { $$ = _normalize([$2]).fold([], (p, c) => p..add(c)); }
+  BEGIN_ARRAY values? END_ARRAY { $$ = $2; }
+
+values <-
+  value (VALUE_SEPARATOR value)* { $$ = _list($1, $2); }
 
 QUOTATION_MARK <-
   ["]
@@ -92,16 +83,16 @@ END_OBJECT <-
   '}' WS
 
 EXP <-
-  ('e' / 'E') ('-' / '+')? DIGIT+ WS { $$ = _flatten(_compact([$1, $2, $3])).join(); }
+  ('e' / 'E') ('-' / '+')? DIGIT+
 
 FALSE <-
   "false" WS { $$ = false; }
 
 FRAC <-
-  DECIMAL_POINT DIGIT+ WS { $$ = _flatten([$1, $2]).join(); }
+  DECIMAL_POINT DIGIT+
 
 INT <-
-  DIGIT+ WS { $$ = _flatten([$1]).join(); }
+  DIGIT+
 
 NAME_SEPARATOR <-
   ':' WS
@@ -110,10 +101,16 @@ NULL <-
   "null" WS { $$ = null; }
 
 NUMBER <-
-  '-'? INT FRAC? EXP? WS { $$ = _parseNumber($1, $2, $3, $4); }
+  NUMBER_PART WS { $$ = $1; }
+
+NUMBER_PART <-
+  '-'? INT FRAC? EXP? { $$ = double.parse(_text()); }
 
 STRING <-
-  QUOTATION_MARK CHAR* QUOTATION_MARK WS { $$ = _flatten([$2]).join(); }
+  QUOTATION_MARK STRING_CHARS QUOTATION_MARK WS { $$ = $2; }
+
+STRING_CHARS <-
+  CHAR* { $$ = $1.join(); }
 
 TRUE <-
   "true" WS { $$ = true; }
@@ -123,8 +120,11 @@ VALUE_SEPARATOR <-
 
 CHAR <-
   UNESCAPED
-  / ESCAPE ["\\/bfnrt]                     { $$ = _escape($2); }
-  / ESCAPE 'u' HEXDIG HEXDIG HEXDIG HEXDIG { $$ = _hex2str([$3, $4, $5, $6].join()); }
+  / ESCAPE ["\\/bfnrt]     { $$ = _escape($2); }
+  / ESCAPE 'u' CHAR_HEXDIG { $$ = _hex2str($3); }
+
+CHAR_HEXDIG <-
+  HEXDIG HEXDIG HEXDIG HEXDIG { $$ = _text(); }
 
 DIGIT <-
   [0-9]
