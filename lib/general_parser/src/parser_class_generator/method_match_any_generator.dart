@@ -3,7 +3,7 @@ part of peg.general_parser.parser_class_generator;
 class MethodMatchAnyGenerator extends DeclarationGenerator {
   static const String NAME = "_matchAny";
 
-  static const String _ASCII = GeneralParserClassGenerator.ASCII;
+  static const String _ASCII = ParserClassGenerator.ASCII;
 
   static const String _CH = ParserClassGenerator.CH;
 

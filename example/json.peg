@@ -12,7 +12,6 @@ String _hex2str(String hex) {
   return new String.fromCharCode(int.parse(hex, radix: 16));
 }
 
-// "\\/bfnrt
 String _escape(String string) {
   switch (string) {
     case "\"":
@@ -36,7 +35,8 @@ String _escape(String string) {
 }
 }%
 
-# value
+# Nonterminals
+
 jsonText <-
   WS? value EOF { $$ = $2; }
 
@@ -64,8 +64,7 @@ array <-
 values <-
   value (VALUE_SEPARATOR value)* { $$ = _list($1, $2); }
 
-QUOTATION_MARK <-
-  ["]
+# Lexemes
 
 BEGIN_ARRAY <-
   '[' WS
@@ -73,58 +72,51 @@ BEGIN_ARRAY <-
 BEGIN_OBJECT <-
   '{' WS
 
-DECIMAL_POINT <-
-  '.' WS { $$ = $1; }
-
 END_ARRAY <-
   ']' WS
 
 END_OBJECT <-
   '}' WS
 
-EXP <-
-  ('e' / 'E') ('-' / '+')? DIGIT+
+EOF <-
+  !.
 
 FALSE <-
-  "false" WS { $$ = false; }
-
-FRAC <-
-  DECIMAL_POINT DIGIT+
-
-INT <-
-  DIGIT+
+  'false' WS { $$ = false; }
 
 NAME_SEPARATOR <-
   ':' WS
 
 NULL <-
-  "null" WS { $$ = null; }
+  'null' WS { $$ = null; }
 
 NUMBER <-
   NUMBER_PART WS { $$ = $1; }
 
-NUMBER_PART <-
-  '-'? INT FRAC? EXP? { $$ = double.parse(_text()); }
-
 STRING <-
   QUOTATION_MARK STRING_CHARS QUOTATION_MARK WS { $$ = $2; }
 
-STRING_CHARS <-
-  CHAR* { $$ = $1.join(); }
-
 TRUE <-
-  "true" WS { $$ = true; }
+  'true' WS { $$ = true; }
 
 VALUE_SEPARATOR <-
   ',' WS
 
+WS <-
+  [\t-\n\r ]*
+
+# Morphemes
+
 CHAR <-
   UNESCAPED
-  / ESCAPE ["\\/bfnrt]     { $$ = _escape($2); }
+  / ESCAPE ["/\\bfnrt] { $$ = _escape($2); }
   / ESCAPE 'u' CHAR_HEXDIG { $$ = _hex2str($3); }
 
 CHAR_HEXDIG <-
   HEXDIG HEXDIG HEXDIG HEXDIG { $$ = _text(); }
+
+DECIMAL_POINT <-
+  '.' WS { $$ = $1; }
 
 DIGIT <-
   [0-9]
@@ -132,19 +124,31 @@ DIGIT <-
 ESCAPE <-
   '\\'
 
-EOF <-
-   !.
+EXP <-
+  ('e' / 'E') ('-' / '+')? DIGIT+
+
+FRAC <-
+  DECIMAL_POINT DIGIT+
 
 HEXDIG <-
   DIGIT
   / [a-f]
   / [A-F]
 
+INT <-
+  DIGIT+
+
+NUMBER_PART <-
+  '-'? INT FRAC? EXP? { $$ = double.parse(_text()); }
+
+QUOTATION_MARK <-
+  ["]
+
+STRING_CHARS <-
+  CHAR* { $$ = $1.join(); }
+
 UNESCAPED <-
-  [ !]
+  [ -!]
   / [#-\[]
   / [\]-~]
-  / [\u5D-\u10FFFF]
-
-WS <-
-  [ \t\n\r]*
+  / [\]-\u10ffff]

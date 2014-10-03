@@ -14,7 +14,6 @@ String _hex2str(String hex) {
   return new String.fromCharCode(int.parse(hex, radix: 16));
 }
 
-// "\\/bfnrt
 String _escape(String string) {
   switch (string) {
     case "\"":
@@ -43,65 +42,65 @@ class JsonParser {
   
   static final List<String> _expect1 = <String>["\'{\'"];
   
-  static final List<String> _expect10 = <String>["E", "e"];
+  static final List<String> _expect10 = <String>["\'null\'"];
   
-  static final List<String> _expect11 = <String>["+", "-"];
+  static final List<String> _expect11 = <String>["NUMBER"];
   
-  static final List<String> _expect12 = <String>["\'false\'"];
+  static final List<String> _expect12 = <String>["\'true\'"];
   
-  static final List<String> _expect13 = <String>["INT"];
+  static final List<String> _expect13 = <String>["WS"];
   
-  static final List<String> _expect14 = <String>["\':\'"];
+  static final List<String> _expect14 = <String>["CHAR"];
   
-  static final List<String> _expect15 = <String>["\'null\'"];
+  static final List<String> _expect15 = <String>["CHAR_HEXDIG"];
   
-  static final List<String> _expect16 = <String>["NUMBER"];
+  static final List<String> _expect16 = <String>["\'.\'"];
   
-  static final List<String> _expect17 = <String>["NUMBER_PART"];
+  static final List<String> _expect17 = <String>["DIGIT"];
   
-  static final List<String> _expect18 = <String>["STRING_CHARS"];
+  static final List<String> _expect18 = <String>["\'\\\'"];
   
-  static final List<String> _expect19 = <String>["\'true\'"];
+  static final List<String> _expect19 = <String>["EXP"];
   
   static final List<String> _expect2 = <String>["STRING"];
   
-  static final List<String> _expect20 = <String>["CHAR"];
+  static final List<String> _expect20 = <String>["E", "e"];
   
-  static final List<String> _expect21 = <String>["CHAR_HEXDIG"];
+  static final List<String> _expect21 = <String>["+", "-"];
   
-  static final List<String> _expect22 = <String>["DIGIT"];
+  static final List<String> _expect22 = <String>["HEXDIG"];
   
-  static final List<String> _expect23 = <String>["\'\\\'"];
+  static final List<String> _expect23 = <String>["INT"];
   
-  static final List<String> _expect24 = <String>["EOF"];
+  static final List<String> _expect24 = <String>["NUMBER_PART"];
   
-  static final List<String> _expect25 = <String>["HEXDIG"];
+  static final List<String> _expect25 = <String>["QUOTATION_MARK"];
   
-  static final List<String> _expect26 = <String>["UNESCAPED"];
+  static final List<String> _expect26 = <String>["STRING_CHARS"];
   
-  static final List<String> _expect27 = <String>["WS"];
+  static final List<String> _expect27 = <String>["UNESCAPED"];
   
   static final List<String> _expect3 = <String>["\',\'"];
   
   static final List<String> _expect4 = <String>["\'[\'"];
   
-  static final List<String> _expect5 = <String>["QUOTATION_MARK"];
+  static final List<String> _expect5 = <String>["\']\'"];
   
-  static final List<String> _expect6 = <String>["\'.\'"];
+  static final List<String> _expect6 = <String>["\'}\'"];
   
-  static final List<String> _expect7 = <String>["\']\'"];
+  static final List<String> _expect7 = <String>["EOF"];
   
-  static final List<String> _expect8 = <String>["\'}\'"];
+  static final List<String> _expect8 = <String>["\'false\'"];
   
-  static final List<String> _expect9 = <String>["EXP"];
+  static final List<String> _expect9 = <String>["\':\'"];
   
   static final List<bool> _lookahead = _unmap([0x2800013, 0x3ff20, 0x100000, 0x7fe04101, 0x3f01, 0xfe00, 0x10000]);
   
-  // '\"', '/', '\\', 'b', 'f', 'n', 'r', 't'
-  static final List<bool> _mapping0 = _unmap([0x2001, 0x8000000, 0x144044]);
-  
   // '\t', '\n', '\r', ' '
-  static final List<bool> _mapping1 = _unmap([0x800013]);
+  static final List<bool> _mapping0 = _unmap([0x800013]);
+  
+  // '\"', '/', '\\', 'b', 'f', 'n', 'r', 't'
+  static final List<bool> _mapping1 = _unmap([0x2001, 0x8000000, 0x144044]);
   
   // 'false'
   static final List<int> _strings0 = <int>[102, 97, 108, 115, 101];
@@ -112,9 +111,9 @@ class JsonParser {
   // 'true'
   static final List<int> _strings2 = <int>[116, 114, 117, 101];
   
-  final List<int> _tokenFlags = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1];
+  final List<int> _tokenFlags = [1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0];
   
-  final List<String> _tokenNames = ["QUOTATION_MARK", "\'[\'", "\'{\'", "\'.\'", "\']\'", "\'}\'", "EXP", "\'false\'", "\'.\'", "INT", "\':\'", "\'null\'", "NUMBER", "NUMBER_PART", "STRING", "STRING_CHARS", "\'true\'", "\',\'", "CHAR", "CHAR_HEXDIG", "DIGIT", "\'\\\'", "EOF", "HEXDIG", "UNESCAPED", "WS"];
+  final List<String> _tokenNames = ["\'[\'", "\'{\'", "\']\'", "\'}\'", "EOF", "\'false\'", "\':\'", "\'null\'", "NUMBER", "STRING", "\'true\'", "\',\'", "WS", "CHAR", "CHAR_HEXDIG", "\'.\'", "DIGIT", "\'\\\'", "EXP", "\'.\'", "HEXDIG", "INT", "NUMBER_PART", "QUOTATION_MARK", "STRING_CHARS", "UNESCAPED"];
   
   static final List<List<int>> _transitions0 = [[9, 10, 13, 13, 32, 32, 34, 34, 45, 45, 48, 57, 91, 91, 102, 102, 110, 110, 116, 116, 123, 123]];
   
@@ -122,25 +121,25 @@ class JsonParser {
   
   static final List<List<int>> _transitions10 = [[48, 57], [65, 70], [97, 102]];
   
-  static final List<List<int>> _transitions11 = [[32, 33], [35, 91], [93, 126], [127, 1114111]];
+  static final List<List<int>> _transitions11 = [[32, 33, 35, 1114111]];
   
-  static final List<List<int>> _transitions12 = [[9, 10, 13, 13, 32, 32]];
+  static final List<List<int>> _transitions12 = [[32, 33], [35, 91], [93, 126], [127, 1114111]];
   
   static final List<List<int>> _transitions2 = [[34, 34, 45, 45, 48, 57, 91, 91, 102, 102, 110, 110, 116, 116, 123, 123]];
   
-  static final List<List<int>> _transitions3 = [[69, 69, 101, 101]];
+  static final List<List<int>> _transitions3 = [[45, 45, 48, 57]];
   
-  static final List<List<int>> _transitions4 = [[69, 69], [101, 101]];
+  static final List<List<int>> _transitions4 = [[9, 10, 13, 13, 32, 32]];
   
-  static final List<List<int>> _transitions5 = [[43, 43], [45, 45]];
+  static final List<List<int>> _transitions5 = [[32, 33, 35, 91, 93, 1114111], [92, 92]];
   
-  static final List<List<int>> _transitions6 = [[45, 45, 48, 57]];
+  static final List<List<int>> _transitions6 = [[48, 57, 65, 70, 97, 102]];
   
-  static final List<List<int>> _transitions7 = [[32, 33, 35, 1114111]];
+  static final List<List<int>> _transitions7 = [[69, 69, 101, 101]];
   
-  static final List<List<int>> _transitions8 = [[32, 33, 35, 91, 93, 1114111], [92, 92]];
+  static final List<List<int>> _transitions8 = [[69, 69], [101, 101]];
   
-  static final List<List<int>> _transitions9 = [[48, 57, 65, 70, 97, 102]];
+  static final List<List<int>> _transitions9 = [[43, 43], [45, 45]];
   
   List _cache;
   
@@ -423,18 +422,18 @@ class JsonParser {
   
   dynamic _parse_BEGIN_ARRAY() {
     // LEXEME
-    // BEGIN_ARRAY <- "[" WS
+    // BEGIN_ARRAY <- '[' WS
     var $$;
-    _beginToken(1);  
-    // => "[" WS # Choice
+    _beginToken(0);  
+    // => '[' WS # Choice
     switch (_ch == 91 ? 0 : _ch == -1 ? 2 : 1) {
       // [[]
       case 0:
-        // => "[" WS # Sequence
+        // => '[' WS # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
         _startPos = _cursor;
         while (true) {  
-          // => "["
+          // => '['
           $$ = '[';
           success = true;
           if (++_cursor < _inputLen) {
@@ -442,7 +441,7 @@ class JsonParser {
           } else {
             _ch = -1;
           }
-          // <= "["
+          // <= '['
           if (!success) break;
           var seq = new List(2)..[0] = $$;
           // => WS
@@ -458,7 +457,7 @@ class JsonParser {
           _cursor = pos0;
         }
         _startPos = startPos0;
-        // <= "[" WS # Sequence
+        // <= '[' WS # Sequence
         break;
       // No matches
       // EOF
@@ -472,25 +471,25 @@ class JsonParser {
       // Expected: '['
       _failure(_expect4);
     }
-    // <= "[" WS # Choice
+    // <= '[' WS # Choice
     _endToken();
     return $$;
   }
   
   dynamic _parse_BEGIN_OBJECT() {
     // LEXEME
-    // BEGIN_OBJECT <- "{" WS
+    // BEGIN_OBJECT <- '{' WS
     var $$;
-    _beginToken(2);  
-    // => "{" WS # Choice
+    _beginToken(1);  
+    // => '{' WS # Choice
     switch (_ch == 123 ? 0 : _ch == -1 ? 2 : 1) {
       // [{]
       case 0:
-        // => "{" WS # Sequence
+        // => '{' WS # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
         _startPos = _cursor;
         while (true) {  
-          // => "{"
+          // => '{'
           $$ = '{';
           success = true;
           if (++_cursor < _inputLen) {
@@ -498,7 +497,7 @@ class JsonParser {
           } else {
             _ch = -1;
           }
-          // <= "{"
+          // <= '{'
           if (!success) break;
           var seq = new List(2)..[0] = $$;
           // => WS
@@ -514,7 +513,7 @@ class JsonParser {
           _cursor = pos0;
         }
         _startPos = startPos0;
-        // <= "{" WS # Sequence
+        // <= '{' WS # Sequence
         break;
       // No matches
       // EOF
@@ -528,18 +527,18 @@ class JsonParser {
       // Expected: '{'
       _failure(_expect1);
     }
-    // <= "{" WS # Choice
+    // <= '{' WS # Choice
     _endToken();
     return $$;
   }
   
   dynamic _parse_CHAR() {
     // MORPHEME
-    // CHAR <- UNESCAPED / ESCAPE ["/\bfnrt] / ESCAPE "u" CHAR_HEXDIG
+    // CHAR <- UNESCAPED / ESCAPE ["/\\bfnrt] / ESCAPE 'u' CHAR_HEXDIG
     var $$;
-    _beginToken(18);  
-    // => UNESCAPED / ESCAPE ["/\bfnrt] / ESCAPE "u" CHAR_HEXDIG # Choice
-    switch (_getState(_transitions8)) {
+    _beginToken(13);  
+    // => UNESCAPED / ESCAPE ["/\\bfnrt] / ESCAPE 'u' CHAR_HEXDIG # Choice
+    switch (_getState(_transitions5)) {
       // [ -!] [#-[] []-\u0010ffff]
       case 0:
         var startPos0 = _startPos;
@@ -551,7 +550,7 @@ class JsonParser {
       // [\\]
       case 1:
         while (true) {
-          // => ESCAPE ["/\bfnrt] # Sequence
+          // => ESCAPE ["/\\bfnrt] # Sequence
           var ch0 = _ch, pos0 = _cursor, startPos1 = _startPos;
           _startPos = _cursor;
           while (true) {  
@@ -560,16 +559,16 @@ class JsonParser {
             // <= ESCAPE
             if (!success) break;
             var seq = new List(2)..[0] = $$;
-            // => ["/\bfnrt]
-            $$ = _matchMapping(34, 116, _mapping0);
-            // <= ["/\bfnrt]
+            // => ["/\\bfnrt]
+            $$ = _matchMapping(34, 116, _mapping1);
+            // <= ["/\\bfnrt]
             if (!success) break;
             seq[1] = $$;
             $$ = seq;
             if (success) {    
               // ESCAPE
               final $1 = seq[0];
-              // ["/\bfnrt]
+              // ["/\\bfnrt]
               final $2 = seq[1];
               $$ = _escape($2);
             }
@@ -580,9 +579,9 @@ class JsonParser {
             _cursor = pos0;
           }
           _startPos = startPos1;
-          // <= ESCAPE ["/\bfnrt] # Sequence
+          // <= ESCAPE ["/\\bfnrt] # Sequence
           if (success) break;
-          // => ESCAPE "u" CHAR_HEXDIG # Sequence
+          // => ESCAPE 'u' CHAR_HEXDIG # Sequence
           var ch1 = _ch, pos1 = _cursor, startPos2 = _startPos;
           _startPos = _cursor;
           while (true) {  
@@ -591,9 +590,9 @@ class JsonParser {
             // <= ESCAPE
             if (!success) break;
             var seq = new List(3)..[0] = $$;
-            // => "u"
+            // => 'u'
             $$ = _matchChar(117, 'u');
-            // <= "u"
+            // <= 'u'
             if (!success) break;
             seq[1] = $$;
             // => CHAR_HEXDIG
@@ -605,7 +604,7 @@ class JsonParser {
             if (success) {    
               // ESCAPE
               final $1 = seq[0];
-              // "u"
+              // 'u'
               final $2 = seq[1];
               // CHAR_HEXDIG
               final $3 = seq[2];
@@ -618,7 +617,7 @@ class JsonParser {
             _cursor = pos1;
           }
           _startPos = startPos2;
-          // <= ESCAPE "u" CHAR_HEXDIG # Sequence
+          // <= ESCAPE 'u' CHAR_HEXDIG # Sequence
           break;
         }
         break;
@@ -632,9 +631,9 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: CHAR
-      _failure(_expect20);
+      _failure(_expect14);
     }
-    // <= UNESCAPED / ESCAPE ["/\bfnrt] / ESCAPE "u" CHAR_HEXDIG # Choice
+    // <= UNESCAPED / ESCAPE ["/\\bfnrt] / ESCAPE 'u' CHAR_HEXDIG # Choice
     _endToken();
     return $$;
   }
@@ -643,9 +642,9 @@ class JsonParser {
     // MORPHEME
     // CHAR_HEXDIG <- HEXDIG HEXDIG HEXDIG HEXDIG
     var $$;
-    _beginToken(19);  
+    _beginToken(14);  
     // => HEXDIG HEXDIG HEXDIG HEXDIG # Choice
-    switch (_getState(_transitions9)) {
+    switch (_getState(_transitions6)) {
       // [0-9] [A-F] [a-f]
       case 0:
         // => HEXDIG HEXDIG HEXDIG HEXDIG # Sequence
@@ -703,7 +702,7 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: CHAR_HEXDIG
-      _failure(_expect21);
+      _failure(_expect15);
     }
     // <= HEXDIG HEXDIG HEXDIG HEXDIG # Choice
     _endToken();
@@ -712,18 +711,18 @@ class JsonParser {
   
   dynamic _parse_DECIMAL_POINT() {
     // MORPHEME
-    // DECIMAL_POINT <- "." WS
+    // DECIMAL_POINT <- '.' WS
     var $$;
-    _beginToken(3);  
-    // => "." WS # Choice
+    _beginToken(15);  
+    // => '.' WS # Choice
     switch (_ch == 46 ? 0 : _ch == -1 ? 2 : 1) {
       // [.]
       case 0:
-        // => "." WS # Sequence
+        // => '.' WS # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
         _startPos = _cursor;
         while (true) {  
-          // => "."
+          // => '.'
           $$ = '.';
           success = true;
           if (++_cursor < _inputLen) {
@@ -731,7 +730,7 @@ class JsonParser {
           } else {
             _ch = -1;
           }
-          // <= "."
+          // <= '.'
           if (!success) break;
           var seq = new List(2)..[0] = $$;
           // => WS
@@ -741,7 +740,7 @@ class JsonParser {
           seq[1] = $$;
           $$ = seq;
           if (success) {    
-            // "."
+            // '.'
             final $1 = seq[0];
             // WS
             final $2 = seq[1];
@@ -754,7 +753,7 @@ class JsonParser {
           _cursor = pos0;
         }
         _startPos = startPos0;
-        // <= "." WS # Sequence
+        // <= '.' WS # Sequence
         break;
       // No matches
       // EOF
@@ -766,9 +765,9 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: '.'
-      _failure(_expect6);
+      _failure(_expect16);
     }
-    // <= "." WS # Choice
+    // <= '.' WS # Choice
     _endToken();
     return $$;
   }
@@ -777,7 +776,7 @@ class JsonParser {
     // MORPHEME
     // DIGIT <- [0-9]
     var $$;
-    _beginToken(20);  
+    _beginToken(16);  
     // => [0-9] # Choice
     switch (_ch >= 48 && _ch <= 57 ? 0 : _ch == -1 ? 2 : 1) {
       // [0-9]
@@ -798,7 +797,7 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: DIGIT
-      _failure(_expect22);
+      _failure(_expect17);
     }
     // <= [0-9] # Choice
     _endToken();
@@ -807,18 +806,18 @@ class JsonParser {
   
   dynamic _parse_END_ARRAY() {
     // LEXEME
-    // END_ARRAY <- "]" WS
+    // END_ARRAY <- ']' WS
     var $$;
-    _beginToken(4);  
-    // => "]" WS # Choice
+    _beginToken(2);  
+    // => ']' WS # Choice
     switch (_ch == 93 ? 0 : _ch == -1 ? 2 : 1) {
       // []]
       case 0:
-        // => "]" WS # Sequence
+        // => ']' WS # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
         _startPos = _cursor;
         while (true) {  
-          // => "]"
+          // => ']'
           $$ = ']';
           success = true;
           if (++_cursor < _inputLen) {
@@ -826,7 +825,7 @@ class JsonParser {
           } else {
             _ch = -1;
           }
-          // <= "]"
+          // <= ']'
           if (!success) break;
           var seq = new List(2)..[0] = $$;
           // => WS
@@ -842,7 +841,7 @@ class JsonParser {
           _cursor = pos0;
         }
         _startPos = startPos0;
-        // <= "]" WS # Sequence
+        // <= ']' WS # Sequence
         break;
       // No matches
       // EOF
@@ -854,27 +853,27 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: ']'
-      _failure(_expect7);
+      _failure(_expect5);
     }
-    // <= "]" WS # Choice
+    // <= ']' WS # Choice
     _endToken();
     return $$;
   }
   
   dynamic _parse_END_OBJECT() {
     // LEXEME
-    // END_OBJECT <- "}" WS
+    // END_OBJECT <- '}' WS
     var $$;
-    _beginToken(5);  
-    // => "}" WS # Choice
+    _beginToken(3);  
+    // => '}' WS # Choice
     switch (_ch == 125 ? 0 : _ch == -1 ? 2 : 1) {
       // [}]
       case 0:
-        // => "}" WS # Sequence
+        // => '}' WS # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
         _startPos = _cursor;
         while (true) {  
-          // => "}"
+          // => '}'
           $$ = '}';
           success = true;
           if (++_cursor < _inputLen) {
@@ -882,7 +881,7 @@ class JsonParser {
           } else {
             _ch = -1;
           }
-          // <= "}"
+          // <= '}'
           if (!success) break;
           var seq = new List(2)..[0] = $$;
           // => WS
@@ -898,7 +897,7 @@ class JsonParser {
           _cursor = pos0;
         }
         _startPos = startPos0;
-        // <= "}" WS # Sequence
+        // <= '}' WS # Sequence
         break;
       // No matches
       // EOF
@@ -910,9 +909,9 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: '}'
-      _failure(_expect8);
+      _failure(_expect6);
     }
-    // <= "}" WS # Choice
+    // <= '}' WS # Choice
     _endToken();
     return $$;
   }
@@ -921,7 +920,7 @@ class JsonParser {
     // LEXEME
     // EOF <- !.
     var $$;
-    _beginToken(22);  
+    _beginToken(4);  
     // => !. # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
       // [\u0000-\u0010ffff]
@@ -951,7 +950,7 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: EOF
-      _failure(_expect24);
+      _failure(_expect7);
     }
     // <= !. # Choice
     _endToken();
@@ -960,15 +959,15 @@ class JsonParser {
   
   dynamic _parse_ESCAPE() {
     // MORPHEME
-    // ESCAPE <- "\\"
+    // ESCAPE <- '\\'
     var $$;
-    _beginToken(21);  
-    // => "\\" # Choice
+    _beginToken(17);  
+    // => '\\' # Choice
     switch (_ch == 92 ? 0 : _ch == -1 ? 2 : 1) {
       // [\\]
       case 0:
         var startPos0 = _startPos;
-        // => "\\"
+        // => '\\'
         $$ = '\\';
         success = true;
         if (++_cursor < _inputLen) {
@@ -976,7 +975,7 @@ class JsonParser {
         } else {
           _ch = -1;
         }
-        // <= "\\"
+        // <= '\\'
         _startPos = startPos0;
         break;
       // No matches
@@ -989,32 +988,32 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: '\'
-      _failure(_expect23);
+      _failure(_expect18);
     }
-    // <= "\\" # Choice
+    // <= '\\' # Choice
     _endToken();
     return $$;
   }
   
   dynamic _parse_EXP() {
     // MORPHEME
-    // EXP <- ("e" / "E") ("-" / "+")? DIGIT+
+    // EXP <- ('e' / 'E') ('-' / '+')? DIGIT+
     var $$;
-    _beginToken(6);  
-    // => ("e" / "E") ("-" / "+")? DIGIT+ # Choice
-    switch (_getState(_transitions3)) {
+    _beginToken(18);  
+    // => ('e' / 'E') ('-' / '+')? DIGIT+ # Choice
+    switch (_getState(_transitions7)) {
       // [E] [e]
       case 0:
-        // => ("e" / "E") ("-" / "+")? DIGIT+ # Sequence
+        // => ('e' / 'E') ('-' / '+')? DIGIT+ # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
         _startPos = _cursor;
         while (true) {  
-          // => "e" / "E" # Choice
-          switch (_getState(_transitions4)) {
+          // => ('e' / 'E') # Choice
+          switch (_getState(_transitions8)) {
             // [E]
             case 0:
               var startPos1 = _startPos;
-              // => "E"
+              // => 'E'
               $$ = 'E';
               success = true;
               if (++_cursor < _inputLen) {
@@ -1022,13 +1021,13 @@ class JsonParser {
               } else {
                 _ch = -1;
               }
-              // <= "E"
+              // <= 'E'
               _startPos = startPos1;
               break;
             // [e]
             case 1:
               var startPos2 = _startPos;
-              // => "e"
+              // => 'e'
               $$ = 'e';
               success = true;
               if (++_cursor < _inputLen) {
@@ -1036,7 +1035,7 @@ class JsonParser {
               } else {
                 _ch = -1;
               }
-              // <= "e"
+              // <= 'e'
               _startPos = startPos2;
               break;
             // No matches
@@ -1049,20 +1048,20 @@ class JsonParser {
           }
           if (!success && _cursor > _testing) {
             // Expected: e, E
-            _failure(_expect10);
+            _failure(_expect20);
           }
-          // <= "e" / "E" # Choice
+          // <= ('e' / 'E') # Choice
           if (!success) break;
           var seq = new List(3)..[0] = $$;
-          // => ("-" / "+")?
+          // => ('-' / '+')?
           var testing0 = _testing;
           _testing = _cursor;
-          // => "-" / "+" # Choice
-          switch (_getState(_transitions5)) {
+          // => ('-' / '+') # Choice
+          switch (_getState(_transitions9)) {
             // [+]
             case 0:
               var startPos3 = _startPos;
-              // => "+"
+              // => '+'
               $$ = '+';
               success = true;
               if (++_cursor < _inputLen) {
@@ -1070,13 +1069,13 @@ class JsonParser {
               } else {
                 _ch = -1;
               }
-              // <= "+"
+              // <= '+'
               _startPos = startPos3;
               break;
             // [-]
             case 1:
               var startPos4 = _startPos;
-              // => "-"
+              // => '-'
               $$ = '-';
               success = true;
               if (++_cursor < _inputLen) {
@@ -1084,7 +1083,7 @@ class JsonParser {
               } else {
                 _ch = -1;
               }
-              // <= "-"
+              // <= '-'
               _startPos = startPos4;
               break;
             // No matches
@@ -1097,12 +1096,12 @@ class JsonParser {
           }
           if (!success && _cursor > _testing) {
             // Expected: -, +
-            _failure(_expect11);
+            _failure(_expect21);
           }
-          // <= "-" / "+" # Choice
+          // <= ('-' / '+') # Choice
           success = true; 
           _testing = testing0;
-          // <= ("-" / "+")?
+          // <= ('-' / '+')?
           if (!success) break;
           seq[1] = $$;
           // => DIGIT+
@@ -1140,7 +1139,7 @@ class JsonParser {
           _cursor = pos0;
         }
         _startPos = startPos0;
-        // <= ("e" / "E") ("-" / "+")? DIGIT+ # Sequence
+        // <= ('e' / 'E') ('-' / '+')? DIGIT+ # Sequence
         break;
       // No matches
       // EOF
@@ -1152,29 +1151,29 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: EXP
-      _failure(_expect9);
+      _failure(_expect19);
     }
-    // <= ("e" / "E") ("-" / "+")? DIGIT+ # Choice
+    // <= ('e' / 'E') ('-' / '+')? DIGIT+ # Choice
     _endToken();
     return $$;
   }
   
   dynamic _parse_FALSE() {
     // LEXEME
-    // FALSE <- "false" WS
+    // FALSE <- 'false' WS
     var $$;
-    _beginToken(7);  
-    // => "false" WS # Choice
+    _beginToken(5);  
+    // => 'false' WS # Choice
     switch (_ch == 102 ? 0 : _ch == -1 ? 2 : 1) {
       // [f]
       case 0:
-        // => "false" WS # Sequence
+        // => 'false' WS # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
         _startPos = _cursor;
         while (true) {  
-          // => "false"
+          // => 'false'
           $$ = _matchString(_strings0, 'false');
-          // <= "false"
+          // <= 'false'
           if (!success) break;
           var seq = new List(2)..[0] = $$;
           // => WS
@@ -1184,7 +1183,7 @@ class JsonParser {
           seq[1] = $$;
           $$ = seq;
           if (success) {    
-            // "false"
+            // 'false'
             final $1 = seq[0];
             // WS
             final $2 = seq[1];
@@ -1197,7 +1196,7 @@ class JsonParser {
           _cursor = pos0;
         }
         _startPos = startPos0;
-        // <= "false" WS # Sequence
+        // <= 'false' WS # Sequence
         break;
       // No matches
       // EOF
@@ -1209,9 +1208,9 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: 'false'
-      _failure(_expect12);
+      _failure(_expect8);
     }
-    // <= "false" WS # Choice
+    // <= 'false' WS # Choice
     _endToken();
     return $$;
   }
@@ -1220,7 +1219,7 @@ class JsonParser {
     // MORPHEME
     // FRAC <- DECIMAL_POINT DIGIT+
     var $$;
-    _beginToken(8);  
+    _beginToken(19);  
     // => DECIMAL_POINT DIGIT+ # Choice
     switch (_ch == 46 ? 0 : _ch == -1 ? 2 : 1) {
       // [.]
@@ -1281,7 +1280,7 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: '.'
-      _failure(_expect6);
+      _failure(_expect16);
     }
     // <= DECIMAL_POINT DIGIT+ # Choice
     _endToken();
@@ -1292,7 +1291,7 @@ class JsonParser {
     // MORPHEME
     // HEXDIG <- DIGIT / [a-f] / [A-F]
     var $$;
-    _beginToken(23);  
+    _beginToken(20);  
     // => DIGIT / [a-f] / [A-F] # Choice
     switch (_getState(_transitions10)) {
       // [0-9]
@@ -1329,7 +1328,7 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: HEXDIG
-      _failure(_expect25);
+      _failure(_expect22);
     }
     // <= DIGIT / [a-f] / [A-F] # Choice
     _endToken();
@@ -1340,7 +1339,7 @@ class JsonParser {
     // MORPHEME
     // INT <- DIGIT+
     var $$;
-    _beginToken(9);  
+    _beginToken(21);  
     // => DIGIT+ # Choice
     switch (_ch >= 48 && _ch <= 57 ? 0 : _ch == -1 ? 2 : 1) {
       // [0-9]
@@ -1383,7 +1382,7 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: INT
-      _failure(_expect13);
+      _failure(_expect23);
     }
     // <= DIGIT+ # Choice
     _endToken();
@@ -1392,18 +1391,18 @@ class JsonParser {
   
   dynamic _parse_NAME_SEPARATOR() {
     // LEXEME
-    // NAME_SEPARATOR <- ":" WS
+    // NAME_SEPARATOR <- ':' WS
     var $$;
-    _beginToken(10);  
-    // => ":" WS # Choice
+    _beginToken(6);  
+    // => ':' WS # Choice
     switch (_ch == 58 ? 0 : _ch == -1 ? 2 : 1) {
       // [:]
       case 0:
-        // => ":" WS # Sequence
+        // => ':' WS # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
         _startPos = _cursor;
         while (true) {  
-          // => ":"
+          // => ':'
           $$ = ':';
           success = true;
           if (++_cursor < _inputLen) {
@@ -1411,7 +1410,7 @@ class JsonParser {
           } else {
             _ch = -1;
           }
-          // <= ":"
+          // <= ':'
           if (!success) break;
           var seq = new List(2)..[0] = $$;
           // => WS
@@ -1427,7 +1426,7 @@ class JsonParser {
           _cursor = pos0;
         }
         _startPos = startPos0;
-        // <= ":" WS # Sequence
+        // <= ':' WS # Sequence
         break;
       // No matches
       // EOF
@@ -1439,29 +1438,29 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: ':'
-      _failure(_expect14);
+      _failure(_expect9);
     }
-    // <= ":" WS # Choice
+    // <= ':' WS # Choice
     _endToken();
     return $$;
   }
   
   dynamic _parse_NULL() {
     // LEXEME
-    // NULL <- "null" WS
+    // NULL <- 'null' WS
     var $$;
-    _beginToken(11);  
-    // => "null" WS # Choice
+    _beginToken(7);  
+    // => 'null' WS # Choice
     switch (_ch == 110 ? 0 : _ch == -1 ? 2 : 1) {
       // [n]
       case 0:
-        // => "null" WS # Sequence
+        // => 'null' WS # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
         _startPos = _cursor;
         while (true) {  
-          // => "null"
+          // => 'null'
           $$ = _matchString(_strings1, 'null');
-          // <= "null"
+          // <= 'null'
           if (!success) break;
           var seq = new List(2)..[0] = $$;
           // => WS
@@ -1471,7 +1470,7 @@ class JsonParser {
           seq[1] = $$;
           $$ = seq;
           if (success) {    
-            // "null"
+            // 'null'
             final $1 = seq[0];
             // WS
             final $2 = seq[1];
@@ -1484,7 +1483,7 @@ class JsonParser {
           _cursor = pos0;
         }
         _startPos = startPos0;
-        // <= "null" WS # Sequence
+        // <= 'null' WS # Sequence
         break;
       // No matches
       // EOF
@@ -1496,9 +1495,9 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: 'null'
-      _failure(_expect15);
+      _failure(_expect10);
     }
-    // <= "null" WS # Choice
+    // <= 'null' WS # Choice
     _endToken();
     return $$;
   }
@@ -1507,9 +1506,9 @@ class JsonParser {
     // LEXEME
     // NUMBER <- NUMBER_PART WS
     var $$;
-    _beginToken(12);  
+    _beginToken(8);  
     // => NUMBER_PART WS # Choice
-    switch (_getState(_transitions6)) {
+    switch (_getState(_transitions3)) {
       // [-] [0-9]
       case 0:
         // => NUMBER_PART WS # Sequence
@@ -1553,7 +1552,7 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: NUMBER
-      _failure(_expect16);
+      _failure(_expect11);
     }
     // <= NUMBER_PART WS # Choice
     _endToken();
@@ -1562,26 +1561,26 @@ class JsonParser {
   
   dynamic _parse_NUMBER_PART() {
     // MORPHEME
-    // NUMBER_PART <- "-"? INT FRAC? EXP?
+    // NUMBER_PART <- '-'? INT FRAC? EXP?
     var $$;
-    _beginToken(13);  
-    // => "-"? INT FRAC? EXP? # Choice
-    switch (_getState(_transitions6)) {
+    _beginToken(22);  
+    // => '-'? INT FRAC? EXP? # Choice
+    switch (_getState(_transitions3)) {
       // [-] [0-9]
       case 0:
-        // => "-"? INT FRAC? EXP? # Sequence
+        // => '-'? INT FRAC? EXP? # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
         _startPos = _cursor;
         while (true) {  
-          // => "-"?
+          // => '-'?
           var testing0 = _testing;
           _testing = _cursor;
-          // => "-"
+          // => '-'
           $$ = _matchChar(45, '-');
-          // <= "-"
+          // <= '-'
           success = true; 
           _testing = testing0;
-          // <= "-"?
+          // <= '-'?
           if (!success) break;
           var seq = new List(4)..[0] = $$;
           // => INT
@@ -1613,7 +1612,7 @@ class JsonParser {
           seq[3] = $$;
           $$ = seq;
           if (success) {    
-            // "-"?
+            // '-'?
             final $1 = seq[0];
             // INT
             final $2 = seq[1];
@@ -1630,7 +1629,7 @@ class JsonParser {
           _cursor = pos0;
         }
         _startPos = startPos0;
-        // <= "-"? INT FRAC? EXP? # Sequence
+        // <= '-'? INT FRAC? EXP? # Sequence
         break;
       // No matches
       // EOF
@@ -1642,9 +1641,9 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: NUMBER_PART
-      _failure(_expect17);
+      _failure(_expect24);
     }
-    // <= "-"? INT FRAC? EXP? # Choice
+    // <= '-'? INT FRAC? EXP? # Choice
     _endToken();
     return $$;
   }
@@ -1653,7 +1652,7 @@ class JsonParser {
     // MORPHEME
     // QUOTATION_MARK <- ["]
     var $$;
-    _beginToken(0);  
+    _beginToken(23);  
     // => ["] # Choice
     switch (_ch == 34 ? 0 : _ch == -1 ? 2 : 1) {
       // [\"]
@@ -1680,7 +1679,7 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: QUOTATION_MARK
-      _failure(_expect5);
+      _failure(_expect25);
     }
     // <= ["] # Choice
     _endToken();
@@ -1691,7 +1690,7 @@ class JsonParser {
     // LEXEME
     // STRING <- QUOTATION_MARK STRING_CHARS QUOTATION_MARK WS
     var $$;
-    _beginToken(14);  
+    _beginToken(9);  
     // => QUOTATION_MARK STRING_CHARS QUOTATION_MARK WS # Choice
     switch (_ch == 34 ? 0 : _ch == -1 ? 2 : 1) {
       // [\"]
@@ -1762,9 +1761,9 @@ class JsonParser {
     // MORPHEME
     // STRING_CHARS <- CHAR*
     var $$;
-    _beginToken(15);  
+    _beginToken(24);  
     // => CHAR* # Choice
-    switch (_getState(_transitions7)) {
+    switch (_getState(_transitions11)) {
       // [ -!] [#-\u0010ffff]
       // EOF
       case 0:
@@ -1802,7 +1801,7 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: STRING_CHARS
-      _failure(_expect18);
+      _failure(_expect26);
     }
     // <= CHAR* # Choice
     _endToken();
@@ -1811,20 +1810,20 @@ class JsonParser {
   
   dynamic _parse_TRUE() {
     // LEXEME
-    // TRUE <- "true" WS
+    // TRUE <- 'true' WS
     var $$;
-    _beginToken(16);  
-    // => "true" WS # Choice
+    _beginToken(10);  
+    // => 'true' WS # Choice
     switch (_ch == 116 ? 0 : _ch == -1 ? 2 : 1) {
       // [t]
       case 0:
-        // => "true" WS # Sequence
+        // => 'true' WS # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
         _startPos = _cursor;
         while (true) {  
-          // => "true"
+          // => 'true'
           $$ = _matchString(_strings2, 'true');
-          // <= "true"
+          // <= 'true'
           if (!success) break;
           var seq = new List(2)..[0] = $$;
           // => WS
@@ -1834,7 +1833,7 @@ class JsonParser {
           seq[1] = $$;
           $$ = seq;
           if (success) {    
-            // "true"
+            // 'true'
             final $1 = seq[0];
             // WS
             final $2 = seq[1];
@@ -1847,7 +1846,7 @@ class JsonParser {
           _cursor = pos0;
         }
         _startPos = startPos0;
-        // <= "true" WS # Sequence
+        // <= 'true' WS # Sequence
         break;
       // No matches
       // EOF
@@ -1859,9 +1858,9 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: 'true'
-      _failure(_expect19);
+      _failure(_expect12);
     }
-    // <= "true" WS # Choice
+    // <= 'true' WS # Choice
     _endToken();
     return $$;
   }
@@ -1870,9 +1869,9 @@ class JsonParser {
     // MORPHEME
     // UNESCAPED <- [ -!] / [#-\[] / [\]-~] / [\]-\u10ffff]
     var $$;
-    _beginToken(24);  
+    _beginToken(25);  
     // => [ -!] / [#-\[] / [\]-~] / [\]-\u10ffff] # Choice
-    switch (_getState(_transitions11)) {
+    switch (_getState(_transitions12)) {
       // [ -!]
       case 0:
         var startPos0 = _startPos;
@@ -1924,7 +1923,7 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: UNESCAPED
-      _failure(_expect26);
+      _failure(_expect27);
     }
     // <= [ -!] / [#-\[] / [\]-~] / [\]-\u10ffff] # Choice
     _endToken();
@@ -1933,18 +1932,18 @@ class JsonParser {
   
   dynamic _parse_VALUE_SEPARATOR() {
     // LEXEME
-    // VALUE_SEPARATOR <- "," WS
+    // VALUE_SEPARATOR <- ',' WS
     var $$;
-    _beginToken(17);  
-    // => "," WS # Choice
+    _beginToken(11);  
+    // => ',' WS # Choice
     switch (_ch == 44 ? 0 : _ch == -1 ? 2 : 1) {
       // [,]
       case 0:
-        // => "," WS # Sequence
+        // => ',' WS # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
         _startPos = _cursor;
         while (true) {  
-          // => ","
+          // => ','
           $$ = ',';
           success = true;
           if (++_cursor < _inputLen) {
@@ -1952,7 +1951,7 @@ class JsonParser {
           } else {
             _ch = -1;
           }
-          // <= ","
+          // <= ','
           if (!success) break;
           var seq = new List(2)..[0] = $$;
           // => WS
@@ -1968,7 +1967,7 @@ class JsonParser {
           _cursor = pos0;
         }
         _startPos = startPos0;
-        // <= "," WS # Sequence
+        // <= ',' WS # Sequence
         break;
       // No matches
       // EOF
@@ -1982,7 +1981,7 @@ class JsonParser {
       // Expected: ','
       _failure(_expect3);
     }
-    // <= "," WS # Choice
+    // <= ',' WS # Choice
     _endToken();
     return $$;
   }
@@ -1991,9 +1990,9 @@ class JsonParser {
     // LEXEME & MORPHEME
     // WS <- [\t-\n\r ]*
     var $$;
-    _beginToken(25);  
+    _beginToken(12);  
     // => [\t-\n\r ]* # Choice
-    switch (_getState(_transitions12)) {
+    switch (_getState(_transitions4)) {
       // [\t-\n] [\r] [ ]
       // EOF
       case 0:
@@ -2004,7 +2003,7 @@ class JsonParser {
         for (var reps = []; ; ) {
           _testing = _cursor;
           // => [\t-\n\r ]
-          $$ = _matchMapping(9, 32, _mapping1);
+          $$ = _matchMapping(9, 32, _mapping0);
           // <= [\t-\n\r ]
           if (success) {  
             reps.add($$);
@@ -2026,7 +2025,7 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: WS
-      _failure(_expect27);
+      _failure(_expect13);
     }
     // <= [\t-\n\r ]* # Choice
     _endToken();
@@ -2184,7 +2183,7 @@ class JsonParser {
           var testing0 = _testing; 
           for (var reps = []; ; ) {
             _testing = _cursor;
-            // => VALUE_SEPARATOR member # Choice
+            // => (VALUE_SEPARATOR member) # Choice
             switch (_ch == 44 ? 0 : _ch == -1 ? 2 : 1) {
               // [,]
               case 0:
@@ -2224,7 +2223,7 @@ class JsonParser {
               // Expected: ','
               _failure(_expect3);
             }
-            // <= VALUE_SEPARATOR member # Choice
+            // <= (VALUE_SEPARATOR member) # Choice
             if (success) {  
               reps.add($$);
             } else {
@@ -2437,7 +2436,7 @@ class JsonParser {
           var testing0 = _testing; 
           for (var reps = []; ; ) {
             _testing = _cursor;
-            // => VALUE_SEPARATOR value # Choice
+            // => (VALUE_SEPARATOR value) # Choice
             switch (_ch == 44 ? 0 : _ch == -1 ? 2 : 1) {
               // [,]
               case 0:
@@ -2477,7 +2476,7 @@ class JsonParser {
               // Expected: ','
               _failure(_expect3);
             }
-            // <= VALUE_SEPARATOR value # Choice
+            // <= (VALUE_SEPARATOR value) # Choice
             if (success) {  
               reps.add($$);
             } else {
@@ -2523,8 +2522,8 @@ class JsonParser {
     return $$;
   }
   
-  String _text() { 
-    return text.substring(_startPos, _cursor);  
+  String _text() {
+    return new String.fromCharCodes(_input.sublist(_startPos, _cursor));
   }
   
   int _toCodePoint(String string) {

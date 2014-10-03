@@ -18,14 +18,4 @@ abstract class ListExpression extends Expression {
   List<Expression> get expressions {
     return _expressions;
   }
-
-  bool get isComplex {
-    if (_expressions.length > 1) {
-      return true;
-    } else if (_expressions[0] is ListExpression) {
-      return (_expressions[0] as ListExpression).isComplex;
-    } else {
-      return false;
-    }
-  }
 }

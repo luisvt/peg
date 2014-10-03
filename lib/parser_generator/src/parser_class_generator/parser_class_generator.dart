@@ -3,6 +3,8 @@ part of peg.parser_generators.parser_class_generator;
 abstract class ParserClassGenerator extends ClassGenerator {
   static const int FLAG_TOKEN_VALUE = 1;
 
+  static const String ASCII = "_ascii";
+
   static const String CACHE = "_cache";
 
   static const String CACHE_POS = "_cachePos";
@@ -56,6 +58,8 @@ abstract class ParserClassGenerator extends ClassGenerator {
   ParserGenerator get parserGenerator;
 
   void _addCommonMembers() {
+    addMethod(new MethodBeginTokenGenerator());
+    addMethod(new MethodEndTokenGenerator());
     addMethod(new MethodErrorsGenerator(this));
     addMethod(new MethodFailureGenerator(this));
     addMethod(new MethodFlattenGenerator());
@@ -74,6 +78,8 @@ abstract class ParserClassGenerator extends ClassGenerator {
 
     // Variables
     var errorClass = ParserErrorClassGenerator.getName(name);
+    var value = "new List<String>.generate(128, (c) => new String.fromCharCode(c))";
+    addVariable(new VariableGenerator(ASCII, "static final List<String>", value: value), true);
     addVariable(new VariableGenerator(CACHE, "List"));
     addVariable(new VariableGenerator(CACHE_POS, "int"));
     addVariable(new VariableGenerator(CACHE_RULE, "List<int>"));
@@ -118,5 +124,9 @@ abstract class ParserClassGenerator extends ClassGenerator {
 
     addVariable(new VariableGenerator(TOKEN_FLAGS, "final List<int>", value: "[${flags.join(", ")}]"), true);
     addVariable(new VariableGenerator(TOKEN_NAMES, "final List<String>", value: "[${names.join(", ")}]"), true);
+
+    if (grammar.members != null) {
+      addCode(Utils.codeToStrings(grammar.members));
+    }
   }
 }

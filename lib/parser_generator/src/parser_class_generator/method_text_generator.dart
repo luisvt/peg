@@ -5,6 +5,8 @@ class MethodTextGenerator extends DeclarationGenerator {
 
   static const String _CURSOR = ParserClassGenerator.CURSOR;
 
+  static const String _INPUT = ParserClassGenerator.INPUT;
+
   static const String _START_POS = ParserClassGenerator.START_POS;
 
   static const String _TEXT = ParserClassGenerator.TEXT;
@@ -12,8 +14,8 @@ class MethodTextGenerator extends DeclarationGenerator {
   static const String _TEMPLATE = "TEMPLATE";
 
   static final String _template = '''
-String $NAME() { 
-  return $_TEXT.substring($_START_POS, $_CURSOR);  
+String $NAME() {
+  return new String.fromCharCodes($_INPUT.sublist($_START_POS, $_CURSOR));
 }
 ''';
 

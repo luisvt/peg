@@ -24,15 +24,7 @@ class SequenceExpression extends ListExpression {
   String toString() {
     var strings = [];
     for (var expression in _expressions) {
-      if (expression is ListExpression) {
-        if (expression.isComplex) {
-          strings.add('($expression)');
-        } else {
-          strings.add('$expression');
-        }
-      } else {
-        strings.add('$expression');
-      }
+      strings.add('$expression');
     }
 
     return strings.join(' ');

@@ -24,7 +24,12 @@ class OrderedChoiceExpression extends ListExpression {
   }
 
   String toString() {
-    return _expressions.toList().join(' / ');
+    if (parent != null) {
+      return "(${_expressions.toList().join(' / ')})";
+    } else {
+
+      return _expressions.toList().join(' / ');
+    }
   }
 
   Object visitChildren(ExpressionVisitor visitor) {

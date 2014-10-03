@@ -1,3 +1,8 @@
+## 0.0.31
+
+- Added grammar formatter utility `pegfmt.dart`
+- Fixed bug in `_text() => String`
+
 ## 0.0.30
 
 - Minor (speed up) changes in `json` grammar. From now the generated `json_parser` is a fast enough parser, given the fact that it is the generated PEG parser

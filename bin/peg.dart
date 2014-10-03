@@ -45,7 +45,7 @@ class Program {
 
   void interpretCommand(String filename, {bool memoize, String name, String output}) {
     print("Not implemented yet.");
-    exit(-1);
+    //exit(-1);
     var basename = path.basenameWithoutExtension(filename);
     if (output == null || output.isEmpty) {
       output = underscore(basename) + '_parser.dart';
@@ -57,8 +57,11 @@ class Program {
 
     var parser = _getParser(filename);
     var grammar = _parseGrammar(parser);
-    var generator = new InterpreterParserGenerator(name, grammar, memoize: memoize);
+    var options = new ParserGeneratorOptions();
+    options.memoize = memoize;
+    var generator = new InterpreterParserGenerator(name, grammar, options);
     var genarated = generator.generate();
+    print(genarated.join('\n'));
     //new File(output).writeAsStringSync(genarated.join('\n'));
   }
 

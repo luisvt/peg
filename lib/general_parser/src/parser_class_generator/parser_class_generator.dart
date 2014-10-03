@@ -1,8 +1,6 @@
 part of peg.general_parser.parser_class_generator;
 
 class GeneralParserClassGenerator extends ParserClassGenerator {
-  static const String ASCII = "_ascii";
-
   static const String EXPECT = "_expect";
 
   static const String LOOKAHEAD = "_lookahead";
@@ -217,8 +215,6 @@ class GeneralParserClassGenerator extends ParserClassGenerator {
       addMethod(new ProductionRuleGenerator(productionRule, this));
     }
 
-    addMethod(new MethodBeginTokenGenerator());
-    addMethod(new MethodEndTokenGenerator());
     addMethod(new MethodGetStateGenerator());
     addMethod(new MethodMatchAnyGenerator());
     addMethod(new MethodMatchCharGenerator());
@@ -240,10 +236,6 @@ class GeneralParserClassGenerator extends ParserClassGenerator {
       }
 
       addMethod(new MethodTraceGenerator(length));
-    }
-
-    if (grammar.members != null) {
-      addCode(Utils.codeToStrings(grammar.members));
     }
 
     _generateVariables();
@@ -286,9 +278,6 @@ class GeneralParserClassGenerator extends ParserClassGenerator {
   }
 
   void _generateVariables() {
-    var value = "new List<String>.generate(128, (c) => new String.fromCharCode(c))";
-    addVariable(new VariableGenerator(ASCII, "static final List<String>", value: value), true);
-    //
     if (!_lookaheadTable.isEmpty) {
       var packed = _pack(_lookaheadTable);
       var hex = packed.map((e) => "0x" + e.toRadixString(16));

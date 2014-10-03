@@ -1,7 +1,7 @@
 part of peg.general_parser.expressions_generators;
 
 class CharacterClassExpressionGenerator extends ExpressionGenerator {
-  static const String _ASCII = GeneralParserClassGenerator.ASCII;
+  static const String _ASCII = ParserClassGenerator.ASCII;
 
   static const String _CH = ParserClassGenerator.CH;
 

@@ -180,19 +180,15 @@ class Utils {
         break;
       case 34:
         string = '\\"';
-
         break;
       case 36:
         string = r'\$';
-
         break;
       case 39:
         string = '\\\'';
-
         break;
       case 92:
         string = '\\\\';
-
         break;
     }
 

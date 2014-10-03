@@ -13,6 +13,17 @@ Add public API of the parser generator
 
 =======================================
 
+Add to interpreter generator
+- Support of tokens (DONE)
+- Support of states and transitions
+- Support of failures
+
+=======================================
+
+Test `peg print` and compare with `peg2txt`
+
+=======================================
+
 Comment _getState transitions
 Comment _getState cases (DONE)
 
@@ -176,3 +187,21 @@ Eg.
 =======================================
 
 Add support of detection "grammar does not requires a memoization"
+
+=======================================
+
+Add ordered choice with one elememnt
+
+=======================================
+
+Add support of AST generation
+
+=======================================
+
+remove duplicate instruction data
+
+=======================================
+
+Improve case generator
+
+=======================================

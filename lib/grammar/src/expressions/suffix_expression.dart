@@ -6,12 +6,6 @@ abstract class SuffixExpression extends UnaryExpression {
   SuffixExpression(Expression expression) : super(expression);
 
   String toString() {
-    if (expression is ListExpression) {
-      if ((expression as ListExpression).isComplex) {
-        return '($expression)$suffix';
-      }
-    }
-
     return '$expression$suffix';
   }
 }

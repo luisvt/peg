@@ -18,6 +18,8 @@ num _binop(num left, num right, String op) {
 
 }%
 
+# Nonterminals
+
 Expr <-
   SPACES? Sentence EOF { $$ = $2; }
 
@@ -33,7 +35,7 @@ Atom <-
   NUMBER
   / OPEN Sentence CLOSE { $$ = $2; }
 
-# Tokens
+# Lexemes
 
 CLOSE <-
   ')' SPACES
@@ -58,9 +60,13 @@ OPEN <-
 
 PLUS <-
   '+' SPACES { $$ = $1; }
- 
+
 SPACES <-
   WS*
 
- WS <-
-   [ \n\t\r] / '\r\n'
+# Morphemes
+
+WS <-
+  [\t-\n\r ]
+  / '\r\n'
+

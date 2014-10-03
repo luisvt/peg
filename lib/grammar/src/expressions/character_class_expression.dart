@@ -43,17 +43,11 @@ class CharacterClassExpression extends Expression {
     var strings = [];
     for (var range in _ranges.groups) {
       if (range.start == range.end) {
-        // var char = Utils.charToString(range.start);
-        var char = toPrintable(new String.fromCharCode(range.start));
-        strings.add(_escape(char));
+        strings.add(_escape(range.start));
       } else {
-        // var end = Utils.charToString(range.end);
-        // var start = Utils.charToString(range.start);
-        var end = toPrintable(new String.fromCharCode(range.end));
-        var start = toPrintable(new String.fromCharCode(range.start));
-        strings.add(_escape(start));
+        strings.add(_escape(range.start));
         strings.add('-');
-        strings.add(_escape(end));
+        strings.add(_escape(range.end));
       }
     }
 
@@ -64,14 +58,31 @@ class CharacterClassExpression extends Expression {
     return this;
   }
 
-  String _escape(String string) {
-    switch (string) {
-      case '[':
-      case '-':
-      case ']':
-        return '\\$string';
-      default:
-        return string;
+  String _escape(int character) {
+    switch (character) {
+      case 9:
+        return '\\t';
+      case 10:
+        return '\\n';
+      case 13:
+        return '\\r';
     }
+
+    if (character < 32 || character >= 127) {
+      return "\\u${character.toRadixString(16)}";
+    }
+
+    switch (character) {
+      case 45:
+        return '\\-';
+      case 91:
+        return '\\[';
+      case 92:
+        return '\\\\';
+      case 93:
+        return '\\]';
+    }
+
+    return new String.fromCharCode(character);
   }
 }

@@ -5,9 +5,7 @@ class LiteralExpression extends Expression {
 
   final String quote;
 
-  String _definition;
-
-  LiteralExpression(this.text, [this.quote = '"']) : super() {
+  LiteralExpression(this.text, [this.quote = '\'']) : super() {
     if (text == null) {
       throw new ArgumentError('text: $text');
     }
@@ -30,16 +28,38 @@ class LiteralExpression extends Expression {
   }
 
   String toString() {
-    if (_definition == null) {
-      List<String> strings = [];
-      for (var charCode in text.codeUnits) {
-        strings.add(Utils.charToString(charCode));
-      }
-
-      _definition = '$quote${strings.join()}$quote';
+    var quoteChar = quote.codeUnitAt(0);
+    List<String> strings = [];
+    for (var charCode in text.codeUnits) {
+      strings.add(_escape(charCode, quoteChar));
     }
 
-    return '$quote${escape(text)}$quote';
-    // return _definition;
+    return '$quote${strings.join()}$quote';
+  }
+
+  String _escape(int character, int quote) {
+    switch (character) {
+      case 9:
+        return '\\t';
+      case 10:
+        return '\\n';
+      case 13:
+        return '\\r';
+    }
+
+    if (character < 32 || character >= 127) {
+      return "\\u${character.toRadixString(16)}";
+    }
+
+    switch (character) {
+      case 92:
+        return '\\\\';
+    }
+
+    if (character == quote) {
+      return '\\${new String.fromCharCode(character)}';
+    }
+
+    return new String.fromCharCode(character);
   }
 }

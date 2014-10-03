@@ -9,6 +9,8 @@ import "package:peg/utils/utils.dart";
 
 part 'src/parser_class_generator/contructor_generator.dart';
 part 'src/parser_class_generator/method_add_to_cache_generator.dart';
+part 'src/parser_class_generator/method_begin_token_generator.dart';
+part 'src/parser_class_generator/method_end_token_generator.dart';
 part 'src/parser_class_generator/method_errors_generator.dart';
 part 'src/parser_class_generator/method_failure_generator.dart';
 part 'src/parser_class_generator/method_flatten_generator.dart';
