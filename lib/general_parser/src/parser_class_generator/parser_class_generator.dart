@@ -210,9 +210,14 @@ class GeneralParserClassGenerator extends ParserClassGenerator {
     // Constructor
     addConstructor(new ClassContructorGenerator(name));
     //
-    var productionRules = grammar.productionRules;
-    for (var productionRule in productionRules) {
-      addMethod(new ProductionRuleGenerator(productionRule, this));
+    var processed = new Set<String>();
+    for (var productionRule in grammar.productionRules) {
+      var name = productionRule.name;
+      if (!processed.contains(name)) {
+        addMethod(new ProductionRuleGenerator(productionRule, this));
+      }
+
+      processed.add(productionRule.name);
     }
 
     addMethod(new MethodGetStateGenerator());

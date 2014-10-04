@@ -41,3 +41,4 @@
 0.0.30 Minor (speed up) changes in `json` grammar. From now the generated `json_parser` is a fast enough parser, given the fact that it is the generated PEG parser
 0.0.31 Fixed bug in `_text() => String`
 0.0.31 Added grammar formatter utility `pegfmt.dart`
+0.0.32 Fixed bug in `OrderedChoiceExpressionGenerator` associated with incomplete coverage of range in symbol transitions

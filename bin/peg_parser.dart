@@ -1537,13 +1537,6 @@ class PegParser {
                   if (!success) break;
                   seq[1] = $$;
                   $$ = seq;
-                  if (success) {    
-                    // SLASH
-                    final $1 = seq[0];
-                    // Sequence
-                    final $2 = seq[1];
-                    $$ = $2;
-                  }
                   break;
                 }
                 if (!success) {
@@ -1584,7 +1577,7 @@ class PegParser {
             final $1 = seq[0];
             // (SLASH Sequence)*
             final $2 = seq[1];
-            $$ = new OrderedChoiceExpression(_flatten([$1, $2]));
+            $$ = new OrderedChoiceExpression(_list($1, $2));
           }
           break;
         }

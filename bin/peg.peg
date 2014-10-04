@@ -51,7 +51,7 @@ Definition <-
   IDENTIFIER LEFTARROW Expression { $$ = new ProductionRule($1, $3); }
 
 Expression <-
-  Sequence (SLASH Sequence { $$ = $2; })* { $$ = new OrderedChoiceExpression(_flatten([$1, $2])); }
+  Sequence (SLASH Sequence)* { $$ = new OrderedChoiceExpression(_list($1, $2)); }
 
 Sequence <-
   Prefix+ { $$ = new SequenceExpression($1); }

@@ -12,7 +12,7 @@ dynamic parse(String string) {
   var parser = new JsonParser(string);
   var result = parser.parse_jsonText();
   if (!parser.success) {
-    var text = new Text(string);
+    var text = new Text(parser.text);
     for (var error in parser.errors()) {
       var location = text.locationAt(error.position);
       var message = "Parser error at $location. ${error.message}";

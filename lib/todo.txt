@@ -20,7 +20,7 @@ Add to interpreter generator
 
 =======================================
 
-Test `peg print` and compare with `peg2txt`
+Add command line utilty `peg2html`
 
 =======================================
 

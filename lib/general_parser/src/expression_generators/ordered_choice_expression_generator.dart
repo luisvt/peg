@@ -160,7 +160,7 @@ switch ({{STATE}}) {
     var transitions = new SparseList<List<Expression>>();
     for (var expression in _expression.expressions) {
       for (var range in expression.startCharacters.groups) {
-        for (var group in transitions.getAlignedGroups(range)) {
+        for (var group in transitions.getAllSpace(range)) {
           var key = group.key;
           if (key == null) {
             key = new _List<Expression>();

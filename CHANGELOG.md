@@ -1,3 +1,7 @@
+## 0.0.32
+
+- Fixed bug in `OrderedChoiceExpressionGenerator` associated with incomplete coverage of range in symbol transitions
+
 ## 0.0.31
 
 - Added grammar formatter utility `pegfmt.dart`

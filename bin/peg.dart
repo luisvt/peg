@@ -255,7 +255,7 @@ class Program {
   }
 }
 
-var _configuration = '''
+String _configuration = '''
 name: peg
 description: PEG (Parsing expression grammar) parser generator.
 commands:
