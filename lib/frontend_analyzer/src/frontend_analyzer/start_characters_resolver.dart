@@ -83,7 +83,7 @@ class StartCharactersResolver extends ExpressionResolver {
     return null;
   }
 
-  Object visitSequence(SequenceExpression expression) {
+  Object visitSequence2(SequenceExpression expression) {
     var passes = 1;
     Expression prev;
     for (var i = 0; i < passes; i++) {
@@ -115,6 +115,35 @@ class StartCharactersResolver extends ExpressionResolver {
         }
 
         prev = child;
+      }
+    }
+
+    return null;
+  }
+
+  Object visitSequence(SequenceExpression expression) {
+    var expressions = expression.expressions;
+    var length = expressions.length;
+    var skip = false;
+    for (var i = 0; i < length; i++) {
+      var child = expressions[i];
+      child.accept(this);
+      if (!skip) {
+        var isNotPredicate = child.type == ExpressionTypes.NOT_PREDICATE;
+        var needApply = true;
+        if (isNotPredicate) {
+          if (i != length - 1) {
+            needApply = false;
+          }
+        }
+
+        if (needApply) {
+          _applyData(child, expression);
+        }
+
+        if (!(child.isOptional || isNotPredicate)) {
+          skip = true;
+        }
       }
     }
 

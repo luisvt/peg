@@ -20,7 +20,8 @@ Add to interpreter generator
 
 =======================================
 
-Add command line utilty `peg2html`
+Add command line utility `peg2html`
+Add command line utility `peg_left_rec`
 
 =======================================
 
