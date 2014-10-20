@@ -14,6 +14,7 @@ class InvocationsResolver extends UnifyingExpressionVisitor {
         caller.directCallees.add(callee);
       } else {
         ProductionRule.addCalls(caller, callee, true);
+        callee.numberOfCalls++;
       }
     }
 

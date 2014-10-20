@@ -3,6 +3,8 @@ part of peg.grammar.expressions;
 class OneOrMoreExpression extends SuffixExpression {
   OneOrMoreExpression(Expression expression) : super(expression);
 
+  int get maxTimes => null;
+
   String get suffix {
     return '+';
   }

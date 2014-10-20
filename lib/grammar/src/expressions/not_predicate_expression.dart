@@ -7,6 +7,10 @@ class NotPredicateExpression extends PrefixExpression {
     return '!';
   }
 
+  int get maxTimes => 1;
+
+  int get minTimes => 1;
+
   ExpressionTypes get type {
     return ExpressionTypes.NOT_PREDICATE;
   }

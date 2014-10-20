@@ -2,7 +2,8 @@ part of peg.frontend_analyzer.frontend_analyzer;
 
 class ExpressionLengthResovler extends ExpressionResolver {
   Object visitAnyCharacter(AnyCharacterExpression expression) {
-    expression.length = 1;
+    expression.maxLength = 1;
+    expression.minLength = 1;
     return null;
   }
 
@@ -12,17 +13,36 @@ class ExpressionLengthResovler extends ExpressionResolver {
   }
 
   Object visitCharacterClass(CharacterClassExpression expression) {
-    expression.length = 1;
+    expression.maxLength = 1;
+    expression.minLength = 1;
     return null;
   }
 
   Object visitLiteral(LiteralExpression expression) {
-    expression.length = expression.text.length;
+    var length = expression.text.length;
+    expression.maxLength = length;
+    expression.minLength = length;
     return null;
   }
 
   Object visitNotPredicate(NotPredicateExpression expression) {
     _applyFromChild(expression);
+    return null;
+  }
+
+  Object visitOptional(OptionalExpression expression) {
+    var child = expression.expression;
+    child.accept(this);
+    expression.maxLength = child.maxLength;
+    expression.minLength = 0;
+    return null;
+  }
+
+  Object visitOneOrMore(OneOrMoreExpression expression) {
+    var child = expression.expression;
+    child.accept(this);
+    expression.maxLength = null;
+    expression.minLength = child.minLength;
     return null;
   }
 
@@ -32,25 +52,31 @@ class ExpressionLengthResovler extends ExpressionResolver {
     }
 
     processed.add(expression);
-    var fail = false;
-    int length;
+    var infinite = false;
+    int maxLength;
+    var minLength = 0;
     for (var child in expression.expressions) {
       child.accept(this);
+      if (minLength == null) {
+        minLength = child.minLength;
+      } else if (child.minLength != null && minLength > child.minLength) {
+        minLength = child.minLength;
+      }
 
-      if (!fail) {
-        if (child.length == null) {
-          length = null;
-          fail = true;
-        } else if (length == null) {
-          length = child.length;
-        } else if (length != child.length) {
-          length = null;
-          fail = true;
+      if (!infinite) {
+        if (child.maxLength == null) {
+          maxLength = null;
+          infinite = true;
+        } else if (maxLength == null) {
+          maxLength = child.maxLength;
+        } else if (maxLength < child.maxLength) {
+          maxLength = child.maxLength;
         }
       }
     }
 
-    expression.length = length;
+    expression.maxLength = maxLength;
+    expression.minLength = minLength;
     //processed.remove(expression);
     return null;
   }
@@ -60,35 +86,55 @@ class ExpressionLengthResovler extends ExpressionResolver {
     if (rule != null) {
       var ruleExpression = rule.expression;
       ruleExpression.accept(this);
-      expression.length = ruleExpression.length;
+      expression.maxLength = ruleExpression.maxLength;
+      expression.minLength = ruleExpression.minLength;
     }
 
     return null;
   }
 
   Object visitSequence(SequenceExpression expression) {
-    var fail = false;
-    var length = 0;
+    var infinite = false;
+    int maxLength;
+    var minLength = 0;
     for (var child in expression.expressions) {
       child.accept(this);
-      if (!fail) {
-        if (child.length == null) {
-          length = null;
-          fail = true;
+      if (minLength == null) {
+        minLength = child.minLength;
+      } else if (child.minLength != null) {
+        minLength += child.minLength;
+      }
+
+      if (!infinite) {
+        if (child.maxLength == null) {
+          maxLength = null;
+          infinite = true;
+        } else if (maxLength == null) {
+          maxLength = child.maxLength;
         } else {
-          length += child.length;
+          maxLength += child.maxLength;
         }
       }
     }
 
-    expression.length = length;
+    expression.maxLength = maxLength;
+    expression.minLength = minLength;
+    return null;
+  }
+
+  Object visitZeroOrMore(ZeroOrMoreExpression expression) {
+    var child = expression.expression;
+    child.accept(this);
+    expression.maxLength = null;
+    expression.minLength = 0;
     return null;
   }
 
   Object _applyFromChild(UnaryExpression expression) {
     var child = expression.expression;
     child.accept(this);
-    expression.length = child.length;
+    expression.maxLength = child.maxLength;
+    expression.minLength = child.minLength;
     return null;
   }
 }

@@ -109,7 +109,7 @@ class PegParser {
   
   static final List<String> _expect9 = <String>["\')\'"];
   
-  static final List<bool> _lookahead = _unmap([0x14800013, 0x7e000000, 0x7d0fffff, 0x38ffffff, 0x7f800010, 0x7f47ffff, 0x30fffff, 0x7ff80001, 0x7ff47fff, 0x1ffffff, 0x7fffffe, 0xffffffd]);
+  static final List<bool> _lookahead = _unmap([0x20e3, 0xffffffe, 0x1ffffffd, 0x7000020c, 0x68ffffff, 0x7fffffff, 0x7ffffc07, 0x7ffffa1f, 0x200004ff]);
   
   // '\"', '\'', '-', '[', '\\', ']', 'n', 'r', 't'
   static final List<bool> _mapping0 = _unmap([0x821, 0x1c000000, 0x144000]);
@@ -138,39 +138,35 @@ class PegParser {
   // '\r\n'
   static final List<int> _strings3 = <int>[13, 10];
   
-  final List<int> _tokenFlags = [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1];
+  final List<int> _tokenFlags = [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0];
   
   final List<String> _tokenNames = ["\'{\'", "\'&\'", "\'[\'", "\')\'", "\'.\'", "EOF", "\'%{\'", "IDENTIFIER", "\'<-\'", "LITERAL", "\'{\'", "\'!\'", "\'(\'", "\'+\'", "\'?\'", "\'/\'", "SPACING", "\'*\'", "ACTION_BODY", "CHAR", "\'#\'", "EOL", "GLOBALS_BODY", "HEX_NUMBER", "IDENT_CONT", "IDENT_START", "RANGE", "SPACE"];
   
-  static final List<List<int>> _transitions0 = [[9, 10, 13, 13, 32, 32, 35, 35, 37, 37, 65, 90, 95, 95, 97, 123]];
+  static final List<List<int>> _transitions0 = [[65, 90, 95, 95, 97, 122]];
   
-  static final List<List<int>> _transitions1 = [[65, 90, 95, 95, 97, 122]];
+  static final List<List<int>> _transitions1 = [[33, 34, 38, 40, 46, 46, 65, 91, 95, 95, 97, 122]];
   
-  static final List<List<int>> _transitions10 = [[0, 122, 124, 1114111], [123, 123]];
+  static final List<List<int>> _transitions10 = [[10, 10], [13, 13]];
   
-  static final List<List<int>> _transitions11 = [[0, 91, 93, 1114111], [92, 92]];
+  static final List<List<int>> _transitions11 = [[48, 57], [65, 90, 95, 95, 97, 122]];
   
-  static final List<List<int>> _transitions12 = [[10, 10], [13, 13]];
+  static final List<List<int>> _transitions12 = [[9, 9, 32, 32], [10, 10, 13, 13]];
   
-  static final List<List<int>> _transitions13 = [[48, 57], [65, 90, 95, 95, 97, 122]];
+  static final List<List<int>> _transitions2 = [[33, 33], [38, 38]];
   
-  static final List<List<int>> _transitions14 = [[9, 9, 32, 32], [10, 10, 13, 13]];
+  static final List<List<int>> _transitions3 = [[34, 34, 39, 40, 46, 46, 65, 91, 95, 95, 97, 122]];
   
-  static final List<List<int>> _transitions2 = [[33, 34, 38, 40, 46, 46, 65, 91, 95, 95, 97, 122]];
+  static final List<List<int>> _transitions4 = [[42, 42], [43, 43], [63, 63]];
   
-  static final List<List<int>> _transitions3 = [[33, 33], [38, 38]];
+  static final List<List<int>> _transitions5 = [[34, 34, 39, 39], [40, 40], [46, 46], [65, 90, 95, 95, 97, 122], [91, 91]];
   
-  static final List<List<int>> _transitions4 = [[34, 34, 39, 40, 46, 46, 65, 91, 95, 95, 97, 122]];
+  static final List<List<int>> _transitions6 = [[34, 34], [39, 39]];
   
-  static final List<List<int>> _transitions5 = [[42, 42], [43, 43], [63, 63]];
+  static final List<List<int>> _transitions7 = [[9, 10, 13, 13, 32, 32], [35, 35]];
   
-  static final List<List<int>> _transitions6 = [[34, 34, 39, 39], [40, 40], [46, 46], [65, 90, 95, 95, 97, 122], [91, 91]];
+  static final List<List<int>> _transitions8 = [[0, 122, 124, 1114111], [123, 123]];
   
-  static final List<List<int>> _transitions7 = [[34, 34], [39, 39]];
-  
-  static final List<List<int>> _transitions8 = [[9, 10, 13, 13, 32, 32, 35, 35]];
-  
-  static final List<List<int>> _transitions9 = [[9, 10, 13, 13, 32, 32], [35, 35]];
+  static final List<List<int>> _transitions9 = [[0, 91, 93, 1114111], [92, 92]];
   
   List _cache;
   
@@ -301,11 +297,9 @@ class PegParser {
         var left = 0;
         if (right == 1) {
           if (_ch <= ranges[1] && _ch >= ranges[0]) {
-            found = true;
-            break;
-          } else {
-            break;
+            found = true;          
           }
+          break;
         }
         int middle;
         while (left < right) {
@@ -572,7 +566,7 @@ class PegParser {
     var $$;
     _beginToken(18);  
     // => '{' ACTION_BODY* '}' / !'}' . # Choice
-    switch (_getState(_transitions10)) {
+    switch (_getState(_transitions8)) {
       // [\u0000-z] [|-\u0010ffff]
       // EOF
       case 0:
@@ -804,7 +798,7 @@ class PegParser {
     var $$;
     _beginToken(19);  
     // => '\\' ["'\-\[-\]nrt] / HEX_NUMBER / !'\\' !EOL . # Choice
-    switch (_getState(_transitions11)) {
+    switch (_getState(_transitions9)) {
       // [\u0000-[] []-\u0010ffff]
       // EOF
       case 0:
@@ -1374,7 +1368,7 @@ class PegParser {
     // Definition <- IDENTIFIER LEFTARROW Expression
     var $$;
     // => IDENTIFIER LEFTARROW Expression # Choice
-    switch (_getState(_transitions1)) {
+    switch (_getState(_transitions0)) {
       // [A-Z] [_] [a-z]
       case 0:
         // => IDENTIFIER LEFTARROW Expression # Sequence
@@ -1478,7 +1472,7 @@ class PegParser {
     var $$;
     _beginToken(21);  
     // => '\r\n' / [\n\r] # Choice
-    switch (_getState(_transitions12)) {
+    switch (_getState(_transitions10)) {
       // [\n]
       case 0:
         var startPos0 = _startPos;
@@ -1526,7 +1520,7 @@ class PegParser {
     // Expression <- Sequence (SLASH Sequence)*
     var $$;
     // => Sequence (SLASH Sequence)* # Choice
-    switch (_getState(_transitions2)) {
+    switch (_getState(_transitions1)) {
       // [!-\"] [&-(] [.] [A-[] [_] [a-z]
       case 0:
         // => Sequence (SLASH Sequence)* # Sequence
@@ -1877,7 +1871,7 @@ class PegParser {
     var $$;
     _beginToken(7);  
     // => IDENT_START IDENT_CONT* SPACING # Choice
-    switch (_getState(_transitions1)) {
+    switch (_getState(_transitions0)) {
       // [A-Z] [_] [a-z]
       case 0:
         // => IDENT_START IDENT_CONT* SPACING # Sequence
@@ -1955,7 +1949,7 @@ class PegParser {
     var $$;
     _beginToken(24);  
     // => IDENT_START / [0-9] # Choice
-    switch (_getState(_transitions13)) {
+    switch (_getState(_transitions11)) {
       // [0-9]
       case 0:
         var startPos0 = _startPos;
@@ -1995,7 +1989,7 @@ class PegParser {
     var $$;
     _beginToken(25);  
     // => [A-Z_a-z] # Choice
-    switch (_getState(_transitions1)) {
+    switch (_getState(_transitions0)) {
       // [A-Z] [_] [a-z]
       case 0:
         var startPos0 = _startPos;
@@ -2077,7 +2071,7 @@ class PegParser {
     var $$;
     _beginToken(9);  
     // => '\'' (!'\'' CHAR)* '\'' SPACING / '"' (!'"' CHAR)* '"' SPACING # Choice
-    switch (_getState(_transitions7)) {
+    switch (_getState(_transitions6)) {
       // [\"]
       case 0:
         // => '"' (!'"' CHAR)* '"' SPACING # Sequence
@@ -2615,7 +2609,7 @@ class PegParser {
     // Prefix <- (AND / NOT)? Suffix ACTION?
     var $$;
     // => (AND / NOT)? Suffix ACTION? # Choice
-    switch (_getState(_transitions2)) {
+    switch (_getState(_transitions1)) {
       // [!-\"] [&-(] [.] [A-[] [_] [a-z]
       case 0:
         // => (AND / NOT)? Suffix ACTION? # Sequence
@@ -2626,7 +2620,7 @@ class PegParser {
           var testing0 = _testing;
           _testing = _cursor;
           // => (AND / NOT) # Choice
-          switch (_getState(_transitions3)) {
+          switch (_getState(_transitions2)) {
             // [!]
             case 0:
               var startPos1 = _startPos;
@@ -2717,7 +2711,7 @@ class PegParser {
     // Primary <- IDENTIFIER !LEFTARROW / OPEN Expression CLOSE / LITERAL / CLASS / DOT
     var $$;
     // => IDENTIFIER !LEFTARROW / OPEN Expression CLOSE / LITERAL / CLASS / DOT # Choice
-    switch (_getState(_transitions6)) {
+    switch (_getState(_transitions5)) {
       // [\"] [\']
       case 0:
         var startPos0 = _startPos;
@@ -3048,7 +3042,7 @@ class PegParser {
     var $$;
     _beginToken(27);  
     // => [\t ] / EOL # Choice
-    switch (_getState(_transitions14)) {
+    switch (_getState(_transitions12)) {
       // [\t] [ ]
       case 0:
         var startPos0 = _startPos;
@@ -3088,8 +3082,8 @@ class PegParser {
     var $$;
     _beginToken(16);  
     // => (SPACE / COMMENT)* # Choice
-    switch (_getState(_transitions8)) {
-      // [\t-\n] [\r] [ ] [#]
+    switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
+      // [\u0000-\u0010ffff]
       // EOF
       case 0:
       case 2:
@@ -3099,7 +3093,7 @@ class PegParser {
         for (var reps = []; ; ) {
           _testing = _cursor;
           // => (SPACE / COMMENT) # Choice
-          switch (_getState(_transitions9)) {
+          switch (_getState(_transitions7)) {
             // [\t-\n] [\r] [ ]
             case 0:
               var startPos1 = _startPos;
@@ -3224,7 +3218,7 @@ class PegParser {
     // Sequence <- Prefix+
     var $$;
     // => Prefix+ # Choice
-    switch (_getState(_transitions2)) {
+    switch (_getState(_transitions1)) {
       // [!-\"] [&-(] [.] [A-[] [_] [a-z]
       case 0:
         var startPos0 = _startPos;
@@ -3281,7 +3275,7 @@ class PegParser {
     // Suffix <- Primary (QUESTION / STAR / PLUS)?
     var $$;
     // => Primary (QUESTION / STAR / PLUS)? # Choice
-    switch (_getState(_transitions4)) {
+    switch (_getState(_transitions3)) {
       // [\"] [\'-(] [.] [A-[] [_] [a-z]
       case 0:
         // => Primary (QUESTION / STAR / PLUS)? # Sequence
@@ -3297,7 +3291,7 @@ class PegParser {
           var testing0 = _testing;
           _testing = _cursor;
           // => (QUESTION / STAR / PLUS) # Choice
-          switch (_getState(_transitions5)) {
+          switch (_getState(_transitions4)) {
             // [*]
             case 0:
               var startPos1 = _startPos;
@@ -3509,8 +3503,8 @@ class PegParser {
     // Grammar <- SPACING? GLOBALS? MEMBERS? Definition+ EOF
     var $$;
     // => SPACING? GLOBALS? MEMBERS? Definition+ EOF # Choice
-    switch (_getState(_transitions0)) {
-      // [\t-\n] [\r] [ ] [#] [%] [A-Z] [_] [a-{]
+    switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
+      // [\u0000-\u0010ffff]
       case 0:
         // => SPACING? GLOBALS? MEMBERS? Definition+ EOF # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;

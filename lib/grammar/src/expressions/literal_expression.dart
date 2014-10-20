@@ -15,6 +15,10 @@ class LiteralExpression extends Expression {
     }
   }
 
+  int get maxTimes => 1;
+
+  int get minTimes => 1;
+
   ExpressionTypes get type {
     return ExpressionTypes.LITERAL;
   }

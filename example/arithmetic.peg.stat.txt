@@ -110,7 +110,7 @@ Expr:
  Direct callers:
  All callers:
  Start characters:
-  [\t-\n][\r][ ][(][0-9]
+  [\u0000-\u10ffff]
  Expected lexemes:
   NUMBER '('
 --------------------------------
@@ -237,7 +237,7 @@ SPACES:
   Sentence
   Term
  Start characters:
-  [\t-\n][\r][ ]
+  [\u0000-\u10ffff]
  Expected lexemes:
   SPACES
 --------------------------------

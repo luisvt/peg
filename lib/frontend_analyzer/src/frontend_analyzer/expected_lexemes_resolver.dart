@@ -74,7 +74,7 @@ class ExpectedLexemesResolver extends ExpressionResolver {
     var owner = expression.owner;
     if (expression.parent == null) {
       var owner = expression.owner;
-      if (owner.isTerminal) {
+      if (owner.isLexical) {
         var done = false;
         var hasUnexpected = false;
         var expectedLexemes = expression.expectedLexemes;

@@ -37,34 +37,12 @@ class FrontendAnalyzer {
     new ExpectedLexemesResolver().resolve(rules);
     new ExpressionWithActionsResolver().resolve(startingRules);
 
-    /*
+
     // Exprerimental
     for (var rule in rules) {
       if (rule.directCallers.length == 0) {
-        //var resolver = new AutomatonResolver();
-        //resolver.resolve([rule]);
-        //_print(resolver.state0, new Set<ExpressionState>());
-        //print("==============");
-      }
-    }
-    */
-  }
-
-  void _print(ExpressionState state, Set<ExpressionState> reported) {
-    if (reported.contains(state)) {
-      return;
-    }
-
-    reported.add(state);
-    var transitions = state.symbolTransitions;
-    print("==============");
-    print("State: $state:");
-    for (var group in transitions.groups) {
-      var start = toPrintable(new String.fromCharCode(group.start));
-      var end = toPrintable(new String.fromCharCode(group.end));
-      print("  [$start-$end] => ${group.key}");
-      for (var state in group.key.elements) {
-        _print(state, reported);
+        //var builder = new AutomatonBuilder();
+        //builder.build(rule);
       }
     }
   }

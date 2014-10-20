@@ -37,12 +37,13 @@ abstract class Expression {
 
   int flag = 0;
 
-  // null - not determined
-  // 0..n - fixed length
-  int length;
-
   // TODO: remove and reimplement all associated
   int level = 0;
+
+  // null - not determined
+  int maxLength;
+
+  int minLength;
 
   Expression next;
 
@@ -76,6 +77,11 @@ abstract class Expression {
   bool get isRepetition {
     return (flag & FLAG_REPETITION) != 0;
   }
+
+  // null - not determined
+  int get maxTimes => 1;
+
+  int get minTimes => 1;
 
   ExpressionState state;
 

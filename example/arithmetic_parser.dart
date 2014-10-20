@@ -47,7 +47,7 @@ class ArithmeticParser {
   
   static final List<String> _expect9 = <String>["\'(\'"];
   
-  static final List<bool> _lookahead = _unmap([0x800013, 0x3ff01]);
+  static final List<bool> _lookahead = _unmap([0x1800013, 0x7fe]);
   
   // '\t', '\n', '\r', ' '
   static final List<bool> _mapping0 = _unmap([0x800013]);
@@ -55,23 +55,19 @@ class ArithmeticParser {
   // '\r\n'
   static final List<int> _strings0 = <int>[13, 10];
   
-  final List<int> _tokenFlags = [1, 1, 0, 1, 1, 1, 1, 1, 1, 1];
+  final List<int> _tokenFlags = [1, 1, 0, 1, 1, 1, 1, 1, 1, 0];
   
   final List<String> _tokenNames = ["\')\'", "\'/\'", "EOF", "\'-\'", "\'*\'", "NUMBER", "\'(\'", "\'+\'", "SPACES", "WS"];
   
-  static final List<List<int>> _transitions0 = [[9, 10, 13, 13, 32, 32, 40, 40, 48, 57]];
+  static final List<List<int>> _transitions0 = [[40, 40, 48, 57]];
   
-  static final List<List<int>> _transitions1 = [[40, 40, 48, 57]];
+  static final List<List<int>> _transitions1 = [[43, 43], [45, 45]];
   
-  static final List<List<int>> _transitions2 = [[43, 43], [45, 45]];
+  static final List<List<int>> _transitions2 = [[42, 42], [47, 47]];
   
-  static final List<List<int>> _transitions3 = [[42, 42], [47, 47]];
+  static final List<List<int>> _transitions3 = [[40, 40], [48, 57]];
   
-  static final List<List<int>> _transitions4 = [[40, 40], [48, 57]];
-  
-  static final List<List<int>> _transitions5 = [[9, 10, 13, 13, 32, 32]];
-  
-  static final List<List<int>> _transitions6 = [[9, 10, 32, 32], [13, 13]];
+  static final List<List<int>> _transitions4 = [[9, 10, 32, 32], [13, 13]];
   
   List _cache;
   
@@ -266,11 +262,9 @@ class ArithmeticParser {
         var left = 0;
         if (right == 1) {
           if (_ch <= ranges[1] && _ch >= ranges[0]) {
-            found = true;
-            break;
-          } else {
-            break;
+            found = true;          
           }
+          break;
         }
         int middle;
         while (left < right) {
@@ -443,9 +437,16 @@ class ArithmeticParser {
   dynamic _parse_Atom() {
     // NONTERMINAL
     // Atom <- NUMBER / OPEN Sentence CLOSE
-    var $$;
+    var $$;        
+    var pos = _cursor;    
+    if(pos <= _cachePos) {
+      $$ = _getFromCache(3);
+    }
+    if($$ != null) {
+      return $$[0];       
+    }  
     // => NUMBER / OPEN Sentence CLOSE # Choice
-    switch (_getState(_transitions4)) {
+    switch (_getState(_transitions3)) {
       // [(]
       case 0:
         // => OPEN Sentence CLOSE # Sequence
@@ -507,6 +508,7 @@ class ArithmeticParser {
       _failure(_expect0);
     }
     // <= NUMBER / OPEN Sentence CLOSE # Choice
+    _addToCache($$, pos, 3);
     return $$;
   }
   
@@ -1007,8 +1009,8 @@ class ArithmeticParser {
     }  
     _beginToken(8);    
     // => WS* # Choice
-    switch (_getState(_transitions5)) {
-      // [\t-\n] [\r] [ ]
+    switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
+      // [\u0000-\u0010ffff]
       // EOF
       case 0:
       case 2:
@@ -1060,7 +1062,7 @@ class ArithmeticParser {
       return $$[0];       
     }  
     // => Term (PLUS / MINUS) Sentence / Term # Choice
-    switch (_getState(_transitions1)) {
+    switch (_getState(_transitions0)) {
       // [(] [0-9]
       case 0:
         while (true) {
@@ -1074,7 +1076,7 @@ class ArithmeticParser {
             if (!success) break;
             var seq = new List(3)..[0] = $$;
             // => (PLUS / MINUS) # Choice
-            switch (_getState(_transitions2)) {
+            switch (_getState(_transitions1)) {
               // [+]
               case 0:
                 var startPos1 = _startPos;
@@ -1167,7 +1169,7 @@ class ArithmeticParser {
       return $$[0];       
     }  
     // => Atom (MUL / DIV) Term / Atom # Choice
-    switch (_getState(_transitions1)) {
+    switch (_getState(_transitions0)) {
       // [(] [0-9]
       case 0:
         while (true) {
@@ -1181,7 +1183,7 @@ class ArithmeticParser {
             if (!success) break;
             var seq = new List(3)..[0] = $$;
             // => (MUL / DIV) # Choice
-            switch (_getState(_transitions3)) {
+            switch (_getState(_transitions2)) {
               // [*]
               case 0:
                 var startPos1 = _startPos;
@@ -1268,7 +1270,7 @@ class ArithmeticParser {
     var $$;
     _beginToken(9);  
     // => [\t-\n\r ] / '\r\n' # Choice
-    switch (_getState(_transitions6)) {
+    switch (_getState(_transitions4)) {
       // [\t-\n] [ ]
       case 0:
         var startPos0 = _startPos;
@@ -1447,8 +1449,8 @@ class ArithmeticParser {
     // Expr <- SPACES? Sentence EOF
     var $$;
     // => SPACES? Sentence EOF # Choice
-    switch (_getState(_transitions0)) {
-      // [\t-\n] [\r] [ ] [(] [0-9]
+    switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
+      // [\u0000-\u0010ffff]
       case 0:
         // => SPACES? Sentence EOF # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;

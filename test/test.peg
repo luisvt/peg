@@ -1,4 +1,11 @@
-x <- 
-  '0'
-  / '1'
-  / ''
+%{
+void main() {
+  var parser = new TestParser("b");
+  var result = parser.parse_x();
+  print(parser.success);
+}
+}%
+
+x <- A
+
+A <- 'a'? / 'b'

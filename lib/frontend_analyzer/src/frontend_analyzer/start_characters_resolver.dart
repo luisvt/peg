@@ -31,8 +31,8 @@ class StartCharactersResolver extends ExpressionResolver {
       if (text.isEmpty) {
         expression.startCharacters.addGroup(Expression.unicodeGroup);
       } else {
-        var charCode = text.codeUnits[0];
-        var group = new GroupedRangeList<bool>(charCode, charCode, true);
+        var codePoint = toRune(text);
+        var group = new GroupedRangeList<bool>(codePoint, codePoint, true);
         expression.startCharacters.addGroup(group);
       }
     }
@@ -124,6 +124,7 @@ class StartCharactersResolver extends ExpressionResolver {
   Object visitSequence(SequenceExpression expression) {
     var expressions = expression.expressions;
     var length = expressions.length;
+    var optional = 0;
     var skip = false;
     for (var i = 0; i < length; i++) {
       var child = expressions[i];
@@ -144,7 +145,15 @@ class StartCharactersResolver extends ExpressionResolver {
         if (!(child.isOptional || isNotPredicate)) {
           skip = true;
         }
+
+        if (child.isOptional) {
+          optional++;
+        }
       }
+    }
+
+    if (optional == length) {
+      expression.startCharacters.addGroup(Expression.unicodeGroup);
     }
 
     return null;

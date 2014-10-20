@@ -94,7 +94,7 @@ class JsonParser {
   
   static final List<String> _expect9 = <String>["\':\'"];
   
-  static final List<bool> _lookahead = _unmap([0x2800013, 0x3ff20, 0x100000, 0x7fe04101, 0x3f01, 0xfe00, 0x10000]);
+  static final List<bool> _lookahead = _unmap([0xffc801, 0x4000000, 0x78104040, 0xfc07f, 0x3f8000, 0x400000]);
   
   // '\t', '\n', '\r', ' '
   static final List<bool> _mapping0 = _unmap([0x800013]);
@@ -111,35 +111,29 @@ class JsonParser {
   // 'true'
   static final List<int> _strings2 = <int>[116, 114, 117, 101];
   
-  final List<int> _tokenFlags = [1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0];
+  final List<int> _tokenFlags = [1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0];
   
   final List<String> _tokenNames = ["\'[\'", "\'{\'", "\']\'", "\'}\'", "EOF", "\'false\'", "\':\'", "\'null\'", "NUMBER", "STRING", "\'true\'", "\',\'", "WS", "CHAR", "CHAR_HEXDIG", "\'.\'", "DIGIT", "\'\\\'", "EXP", "\'.\'", "HEXDIG", "INT", "NUMBER_PART", "QUOTATION_MARK", "STRING_CHARS", "UNESCAPED"];
   
-  static final List<List<int>> _transitions0 = [[9, 10, 13, 13, 32, 32, 34, 34, 45, 45, 48, 57, 91, 91, 102, 102, 110, 110, 116, 116, 123, 123]];
+  static final List<List<int>> _transitions0 = [[34, 34], [45, 45, 48, 57], [91, 91], [102, 102], [110, 110], [116, 116], [123, 123]];
   
-  static final List<List<int>> _transitions1 = [[34, 34], [45, 45, 48, 57], [91, 91], [102, 102], [110, 110], [116, 116], [123, 123]];
+  static final List<List<int>> _transitions1 = [[34, 34, 45, 45, 48, 57, 91, 91, 102, 102, 110, 110, 116, 116, 123, 123]];
   
-  static final List<List<int>> _transitions10 = [[48, 57], [65, 70], [97, 102]];
+  static final List<List<int>> _transitions2 = [[45, 45, 48, 57]];
   
-  static final List<List<int>> _transitions11 = [[32, 33, 35, 1114111]];
+  static final List<List<int>> _transitions3 = [[32, 33, 35, 91, 93, 1114111], [92, 92]];
   
-  static final List<List<int>> _transitions12 = [[32, 33], [35, 91], [93, 126], [127, 1114111]];
+  static final List<List<int>> _transitions4 = [[48, 57, 65, 70, 97, 102]];
   
-  static final List<List<int>> _transitions2 = [[34, 34, 45, 45, 48, 57, 91, 91, 102, 102, 110, 110, 116, 116, 123, 123]];
+  static final List<List<int>> _transitions5 = [[69, 69, 101, 101]];
   
-  static final List<List<int>> _transitions3 = [[45, 45, 48, 57]];
+  static final List<List<int>> _transitions6 = [[69, 69], [101, 101]];
   
-  static final List<List<int>> _transitions4 = [[9, 10, 13, 13, 32, 32]];
+  static final List<List<int>> _transitions7 = [[43, 43], [45, 45]];
   
-  static final List<List<int>> _transitions5 = [[32, 33, 35, 91, 93, 1114111], [92, 92]];
+  static final List<List<int>> _transitions8 = [[48, 57], [65, 70], [97, 102]];
   
-  static final List<List<int>> _transitions6 = [[48, 57, 65, 70, 97, 102]];
-  
-  static final List<List<int>> _transitions7 = [[69, 69, 101, 101]];
-  
-  static final List<List<int>> _transitions8 = [[69, 69], [101, 101]];
-  
-  static final List<List<int>> _transitions9 = [[43, 43], [45, 45]];
+  static final List<List<int>> _transitions9 = [[32, 33], [35, 91], [93, 126], [127, 1114111]];
   
   List _cache;
   
@@ -270,11 +264,9 @@ class JsonParser {
         var left = 0;
         if (right == 1) {
           if (_ch <= ranges[1] && _ch >= ranges[0]) {
-            found = true;
-            break;
-          } else {
-            break;
+            found = true;          
           }
+          break;
         }
         int middle;
         while (left < right) {
@@ -562,7 +554,7 @@ class JsonParser {
     var $$;
     _beginToken(13);  
     // => UNESCAPED / ESCAPE ["/\\bfnrt] / ESCAPE 'u' CHAR_HEXDIG # Choice
-    switch (_getState(_transitions5)) {
+    switch (_getState(_transitions3)) {
       // [ -!] [#-[] []-\u0010ffff]
       case 0:
         var startPos0 = _startPos;
@@ -668,7 +660,7 @@ class JsonParser {
     var $$;
     _beginToken(14);  
     // => HEXDIG HEXDIG HEXDIG HEXDIG # Choice
-    switch (_getState(_transitions6)) {
+    switch (_getState(_transitions4)) {
       // [0-9] [A-F] [a-f]
       case 0:
         // => HEXDIG HEXDIG HEXDIG HEXDIG # Sequence
@@ -1025,7 +1017,7 @@ class JsonParser {
     var $$;
     _beginToken(18);  
     // => ('e' / 'E') ('-' / '+')? DIGIT+ # Choice
-    switch (_getState(_transitions7)) {
+    switch (_getState(_transitions5)) {
       // [E] [e]
       case 0:
         // => ('e' / 'E') ('-' / '+')? DIGIT+ # Sequence
@@ -1033,7 +1025,7 @@ class JsonParser {
         _startPos = _cursor;
         while (true) {  
           // => ('e' / 'E') # Choice
-          switch (_getState(_transitions8)) {
+          switch (_getState(_transitions6)) {
             // [E]
             case 0:
               var startPos1 = _startPos;
@@ -1081,7 +1073,7 @@ class JsonParser {
           var testing0 = _testing;
           _testing = _cursor;
           // => ('-' / '+') # Choice
-          switch (_getState(_transitions9)) {
+          switch (_getState(_transitions7)) {
             // [+]
             case 0:
               var startPos3 = _startPos;
@@ -1317,7 +1309,7 @@ class JsonParser {
     var $$;
     _beginToken(20);  
     // => DIGIT / [a-f] / [A-F] # Choice
-    switch (_getState(_transitions10)) {
+    switch (_getState(_transitions8)) {
       // [0-9]
       case 0:
         var startPos0 = _startPos;
@@ -1532,7 +1524,7 @@ class JsonParser {
     var $$;
     _beginToken(8);  
     // => NUMBER_PART WS # Choice
-    switch (_getState(_transitions3)) {
+    switch (_getState(_transitions2)) {
       // [-] [0-9]
       case 0:
         // => NUMBER_PART WS # Sequence
@@ -1589,7 +1581,7 @@ class JsonParser {
     var $$;
     _beginToken(22);  
     // => '-'? INT FRAC? EXP? # Choice
-    switch (_getState(_transitions3)) {
+    switch (_getState(_transitions2)) {
       // [-] [0-9]
       case 0:
         // => '-'? INT FRAC? EXP? # Sequence
@@ -1787,8 +1779,8 @@ class JsonParser {
     var $$;
     _beginToken(24);  
     // => CHAR* # Choice
-    switch (_getState(_transitions11)) {
-      // [ -!] [#-\u0010ffff]
+    switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
+      // [\u0000-\u0010ffff]
       // EOF
       case 0:
       case 2:
@@ -1895,7 +1887,7 @@ class JsonParser {
     var $$;
     _beginToken(25);  
     // => [ -!] / [#-\[] / [\]-~] / [\]-\u10ffff] # Choice
-    switch (_getState(_transitions12)) {
+    switch (_getState(_transitions9)) {
       // [ -!]
       case 0:
         var startPos0 = _startPos;
@@ -2016,8 +2008,8 @@ class JsonParser {
     var $$;
     _beginToken(12);  
     // => [\t-\n\r ]* # Choice
-    switch (_getState(_transitions4)) {
-      // [\t-\n] [\r] [ ]
+    switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
+      // [\u0000-\u0010ffff]
       // EOF
       case 0:
       case 2:
@@ -2366,7 +2358,7 @@ class JsonParser {
     // value <- FALSE / NULL / TRUE / object / array / NUMBER / STRING
     var $$;
     // => FALSE / NULL / TRUE / object / array / NUMBER / STRING # Choice
-    switch (_getState(_transitions1)) {
+    switch (_getState(_transitions0)) {
       // [\"]
       case 0:
         var startPos0 = _startPos;
@@ -2444,7 +2436,7 @@ class JsonParser {
     // values <- value (VALUE_SEPARATOR value)*
     var $$;
     // => value (VALUE_SEPARATOR value)* # Choice
-    switch (_getState(_transitions2)) {
+    switch (_getState(_transitions1)) {
       // [\"] [-] [0-9] [[] [f] [n] [t] [{]
       case 0:
         // => value (VALUE_SEPARATOR value)* # Sequence
@@ -2682,8 +2674,8 @@ class JsonParser {
     // jsonText <- WS? value EOF
     var $$;
     // => WS? value EOF # Choice
-    switch (_getState(_transitions0)) {
-      // [\t-\n] [\r] [ ] [\"] [-] [0-9] [[] [f] [n] [t] [{]
+    switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
+      // [\u0000-\u0010ffff]
       case 0:
         // => WS? value EOF # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;

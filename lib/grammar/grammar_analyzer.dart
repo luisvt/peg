@@ -9,6 +9,7 @@ part 'src/grammar_analyzer/choice_with_optional_finder.dart';
 part 'src/grammar_analyzer/duplicate_rules_finder.dart';
 part 'src/grammar_analyzer/grammar_analyzer.dart';
 part 'src/grammar_analyzer/infinite_loop_finder.dart';
+part 'src/grammar_analyzer/language_hiding_finder.dart';
 part 'src/grammar_analyzer/left_recursions_finder.dart';
 part 'src/grammar_analyzer/nonterminals_with_lexemes_finder.dart';
 part 'src/grammar_analyzer/starting_rules_finder.dart';

@@ -1,14 +1,15 @@
 library peg.frontend_analyzer.frontend_analyzer;
 
 import 'package:lists/lists.dart';
+import 'package:peg/automaton/automaton.dart';
 import 'package:peg/grammar/expressions.dart';
 import 'package:peg/grammar/grammar.dart';
 import 'package:peg/grammar/production_rule.dart';
-import 'package:peg/automaton/expression_states.dart';
+import 'package:peg/automaton/automaton.dart';
 import 'package:peg/grammar/expression_visitors.dart';
 import 'package:strings/strings.dart';
+import 'package:unicode/unicode.dart';
 
-part 'src/frontend_analyzer/automaton_resolver.dart';
 part 'src/frontend_analyzer/expected_lexemes_resolver.dart';
 part 'src/frontend_analyzer/expression_able_not_consume_input_resolver.dart';
 part 'src/frontend_analyzer/expression_callers_resolver.dart';

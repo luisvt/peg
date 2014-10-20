@@ -1,3 +1,7 @@
+## 0.0.34
+
+- Fixed bug in `StartCharactersResolver` 
+
 ## 0.0.33
 
 - Added the binary search algorithm to method `getState` (determiner of the current state through the symbol transitions) in a generated `general` parsers. This feature improves the performance of the parsing of a complex grammar with a wide range of used input symbols
@@ -116,8 +120,4 @@
 ## 0.0.2
 
 - Small fixes in `bin/peg.dart`
-
-## 0.0.1
-
-- Initial release
 

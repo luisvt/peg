@@ -1,4 +1,4 @@
-part of peg.automaton.expression_states;
+part of peg.automaton.automaton;
 
 class ExpressionStates extends Object with ListMixin<ExpressionState> {
   List<ExpressionState> _list;
@@ -75,6 +75,21 @@ class ExpressionStates extends Object with ListMixin<ExpressionState> {
   void addAll(Iterable<ExpressionState> iterable) {
     for (var value in iterable) {
       add(value);
+    }
+  }
+
+  void replaceState(ExpressionState state, [Iterable<ExpressionState> states]) {
+    if (!_set.contains(state)) {
+      return;
+    }
+
+    _set.remove(state);
+    var index = _list.indexOf(state);
+    _list.removeAt(index);
+    for (var state in states) {
+      if (!_set.contains(state)) {
+        _list.insert(index++, state);
+      }
     }
   }
 

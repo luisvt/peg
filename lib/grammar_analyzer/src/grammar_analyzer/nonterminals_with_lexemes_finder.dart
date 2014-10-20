@@ -6,7 +6,7 @@ class NonterminalsWithLexemesFinder extends UnifyingExpressionVisitor {
   Map<ProductionRule, List<Expression>> find(List<ProductionRule> rules) {
     result = new Map<ProductionRule, List<Expression>>();
     for (var rule in rules) {
-      if (!rule.isTerminal) {
+      if (!rule.isLexical) {
         rule.expression.accept(this);
       }
     }

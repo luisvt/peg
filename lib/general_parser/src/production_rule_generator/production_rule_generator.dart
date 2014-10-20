@@ -163,7 +163,7 @@ dynamic {{NAME}}() {
 
   List<String> generate() {
     var useCache = options.memoize;
-    if (productionRule.directCallers.length < 2) {
+    if (productionRule.numberOfCalls < 2) {
       useCache = false;
     }
 
@@ -191,7 +191,7 @@ dynamic {{NAME}}() {
   }
 
   List<String> _generateTokenEpilog() {
-    if (!productionRule.isTerminal) {
+    if (!productionRule.isLexical) {
       return const <String>[];
     }
 
@@ -200,7 +200,7 @@ dynamic {{NAME}}() {
   }
 
   List<String> _generateTokenProlog() {
-    if (!productionRule.isTerminal) {
+    if (!productionRule.isLexical) {
       return const <String>[];
     }
 
@@ -234,7 +234,7 @@ dynamic {{NAME}}() {
       block.assign('#COMMENTS', '// $productionRule');
     }
 
-    if (productionRule.isTerminal) {
+    if (productionRule.isLexical) {
       block.assign('#TOKEN_EPILOG', _generateTokenEpilog());
       block.assign('#TOKEN_PROLOG', _generateTokenProlog());
     }
@@ -262,7 +262,7 @@ dynamic {{NAME}}() {
       block.assign('#COMMENTS', '// $productionRule');
     }
 
-    if (productionRule.isTerminal) {
+    if (productionRule.isLexical) {
       block.assign('#TOKEN_EPILOG', _generateTokenEpilog());
       block.assign('#TOKEN_PROLOG', _generateTokenProlog());
     }
@@ -279,7 +279,7 @@ dynamic {{NAME}}() {
   }
 
   String _getLexicalType() {
-    if (!productionRule.isTerminal) {
+    if (!productionRule.isLexical) {
       return 'NONTERMINAL';
     }
 

@@ -102,10 +102,10 @@ abstract class ParserClassGenerator extends ClassGenerator {
     var tokenFlags = <int, int>{};
     var tokenNames = <int, String>{};
     for (var productionRule in grammar.productionRules) {
-      if (productionRule.isTerminal) {
+      if (productionRule.isLexical) {
         var flag = 0;
         var tokenId = productionRule.tokenId;
-        if (productionRule.expression.length == null) {
+        if (productionRule.expression.maxLength == null) {
           flag |= FLAG_TOKEN_VALUE;
         }
 

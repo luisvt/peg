@@ -30,11 +30,9 @@ int $NAME(List<List<int>> transitions) {
       var left = 0;
       if (right == 1) {
         if ($_CH <= ranges[1] && $_CH >= ranges[0]) {
-          found = true;
-          break;
-        } else {
-          break;
+          found = true;          
         }
+        break;
       }
       int middle;
       while (left < right) {

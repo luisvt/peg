@@ -1,11 +1,13 @@
-part of peg.automaton.expression_states;
+part of peg.automaton.automaton;
 
 class ExpressionState {
+  static const int FLAG_EXRESSION_STARTS = 1;
+
+  static const int FLAG_PREDICATE_ENDS = 2;
+
   ExpressionStates emptyTransition = new ExpressionStates();
 
-  Expression expression;
-
-  final int id;
+  int flag = 0;
 
   Set<Expression> inputExpressions = new Set<Expression>();
 
@@ -14,29 +16,6 @@ class ExpressionState {
   SparseList<ExpressionStates> symbolTransitions = new SparseList<ExpressionStates>();
 
   SparseList<ExpressionStates> unreachableTransitions = new SparseList<ExpressionStates>();
-
-  ExpressionState(this.id, this.expression);
-
-  int get hashCode {
-    return id.hashCode;
-  }
-
-  bool operator ==(other) {
-    if (identical(this, other)) {
-      return true;
-    }
-
-    var length = symbolTransitions.length;
-    if (other is ExpressionState) {
-      if (expression == null) {
-        return false;
-      }
-
-      return id == other.id;
-    }
-
-    return false;
-  }
 
   void addEmptyTransition(ExpressionState state) {
     emptyTransition.add(state);
@@ -63,9 +42,5 @@ class ExpressionState {
       group = new GroupedRangeList<ExpressionStates>(group.start, group.end, states);
       symbolTransitions.addGroup(group);
     }
-  }
-
-  toString() {
-    return "$expression";
   }
 }

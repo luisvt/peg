@@ -19,11 +19,14 @@ class ProductionRule {
 
   bool isLexeme;
 
+  bool isLexical;
+
   bool isMorpheme;
 
   bool isStartingRule;
 
-  bool isTerminal;
+  // TODO: Remove
+  int numberOfCalls = 0;
 
   final String name;
 
@@ -95,7 +98,7 @@ class ProductionRule {
   }
 
   String getTokenName() {
-    if (!isTerminal) {
+    if (!isLexical) {
       return null;
     }
 

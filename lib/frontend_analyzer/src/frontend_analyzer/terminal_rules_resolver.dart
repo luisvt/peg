@@ -10,7 +10,7 @@ class TerminalRulesFinder {
     _reanalyze(rules);
     var id = 0;
     for (var rule in rules) {
-      if (rule.isTerminal) {
+      if (rule.isLexical) {
         rule.tokenId = id++;
       }
     }
@@ -18,7 +18,7 @@ class TerminalRulesFinder {
 
   void _reanalyze(List<ProductionRule> rules) {
     for (var rule in rules) {
-      rule.isTerminal = isTerminal(rule);
+      rule.isLexical = isTerminal(rule);
     }
 
     for (var rule in rules) {
@@ -59,7 +59,7 @@ class TerminalRulesFinder {
   }
 
   bool isTerminal(ProductionRule rule) {
-    if (rule.isTerminal == false) {
+    if (rule.isLexical == false) {
       return false;
     }
 
