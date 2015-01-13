@@ -142,7 +142,7 @@ NUMBER_PART <-
   '-'? INT FRAC? EXP? { $$ = double.parse(_text()); }
 
 QUOTATION_MARK <-
-  ["]
+  '"'
 
 STRING_CHARS <-
   CHAR* { $$ = $1.join(); }

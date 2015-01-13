@@ -43,13 +43,15 @@ void $NAME([List<String> expected]) {
     var name = $_TOKEN_NAMES[$_TOKEN];
     if ($_FAILURE_POS == $_INPUT_LEN && (flag & $_FLAG_TOKEN_VALUE) != 0) {             
       var message = "Unterminated \$name";
-      $_ERRORS.add(new {{ERROR_CLASS}}({{ERROR_CLASS}}.$_TYPE_UNTERMINATED, $_FAILURE_POS, $_TOKEN_START, message));            
-    }
-    else if ($_FAILURE_POS > $_TOKEN_START && (flag & $_FLAG_TOKEN_VALUE) != 0) {             
+      $_ERRORS.add(new {{ERROR_CLASS}}({{ERROR_CLASS}}.$_TYPE_UNTERMINATED, $_FAILURE_POS, $_TOKEN_START, message));
+      $_EXPECTED.addAll(expected);            
+    } else if ($_FAILURE_POS > $_TOKEN_START && (flag & $_FLAG_TOKEN_VALUE) != 0) {             
       var message = "Malformed \$name";
-      $_ERRORS.add(new {{ERROR_CLASS}}({{ERROR_CLASS}}.$_TYPE_MALFORMED, $_FAILURE_POS, $_TOKEN_START, message));            
-    }
-    $_EXPECTED.add(name);        
+      $_ERRORS.add(new {{ERROR_CLASS}}({{ERROR_CLASS}}.$_TYPE_MALFORMED, $_FAILURE_POS, $_TOKEN_START, message));
+      $_EXPECTED.addAll(expected);            
+    } else {
+      $_EXPECTED.add(name);
+    }            
   } else if (expected == null) {
     $_EXPECTED.add(null);
   } else {

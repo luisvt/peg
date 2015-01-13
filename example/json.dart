@@ -26,7 +26,7 @@ dynamic parse(String string) {
 }
 
 String json = r'''
-{
+{  
   "name": "Андрей",
   "list": [11.0, 22, 33],
   "newline" : "\n",

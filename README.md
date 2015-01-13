@@ -3,7 +3,7 @@
 
 PEG (Parsing expression grammar) parsers generator.
 
-Version: 0.0.35
+Version: 0.0.36
 
 Status: Experimental
 
@@ -416,13 +416,15 @@ class ArithmeticParser {
       var name = _tokenNames[_token];
       if (_failurePos == _inputLen && (flag & 1) != 0) {             
         var message = "Unterminated $name";
-        _errors.add(new ArithmeticParserError(ArithmeticParserError.UNTERMINATED, _failurePos, _tokenStart, message));            
-      }
-      else if (_failurePos > _tokenStart && (flag & 1) != 0) {             
+        _errors.add(new ArithmeticParserError(ArithmeticParserError.UNTERMINATED, _failurePos, _tokenStart, message));
+        _expected.addAll(expected);            
+      } else if (_failurePos > _tokenStart && (flag & 1) != 0) {             
         var message = "Malformed $name";
-        _errors.add(new ArithmeticParserError(ArithmeticParserError.MALFORMED, _failurePos, _tokenStart, message));            
-      }
-      _expected.add(name);        
+        _errors.add(new ArithmeticParserError(ArithmeticParserError.MALFORMED, _failurePos, _tokenStart, message));
+        _expected.addAll(expected);            
+      } else {
+        _expected.add(name);
+      }            
     } else if (expected == null) {
       _expected.add(null);
     } else {

@@ -41,7 +41,7 @@ void main(List<String> args) {
 
   //FileUtils.rm(generatedFiles);
 
-  var dartSdk = FileUtils.fullpath(Platform.environment["DART_SDK"]);
+  //var dartSdk = FileUtils.fullpath(Platform.environment["DART_SDK"]);
 
   file(CHANGELOG_MD, [CHANGE_LOG], (Target t, Map args) {
     writeChangelogMd();
@@ -67,7 +67,7 @@ void main(List<String> args) {
   });
 
   rule("%.peg.txt", ["%.peg"], (Target t, Map args) {
-    return Process.run("$dartSdk/bin/dart", ["bin/peg.dart", "print", t.sources.first]).then((result) {
+    return Process.run("dart", ["bin/peg.dart", "print", t.sources.first]).then((result) {
       if (result.exitCode != 0) {
         print(result.stdout);
         return result.exitCode;
@@ -79,7 +79,7 @@ void main(List<String> args) {
   });
 
   rule("%.peg.stat.txt", ["%.peg"], (Target t, Map args) {
-    return Process.run("$dartSdk/bin/dart", ["bin/peg.dart", "stat", "-d", "high", t.sources.first]).then((result) {
+    return Process.run("dart", ["bin/peg.dart", "stat", "-d", "high", t.sources.first]).then((result) {
       if (result.exitCode != 0) {
         print(result.stdout);
         return result.exitCode;
@@ -91,7 +91,7 @@ void main(List<String> args) {
   });
 
   rule("%_parser.dart", ["%.peg"], (Target t, Map args) {
-    return Process.run("$dartSdk/bin/dart", ["bin/peg.dart", "general", "-c", "-l", "-m", "-o", t.name, t.sources.first]).then((result) {
+    return Process.run("dart", ["bin/peg.dart", "general", "-c", "-l", "-m", "-o", t.name, t.sources.first]).then((result) {
       if (result.exitCode != 0) {
         print(result.stdout);
         return result.exitCode;

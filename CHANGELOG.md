@@ -1,6 +1,10 @@
+## 0.0.36
+
+- Changes in `MethodFailureGenerator`. Improves the handling errors in method `_failure`. Error messages now more informative    
+
 ## 0.0.35
 
-- Fixed minor bugs with error messages  
+- Fixed minor bugs with error messages
 
 ## 0.0.34
 

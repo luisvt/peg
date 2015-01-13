@@ -38,7 +38,7 @@ String _escape(String string) {
 class JsonParser {
   static final List<String> _ascii = new List<String>.generate(128, (c) => new String.fromCharCode(c));
   
-  static final List<String> _expect0 = <String>["\'[\'", "\'false\'", "\'null\'", "\'true\'", "\'{\'", "NUMBER", "STRING"];
+  static final List<String> _expect0 = <String>["\'\"\'", "\'[\'", "\'false\'", "\'null\'", "\'true\'", "\'{\'", "NUMBER"];
   
   static final List<String> _expect1 = <String>["\'{\'"];
   
@@ -62,7 +62,7 @@ class JsonParser {
   
   static final List<String> _expect19 = <String>["EXP"];
   
-  static final List<String> _expect2 = <String>["STRING"];
+  static final List<String> _expect2 = <String>["\'\"\'"];
   
   static final List<String> _expect20 = <String>["E", "e"];
   
@@ -74,11 +74,9 @@ class JsonParser {
   
   static final List<String> _expect24 = <String>["NUMBER_PART"];
   
-  static final List<String> _expect25 = <String>["QUOTATION_MARK"];
+  static final List<String> _expect25 = <String>["STRING_CHARS"];
   
-  static final List<String> _expect26 = <String>["STRING_CHARS"];
-  
-  static final List<String> _expect27 = <String>["UNESCAPED"];
+  static final List<String> _expect26 = <String>["UNESCAPED"];
   
   static final List<String> _expect3 = <String>["\',\'"];
   
@@ -113,7 +111,7 @@ class JsonParser {
   
   final List<int> _tokenFlags = [1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0];
   
-  final List<String> _tokenNames = ["WS", "CHAR", "CHAR_HEXDIG", "\'.\'", "DIGIT", "\'\\\'", "EXP", "\'.\'", "HEXDIG", "INT", "NUMBER_PART", "QUOTATION_MARK", "STRING_CHARS", "UNESCAPED"];
+  final List<String> _tokenNames = ["WS", "CHAR", "CHAR_HEXDIG", "\'.\'", "DIGIT", "\'\\\'", "EXP", "\'.\'", "HEXDIG", "INT", "NUMBER_PART", "\'\"\'", "STRING_CHARS", "UNESCAPED"];
   
   static final List<List<int>> _transitions0 = [[34, 34], [45, 45, 48, 57], [91, 91], [102, 102], [110, 110], [116, 116], [123, 123]];
   
@@ -183,6 +181,31 @@ class JsonParser {
     reset(0);    
   }
   
+  void _addToCache(dynamic result, int start, int id) {  
+    var cached = _cache[start];
+    if (cached == null) {
+      _cacheRule[start] = id;
+      _cache[start] = [result, _cursor, success];
+    } else {    
+      var slot = start >> 5;
+      var r1 = (slot << 5) & 0x3fffffff;    
+      var mask = 1 << (start - r1);    
+      if ((_cacheState[slot] & mask) == 0) {
+        _cacheState[slot] |= mask;   
+        cached = [new List.filled(3, 0), new Map<int, List>()];
+        _cache[start] = cached;                                      
+      }
+      slot = id >> 5;
+      r1 = (slot << 5) & 0x3fffffff;    
+      mask = 1 << (id - r1);    
+      cached[0][slot] |= mask;
+      cached[1][id] = [result, _cursor, success];      
+    }
+    if (_cachePos < start) {
+      _cachePos = start;
+    }    
+  }
+  
   void _beginToken(int tokenId) {
     if (_tokenLevel++ == 0) {
       _token = tokenId;
@@ -210,13 +233,15 @@ class JsonParser {
       var name = _tokenNames[_token];
       if (_failurePos == _inputLen && (flag & 1) != 0) {             
         var message = "Unterminated $name";
-        _errors.add(new JsonParserError(JsonParserError.UNTERMINATED, _failurePos, _tokenStart, message));            
-      }
-      else if (_failurePos > _tokenStart && (flag & 1) != 0) {             
+        _errors.add(new JsonParserError(JsonParserError.UNTERMINATED, _failurePos, _tokenStart, message));
+        _expected.addAll(expected);            
+      } else if (_failurePos > _tokenStart && (flag & 1) != 0) {             
         var message = "Malformed $name";
-        _errors.add(new JsonParserError(JsonParserError.MALFORMED, _failurePos, _tokenStart, message));            
-      }
-      _expected.add(name);        
+        _errors.add(new JsonParserError(JsonParserError.MALFORMED, _failurePos, _tokenStart, message));
+        _expected.addAll(expected);            
+      } else {
+        _expected.add(name);
+      }            
     } else if (expected == null) {
       _expected.add(null);
     } else {
@@ -248,6 +273,45 @@ class JsonParser {
       }
     }
     return [value];
+  }
+  
+  dynamic _getFromCache(int id) {  
+    var result = _cache[_cursor];
+    if (result == null) {
+      return null;
+    }    
+    var slot = _cursor >> 5;
+    var r1 = (slot << 5) & 0x3fffffff;  
+    var mask = 1 << (_cursor - r1);
+    if ((_cacheState[slot] & mask) == 0) {
+      if (_cacheRule[_cursor] == id) {      
+        _cursor = result[1];
+        success = result[2];      
+        if (_cursor < _inputLen) {
+          _ch = _input[_cursor];
+        } else {
+          _ch = -1;
+        }      
+        return result;
+      } else {
+        return null;
+      }    
+    }
+    slot = id >> 5;
+    r1 = (slot << 5) & 0x3fffffff;  
+    mask = 1 << (id - r1);
+    if ((result[0][slot] & mask) == 0) {
+      return null;
+    }
+    var data = result[1][id];  
+    _cursor = data[1];
+    success = data[2];
+    if (_cursor < _inputLen) {
+      _ch = _input[_cursor];
+    } else {
+      _ch = -1;
+    }   
+    return data;  
   }
   
   int _getState(List<List<int>> transitions) {
@@ -787,8 +851,15 @@ class JsonParser {
   dynamic _parse_DIGIT() {
     // MORPHEME
     // DIGIT <- [0-9]
-    var $$;
-    _beginToken(4);  
+    var $$;        
+    var pos = _cursor;    
+    if(pos <= _cachePos) {
+      $$ = _getFromCache(23);
+    }
+    if($$ != null) {
+      return $$[0];       
+    }  
+    _beginToken(4);    
     // => [0-9] # Choice
     switch (_ch >= 48 && _ch <= 57 ? 0 : _ch == -1 ? 2 : 1) {
       // [0-9]
@@ -812,6 +883,7 @@ class JsonParser {
       _failure(_expect17);
     }
     // <= [0-9] # Choice
+    _addToCache($$, pos, 23);
     _endToken();
     return $$;
   }
@@ -966,8 +1038,15 @@ class JsonParser {
   dynamic _parse_ESCAPE() {
     // MORPHEME
     // ESCAPE <- '\\'
-    var $$;
-    _beginToken(5);  
+    var $$;        
+    var pos = _cursor;    
+    if(pos <= _cachePos) {
+      $$ = _getFromCache(24);
+    }
+    if($$ != null) {
+      return $$[0];       
+    }  
+    _beginToken(5);    
     // => '\\' # Choice
     switch (_ch == 92 ? 0 : _ch == -1 ? 2 : 1) {
       // [\\]
@@ -997,6 +1076,7 @@ class JsonParser {
       _failure(_expect18);
     }
     // <= '\\' # Choice
+    _addToCache($$, pos, 24);
     _endToken();
     return $$;
   }
@@ -1294,8 +1374,15 @@ class JsonParser {
   dynamic _parse_HEXDIG() {
     // MORPHEME
     // HEXDIG <- DIGIT / [a-f] / [A-F]
-    var $$;
-    _beginToken(8);  
+    var $$;        
+    var pos = _cursor;    
+    if(pos <= _cachePos) {
+      $$ = _getFromCache(27);
+    }
+    if($$ != null) {
+      return $$[0];       
+    }  
+    _beginToken(8);    
     // => DIGIT / [a-f] / [A-F] # Choice
     switch (_getState(_transitions8)) {
       // [0-9]
@@ -1335,6 +1422,7 @@ class JsonParser {
       _failure(_expect22);
     }
     // <= DIGIT / [a-f] / [A-F] # Choice
+    _addToCache($$, pos, 27);
     _endToken();
     return $$;
   }
@@ -1648,15 +1736,22 @@ class JsonParser {
   
   dynamic _parse_QUOTATION_MARK() {
     // MORPHEME
-    // QUOTATION_MARK <- ["]
-    var $$;
-    _beginToken(11);  
-    // => ["] # Choice
+    // QUOTATION_MARK <- '"'
+    var $$;        
+    var pos = _cursor;    
+    if(pos <= _cachePos) {
+      $$ = _getFromCache(30);
+    }
+    if($$ != null) {
+      return $$[0];       
+    }  
+    _beginToken(11);    
+    // => '"' # Choice
     switch (_ch == 34 ? 0 : _ch == -1 ? 2 : 1) {
       // [\"]
       case 0:
         var startPos0 = _startPos;
-        // => ["]
+        // => '"'
         $$ = '\"';
         success = true;
         if (++_cursor < _inputLen) {
@@ -1664,7 +1759,7 @@ class JsonParser {
         } else {
           _ch = -1;
         }
-        // <= ["]
+        // <= '"'
         _startPos = startPos0;
         break;
       // No matches
@@ -1676,10 +1771,11 @@ class JsonParser {
         break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: QUOTATION_MARK
-      _failure(_expect25);
+      // Expected: '"'
+      _failure(_expect2);
     }
-    // <= ["] # Choice
+    // <= '"' # Choice
+    _addToCache($$, pos, 30);
     _endToken();
     return $$;
   }
@@ -1687,7 +1783,14 @@ class JsonParser {
   dynamic _parse_STRING() {
     // LEXEME
     // STRING <- QUOTATION_MARK STRING_CHARS QUOTATION_MARK WS
-    var $$;
+    var $$;        
+    var pos = _cursor;    
+    if(pos <= _cachePos) {
+      $$ = _getFromCache(16);
+    }
+    if($$ != null) {
+      return $$[0];       
+    }  
     // => QUOTATION_MARK STRING_CHARS QUOTATION_MARK WS # Choice
     switch (_ch == 34 ? 0 : _ch == -1 ? 2 : 1) {
       // [\"]
@@ -1746,10 +1849,11 @@ class JsonParser {
         break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: STRING
+      // Expected: '"'
       _failure(_expect2);
     }
     // <= QUOTATION_MARK STRING_CHARS QUOTATION_MARK WS # Choice
+    _addToCache($$, pos, 16);
     return $$;
   }
   
@@ -1797,7 +1901,7 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: STRING_CHARS
-      _failure(_expect26);
+      _failure(_expect25);
     }
     // <= CHAR* # Choice
     _endToken();
@@ -1917,7 +2021,7 @@ class JsonParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: UNESCAPED
-      _failure(_expect27);
+      _failure(_expect26);
     }
     // <= [ -!] / [#-\[] / [\]-~] / [\]-\u10ffff] # Choice
     _endToken();
@@ -1927,7 +2031,14 @@ class JsonParser {
   dynamic _parse_VALUE_SEPARATOR() {
     // LEXEME
     // VALUE_SEPARATOR <- ',' WS
-    var $$;
+    var $$;        
+    var pos = _cursor;    
+    if(pos <= _cachePos) {
+      $$ = _getFromCache(18);
+    }
+    if($$ != null) {
+      return $$[0];       
+    }  
     // => ',' WS # Choice
     switch (_ch == 44 ? 0 : _ch == -1 ? 2 : 1) {
       // [,]
@@ -1975,14 +2086,22 @@ class JsonParser {
       _failure(_expect3);
     }
     // <= ',' WS # Choice
+    _addToCache($$, pos, 18);
     return $$;
   }
   
   dynamic _parse_WS() {
     // LEXEME & MORPHEME
     // WS <- [\t-\n\r ]*
-    var $$;
-    _beginToken(0);  
+    var $$;        
+    var pos = _cursor;    
+    if(pos <= _cachePos) {
+      $$ = _getFromCache(19);
+    }
+    if($$ != null) {
+      return $$[0];       
+    }  
+    _beginToken(0);    
     // => [\t-\n\r ]* # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
       // [\u0000-\u0010ffff]
@@ -2020,6 +2139,7 @@ class JsonParser {
       _failure(_expect13);
     }
     // <= [\t-\n\r ]* # Choice
+    _addToCache($$, pos, 19);
     _endToken();
     return $$;
   }
@@ -2095,7 +2215,14 @@ class JsonParser {
   dynamic _parse_member() {
     // NONTERMINAL
     // member <- STRING NAME_SEPARATOR value
-    var $$;
+    var $$;        
+    var pos = _cursor;    
+    if(pos <= _cachePos) {
+      $$ = _getFromCache(4);
+    }
+    if($$ != null) {
+      return $$[0];       
+    }  
     // => STRING NAME_SEPARATOR value # Choice
     switch (_ch == 34 ? 0 : _ch == -1 ? 2 : 1) {
       // [\"]
@@ -2147,10 +2274,11 @@ class JsonParser {
         break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: STRING
+      // Expected: '"'
       _failure(_expect2);
     }
     // <= STRING NAME_SEPARATOR value # Choice
+    _addToCache($$, pos, 4);
     return $$;
   }
   
@@ -2254,7 +2382,7 @@ class JsonParser {
         break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: STRING
+      // Expected: '"'
       _failure(_expect2);
     }
     // <= member (VALUE_SEPARATOR member)* # Choice
@@ -2332,7 +2460,14 @@ class JsonParser {
   dynamic _parse_value() {
     // NONTERMINAL
     // value <- FALSE / NULL / TRUE / object / array / NUMBER / STRING
-    var $$;
+    var $$;        
+    var pos = _cursor;    
+    if(pos <= _cachePos) {
+      $$ = _getFromCache(1);
+    }
+    if($$ != null) {
+      return $$[0];       
+    }  
     // => FALSE / NULL / TRUE / object / array / NUMBER / STRING # Choice
     switch (_getState(_transitions0)) {
       // [\"]
@@ -2400,10 +2535,11 @@ class JsonParser {
         break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: 'false', 'null', 'true', '{', '[', NUMBER, STRING
+      // Expected: 'false', 'null', 'true', '{', '[', NUMBER, '"'
       _failure(_expect0);
     }
     // <= FALSE / NULL / TRUE / object / array / NUMBER / STRING # Choice
+    _addToCache($$, pos, 1);
     return $$;
   }
   
@@ -2507,7 +2643,7 @@ class JsonParser {
         break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: 'false', 'null', 'true', '{', '[', NUMBER, STRING
+      // Expected: 'false', 'null', 'true', '{', '[', NUMBER, '"'
       _failure(_expect0);
     }
     // <= value (VALUE_SEPARATOR value)* # Choice
@@ -2706,7 +2842,7 @@ class JsonParser {
         break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: 'false', 'null', 'true', '{', '[', NUMBER, STRING
+      // Expected: 'false', 'null', 'true', '{', '[', NUMBER, '"'
       _failure(_expect0);
     }
     // <= WS? value EOF # Choice
