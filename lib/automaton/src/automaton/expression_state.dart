@@ -1,9 +1,9 @@
 part of peg.automaton.automaton;
 
 class ExpressionState {
-  static const int FLAG_EXRESSION_STARTS = 1;
+  // static const int FLAG_EXRESSION_STARTS = 1;
 
-  static const int FLAG_PREDICATE_ENDS = 2;
+  // static const int FLAG_PREDICATE_ENDS = 2;
 
   ExpressionStates emptyTransition = new ExpressionStates();
 

@@ -10,7 +10,8 @@ class TerminalRulesFinder {
     _reanalyze(rules);
     var id = 0;
     for (var rule in rules) {
-      if (rule.isLexical) {
+      if (rule.isMorpheme) {
+      //if (rule.isLexical) {
         rule.tokenId = id++;
       }
     }

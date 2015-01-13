@@ -111,9 +111,9 @@ class JsonParser {
   // 'true'
   static final List<int> _strings2 = <int>[116, 114, 117, 101];
   
-  final List<int> _tokenFlags = [1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0];
+  final List<int> _tokenFlags = [1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0];
   
-  final List<String> _tokenNames = ["\'[\'", "\'{\'", "\']\'", "\'}\'", "EOF", "\'false\'", "\':\'", "\'null\'", "NUMBER", "STRING", "\'true\'", "\',\'", "WS", "CHAR", "CHAR_HEXDIG", "\'.\'", "DIGIT", "\'\\\'", "EXP", "\'.\'", "HEXDIG", "INT", "NUMBER_PART", "QUOTATION_MARK", "STRING_CHARS", "UNESCAPED"];
+  final List<String> _tokenNames = ["WS", "CHAR", "CHAR_HEXDIG", "\'.\'", "DIGIT", "\'\\\'", "EXP", "\'.\'", "HEXDIG", "INT", "NUMBER_PART", "QUOTATION_MARK", "STRING_CHARS", "UNESCAPED"];
   
   static final List<List<int>> _transitions0 = [[34, 34], [45, 45, 48, 57], [91, 91], [102, 102], [110, 110], [116, 116], [123, 123]];
   
@@ -440,7 +440,6 @@ class JsonParser {
     // LEXEME
     // BEGIN_ARRAY <- '[' WS
     var $$;
-    _beginToken(0);  
     // => '[' WS # Choice
     switch (_ch == 91 ? 0 : _ch == -1 ? 2 : 1) {
       // [[]
@@ -488,7 +487,6 @@ class JsonParser {
       _failure(_expect4);
     }
     // <= '[' WS # Choice
-    _endToken();
     return $$;
   }
   
@@ -496,7 +494,6 @@ class JsonParser {
     // LEXEME
     // BEGIN_OBJECT <- '{' WS
     var $$;
-    _beginToken(1);  
     // => '{' WS # Choice
     switch (_ch == 123 ? 0 : _ch == -1 ? 2 : 1) {
       // [{]
@@ -544,7 +541,6 @@ class JsonParser {
       _failure(_expect1);
     }
     // <= '{' WS # Choice
-    _endToken();
     return $$;
   }
   
@@ -552,7 +548,7 @@ class JsonParser {
     // MORPHEME
     // CHAR <- UNESCAPED / ESCAPE ["/\\bfnrt] / ESCAPE 'u' CHAR_HEXDIG
     var $$;
-    _beginToken(13);  
+    _beginToken(1);  
     // => UNESCAPED / ESCAPE ["/\\bfnrt] / ESCAPE 'u' CHAR_HEXDIG # Choice
     switch (_getState(_transitions3)) {
       // [ -!] [#-[] []-\u0010ffff]
@@ -658,7 +654,7 @@ class JsonParser {
     // MORPHEME
     // CHAR_HEXDIG <- HEXDIG HEXDIG HEXDIG HEXDIG
     var $$;
-    _beginToken(14);  
+    _beginToken(2);  
     // => HEXDIG HEXDIG HEXDIG HEXDIG # Choice
     switch (_getState(_transitions4)) {
       // [0-9] [A-F] [a-f]
@@ -729,7 +725,7 @@ class JsonParser {
     // MORPHEME
     // DECIMAL_POINT <- '.' WS
     var $$;
-    _beginToken(15);  
+    _beginToken(3);  
     // => '.' WS # Choice
     switch (_ch == 46 ? 0 : _ch == -1 ? 2 : 1) {
       // [.]
@@ -792,7 +788,7 @@ class JsonParser {
     // MORPHEME
     // DIGIT <- [0-9]
     var $$;
-    _beginToken(16);  
+    _beginToken(4);  
     // => [0-9] # Choice
     switch (_ch >= 48 && _ch <= 57 ? 0 : _ch == -1 ? 2 : 1) {
       // [0-9]
@@ -824,7 +820,6 @@ class JsonParser {
     // LEXEME
     // END_ARRAY <- ']' WS
     var $$;
-    _beginToken(2);  
     // => ']' WS # Choice
     switch (_ch == 93 ? 0 : _ch == -1 ? 2 : 1) {
       // []]
@@ -872,7 +867,6 @@ class JsonParser {
       _failure(_expect5);
     }
     // <= ']' WS # Choice
-    _endToken();
     return $$;
   }
   
@@ -880,7 +874,6 @@ class JsonParser {
     // LEXEME
     // END_OBJECT <- '}' WS
     var $$;
-    _beginToken(3);  
     // => '}' WS # Choice
     switch (_ch == 125 ? 0 : _ch == -1 ? 2 : 1) {
       // [}]
@@ -928,7 +921,6 @@ class JsonParser {
       _failure(_expect6);
     }
     // <= '}' WS # Choice
-    _endToken();
     return $$;
   }
   
@@ -936,7 +928,6 @@ class JsonParser {
     // LEXEME
     // EOF <- !.
     var $$;
-    _beginToken(4);  
     // => !. # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
       // [\u0000-\u0010ffff]
@@ -969,7 +960,6 @@ class JsonParser {
       _failure(_expect7);
     }
     // <= !. # Choice
-    _endToken();
     return $$;
   }
   
@@ -977,7 +967,7 @@ class JsonParser {
     // MORPHEME
     // ESCAPE <- '\\'
     var $$;
-    _beginToken(17);  
+    _beginToken(5);  
     // => '\\' # Choice
     switch (_ch == 92 ? 0 : _ch == -1 ? 2 : 1) {
       // [\\]
@@ -1015,7 +1005,7 @@ class JsonParser {
     // MORPHEME
     // EXP <- ('e' / 'E') ('-' / '+')? DIGIT+
     var $$;
-    _beginToken(18);  
+    _beginToken(6);  
     // => ('e' / 'E') ('-' / '+')? DIGIT+ # Choice
     switch (_getState(_transitions5)) {
       // [E] [e]
@@ -1178,7 +1168,6 @@ class JsonParser {
     // LEXEME
     // FALSE <- 'false' WS
     var $$;
-    _beginToken(5);  
     // => 'false' WS # Choice
     switch (_ch == 102 ? 0 : _ch == -1 ? 2 : 1) {
       // [f]
@@ -1227,7 +1216,6 @@ class JsonParser {
       _failure(_expect8);
     }
     // <= 'false' WS # Choice
-    _endToken();
     return $$;
   }
   
@@ -1235,7 +1223,7 @@ class JsonParser {
     // MORPHEME
     // FRAC <- DECIMAL_POINT DIGIT+
     var $$;
-    _beginToken(19);  
+    _beginToken(7);  
     // => DECIMAL_POINT DIGIT+ # Choice
     switch (_ch == 46 ? 0 : _ch == -1 ? 2 : 1) {
       // [.]
@@ -1307,7 +1295,7 @@ class JsonParser {
     // MORPHEME
     // HEXDIG <- DIGIT / [a-f] / [A-F]
     var $$;
-    _beginToken(20);  
+    _beginToken(8);  
     // => DIGIT / [a-f] / [A-F] # Choice
     switch (_getState(_transitions8)) {
       // [0-9]
@@ -1355,7 +1343,7 @@ class JsonParser {
     // MORPHEME
     // INT <- DIGIT+
     var $$;
-    _beginToken(21);  
+    _beginToken(9);  
     // => DIGIT+ # Choice
     switch (_ch >= 48 && _ch <= 57 ? 0 : _ch == -1 ? 2 : 1) {
       // [0-9]
@@ -1409,7 +1397,6 @@ class JsonParser {
     // LEXEME
     // NAME_SEPARATOR <- ':' WS
     var $$;
-    _beginToken(6);  
     // => ':' WS # Choice
     switch (_ch == 58 ? 0 : _ch == -1 ? 2 : 1) {
       // [:]
@@ -1457,7 +1444,6 @@ class JsonParser {
       _failure(_expect9);
     }
     // <= ':' WS # Choice
-    _endToken();
     return $$;
   }
   
@@ -1465,7 +1451,6 @@ class JsonParser {
     // LEXEME
     // NULL <- 'null' WS
     var $$;
-    _beginToken(7);  
     // => 'null' WS # Choice
     switch (_ch == 110 ? 0 : _ch == -1 ? 2 : 1) {
       // [n]
@@ -1514,7 +1499,6 @@ class JsonParser {
       _failure(_expect10);
     }
     // <= 'null' WS # Choice
-    _endToken();
     return $$;
   }
   
@@ -1522,7 +1506,6 @@ class JsonParser {
     // LEXEME
     // NUMBER <- NUMBER_PART WS
     var $$;
-    _beginToken(8);  
     // => NUMBER_PART WS # Choice
     switch (_getState(_transitions2)) {
       // [-] [0-9]
@@ -1571,7 +1554,6 @@ class JsonParser {
       _failure(_expect11);
     }
     // <= NUMBER_PART WS # Choice
-    _endToken();
     return $$;
   }
   
@@ -1579,7 +1561,7 @@ class JsonParser {
     // MORPHEME
     // NUMBER_PART <- '-'? INT FRAC? EXP?
     var $$;
-    _beginToken(22);  
+    _beginToken(10);  
     // => '-'? INT FRAC? EXP? # Choice
     switch (_getState(_transitions2)) {
       // [-] [0-9]
@@ -1668,7 +1650,7 @@ class JsonParser {
     // MORPHEME
     // QUOTATION_MARK <- ["]
     var $$;
-    _beginToken(23);  
+    _beginToken(11);  
     // => ["] # Choice
     switch (_ch == 34 ? 0 : _ch == -1 ? 2 : 1) {
       // [\"]
@@ -1706,7 +1688,6 @@ class JsonParser {
     // LEXEME
     // STRING <- QUOTATION_MARK STRING_CHARS QUOTATION_MARK WS
     var $$;
-    _beginToken(9);  
     // => QUOTATION_MARK STRING_CHARS QUOTATION_MARK WS # Choice
     switch (_ch == 34 ? 0 : _ch == -1 ? 2 : 1) {
       // [\"]
@@ -1769,7 +1750,6 @@ class JsonParser {
       _failure(_expect2);
     }
     // <= QUOTATION_MARK STRING_CHARS QUOTATION_MARK WS # Choice
-    _endToken();
     return $$;
   }
   
@@ -1777,7 +1757,7 @@ class JsonParser {
     // MORPHEME
     // STRING_CHARS <- CHAR*
     var $$;
-    _beginToken(24);  
+    _beginToken(12);  
     // => CHAR* # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
       // [\u0000-\u0010ffff]
@@ -1828,7 +1808,6 @@ class JsonParser {
     // LEXEME
     // TRUE <- 'true' WS
     var $$;
-    _beginToken(10);  
     // => 'true' WS # Choice
     switch (_ch == 116 ? 0 : _ch == -1 ? 2 : 1) {
       // [t]
@@ -1877,7 +1856,6 @@ class JsonParser {
       _failure(_expect12);
     }
     // <= 'true' WS # Choice
-    _endToken();
     return $$;
   }
   
@@ -1885,7 +1863,7 @@ class JsonParser {
     // MORPHEME
     // UNESCAPED <- [ -!] / [#-\[] / [\]-~] / [\]-\u10ffff]
     var $$;
-    _beginToken(25);  
+    _beginToken(13);  
     // => [ -!] / [#-\[] / [\]-~] / [\]-\u10ffff] # Choice
     switch (_getState(_transitions9)) {
       // [ -!]
@@ -1950,7 +1928,6 @@ class JsonParser {
     // LEXEME
     // VALUE_SEPARATOR <- ',' WS
     var $$;
-    _beginToken(11);  
     // => ',' WS # Choice
     switch (_ch == 44 ? 0 : _ch == -1 ? 2 : 1) {
       // [,]
@@ -1998,7 +1975,6 @@ class JsonParser {
       _failure(_expect3);
     }
     // <= ',' WS # Choice
-    _endToken();
     return $$;
   }
   
@@ -2006,7 +1982,7 @@ class JsonParser {
     // LEXEME & MORPHEME
     // WS <- [\t-\n\r ]*
     var $$;
-    _beginToken(12);  
+    _beginToken(0);  
     // => [\t-\n\r ]* # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
       // [\u0000-\u0010ffff]

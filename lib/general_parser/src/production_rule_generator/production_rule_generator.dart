@@ -191,7 +191,8 @@ dynamic {{NAME}}() {
   }
 
   List<String> _generateTokenEpilog() {
-    if (!productionRule.isLexical) {
+    if (!productionRule.isMorpheme) {
+    //if (!productionRule.isLexical) {
       return const <String>[];
     }
 
@@ -200,7 +201,8 @@ dynamic {{NAME}}() {
   }
 
   List<String> _generateTokenProlog() {
-    if (!productionRule.isLexical) {
+    if (!productionRule.isMorpheme) {
+    //if (!productionRule.isLexical) {
       return const <String>[];
     }
 
@@ -234,7 +236,8 @@ dynamic {{NAME}}() {
       block.assign('#COMMENTS', '// $productionRule');
     }
 
-    if (productionRule.isLexical) {
+    if (productionRule.isMorpheme) {
+    //if (productionRule.isLexical) {
       block.assign('#TOKEN_EPILOG', _generateTokenEpilog());
       block.assign('#TOKEN_PROLOG', _generateTokenProlog());
     }
@@ -262,7 +265,8 @@ dynamic {{NAME}}() {
       block.assign('#COMMENTS', '// $productionRule');
     }
 
-    if (productionRule.isLexical) {
+    if (productionRule.isMorpheme) {
+    //if (productionRule.isLexical) {
       block.assign('#TOKEN_EPILOG', _generateTokenEpilog());
       block.assign('#TOKEN_PROLOG', _generateTokenProlog());
     }

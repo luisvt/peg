@@ -41,8 +41,8 @@ class FrontendAnalyzer {
     // Exprerimental
     for (var rule in rules) {
       if (rule.directCallers.length == 0) {
-        //var builder = new AutomatonBuilder();
-        //builder.build(rule);
+        var builder = new AutomatonBuilder();
+        builder.build(rule);
       }
     }
   }

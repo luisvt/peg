@@ -55,9 +55,9 @@ class ArithmeticParser {
   // '\r\n'
   static final List<int> _strings0 = <int>[13, 10];
   
-  final List<int> _tokenFlags = [1, 1, 0, 1, 1, 1, 1, 1, 1, 0];
+  final List<int> _tokenFlags = [1, 0];
   
-  final List<String> _tokenNames = ["\')\'", "\'/\'", "EOF", "\'-\'", "\'*\'", "NUMBER", "\'(\'", "\'+\'", "SPACES", "WS"];
+  final List<String> _tokenNames = ["SPACES", "WS"];
   
   static final List<List<int>> _transitions0 = [[40, 40, 48, 57]];
   
@@ -516,7 +516,6 @@ class ArithmeticParser {
     // LEXEME
     // CLOSE <- ')' SPACES
     var $$;
-    _beginToken(0);  
     // => ')' SPACES # Choice
     switch (_ch == 41 ? 0 : _ch == -1 ? 2 : 1) {
       // [)]
@@ -564,7 +563,6 @@ class ArithmeticParser {
       _failure(_expect3);
     }
     // <= ')' SPACES # Choice
-    _endToken();
     return $$;
   }
   
@@ -572,7 +570,6 @@ class ArithmeticParser {
     // LEXEME
     // DIV <- '/' SPACES
     var $$;
-    _beginToken(1);  
     // => '/' SPACES # Choice
     switch (_ch == 47 ? 0 : _ch == -1 ? 2 : 1) {
       // [/]
@@ -627,7 +624,6 @@ class ArithmeticParser {
       _failure(_expect4);
     }
     // <= '/' SPACES # Choice
-    _endToken();
     return $$;
   }
   
@@ -635,7 +631,6 @@ class ArithmeticParser {
     // LEXEME
     // EOF <- !.
     var $$;
-    _beginToken(2);  
     // => !. # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
       // [\u0000-\u0010ffff]
@@ -668,7 +663,6 @@ class ArithmeticParser {
       _failure(_expect5);
     }
     // <= !. # Choice
-    _endToken();
     return $$;
   }
   
@@ -676,7 +670,6 @@ class ArithmeticParser {
     // LEXEME
     // MINUS <- '-' SPACES
     var $$;
-    _beginToken(3);  
     // => '-' SPACES # Choice
     switch (_ch == 45 ? 0 : _ch == -1 ? 2 : 1) {
       // [-]
@@ -731,7 +724,6 @@ class ArithmeticParser {
       _failure(_expect6);
     }
     // <= '-' SPACES # Choice
-    _endToken();
     return $$;
   }
   
@@ -739,7 +731,6 @@ class ArithmeticParser {
     // LEXEME
     // MUL <- '*' SPACES
     var $$;
-    _beginToken(4);  
     // => '*' SPACES # Choice
     switch (_ch == 42 ? 0 : _ch == -1 ? 2 : 1) {
       // [*]
@@ -794,7 +785,6 @@ class ArithmeticParser {
       _failure(_expect7);
     }
     // <= '*' SPACES # Choice
-    _endToken();
     return $$;
   }
   
@@ -802,7 +792,6 @@ class ArithmeticParser {
     // LEXEME
     // NUMBER <- [0-9]+ SPACES
     var $$;
-    _beginToken(5);  
     // => [0-9]+ SPACES # Choice
     switch (_ch >= 48 && _ch <= 57 ? 0 : _ch == -1 ? 2 : 1) {
       // [0-9]
@@ -873,7 +862,6 @@ class ArithmeticParser {
       _failure(_expect8);
     }
     // <= [0-9]+ SPACES # Choice
-    _endToken();
     return $$;
   }
   
@@ -881,7 +869,6 @@ class ArithmeticParser {
     // LEXEME
     // OPEN <- '(' SPACES
     var $$;
-    _beginToken(6);  
     // => '(' SPACES # Choice
     switch (_ch == 40 ? 0 : _ch == -1 ? 2 : 1) {
       // [(]
@@ -929,7 +916,6 @@ class ArithmeticParser {
       _failure(_expect9);
     }
     // <= '(' SPACES # Choice
-    _endToken();
     return $$;
   }
   
@@ -937,7 +923,6 @@ class ArithmeticParser {
     // LEXEME
     // PLUS <- '+' SPACES
     var $$;
-    _beginToken(7);  
     // => '+' SPACES # Choice
     switch (_ch == 43 ? 0 : _ch == -1 ? 2 : 1) {
       // [+]
@@ -992,7 +977,6 @@ class ArithmeticParser {
       _failure(_expect10);
     }
     // <= '+' SPACES # Choice
-    _endToken();
     return $$;
   }
   
@@ -1007,7 +991,7 @@ class ArithmeticParser {
     if($$ != null) {
       return $$[0];       
     }  
-    _beginToken(8);    
+    _beginToken(0);    
     // => WS* # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
       // [\u0000-\u0010ffff]
@@ -1268,7 +1252,7 @@ class ArithmeticParser {
     // MORPHEME
     // WS <- [\t-\n\r ] / '\r\n'
     var $$;
-    _beginToken(9);  
+    _beginToken(1);  
     // => [\t-\n\r ] / '\r\n' # Choice
     switch (_getState(_transitions4)) {
       // [\t-\n] [ ]

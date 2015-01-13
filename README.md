@@ -3,7 +3,7 @@
 
 PEG (Parsing expression grammar) parsers generator.
 
-Version: 0.0.34
+Version: 0.0.35
 
 Status: Experimental
 
@@ -302,9 +302,9 @@ class ArithmeticParser {
   // '\r\n'
   static final List<int> _strings0 = <int>[13, 10];
   
-  final List<int> _tokenFlags = [1, 1, 0, 1, 1, 1, 1, 1, 1, 0];
+  final List<int> _tokenFlags = [1, 0];
   
-  final List<String> _tokenNames = ["\')\'", "\'/\'", "EOF", "\'-\'", "\'*\'", "NUMBER", "\'(\'", "\'+\'", "SPACES", "WS"];
+  final List<String> _tokenNames = ["SPACES", "WS"];
   
   static final List<List<int>> _transitions0 = [[40, 40, 48, 57]];
   
@@ -763,7 +763,6 @@ class ArithmeticParser {
     // LEXEME
     // CLOSE <- ')' SPACES
     var $$;
-    _beginToken(0);  
     // => ')' SPACES # Choice
     switch (_ch == 41 ? 0 : _ch == -1 ? 2 : 1) {
       // [)]
@@ -811,7 +810,6 @@ class ArithmeticParser {
       _failure(_expect3);
     }
     // <= ')' SPACES # Choice
-    _endToken();
     return $$;
   }
   
@@ -819,7 +817,6 @@ class ArithmeticParser {
     // LEXEME
     // DIV <- '/' SPACES
     var $$;
-    _beginToken(1);  
     // => '/' SPACES # Choice
     switch (_ch == 47 ? 0 : _ch == -1 ? 2 : 1) {
       // [/]
@@ -874,7 +871,6 @@ class ArithmeticParser {
       _failure(_expect4);
     }
     // <= '/' SPACES # Choice
-    _endToken();
     return $$;
   }
   
@@ -882,7 +878,6 @@ class ArithmeticParser {
     // LEXEME
     // EOF <- !.
     var $$;
-    _beginToken(2);  
     // => !. # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
       // [\u0000-\u0010ffff]
@@ -915,7 +910,6 @@ class ArithmeticParser {
       _failure(_expect5);
     }
     // <= !. # Choice
-    _endToken();
     return $$;
   }
   
@@ -923,7 +917,6 @@ class ArithmeticParser {
     // LEXEME
     // MINUS <- '-' SPACES
     var $$;
-    _beginToken(3);  
     // => '-' SPACES # Choice
     switch (_ch == 45 ? 0 : _ch == -1 ? 2 : 1) {
       // [-]
@@ -978,7 +971,6 @@ class ArithmeticParser {
       _failure(_expect6);
     }
     // <= '-' SPACES # Choice
-    _endToken();
     return $$;
   }
   
@@ -986,7 +978,6 @@ class ArithmeticParser {
     // LEXEME
     // MUL <- '*' SPACES
     var $$;
-    _beginToken(4);  
     // => '*' SPACES # Choice
     switch (_ch == 42 ? 0 : _ch == -1 ? 2 : 1) {
       // [*]
@@ -1041,7 +1032,6 @@ class ArithmeticParser {
       _failure(_expect7);
     }
     // <= '*' SPACES # Choice
-    _endToken();
     return $$;
   }
   
@@ -1049,7 +1039,6 @@ class ArithmeticParser {
     // LEXEME
     // NUMBER <- [0-9]+ SPACES
     var $$;
-    _beginToken(5);  
     // => [0-9]+ SPACES # Choice
     switch (_ch >= 48 && _ch <= 57 ? 0 : _ch == -1 ? 2 : 1) {
       // [0-9]
@@ -1120,7 +1109,6 @@ class ArithmeticParser {
       _failure(_expect8);
     }
     // <= [0-9]+ SPACES # Choice
-    _endToken();
     return $$;
   }
   
@@ -1128,7 +1116,6 @@ class ArithmeticParser {
     // LEXEME
     // OPEN <- '(' SPACES
     var $$;
-    _beginToken(6);  
     // => '(' SPACES # Choice
     switch (_ch == 40 ? 0 : _ch == -1 ? 2 : 1) {
       // [(]
@@ -1176,7 +1163,6 @@ class ArithmeticParser {
       _failure(_expect9);
     }
     // <= '(' SPACES # Choice
-    _endToken();
     return $$;
   }
   
@@ -1184,7 +1170,6 @@ class ArithmeticParser {
     // LEXEME
     // PLUS <- '+' SPACES
     var $$;
-    _beginToken(7);  
     // => '+' SPACES # Choice
     switch (_ch == 43 ? 0 : _ch == -1 ? 2 : 1) {
       // [+]
@@ -1239,7 +1224,6 @@ class ArithmeticParser {
       _failure(_expect10);
     }
     // <= '+' SPACES # Choice
-    _endToken();
     return $$;
   }
   
@@ -1254,7 +1238,7 @@ class ArithmeticParser {
     if($$ != null) {
       return $$[0];       
     }  
-    _beginToken(8);    
+    _beginToken(0);    
     // => WS* # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
       // [\u0000-\u0010ffff]
@@ -1515,7 +1499,7 @@ class ArithmeticParser {
     // MORPHEME
     // WS <- [\t-\n\r ] / '\r\n'
     var $$;
-    _beginToken(9);  
+    _beginToken(1);  
     // => [\t-\n\r ] / '\r\n' # Choice
     switch (_getState(_transitions4)) {
       // [\t-\n] [ ]
@@ -1836,30 +1820,30 @@ Rules:
 Atom:
  Type: Nonterminal
  Direct callees:
-  CLOSE
-  NUMBER
-  OPEN
-  Sentence
+  (L ) CLOSE
+  (L ) NUMBER
+  (L ) OPEN
+  (N ) Sentence
  All callees:
-  Atom
-  CLOSE
-  DIV
-  MINUS
-  MUL
-  NUMBER
-  OPEN
-  PLUS
-  SPACES
-  Sentence
-  Term
-  WS
+  (N ) Atom
+  (L ) CLOSE
+  (L ) DIV
+  (L ) MINUS
+  (L ) MUL
+  (L ) NUMBER
+  (L ) OPEN
+  (L ) PLUS
+  (LM) SPACES
+  (N ) Sentence
+  (N ) Term
+  (M ) WS
  Direct callers:
-  Term
+  (N ) Term
  All callers:
-  Atom
-  Expr
-  Sentence
-  Term
+  (N ) Atom
+  (N ) Expr
+  (N ) Sentence
+  (N ) Term
  Start characters:
   [(][0-9]
  Expected lexemes:
@@ -1868,17 +1852,17 @@ Atom:
 CLOSE:
  Type: Lexeme
  Direct callees:
-  SPACES
+  (LM) SPACES
  All callees:
-  SPACES
-  WS
+  (LM) SPACES
+  (M ) WS
  Direct callers:
-  Atom
+  (N ) Atom
  All callers:
-  Atom
-  Expr
-  Sentence
-  Term
+  (N ) Atom
+  (N ) Expr
+  (N ) Sentence
+  (N ) Term
  Start characters:
   [)]
  Expected lexemes:
@@ -1887,17 +1871,17 @@ CLOSE:
 DIV:
  Type: Lexeme
  Direct callees:
-  SPACES
+  (LM) SPACES
  All callees:
-  SPACES
-  WS
+  (LM) SPACES
+  (M ) WS
  Direct callers:
-  Term
+  (N ) Term
  All callers:
-  Atom
-  Expr
-  Sentence
-  Term
+  (N ) Atom
+  (N ) Expr
+  (N ) Sentence
+  (N ) Term
  Start characters:
   [/]
  Expected lexemes:
@@ -1908,9 +1892,9 @@ EOF:
  Direct callees:
  All callees:
  Direct callers:
-  Expr
+  (N ) Expr
  All callers:
-  Expr
+  (N ) Expr
  Start characters:
   [\u0000-\u10ffff]
  Expected lexemes:
@@ -1919,23 +1903,23 @@ EOF:
 Expr:
  Type: Nonterminal
  Direct callees:
-  EOF
-  SPACES
-  Sentence
+  (L ) EOF
+  (LM) SPACES
+  (N ) Sentence
  All callees:
-  Atom
-  CLOSE
-  DIV
-  EOF
-  MINUS
-  MUL
-  NUMBER
-  OPEN
-  PLUS
-  SPACES
-  Sentence
-  Term
-  WS
+  (N ) Atom
+  (L ) CLOSE
+  (L ) DIV
+  (L ) EOF
+  (L ) MINUS
+  (L ) MUL
+  (L ) NUMBER
+  (L ) OPEN
+  (L ) PLUS
+  (LM) SPACES
+  (N ) Sentence
+  (N ) Term
+  (M ) WS
  Direct callers:
  All callers:
  Start characters:
@@ -1946,17 +1930,17 @@ Expr:
 MINUS:
  Type: Lexeme
  Direct callees:
-  SPACES
+  (LM) SPACES
  All callees:
-  SPACES
-  WS
+  (LM) SPACES
+  (M ) WS
  Direct callers:
-  Sentence
+  (N ) Sentence
  All callers:
-  Atom
-  Expr
-  Sentence
-  Term
+  (N ) Atom
+  (N ) Expr
+  (N ) Sentence
+  (N ) Term
  Start characters:
   [-]
  Expected lexemes:
@@ -1965,17 +1949,17 @@ MINUS:
 MUL:
  Type: Lexeme
  Direct callees:
-  SPACES
+  (LM) SPACES
  All callees:
-  SPACES
-  WS
+  (LM) SPACES
+  (M ) WS
  Direct callers:
-  Term
+  (N ) Term
  All callers:
-  Atom
-  Expr
-  Sentence
-  Term
+  (N ) Atom
+  (N ) Expr
+  (N ) Sentence
+  (N ) Term
  Start characters:
   [*]
  Expected lexemes:
@@ -1984,17 +1968,17 @@ MUL:
 NUMBER:
  Type: Lexeme
  Direct callees:
-  SPACES
+  (LM) SPACES
  All callees:
-  SPACES
-  WS
+  (LM) SPACES
+  (M ) WS
  Direct callers:
-  Atom
+  (N ) Atom
  All callers:
-  Atom
-  Expr
-  Sentence
-  Term
+  (N ) Atom
+  (N ) Expr
+  (N ) Sentence
+  (N ) Term
  Start characters:
   [0-9]
  Expected lexemes:
@@ -2003,17 +1987,17 @@ NUMBER:
 OPEN:
  Type: Lexeme
  Direct callees:
-  SPACES
+  (LM) SPACES
  All callees:
-  SPACES
-  WS
+  (LM) SPACES
+  (M ) WS
  Direct callers:
-  Atom
+  (N ) Atom
  All callers:
-  Atom
-  Expr
-  Sentence
-  Term
+  (N ) Atom
+  (N ) Expr
+  (N ) Sentence
+  (N ) Term
  Start characters:
   [(]
  Expected lexemes:
@@ -2022,17 +2006,17 @@ OPEN:
 PLUS:
  Type: Lexeme
  Direct callees:
-  SPACES
+  (LM) SPACES
  All callees:
-  SPACES
-  WS
+  (LM) SPACES
+  (M ) WS
  Direct callers:
-  Sentence
+  (N ) Sentence
  All callers:
-  Atom
-  Expr
-  Sentence
-  Term
+  (N ) Atom
+  (N ) Expr
+  (N ) Sentence
+  (N ) Term
  Start characters:
   [+]
  Expected lexemes:
@@ -2041,30 +2025,30 @@ PLUS:
 SPACES:
  Type: Lexeme & morpheme
  Direct callees:
-  WS
+  (M ) WS
  All callees:
-  WS
+  (M ) WS
  Direct callers:
-  CLOSE
-  DIV
-  Expr
-  MINUS
-  MUL
-  NUMBER
-  OPEN
-  PLUS
+  (L ) CLOSE
+  (L ) DIV
+  (N ) Expr
+  (L ) MINUS
+  (L ) MUL
+  (L ) NUMBER
+  (L ) OPEN
+  (L ) PLUS
  All callers:
-  Atom
-  CLOSE
-  DIV
-  Expr
-  MINUS
-  MUL
-  NUMBER
-  OPEN
-  PLUS
-  Sentence
-  Term
+  (N ) Atom
+  (L ) CLOSE
+  (L ) DIV
+  (N ) Expr
+  (L ) MINUS
+  (L ) MUL
+  (L ) NUMBER
+  (L ) OPEN
+  (L ) PLUS
+  (N ) Sentence
+  (N ) Term
  Start characters:
   [\u0000-\u10ffff]
  Expected lexemes:
@@ -2073,32 +2057,32 @@ SPACES:
 Sentence:
  Type: Nonterminal
  Direct callees:
-  MINUS
-  PLUS
-  Sentence
-  Term
+  (L ) MINUS
+  (L ) PLUS
+  (N ) Sentence
+  (N ) Term
  All callees:
-  Atom
-  CLOSE
-  DIV
-  MINUS
-  MUL
-  NUMBER
-  OPEN
-  PLUS
-  SPACES
-  Sentence
-  Term
-  WS
+  (N ) Atom
+  (L ) CLOSE
+  (L ) DIV
+  (L ) MINUS
+  (L ) MUL
+  (L ) NUMBER
+  (L ) OPEN
+  (L ) PLUS
+  (LM) SPACES
+  (N ) Sentence
+  (N ) Term
+  (M ) WS
  Direct callers:
-  Atom
-  Expr
-  Sentence
+  (N ) Atom
+  (N ) Expr
+  (N ) Sentence
  All callers:
-  Atom
-  Expr
-  Sentence
-  Term
+  (N ) Atom
+  (N ) Expr
+  (N ) Sentence
+  (N ) Term
  Start characters:
   [(][0-9]
  Expected lexemes:
@@ -2107,31 +2091,31 @@ Sentence:
 Term:
  Type: Nonterminal
  Direct callees:
-  Atom
-  DIV
-  MUL
-  Term
+  (N ) Atom
+  (L ) DIV
+  (L ) MUL
+  (N ) Term
  All callees:
-  Atom
-  CLOSE
-  DIV
-  MINUS
-  MUL
-  NUMBER
-  OPEN
-  PLUS
-  SPACES
-  Sentence
-  Term
-  WS
+  (N ) Atom
+  (L ) CLOSE
+  (L ) DIV
+  (L ) MINUS
+  (L ) MUL
+  (L ) NUMBER
+  (L ) OPEN
+  (L ) PLUS
+  (LM) SPACES
+  (N ) Sentence
+  (N ) Term
+  (M ) WS
  Direct callers:
-  Sentence
-  Term
+  (N ) Sentence
+  (N ) Term
  All callers:
-  Atom
-  Expr
-  Sentence
-  Term
+  (N ) Atom
+  (N ) Expr
+  (N ) Sentence
+  (N ) Term
  Start characters:
   [(][0-9]
  Expected lexemes:
@@ -2142,20 +2126,20 @@ WS:
  Direct callees:
  All callees:
  Direct callers:
-  SPACES
+  (LM) SPACES
  All callers:
-  Atom
-  CLOSE
-  DIV
-  Expr
-  MINUS
-  MUL
-  NUMBER
-  OPEN
-  PLUS
-  SPACES
-  Sentence
-  Term
+  (N ) Atom
+  (L ) CLOSE
+  (L ) DIV
+  (N ) Expr
+  (L ) MINUS
+  (L ) MUL
+  (L ) NUMBER
+  (L ) OPEN
+  (L ) PLUS
+  (LM) SPACES
+  (N ) Sentence
+  (N ) Term
  Start characters:
   [\t-\n][\r][ ]
  Expected lexemes:

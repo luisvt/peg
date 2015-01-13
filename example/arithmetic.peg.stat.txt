@@ -7,30 +7,30 @@ Rules:
 Atom:
  Type: Nonterminal
  Direct callees:
-  CLOSE
-  NUMBER
-  OPEN
-  Sentence
+  (L ) CLOSE
+  (L ) NUMBER
+  (L ) OPEN
+  (N ) Sentence
  All callees:
-  Atom
-  CLOSE
-  DIV
-  MINUS
-  MUL
-  NUMBER
-  OPEN
-  PLUS
-  SPACES
-  Sentence
-  Term
-  WS
+  (N ) Atom
+  (L ) CLOSE
+  (L ) DIV
+  (L ) MINUS
+  (L ) MUL
+  (L ) NUMBER
+  (L ) OPEN
+  (L ) PLUS
+  (LM) SPACES
+  (N ) Sentence
+  (N ) Term
+  (M ) WS
  Direct callers:
-  Term
+  (N ) Term
  All callers:
-  Atom
-  Expr
-  Sentence
-  Term
+  (N ) Atom
+  (N ) Expr
+  (N ) Sentence
+  (N ) Term
  Start characters:
   [(][0-9]
  Expected lexemes:
@@ -39,17 +39,17 @@ Atom:
 CLOSE:
  Type: Lexeme
  Direct callees:
-  SPACES
+  (LM) SPACES
  All callees:
-  SPACES
-  WS
+  (LM) SPACES
+  (M ) WS
  Direct callers:
-  Atom
+  (N ) Atom
  All callers:
-  Atom
-  Expr
-  Sentence
-  Term
+  (N ) Atom
+  (N ) Expr
+  (N ) Sentence
+  (N ) Term
  Start characters:
   [)]
  Expected lexemes:
@@ -58,17 +58,17 @@ CLOSE:
 DIV:
  Type: Lexeme
  Direct callees:
-  SPACES
+  (LM) SPACES
  All callees:
-  SPACES
-  WS
+  (LM) SPACES
+  (M ) WS
  Direct callers:
-  Term
+  (N ) Term
  All callers:
-  Atom
-  Expr
-  Sentence
-  Term
+  (N ) Atom
+  (N ) Expr
+  (N ) Sentence
+  (N ) Term
  Start characters:
   [/]
  Expected lexemes:
@@ -79,9 +79,9 @@ EOF:
  Direct callees:
  All callees:
  Direct callers:
-  Expr
+  (N ) Expr
  All callers:
-  Expr
+  (N ) Expr
  Start characters:
   [\u0000-\u10ffff]
  Expected lexemes:
@@ -90,23 +90,23 @@ EOF:
 Expr:
  Type: Nonterminal
  Direct callees:
-  EOF
-  SPACES
-  Sentence
+  (L ) EOF
+  (LM) SPACES
+  (N ) Sentence
  All callees:
-  Atom
-  CLOSE
-  DIV
-  EOF
-  MINUS
-  MUL
-  NUMBER
-  OPEN
-  PLUS
-  SPACES
-  Sentence
-  Term
-  WS
+  (N ) Atom
+  (L ) CLOSE
+  (L ) DIV
+  (L ) EOF
+  (L ) MINUS
+  (L ) MUL
+  (L ) NUMBER
+  (L ) OPEN
+  (L ) PLUS
+  (LM) SPACES
+  (N ) Sentence
+  (N ) Term
+  (M ) WS
  Direct callers:
  All callers:
  Start characters:
@@ -117,17 +117,17 @@ Expr:
 MINUS:
  Type: Lexeme
  Direct callees:
-  SPACES
+  (LM) SPACES
  All callees:
-  SPACES
-  WS
+  (LM) SPACES
+  (M ) WS
  Direct callers:
-  Sentence
+  (N ) Sentence
  All callers:
-  Atom
-  Expr
-  Sentence
-  Term
+  (N ) Atom
+  (N ) Expr
+  (N ) Sentence
+  (N ) Term
  Start characters:
   [-]
  Expected lexemes:
@@ -136,17 +136,17 @@ MINUS:
 MUL:
  Type: Lexeme
  Direct callees:
-  SPACES
+  (LM) SPACES
  All callees:
-  SPACES
-  WS
+  (LM) SPACES
+  (M ) WS
  Direct callers:
-  Term
+  (N ) Term
  All callers:
-  Atom
-  Expr
-  Sentence
-  Term
+  (N ) Atom
+  (N ) Expr
+  (N ) Sentence
+  (N ) Term
  Start characters:
   [*]
  Expected lexemes:
@@ -155,17 +155,17 @@ MUL:
 NUMBER:
  Type: Lexeme
  Direct callees:
-  SPACES
+  (LM) SPACES
  All callees:
-  SPACES
-  WS
+  (LM) SPACES
+  (M ) WS
  Direct callers:
-  Atom
+  (N ) Atom
  All callers:
-  Atom
-  Expr
-  Sentence
-  Term
+  (N ) Atom
+  (N ) Expr
+  (N ) Sentence
+  (N ) Term
  Start characters:
   [0-9]
  Expected lexemes:
@@ -174,17 +174,17 @@ NUMBER:
 OPEN:
  Type: Lexeme
  Direct callees:
-  SPACES
+  (LM) SPACES
  All callees:
-  SPACES
-  WS
+  (LM) SPACES
+  (M ) WS
  Direct callers:
-  Atom
+  (N ) Atom
  All callers:
-  Atom
-  Expr
-  Sentence
-  Term
+  (N ) Atom
+  (N ) Expr
+  (N ) Sentence
+  (N ) Term
  Start characters:
   [(]
  Expected lexemes:
@@ -193,17 +193,17 @@ OPEN:
 PLUS:
  Type: Lexeme
  Direct callees:
-  SPACES
+  (LM) SPACES
  All callees:
-  SPACES
-  WS
+  (LM) SPACES
+  (M ) WS
  Direct callers:
-  Sentence
+  (N ) Sentence
  All callers:
-  Atom
-  Expr
-  Sentence
-  Term
+  (N ) Atom
+  (N ) Expr
+  (N ) Sentence
+  (N ) Term
  Start characters:
   [+]
  Expected lexemes:
@@ -212,30 +212,30 @@ PLUS:
 SPACES:
  Type: Lexeme & morpheme
  Direct callees:
-  WS
+  (M ) WS
  All callees:
-  WS
+  (M ) WS
  Direct callers:
-  CLOSE
-  DIV
-  Expr
-  MINUS
-  MUL
-  NUMBER
-  OPEN
-  PLUS
+  (L ) CLOSE
+  (L ) DIV
+  (N ) Expr
+  (L ) MINUS
+  (L ) MUL
+  (L ) NUMBER
+  (L ) OPEN
+  (L ) PLUS
  All callers:
-  Atom
-  CLOSE
-  DIV
-  Expr
-  MINUS
-  MUL
-  NUMBER
-  OPEN
-  PLUS
-  Sentence
-  Term
+  (N ) Atom
+  (L ) CLOSE
+  (L ) DIV
+  (N ) Expr
+  (L ) MINUS
+  (L ) MUL
+  (L ) NUMBER
+  (L ) OPEN
+  (L ) PLUS
+  (N ) Sentence
+  (N ) Term
  Start characters:
   [\u0000-\u10ffff]
  Expected lexemes:
@@ -244,32 +244,32 @@ SPACES:
 Sentence:
  Type: Nonterminal
  Direct callees:
-  MINUS
-  PLUS
-  Sentence
-  Term
+  (L ) MINUS
+  (L ) PLUS
+  (N ) Sentence
+  (N ) Term
  All callees:
-  Atom
-  CLOSE
-  DIV
-  MINUS
-  MUL
-  NUMBER
-  OPEN
-  PLUS
-  SPACES
-  Sentence
-  Term
-  WS
+  (N ) Atom
+  (L ) CLOSE
+  (L ) DIV
+  (L ) MINUS
+  (L ) MUL
+  (L ) NUMBER
+  (L ) OPEN
+  (L ) PLUS
+  (LM) SPACES
+  (N ) Sentence
+  (N ) Term
+  (M ) WS
  Direct callers:
-  Atom
-  Expr
-  Sentence
+  (N ) Atom
+  (N ) Expr
+  (N ) Sentence
  All callers:
-  Atom
-  Expr
-  Sentence
-  Term
+  (N ) Atom
+  (N ) Expr
+  (N ) Sentence
+  (N ) Term
  Start characters:
   [(][0-9]
  Expected lexemes:
@@ -278,31 +278,31 @@ Sentence:
 Term:
  Type: Nonterminal
  Direct callees:
-  Atom
-  DIV
-  MUL
-  Term
+  (N ) Atom
+  (L ) DIV
+  (L ) MUL
+  (N ) Term
  All callees:
-  Atom
-  CLOSE
-  DIV
-  MINUS
-  MUL
-  NUMBER
-  OPEN
-  PLUS
-  SPACES
-  Sentence
-  Term
-  WS
+  (N ) Atom
+  (L ) CLOSE
+  (L ) DIV
+  (L ) MINUS
+  (L ) MUL
+  (L ) NUMBER
+  (L ) OPEN
+  (L ) PLUS
+  (LM) SPACES
+  (N ) Sentence
+  (N ) Term
+  (M ) WS
  Direct callers:
-  Sentence
-  Term
+  (N ) Sentence
+  (N ) Term
  All callers:
-  Atom
-  Expr
-  Sentence
-  Term
+  (N ) Atom
+  (N ) Expr
+  (N ) Sentence
+  (N ) Term
  Start characters:
   [(][0-9]
  Expected lexemes:
@@ -313,20 +313,20 @@ WS:
  Direct callees:
  All callees:
  Direct callers:
-  SPACES
+  (LM) SPACES
  All callers:
-  Atom
-  CLOSE
-  DIV
-  Expr
-  MINUS
-  MUL
-  NUMBER
-  OPEN
-  PLUS
-  SPACES
-  Sentence
-  Term
+  (N ) Atom
+  (L ) CLOSE
+  (L ) DIV
+  (N ) Expr
+  (L ) MINUS
+  (L ) MUL
+  (L ) NUMBER
+  (L ) OPEN
+  (L ) PLUS
+  (LM) SPACES
+  (N ) Sentence
+  (N ) Term
  Start characters:
   [\t-\n][\r][ ]
  Expected lexemes:

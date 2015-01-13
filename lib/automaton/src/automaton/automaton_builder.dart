@@ -3,107 +3,98 @@ part of peg.automaton.automaton;
 class AutomatonBuilder extends UnifyingExpressionVisitor {
   Map<RuleExpression, ExpressionState> _ruleEndStates;
 
-  ExpressionState _endState;
+  ExpressionStates _nextStates;
+
+  ExpressionStates _prevStates;
 
   Set<RuleExpression> _processed;
-
-  ExpressionState _startState;
 
   Automaton build(ProductionRule productionRule) {
     if (productionRule == null) {
       throw new ArgumentError("productionRule: $productionRule");
     }
 
-    _startState = new ExpressionState();
-    _endState = new ExpressionState();
+    _nextStates = new ExpressionStates([new ExpressionState()]);
+    _prevStates = new ExpressionStates([new ExpressionState()]);
     _processed = new Set<RuleExpression>();
     _ruleEndStates = <RuleExpression, ExpressionState>{};
     productionRule.expression.accept(this);
-    var automaton = new Automaton(_startState, _endState);
+    var automaton;
     return automaton;
   }
 
   Object visitAndPredicate(AndPredicateExpression expression) {
-    var lastStates = _startStates;
-    expression.expression.accept(this);
-    for (var state in _startStates) {
-      state.flag |= ExpressionState.FLAG_PREDICATE_ENDS;
-    }
-
-    // TODO:
-
-    _startStates = lastStates;
     return null;
   }
 
   Object visitAnyCharacter(AnyCharacterExpression expression) {
-    _startState.flag |= ExpressionState.FLAG_EXRESSION_STARTS;
-    _endState = _addTransition2(_startState, _endState, <RangeList>[Expression.unicodeGroup]);
     return null;
   }
 
   Object visitCharacterClass(CharacterClassExpression expression) {
-    _startState.flag |= ExpressionState.FLAG_EXRESSION_STARTS;
-    _endState = _addTransition2(_startState, _endState, expression.ranges.groups);
     return null;
   }
 
   Object visitLiteral(LiteralExpression expression) {
     var text = expression.text;
     if (text.isEmpty) {
-      _startState.flag |= ExpressionState.FLAG_EXRESSION_STARTS;
-      _endState = _addEmptyTransition2(_startState, _endState);
+      _prevStates = _addEmptyTransition(_prevStates, _nextStates);
     } else {
       var codePoints = toRunes(text);
       var length = codePoints.length;
-      ExpressionState end;
-      var start = _startState;
+      ExpressionStates nextStates;
       for (var i = 0; i < length; i++) {
         var codePoint = codePoints[i];
         if (i == 0) {
-          start.flag |= ExpressionState.FLAG_EXRESSION_STARTS;
         }
 
         if (i == length - 1) {
-          end = _endState;
+          nextStates = _nextStates;
         } else {
-          end = null;
+          nextStates = null;
         }
 
-        _endState = _addTransition2(start, end, <RangeList>[new RangeList(codePoint, codePoint)]);
-        start = _endState;
+        _prevStates = _addTransition(_prevStates, nextStates, <RangeList>[new RangeList(codePoint, codePoint)]);
       }
     }
 
+    _nextStates = null;
     return null;
   }
 
   Object visitNotPredicate(NotPredicateExpression expression) {
-    var endState = _endState;
-    _endState = null;
-    expression.expression.accept(this);
-    // _endState.flag |= FAILED
-
-
-    state.flag |= ExpressionState.FLAG_PREDICATE_ENDS;
     return null;
   }
 
   Object visitOneOrMore(OneOrMoreExpression expression) {
     expression.expression.accept(this);
-    _addTransitions2(_endState, _endState);
     return null;
   }
 
   Object visitOptional(OptionalExpression expression) {
+    var nextStates = _nextStates;
+    var prevStates = _prevStates;
     expression.expression.accept(this);
-    _addEmptyTransition2(_startState, _endState);
+    if (nextStates == null) {
+      _prevStates.addAll(prevStates);
+    } else {
+      _addEmptyTransition(prevStates, nextStates);
+    }
+
     return null;
   }
 
   Object visitOrderedChoice(OrderedChoiceExpression expression) {
+    if (_nextStates == null) {
+      _nextStates = new ExpressionStates([new ExpressionState()]);
+    }
+
+    var nextStates = _nextStates;
+    var prevStates = _prevStates;
     for (var child in expression.expressions) {
       child.accept(this);
+      _nextStates = nextStates;
+      _prevStates = prevStates;
     }
 
     return null;
@@ -111,137 +102,75 @@ class AutomatonBuilder extends UnifyingExpressionVisitor {
 
   Object visitRule(RuleExpression expression) {
     if (_processed.contains(expression)) {
-      if (_endState == null) {
-        _endState = _ruleEndStates[expression];
-      }
-
       return null;
-    }
-
-    _processed.add(expression);
-    var rule = expression.rule;
-    if (rule != null) {
-      var ruleExpression = rule.expression;
-      if (_endState == null) {
-        _endState = new ExpressionState();
-      }
-
-      _ruleEndStates[expression] = _endState;
-      ruleExpression.accept(this);
     }
 
     return null;
   }
 
   Object visitSequence(SequenceExpression expression) {
-    var endState = _endState;
-    var startState = _startState;
     var expressions = expression.expressions;
     var length = expressions.length;
-    _endState = null;
+    var nextStates = _nextStates;
     for (var i = 0; i < length; i++) {
+      var child = expressions[i];
       if (i == length - 1) {
-        _endState = endState;
+        _nextStates = nextStates;
       } else {
-        _endState = null;
+        _nextStates = null;
       }
 
-      var child = expressions[i];
       child.accept(this);
-      _startState = _endState;
     }
 
-    _startState = startState;
     return null;
   }
 
   Object visitZeroOrMore(ZeroOrMoreExpression expression) {
+    var nextStates = _nextStates;
+    var prevStates = _prevStates;
     expression.expression.accept(this);
-    _addTransitions2(_endState, _endState);
-    _addEmptyTransition2(_startState, _endState);
+    _nextStates = _prevStates;
+    expression.expression.accept(this);
+
+
+
+    if (nextStates == null) {
+      _prevStates.addAll(prevStates);
+    } else {
+      _addEmptyTransition(prevStates, nextStates);
+    }
+
     return null;
   }
 
-  void _addEmptyTransition(ExpressionStates receivers, ExpressionState state) {
-    for (var receiver in receivers) {
-      receiver.addEmptyTransition(state);
-    }
-  }
-
-  ExpressionState _addEmptyTransition2(ExpressionState start, ExpressionState end) {
-    if (end == null) {
-      end = new ExpressionState();
+  ExpressionStates _addEmptyTransition(ExpressionStates prevStates, ExpressionStates nextStates) {
+    if (nextStates == null) {
+      nextStates = new ExpressionStates([new ExpressionState()]);
     }
 
-    start.addEmptyTransition(end);
-    return end;
-  }
-
-  ExpressionState _addTransition2(ExpressionState start, ExpressionState end, Iterable<RangeList> ranges) {
-    if (end == null) {
-      end = new ExpressionState();
-    }
-
-    for (var range in ranges) {
-      start.addTransition(range, end);
-    }
-
-    return end;
-  }
-
-  void _addTransitions2(ExpressionState start, ExpressionState end) {
-    for (var group in start.symbolTransitions.groups) {
-      for (var state in group.key) {
-        end.addTransition(group, state);
+    for (var prevState in prevStates) {
+      for (var nextState in nextStates) {
+        prevState.addEmptyTransition(nextState);
       }
     }
 
-    for (var state in start.emptyTransition) {
-      end.addEmptyTransition(state);
-    }
-
-    for (var group in start.unreachableTransitions.groups) {
-      for (var state in group.key) {
-        end.addTransition(group, state);
-      }
-    }
+    return nextStates;
   }
 
-  void _addTransition(ExpressionStates receivers, Iterable<RangeList> ranges, ExpressionState state) {
-    for (var receiver in receivers) {
+  ExpressionStates _addTransition(ExpressionStates prevStates, ExpressionStates nextStates, List<RangeList> ranges) {
+    if (nextStates == null) {
+      nextStates = new ExpressionStates([new ExpressionState()]);
+    }
+
+    for (var prevState in prevStates) {
       for (var range in ranges) {
-        receiver.addTransition(range, state);
-      }
-    }
-  }
-
-  void _addTransitions(ExpressionStates receivers, ExpressionStates senders) {
-    for (var receiver in receivers) {
-      for (var sender in senders) {
-        for (var group in sender.symbolTransitions.groups) {
-          for (var state in group.key) {
-            receiver.addTransition(group, state);
-          }
+        for (var nextState in nextStates) {
+          prevState.addTransition(range, nextState);
         }
       }
     }
 
-    for (var receiver in receivers) {
-      for (var sender in senders) {
-        for (var state in sender.emptyTransition) {
-          receiver.addEmptyTransition(state);
-        }
-      }
-    }
-
-    for (var receiver in receivers) {
-      for (var sender in senders) {
-        for (var group in sender.unreachableTransitions.groups) {
-          for (var state in group.key) {
-            receiver.addTransition(group, state);
-          }
-        }
-      }
-    }
+    return nextStates;
   }
 }

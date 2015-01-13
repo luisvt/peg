@@ -3,9 +3,7 @@ library peg.grammar.expressions;
 import 'package:lists/lists.dart';
 import 'package:peg/automaton/automaton.dart';
 import 'package:peg/grammar/production_rule.dart';
-import 'package:peg/utils/utils.dart';
 import 'package:peg/grammar/expression_visitors.dart';
-import 'package:strings/strings.dart';
 
 part 'src/expressions/and_predicate_expression.dart';
 part 'src/expressions/any_character_expression.dart';

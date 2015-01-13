@@ -2,6 +2,7 @@ import "dart:io";
 import "package:args_helper/args_helper.dart";
 import 'package:path/path.dart' as path;
 import 'package:peg/grammar/grammar.dart';
+import 'package:peg/grammar/production_rule.dart';
 import 'package:peg/grammar_analyzer/grammar_analyzer.dart';
 import 'package:peg/grammar_reporter/grammar_reporter.dart';
 import 'package:peg/general_parser/parser_generator.dart';
@@ -118,6 +119,23 @@ class Program {
   }
 
   void _report(GrammarReporter reporter, String level) {
+    String ruleAndKind(ProductionRule rule) {
+      var kind = "N ";
+      if (rule.isLexical) {
+        if (rule.isLexeme && rule.isMorpheme) {
+          kind = "LM";
+        } else if (rule.isLexeme) {
+          kind = "L ";
+        } else if (rule.isMorpheme) {
+          kind = "M ";
+        } else {
+          kind = "  ";
+        }
+      }
+
+      return "($kind) ${rule.name}";
+    }
+
     var detail = level == 'high';
     if (detail) {
       print('--------------------------------');
@@ -145,28 +163,28 @@ class Program {
         var callees = rule.directCallees.toList();
         callees.sort((a, b) => a.name.compareTo(b.name));
         for (var callee in callees) {
-          print('  ${callee.name}');
+          print('  ${ruleAndKind(callee)}');
         }
 
         print(' All callees:');
         callees = rule.allCallees.toList();
         callees.sort((a, b) => a.name.compareTo(b.name));
         for (var callee in callees) {
-          print('  ${callee.name}');
+          print('  ${ruleAndKind(callee)}');
         }
 
         print(' Direct callers:');
         var callers = rule.directCallers.toList();
         callers.sort((a, b) => a.name.compareTo(b.name));
         for (var caller in callers) {
-          print('  ${caller.name}');
+          print('  ${ruleAndKind(caller)}');
         }
 
         print(' All callers:');
         callers = rule.allCallers.toList();
         callers.sort((a, b) => a.name.compareTo(b.name));
         for (var caller in callers) {
-          print('  ${caller.name}');
+          print('  ${ruleAndKind(caller)}');
         }
 
         print(' Start characters:');
