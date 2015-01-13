@@ -38,6 +38,7 @@ class FrontendAnalyzer {
     new ExpressionWithActionsResolver().resolve(startingRules);
 
 
+    /*
     // Exprerimental
     for (var rule in rules) {
       if (rule.directCallers.length == 0) {
@@ -45,5 +46,6 @@ class FrontendAnalyzer {
         builder.build(rule);
       }
     }
+    */
   }
 }
