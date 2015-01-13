@@ -1,6 +1,10 @@
+## 0.0.35
+
+- Fixed minor bugs with error messages  
+
 ## 0.0.34
 
-- Fixed bug in `StartCharactersResolver` 
+- Fixed bug in `StartCharactersResolver`
 
 ## 0.0.33
 
