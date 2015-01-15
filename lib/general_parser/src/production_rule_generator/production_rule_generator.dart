@@ -9,6 +9,8 @@ class ProductionRuleGenerator extends DeclarationGenerator {
 
   static const String _CACHE_POS = ParserClassGenerator.CACHE_POS;
 
+  static const String _CACHEABLE = ParserClassGenerator.CACHEABLE;
+
   static const String _CURSOR = ParserClassGenerator.CURSOR;
 
   static const String _END_TOKEN = MethodEndTokenGenerator.NAME;
@@ -51,7 +53,7 @@ $_BEGIN_TOKEN({{TOKEN_ID}});''';
 dynamic {{NAME}}() {
   {{#COMMENTS}}
   {{#ENTER}}
-  {{#VARIABLES}}        
+  {{#VARIABLES}}          
   var pos = $_CURSOR;    
   if(pos <= $_CACHE_POS) {
     $_RESULT = $_GET_FROM_CACHE({{RULE_ID}});
@@ -62,7 +64,9 @@ dynamic {{NAME}}() {
   }  
   {{#TOKEN_PROLOG}}    
   {{#EXPRESSION}}
-  $_ADD_TO_CACHE($_RESULT, pos, {{RULE_ID}});
+  if ($_CACHEABLE[{{RULE_ID}}]) {
+    $_ADD_TO_CACHE($_RESULT, pos, {{RULE_ID}});
+  }  
   {{#TOKEN_EPILOG}}
   {{#LEAVE}}        
   return $_RESULT;

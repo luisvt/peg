@@ -3,7 +3,7 @@ part of peg.grammar.expressions;
 class OrderedChoiceExpression extends ListExpression {
   int lookaheadId = -1;
 
-  OrderedChoiceExpression(List<Expression> expressions) : super(expressions) {
+  OrderedChoiceExpression(List<SequenceExpression> expressions) : super(expressions) {
     for (var expression in expressions) {
       if (expression is! SequenceExpression) {
         throw new StateError('The expression list contains illegal expression.');
@@ -11,7 +11,7 @@ class OrderedChoiceExpression extends ListExpression {
     }
   }
 
-  List<Expression> get expressions {
+  List<SequenceExpression> get expressions {
     return super.expressions;
   }
 

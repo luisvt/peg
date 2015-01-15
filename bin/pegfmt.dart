@@ -5,6 +5,7 @@ import 'package:peg/grammar/grammar.dart';
 import 'package:peg/grammar/expressions.dart';
 import 'package:peg/grammar/expression_visitors.dart';
 import 'package:peg/grammar/production_rule.dart';
+import 'package:peg/optimizer/optimizer.dart';
 import 'package:peg/utils/utils.dart';
 import 'package:text/text.dart';
 import "package:yaml/yaml.dart" as yaml;
@@ -22,6 +23,22 @@ class Program {
     var lexemes = <ProductionRule>[];
     var morphemes = <ProductionRule>[];
     _sort(grammar.productionRules, sort, nonterminals, lexemes, morphemes);
+    var text = _print(grammar, nonterminals, lexemes, morphemes);
+    if (output != null) {
+      new File(output).writeAsStringSync(text);
+    } else {
+      print(text);
+    }
+  }
+
+  void recursionCommand(String filename, {String output, String sort}) {
+    var parser = _getParser(filename);
+    var grammar = _parseGrammar(parser);
+    var rules = new LeftRecursionRemover().remove(grammar.productionRules);
+    var nonterminals = <ProductionRule>[];
+    var lexemes = <ProductionRule>[];
+    var morphemes = <ProductionRule>[];
+    _sort(rules, sort, nonterminals, lexemes, morphemes);
     var text = _print(grammar, nonterminals, lexemes, morphemes);
     if (output != null) {
       new File(output).writeAsStringSync(text);
@@ -326,7 +343,25 @@ name: pegfmt
 description: PEG (Parsing expression grammar) formatter.
 commands:
   format:
+    aliases: [fmt]
     description: Format PEG grammar.
+    options:      
+      output:
+        help: The output file name.
+        abbr: o
+      sort:       
+        help: Sort order of nonterminals.
+        allowed: [call, name, none]
+        defaultsTo: call
+        abbr: s
+    rest:
+      allowMultiple: false
+      help: PEG grammar file
+      name: pegfile
+      required: true
+  recursion:
+    aliases: [rec]
+    description: Removes direct left recursion in PEG grammar.
     options:      
       output:
         help: The output file name.

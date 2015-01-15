@@ -9,6 +9,8 @@ class MethodGetFromCacheGenerator extends DeclarationGenerator {
 
   static const String _CACHE_STATE = ParserClassGenerator.CACHE_STATE;
 
+  static const String _CACHEABLE = ParserClassGenerator.CACHEABLE;
+
   static const String _CH = ParserClassGenerator.CH;
 
   static const String _CURSOR = ParserClassGenerator.CURSOR;
@@ -21,10 +23,20 @@ class MethodGetFromCacheGenerator extends DeclarationGenerator {
 
   static const String _SUCCESS = ParserClassGenerator.SUCCESS;
 
+  static const String _TRACK_POS = ParserClassGenerator.TRACK_POS;
+
   static const String _TEMPLATE = "TEMPLATE";
 
   static final String _template = '''
 dynamic $NAME(int id) {  
+  if (!$_CACHEABLE[id]) {
+    if ($_TRACK_POS[id] < $_CURSOR) {
+      $_TRACK_POS[id] = $_CURSOR;
+      return null;
+    } else {
+      $_CACHEABLE[id] = true;            
+    }
+  }  
   var result = $_CACHE[$_CURSOR];
   if (result == null) {
     return null;

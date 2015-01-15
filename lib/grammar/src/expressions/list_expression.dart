@@ -12,6 +12,10 @@ abstract class ListExpression extends Expression {
       throw new StateError('The expression list contains no elements');
     }
 
+    for (var expression in expressions) {
+      expression.parent = this;
+    }
+
     _expressions = expressions;
   }
 

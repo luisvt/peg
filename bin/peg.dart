@@ -293,7 +293,7 @@ commands:
       memoize:
         help: Memoize the intermediate results of all invocations of the mutually recursive parsing functions.
         isFlag: true
-        defaultsTo: false
+        defaultsTo: true
         abbr: m
       name:
         help: The class name of the generated parser.
@@ -317,7 +317,7 @@ commands:
       memoize:
         help: Memoize the intermediate results of all mutually recursive production rules.
         isFlag: true
-        defaultsTo: false
+        defaultsTo: true
         abbr: m
       name:
         help: The class name of the generated parser.

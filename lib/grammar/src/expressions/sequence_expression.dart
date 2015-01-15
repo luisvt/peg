@@ -5,7 +5,7 @@ class SequenceExpression extends ListExpression {
 
   SequenceExpression(List<Expression> expressions) : super(expressions) {
     for (var expression in expressions) {
-      if (expression == null || expression is! Expression) {
+      if (expression == null || expression is! Expression || expression is SequenceExpression) {
         throw new StateError('The expression list contains illegal expression');
       }
     }

@@ -18,6 +18,7 @@ The generated parsers intended for embedding into programs with the time-critica
 
 **Features:**
 
+- Elimination of direct left recursion (via `pegfmt` tool)
 - Generation of detailed comments
 - Grammar analytics
 - Grammar reporting
@@ -30,6 +31,52 @@ The generated parsers intended for embedding into programs with the time-critica
 - Printing grammar
 - Symbols transitions (upcomming)
 - Terminal and nonterminal symbol recognition
+
+**Elimination of direct left recursion (exprerimental)**
+
+Grammar with direct left recursion can be rewritten with `pegfmt` tool.  
+Suppored expressions:
+
+```
+# Original
+A <- A a
+
+# Rewritten
+A <- a+
+
+# Original
+A <- A a / b
+
+# Rewritten
+A <- b A1
+A1 <- a A1 / ''
+
+# Original
+A <- b / A a
+
+# Rewritten
+A <- b A1
+A1 <- a A1 / ''
+```
+
+Limitation:
+
+Expressions that starts with recursion should not contains actions in grammar before rewriting them.  
+They (actions) should be added after rewriting grammar.
+
+Eg.
+
+```
+# Semantic variable `$1` does not reffers to `A` after the rewriting.
+# Before 
+A <-
+  A a { $$ = $1; # UNSAFE }
+  / b { $$ = $1; # SAFE }
+
+# After 
+A <- b { $$ = $1; # SAFE } A1
+A1 <- a A1 / ''
+```
 
 **Error detection**
 
@@ -97,11 +144,9 @@ Arithmetic grammar
 {{example/arithmetic.peg}}
 ```
 
-Source code of the generated parser for `arithmetic grammar`
+Source code of the generated parser for `arithmetic grammar` 
 
-Such (as an arithmetic) grammars parsed faster with a memoization. 
-
-`peg general --comment --lookahead --memoize arithmetic.peg` 
+`peg general --comment arithmetic.peg` 
 
 ```dart
 {{example/arithmetic_parser.dart}}

@@ -44,4 +44,6 @@
 0.0.33 Added the binary search algorithm to method `getState` (determiner of the current state through the symbol transitions) in a generated `general` parsers. This feature improves the performance of the parsing of a complex grammar with a wide range of used input symbols
 0.0.34 Fixed bug in `StartCharactersResolver`
 0.0.35 Fixed minor bugs with error messages
-0.0.36 Changes in `MethodFailureGenerator`. Improves the handling errors in method `_failure`. Error messages now more informative    
+0.0.36 Changes in `MethodFailureGenerator`. Improves the handling errors in method `_failure`. Error messages now more informative
+0.0.37 Experimental feature. Elimination of the direct left recursion via the grammar formatter `pegfmt`. Eg. `pub global run peg:pegfmt recursion grammar.peg`
+    

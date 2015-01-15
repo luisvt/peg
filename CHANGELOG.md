@@ -1,6 +1,14 @@
+## 
+
+- 
+
+## 0.0.37
+
+- Experimental feature. Elimination of the direct left recursion via the grammar formatter `pegfmt`. Eg. `pub global run peg:pegfmt recursion grammar.peg`
+
 ## 0.0.36
 
-- Changes in `MethodFailureGenerator`. Improves the handling errors in method `_failure`. Error messages now more informative    
+- Changes in `MethodFailureGenerator`. Improves the handling errors in method `_failure`. Error messages now more informative
 
 ## 0.0.35
 

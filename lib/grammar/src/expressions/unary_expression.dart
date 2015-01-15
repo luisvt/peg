@@ -8,6 +8,7 @@ abstract class UnaryExpression extends Expression {
       throw new ArgumentError('expression: $expression');
     }
 
+    expression.parent = this;
     _expression = expression;
   }
 

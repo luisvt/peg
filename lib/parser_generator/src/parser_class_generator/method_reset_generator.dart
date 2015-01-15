@@ -11,6 +11,8 @@ class MethodResetGenerator extends DeclarationGenerator {
 
   static const String _CACHE_STATE = ParserClassGenerator.CACHE_STATE;
 
+  static const String _CACHEABLE = ParserClassGenerator.CACHEABLE;
+
   static const String _CH = ParserClassGenerator.CH;
 
   static const String _CURSOR = ParserClassGenerator.CURSOR;
@@ -39,6 +41,8 @@ class MethodResetGenerator extends DeclarationGenerator {
 
   static const String _TOKEN_START = ParserClassGenerator.TOKEN_START;
 
+  static const String _TRACK_POS = ParserClassGenerator.TRACK_POS;
+
   static const String _TEMPLATE = "TEMPLATE";
 
   static final String _template = '''
@@ -54,6 +58,7 @@ void $NAME(int pos) {
   $_CACHE_POS = -1;
   $_CACHE_RULE = new List($_INPUT_LEN + 1);
   $_CACHE_STATE = new List.filled((($_INPUT_LEN + 1) >> 5) + 1, 0);
+  $_CACHEABLE = new List<bool>.filled({{RULE_COUNT}}, false);
   $_CH = $_EOF;
   $_ERRORS = <{{ERROR_CLASS}}>[];   
   $_EXPECTED = <String>[];
@@ -63,6 +68,7 @@ void $NAME(int pos) {
   $_TOKEN = null;
   $_TOKEN_LEVEL = 0;
   $_TOKEN_START = null;
+  $_TRACK_POS = new List<int>.filled({{RULE_COUNT}}, 0);
   if ($_CURSOR < $_INPUT_LEN) {
     $_CH = $_INPUT[$_CURSOR];
   }
@@ -72,7 +78,9 @@ void $NAME(int pos) {
 
   final ParserClassGenerator parserClassGenerator;
 
-  MethodResetGenerator(this.parserClassGenerator) {
+  final int ruleCount;
+
+  MethodResetGenerator(this.parserClassGenerator, this.ruleCount) {
     if (parserClassGenerator == null) {
       throw new ArgumentError("parserClassGenerator: $parserClassGenerator");
     }
@@ -86,6 +94,7 @@ void $NAME(int pos) {
     var block = getTemplateBlock(_TEMPLATE);
     var parserName = parserClassGenerator.name;
     var errorClass = ParserErrorClassGenerator.getName(parserName);
+    block.assign("RULE_COUNT", ruleCount + 1);
     block.assign("ERROR_CLASS", errorClass);
     return block.process();
   }

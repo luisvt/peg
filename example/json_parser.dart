@@ -141,6 +141,8 @@ class JsonParser {
   
   List<int> _cacheState;
   
+  List<bool> _cacheable;
+  
   int _ch;
   
   int _cursor;
@@ -164,6 +166,8 @@ class JsonParser {
   int _tokenLevel;
   
   int _tokenStart;
+  
+  List<int> _trackPos;
   
   bool success;
   
@@ -276,6 +280,14 @@ class JsonParser {
   }
   
   dynamic _getFromCache(int id) {  
+    if (!_cacheable[id]) {
+      if (_trackPos[id] < _cursor) {
+        _trackPos[id] = _cursor;
+        return null;
+      } else {
+        _cacheable[id] = true;            
+      }
+    }  
     var result = _cache[_cursor];
     if (result == null) {
       return null;
@@ -851,7 +863,7 @@ class JsonParser {
   dynamic _parse_DIGIT() {
     // MORPHEME
     // DIGIT <- [0-9]
-    var $$;        
+    var $$;          
     var pos = _cursor;    
     if(pos <= _cachePos) {
       $$ = _getFromCache(23);
@@ -883,7 +895,9 @@ class JsonParser {
       _failure(_expect17);
     }
     // <= [0-9] # Choice
-    _addToCache($$, pos, 23);
+    if (_cacheable[23]) {
+      _addToCache($$, pos, 23);
+    }  
     _endToken();
     return $$;
   }
@@ -1038,7 +1052,7 @@ class JsonParser {
   dynamic _parse_ESCAPE() {
     // MORPHEME
     // ESCAPE <- '\\'
-    var $$;        
+    var $$;          
     var pos = _cursor;    
     if(pos <= _cachePos) {
       $$ = _getFromCache(24);
@@ -1076,7 +1090,9 @@ class JsonParser {
       _failure(_expect18);
     }
     // <= '\\' # Choice
-    _addToCache($$, pos, 24);
+    if (_cacheable[24]) {
+      _addToCache($$, pos, 24);
+    }  
     _endToken();
     return $$;
   }
@@ -1374,7 +1390,7 @@ class JsonParser {
   dynamic _parse_HEXDIG() {
     // MORPHEME
     // HEXDIG <- DIGIT / [a-f] / [A-F]
-    var $$;        
+    var $$;          
     var pos = _cursor;    
     if(pos <= _cachePos) {
       $$ = _getFromCache(27);
@@ -1422,7 +1438,9 @@ class JsonParser {
       _failure(_expect22);
     }
     // <= DIGIT / [a-f] / [A-F] # Choice
-    _addToCache($$, pos, 27);
+    if (_cacheable[27]) {
+      _addToCache($$, pos, 27);
+    }  
     _endToken();
     return $$;
   }
@@ -1737,7 +1755,7 @@ class JsonParser {
   dynamic _parse_QUOTATION_MARK() {
     // MORPHEME
     // QUOTATION_MARK <- '"'
-    var $$;        
+    var $$;          
     var pos = _cursor;    
     if(pos <= _cachePos) {
       $$ = _getFromCache(30);
@@ -1775,7 +1793,9 @@ class JsonParser {
       _failure(_expect2);
     }
     // <= '"' # Choice
-    _addToCache($$, pos, 30);
+    if (_cacheable[30]) {
+      _addToCache($$, pos, 30);
+    }  
     _endToken();
     return $$;
   }
@@ -1783,7 +1803,7 @@ class JsonParser {
   dynamic _parse_STRING() {
     // LEXEME
     // STRING <- QUOTATION_MARK STRING_CHARS QUOTATION_MARK WS
-    var $$;        
+    var $$;          
     var pos = _cursor;    
     if(pos <= _cachePos) {
       $$ = _getFromCache(16);
@@ -1853,7 +1873,9 @@ class JsonParser {
       _failure(_expect2);
     }
     // <= QUOTATION_MARK STRING_CHARS QUOTATION_MARK WS # Choice
-    _addToCache($$, pos, 16);
+    if (_cacheable[16]) {
+      _addToCache($$, pos, 16);
+    }  
     return $$;
   }
   
@@ -2031,7 +2053,7 @@ class JsonParser {
   dynamic _parse_VALUE_SEPARATOR() {
     // LEXEME
     // VALUE_SEPARATOR <- ',' WS
-    var $$;        
+    var $$;          
     var pos = _cursor;    
     if(pos <= _cachePos) {
       $$ = _getFromCache(18);
@@ -2086,14 +2108,16 @@ class JsonParser {
       _failure(_expect3);
     }
     // <= ',' WS # Choice
-    _addToCache($$, pos, 18);
+    if (_cacheable[18]) {
+      _addToCache($$, pos, 18);
+    }  
     return $$;
   }
   
   dynamic _parse_WS() {
     // LEXEME & MORPHEME
     // WS <- [\t-\n\r ]*
-    var $$;        
+    var $$;          
     var pos = _cursor;    
     if(pos <= _cachePos) {
       $$ = _getFromCache(19);
@@ -2139,7 +2163,9 @@ class JsonParser {
       _failure(_expect13);
     }
     // <= [\t-\n\r ]* # Choice
-    _addToCache($$, pos, 19);
+    if (_cacheable[19]) {
+      _addToCache($$, pos, 19);
+    }  
     _endToken();
     return $$;
   }
@@ -2215,7 +2241,7 @@ class JsonParser {
   dynamic _parse_member() {
     // NONTERMINAL
     // member <- STRING NAME_SEPARATOR value
-    var $$;        
+    var $$;          
     var pos = _cursor;    
     if(pos <= _cachePos) {
       $$ = _getFromCache(4);
@@ -2278,7 +2304,9 @@ class JsonParser {
       _failure(_expect2);
     }
     // <= STRING NAME_SEPARATOR value # Choice
-    _addToCache($$, pos, 4);
+    if (_cacheable[4]) {
+      _addToCache($$, pos, 4);
+    }  
     return $$;
   }
   
@@ -2460,7 +2488,7 @@ class JsonParser {
   dynamic _parse_value() {
     // NONTERMINAL
     // value <- FALSE / NULL / TRUE / object / array / NUMBER / STRING
-    var $$;        
+    var $$;          
     var pos = _cursor;    
     if(pos <= _cachePos) {
       $$ = _getFromCache(1);
@@ -2539,7 +2567,9 @@ class JsonParser {
       _failure(_expect0);
     }
     // <= FALSE / NULL / TRUE / object / array / NUMBER / STRING # Choice
-    _addToCache($$, pos, 1);
+    if (_cacheable[1]) {
+      _addToCache($$, pos, 1);
+    }  
     return $$;
   }
   
@@ -2861,6 +2891,7 @@ class JsonParser {
     _cachePos = -1;
     _cacheRule = new List(_inputLen + 1);
     _cacheState = new List.filled(((_inputLen + 1) >> 5) + 1, 0);
+    _cacheable = new List<bool>.filled(34, false);
     _ch = -1;
     _errors = <JsonParserError>[];   
     _expected = <String>[];
@@ -2870,6 +2901,7 @@ class JsonParser {
     _token = null;
     _tokenLevel = 0;
     _tokenStart = null;
+    _trackPos = new List<int>.filled(34, 0);
     if (_cursor < _inputLen) {
       _ch = _input[_cursor];
     }

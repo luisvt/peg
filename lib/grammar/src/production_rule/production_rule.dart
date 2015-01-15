@@ -15,7 +15,7 @@ class ProductionRule {
 
   Set<String> expectedStrings = new Set<String>();
 
-  final OrderedChoiceExpression expression;
+  OrderedChoiceExpression expression;
 
   bool isLexeme;
 

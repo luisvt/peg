@@ -13,6 +13,8 @@ abstract class ParserClassGenerator extends ClassGenerator {
 
   static const String CACHE_STATE = "_cacheState";
 
+  static const String CACHEABLE = "_cacheable";
+
   static const String CH = "_ch";
 
   static const String CURSOR = "_cursor";
@@ -33,6 +35,8 @@ abstract class ParserClassGenerator extends ClassGenerator {
 
   static const String SUCCESS = "success";
 
+  static const String TESTING = "_testing";
+
   static const String TOKEN = "_token";
 
   static const String TOKEN_FLAGS = "_tokenFlags";
@@ -43,7 +47,7 @@ abstract class ParserClassGenerator extends ClassGenerator {
 
   static const String TOKEN_START = "_tokenStart";
 
-  static const String TESTING = "_testing";
+  static const String TRACK_POS = "_trackPos";
 
   static const String TEXT = "text";
 
@@ -58,18 +62,19 @@ abstract class ParserClassGenerator extends ClassGenerator {
   ParserGenerator get parserGenerator;
 
   void _addCommonMembers() {
+    var grammar = parserGenerator.grammar;
+    var options = parserGenerator.options;
     addMethod(new MethodBeginTokenGenerator());
     addMethod(new MethodEndTokenGenerator());
     addMethod(new MethodErrorsGenerator(this));
     addMethod(new MethodFailureGenerator(this));
     addMethod(new MethodFlattenGenerator());
     addMethod(new MethodListGenerator());
-    addMethod(new MethodResetGenerator(this));
+    // TODO: Use the real number of memoized rules
+    addMethod(new MethodResetGenerator(this, grammar.productionRules.length));
     addMethod(new MethodTextGenerator());
     addMethod(new MethodToCodePointGenerator());
     addMethod(new MethodToCodePointsGenerator());
-    var grammar = parserGenerator.grammar;
-    var options = parserGenerator.options;
     // Memoization
     if (options.memoize) {
       addMethod(new MethodAddToCacheGenerator(grammar));
@@ -84,6 +89,7 @@ abstract class ParserClassGenerator extends ClassGenerator {
     addVariable(new VariableGenerator(CACHE_POS, "int"));
     addVariable(new VariableGenerator(CACHE_RULE, "List<int>"));
     addVariable(new VariableGenerator(CACHE_STATE, "List<int>"));
+    addVariable(new VariableGenerator(CACHEABLE, "List<bool>"));
     addVariable(new VariableGenerator(CH, "int"));
     addVariable(new VariableGenerator(CURSOR, "int"));
     addVariable(new VariableGenerator(ERRORS, "List<$errorClass>"));
@@ -97,6 +103,7 @@ abstract class ParserClassGenerator extends ClassGenerator {
     addVariable(new VariableGenerator(TOKEN, "int"));
     addVariable(new VariableGenerator(TOKEN_LEVEL, "int"));
     addVariable(new VariableGenerator(TOKEN_START, "int"));
+    addVariable(new VariableGenerator(TRACK_POS, "List<int>"));
     addVariable(new VariableGenerator(TEXT, "final String"));
     // Generate tokens
     var tokenFlags = <int, int>{};
