@@ -5,10 +5,6 @@
 
 Version: {{VERSION}}
 
-Status: Experimental
-
-Latest version always can be found at https://github.com/mezoni/peg
-
 **Main advantages:**
 
 - The generated parsers has no dependencies
@@ -32,7 +28,7 @@ The generated parsers intended for embedding into programs with the time-critica
 - Symbols transitions (upcomming)
 - Terminal and nonterminal symbol recognition
 
-**Elimination of direct left recursion (exprerimental)**
+**Elimination of direct left recursion (experimental)**
 
 Grammar with direct left recursion can be rewritten with `pegfmt` tool.  
 Suppored expressions:
