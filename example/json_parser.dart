@@ -658,6 +658,7 @@ class JsonParser {
               final $1 = seq[0];
               // ["/\\bfnrt]
               final $2 = seq[1];
+              final $start = startPos1;
               $$ = _escape($2);
             }
             break;
@@ -696,6 +697,7 @@ class JsonParser {
               final $2 = seq[1];
               // CHAR_HEXDIG
               final $3 = seq[2];
+              final $start = startPos2;
               $$ = _hex2str($3);
             }
             break;
@@ -769,6 +771,7 @@ class JsonParser {
             final $3 = seq[2];
             // HEXDIG
             final $4 = seq[3];
+            final $start = startPos0;
             $$ = _text();
           }
           break;
@@ -832,6 +835,7 @@ class JsonParser {
             final $1 = seq[0];
             // WS
             final $2 = seq[1];
+            final $start = startPos0;
             $$ = $1;
           }
           break;
@@ -1288,6 +1292,7 @@ class JsonParser {
             final $1 = seq[0];
             // WS
             final $2 = seq[1];
+            final $start = startPos0;
             $$ = false;
           }
           break;
@@ -1581,6 +1586,7 @@ class JsonParser {
             final $1 = seq[0];
             // WS
             final $2 = seq[1];
+            final $start = startPos0;
             $$ = null;
           }
           break;
@@ -1636,6 +1642,7 @@ class JsonParser {
             final $1 = seq[0];
             // WS
             final $2 = seq[1];
+            final $start = startPos0;
             $$ = $1;
           }
           break;
@@ -1724,6 +1731,7 @@ class JsonParser {
             final $3 = seq[2];
             // EXP?
             final $4 = seq[3];
+            final $start = startPos0;
             $$ = double.parse(_text());
           }
           break;
@@ -1849,6 +1857,7 @@ class JsonParser {
             final $3 = seq[2];
             // WS
             final $4 = seq[3];
+            final $start = startPos0;
             $$ = $2;
           }
           break;
@@ -1911,6 +1920,7 @@ class JsonParser {
         if (success) {    
           // CHAR*
           final $1 = $$;
+          final $start = startPos0;
           $$ = $1.join();
         }
         _startPos = startPos0;
@@ -1958,6 +1968,7 @@ class JsonParser {
             final $1 = seq[0];
             // WS
             final $2 = seq[1];
+            final $start = startPos0;
             $$ = true;
           }
           break;
@@ -2211,6 +2222,7 @@ class JsonParser {
             final $2 = seq[1];
             // END_ARRAY
             final $3 = seq[2];
+            final $start = startPos0;
             $$ = $2;
           }
           break;
@@ -2280,6 +2292,7 @@ class JsonParser {
             final $2 = seq[1];
             // value
             final $3 = seq[2];
+            final $start = startPos0;
             $$ = new _KeyValuePair($1, $3);
           }
           break;
@@ -2390,6 +2403,7 @@ class JsonParser {
             final $1 = seq[0];
             // (VALUE_SEPARATOR member)*
             final $2 = seq[1];
+            final $start = startPos0;
             $$ = _list($1, $2);
           }
           break;
@@ -2458,6 +2472,7 @@ class JsonParser {
             final $2 = seq[1];
             // END_OBJECT
             final $3 = seq[2];
+            final $start = startPos0;
             $$ = $2.fold({}, (p, c) => p..[c.key] = c.value);
           }
           break;
@@ -2653,6 +2668,7 @@ class JsonParser {
             final $1 = seq[0];
             // (VALUE_SEPARATOR value)*
             final $2 = seq[1];
+            final $start = startPos0;
             $$ = _list($1, $2);
           }
           break;
@@ -2852,6 +2868,7 @@ class JsonParser {
             final $2 = seq[1];
             // EOF
             final $3 = seq[2];
+            final $start = startPos0;
             $$ = $2;
           }
           break;

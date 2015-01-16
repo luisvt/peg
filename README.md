@@ -3,7 +3,7 @@
 
 PEG (Parsing expression grammar) parsers generator.
 
-Version: 0.0.38
+Version: 0.0.39
 
 **Main advantages:**
 
@@ -778,6 +778,7 @@ class ArithmeticParser {
             final $2 = seq[1];
             // CLOSE
             final $3 = seq[2];
+            final $start = startPos0;
             $$ = $2;
           }
           break;
@@ -904,6 +905,7 @@ class ArithmeticParser {
             final $1 = seq[0];
             // SPACES
             final $2 = seq[1];
+            final $start = startPos0;
             $$ = $1;
           }
           break;
@@ -1004,6 +1006,7 @@ class ArithmeticParser {
             final $1 = seq[0];
             // SPACES
             final $2 = seq[1];
+            final $start = startPos0;
             $$ = $1;
           }
           break;
@@ -1065,6 +1068,7 @@ class ArithmeticParser {
             final $1 = seq[0];
             // SPACES
             final $2 = seq[1];
+            final $start = startPos0;
             $$ = $1;
           }
           break;
@@ -1142,6 +1146,7 @@ class ArithmeticParser {
             final $1 = seq[0];
             // SPACES
             final $2 = seq[1];
+            final $start = startPos0;
             $$ = int.parse($1.join());
           }
           break;
@@ -1257,6 +1262,7 @@ class ArithmeticParser {
             final $1 = seq[0];
             // SPACES
             final $2 = seq[1];
+            final $start = startPos0;
             $$ = $1;
           }
           break;
@@ -1411,6 +1417,7 @@ class ArithmeticParser {
               final $2 = seq[1];
               // Sentence
               final $3 = seq[2];
+              final $start = startPos0;
               $$ = _binop($1, $3, $2);
             }
             break;
@@ -1520,6 +1527,7 @@ class ArithmeticParser {
               final $2 = seq[1];
               // Term
               final $3 = seq[2];
+              final $start = startPos0;
               $$ = _binop($1, $3, $2);
             }
             break;
@@ -1779,6 +1787,7 @@ class ArithmeticParser {
             final $2 = seq[1];
             // EOF
             final $3 = seq[2];
+            final $start = startPos0;
             $$ = $2;
           }
           break;

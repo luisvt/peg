@@ -97,10 +97,10 @@ $_START_POS = {{START_POS}};
     }
   }
 
-  List<String> _generateAction(Expression expression) {
+  List<String> _generateAction(Expression expression, startPos) {
     var action = expression.action;
     if (action != null) {
-      var variables = _generateSemanticValues(expression);
+      var variables = _generateSemanticValues(expression, startPos);
       var block = getTemplateBlock(_TEMPLATE_ACTION);
       block.assign('#CODE', Utils.codeToStrings(action));
       block.assign('#VARIABLES', variables);
@@ -131,7 +131,7 @@ $_START_POS = {{START_POS}};
       }
 
       inner.assign('#EXPRESSION', generator.generate());
-      inner.assign('#ACTION', _generateAction(expression));
+      inner.assign('#ACTION', _generateAction(expression, startPos));
       inner.assign('INDEX', i);
       if (!generator.breakOnFailWasInserted()) {
         inner.assign('#BREAK', 'if (!$_SUCCESS) break;');
@@ -155,7 +155,7 @@ $_START_POS = {{START_POS}};
     return block.process();
   }
 
-  List<String> _generateSemanticValues(Expression expression) {
+  List<String> _generateSemanticValues(Expression expression, String startPos) {
     var expressions = _expression.expressions;
     var length = expressions.length;
     var position = expression.positionInSequence;
@@ -182,6 +182,7 @@ $_START_POS = {{START_POS}};
       strings.add("final \$1 = $_RESULT;");
     }
 
+    strings.add("final \$start = $startPos;");
     return strings;
   }
 
@@ -195,7 +196,7 @@ $_START_POS = {{START_POS}};
     }
 
     block.assign('#EXPRESSION', _generators[0].generate());
-    block.assign('#ACTION', _generateAction(_expression.expressions[0]));
+    block.assign('#ACTION', _generateAction(_expression.expressions[0], startPos));
     block.assign('START_POS', startPos);
     return block.process();
   }

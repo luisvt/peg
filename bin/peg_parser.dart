@@ -609,6 +609,8 @@ class PegParser {
             final $3 = seq[2];
             // SPACING
             final $4 = seq[3];
+            final $start = startPos0;
+            final $end = _cursor;
             $$ = $2.join();
           }
           break;
@@ -683,6 +685,8 @@ class PegParser {
             final $1 = seq[0];
             // .
             final $2 = seq[1];
+            final $start = startPos0;
+            final $end = _cursor;
             $$ = _text();
           }
           break;
@@ -744,6 +748,8 @@ class PegParser {
               final $2 = seq[1];
               // '}'
               final $3 = seq[2];
+              final $start = startPos1;
+              final $end = _cursor;
               $$ = _text();
             }
             break;
@@ -784,6 +790,8 @@ class PegParser {
               final $1 = seq[0];
               // .
               final $2 = seq[1];
+              final $start = startPos2;
+              final $end = _cursor;
               $$ = _text();
             }
             break;
@@ -849,6 +857,8 @@ class PegParser {
             final $1 = seq[0];
             // SPACING
             final $2 = seq[1];
+            final $start = startPos0;
+            final $end = _cursor;
             $$ = $1;
           }
           break;
@@ -939,6 +949,8 @@ class PegParser {
             final $2 = seq[1];
             // .
             final $3 = seq[2];
+            final $start = startPos0;
+            final $end = _cursor;
             $$ = _toCodePoint($3);
           }
           break;
@@ -979,6 +991,8 @@ class PegParser {
               final $1 = seq[0];
               // ["'\-\[-\]nrt]
               final $2 = seq[1];
+              final $start = startPos1;
+              final $end = _cursor;
               $$ = _escape($2.codeUnitAt(0));
             }
             break;
@@ -1041,6 +1055,8 @@ class PegParser {
               final $2 = seq[1];
               // .
               final $3 = seq[2];
+              final $start = startPos3;
+              final $end = _cursor;
               $$ = _toCodePoint($3);
             }
             break;
@@ -1134,6 +1150,8 @@ class PegParser {
                     final $1 = seq[0];
                     // RANGE
                     final $2 = seq[1];
+                    final $start = startPos1;
+                    final $end = _cursor;
                     $$ = $2;
                   }
                   break;
@@ -1188,6 +1206,8 @@ class PegParser {
             final $3 = seq[2];
             // SPACING
             final $4 = seq[3];
+            final $start = startPos0;
+            final $end = _cursor;
             $$ = new CharacterClassExpression($2);
           }
           break;
@@ -1486,6 +1506,8 @@ class PegParser {
             final $2 = seq[1];
             // Expression
             final $3 = seq[2];
+            final $start = startPos0;
+            final $end = _cursor;
             $$ = new ProductionRule($1, $3);
           }
           break;
@@ -1698,6 +1720,8 @@ class PegParser {
             final $1 = seq[0];
             // (SLASH Sequence)*
             final $2 = seq[1];
+            final $start = startPos0;
+            final $end = _cursor;
             $$ = new OrderedChoiceExpression(_list($1, $2));
           }
           break;
@@ -1784,6 +1808,8 @@ class PegParser {
             final $3 = seq[2];
             // SPACING
             final $4 = seq[3];
+            final $start = startPos0;
+            final $end = _cursor;
             $$ = $2.join();
           }
           break;
@@ -1851,6 +1877,8 @@ class PegParser {
             final $1 = seq[0];
             // .
             final $2 = seq[1];
+            final $start = startPos0;
+            final $end = _cursor;
             $$ = _text();
           }
           break;
@@ -1941,6 +1969,8 @@ class PegParser {
             final $2 = seq[1];
             // [0-9A-Fa-f]+
             final $3 = seq[2];
+            final $start = startPos0;
+            final $end = _cursor;
             $$ = int.parse($3.join(), radix: 16);
           }
           break;
@@ -2025,6 +2055,8 @@ class PegParser {
             final $2 = seq[1];
             // SPACING
             final $3 = seq[2];
+            final $start = startPos0;
+            final $end = _cursor;
             $$ = _flatten([$1, $2]).join();
           }
           break;
@@ -2257,6 +2289,8 @@ class PegParser {
                     final $1 = seq[0];
                     // CHAR
                     final $2 = seq[1];
+                    final $start = startPos1;
+                    final $end = _cursor;
                     $$ = $2;
                   }
                   break;
@@ -2311,6 +2345,8 @@ class PegParser {
             final $3 = seq[2];
             // SPACING
             final $4 = seq[3];
+            final $start = startPos0;
+            final $end = _cursor;
             $$ = new LiteralExpression(new String.fromCharCodes($2));
           }
           break;
@@ -2378,6 +2414,8 @@ class PegParser {
                     final $1 = seq[0];
                     // CHAR
                     final $2 = seq[1];
+                    final $start = startPos3;
+                    final $end = _cursor;
                     $$ = $2;
                   }
                   break;
@@ -2432,6 +2470,8 @@ class PegParser {
             final $3 = seq[2];
             // SPACING
             final $4 = seq[3];
+            final $start = startPos2;
+            final $end = _cursor;
             $$ = new LiteralExpression(new String.fromCharCodes($2));
           }
           break;
@@ -2521,6 +2561,8 @@ class PegParser {
             final $3 = seq[2];
             // SPACING
             final $4 = seq[3];
+            final $start = startPos0;
+            final $end = _cursor;
             $$ = $2.join();
           }
           break;
@@ -2582,6 +2624,8 @@ class PegParser {
             final $1 = seq[0];
             // SPACING
             final $2 = seq[1];
+            final $start = startPos0;
+            final $end = _cursor;
             $$ = $1;
           }
           break;
@@ -2697,6 +2741,8 @@ class PegParser {
             final $1 = seq[0];
             // SPACING
             final $2 = seq[1];
+            final $start = startPos0;
+            final $end = _cursor;
             $$ = $1;
           }
           break;
@@ -2799,6 +2845,8 @@ class PegParser {
             final $2 = seq[1];
             // ACTION?
             final $3 = seq[2];
+            final $start = startPos0;
+            final $end = _cursor;
             $$ = _prefix($1, $2, $3);
           }
           break;
@@ -2869,6 +2917,8 @@ class PegParser {
             final $2 = seq[1];
             // CLOSE
             final $3 = seq[2];
+            final $start = startPos1;
+            final $end = _cursor;
             $$ = $2;
           }
           break;
@@ -2889,6 +2939,8 @@ class PegParser {
         if (success) {    
           // DOT
           final $1 = $$;
+          final $start = startPos2;
+          final $end = _cursor;
           $$ = new AnyCharacterExpression();
         }
         _startPos = startPos2;
@@ -2924,6 +2976,8 @@ class PegParser {
             final $1 = seq[0];
             // !LEFTARROW
             final $2 = seq[1];
+            final $start = startPos3;
+            final $end = _cursor;
             $$ = new RuleExpression($1);
           }
           break;
@@ -2993,6 +3047,8 @@ class PegParser {
             final $1 = seq[0];
             // SPACING
             final $2 = seq[1];
+            final $start = startPos0;
+            final $end = _cursor;
             $$ = $1;
           }
           break;
@@ -3059,6 +3115,8 @@ class PegParser {
               final $2 = seq[1];
               // CHAR
               final $3 = seq[2];
+              final $start = startPos0;
+              final $end = _cursor;
               $$ = [$1, $3];
             }
             break;
@@ -3077,6 +3135,8 @@ class PegParser {
           if (success) {    
             // CHAR
             final $1 = $$;
+            final $start = startPos1;
+            final $end = _cursor;
             $$ = [$1, $1];
           }
           _startPos = startPos1;
@@ -3310,6 +3370,8 @@ class PegParser {
             final $1 = seq[0];
             // SPACING
             final $2 = seq[1];
+            final $start = startPos0;
+            final $end = _cursor;
             $$ = $1;
           }
           break;
@@ -3381,6 +3443,8 @@ class PegParser {
         if (success) {    
           // Prefix+
           final $1 = $$;
+          final $start = startPos0;
+          final $end = _cursor;
           $$ = new SequenceExpression($1);
         }
         _startPos = startPos0;
@@ -3474,6 +3538,8 @@ class PegParser {
             final $1 = seq[0];
             // (QUESTION / STAR / PLUS)?
             final $2 = seq[1];
+            final $start = startPos0;
+            final $end = _cursor;
             $$ = _suffix($2, $1);
           }
           break;
@@ -3721,6 +3787,8 @@ class PegParser {
             final $4 = seq[3];
             // EOF
             final $5 = seq[4];
+            final $start = startPos0;
+            final $end = _cursor;
             $$ = new Grammar($4, $2, $3);
           }
           break;

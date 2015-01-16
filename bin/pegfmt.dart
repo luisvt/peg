@@ -1,6 +1,7 @@
 import "dart:io";
 import 'peg_parser.dart';
 import "package:args_helper/args_helper.dart";
+import "package:strings/strings.dart" as strings;
 import 'package:peg/grammar/grammar.dart';
 import 'package:peg/grammar/expressions.dart';
 import 'package:peg/grammar/expression_visitors.dart';
@@ -47,6 +48,23 @@ class Program {
     }
   }
 
+  void stylizeCommand(String filename, {String lexeme, String morpheme, String nonterminal, String output, String sort}) {
+    var parser = _getParser(filename);
+    var grammar = _parseGrammar(parser);
+    var rules = new LeftRecursionRemover().remove(grammar.productionRules);
+    var nonterminals = <ProductionRule>[];
+    var lexemes = <ProductionRule>[];
+    var morphemes = <ProductionRule>[];
+    _sort(rules, sort, nonterminals, lexemes, morphemes);
+    var nameMap = _createNameMap(nonterminals, lexemes, morphemes, nonterminal, lexeme, morpheme);
+    var text = _print(grammar, nonterminals, lexemes, morphemes, nameMap);
+    if (output != null) {
+      new File(output).writeAsStringSync(text);
+    } else {
+      print(text);
+    }
+  }
+
   void _error(String message) {
     print(message);
     exit(-1);
@@ -79,7 +97,55 @@ class Program {
     return grammar;
   }
 
-  String _print(Grammar grammar, List<ProductionRule> nonterminals, List<ProductionRule> lexemes, List<ProductionRule> morphemes) {
+  String _changeWordCompound(String name, String compound) {
+    switch (compound) {
+      case "underscore":
+        return strings.underscore(name);
+      case "camel_case":
+      case "upper_camel_case":
+        return strings.camelize(name);
+      case "lower_case":
+        return name.toLowerCase();
+      case "lower_camel_case":
+        return strings.camelize(name, true);
+      case "upper_case":
+        return name.toUpperCase();
+    }
+
+    return name;
+  }
+
+  Map<String, String> _createNameMap(List<ProductionRule> nonterminals, List<ProductionRule> lexemes, List<ProductionRule> morphemes, String nonterminalCompound, String lexemesCompound, String morphemesCompound) {
+    var map = <String, String>{};
+    for (var rule in nonterminals) {
+      var name = rule.name;
+      map[name] = _changeWordCompound(name, nonterminalCompound);
+    }
+
+    for (var rule in lexemes) {
+      var name = rule.name;
+      map[name] = _changeWordCompound(name, lexemesCompound);
+    }
+
+    for (var rule in morphemes) {
+      var name = rule.name;
+      map[name] = _changeWordCompound(name, morphemesCompound);
+    }
+
+    var used = new Set<String>();
+    for (var key in map.keys) {
+      var name = map[key];
+      if (used.contains(name)) {
+        map[key] = key;
+      }
+
+      used.add(name);
+    }
+
+    return map;
+  }
+
+  String _print(Grammar grammar, List<ProductionRule> nonterminals, List<ProductionRule> lexemes, List<ProductionRule> morphemes, [Map<String, String> nameMap]) {
     var sb = new StringBuffer();
     var globals = grammar.globals;
     if (globals != null) {
@@ -106,27 +172,27 @@ class Program {
     if (!nonterminals.isEmpty) {
       sb.writeln("# Nonterminals");
       sb.writeln("");
-      _printProductionRules(nonterminals, sb);
+      _printProductionRules(nonterminals, sb, nameMap);
     }
 
     if (!lexemes.isEmpty) {
       sb.writeln("");
       sb.writeln("# Lexemes");
       sb.writeln("");
-      _printProductionRules(lexemes, sb);
+      _printProductionRules(lexemes, sb, nameMap);
     }
 
     if (!morphemes.isEmpty) {
       sb.writeln("");
       sb.writeln("# Morphemes");
       sb.writeln("");
-      _printProductionRules(morphemes, sb);
+      _printProductionRules(morphemes, sb, nameMap);
     }
 
     return sb.toString();
   }
 
-  void _printProductionRules(List<ProductionRule> productionRules, StringBuffer sb) {
+  void _printProductionRules(List<ProductionRule> productionRules, StringBuffer sb, [Map<String, String> nameMap]) {
     var length = productionRules.length;
     for (var i = 0; i < length; i++) {
       var productionRule = productionRules[i];
@@ -135,9 +201,14 @@ class Program {
         sb.writeln();
       }
 
-      sb.write(productionRule.name);
+      var name = productionRule.name;
+      if (nameMap != null) {
+        name = nameMap[name];
+      }
+
+      sb.write(name);
       sb.writeln(" <-");
-      expression.accept(new TextPrinter(sb));
+      expression.accept(new TextPrinter(sb, nameMap));
     }
   }
 
@@ -211,9 +282,11 @@ class Program {
 }
 
 class TextPrinter extends ExpressionVisitor {
+  Map<String, String> nameMap;
+
   StringBuffer sb;
 
-  TextPrinter(this.sb);
+  TextPrinter(this.sb, [this.nameMap]);
 
   visitAndPredicate(AndPredicateExpression expression) {
     sb.write("&");
@@ -281,7 +354,8 @@ class TextPrinter extends ExpressionVisitor {
   }
 
   visitRule(RuleExpression expression) {
-    sb.write(expression.name);
+    var name = _getName(expression.name);
+    sb.write(name);
   }
 
   visitSequence(SequenceExpression expression) {
@@ -305,6 +379,14 @@ class TextPrinter extends ExpressionVisitor {
 
   void _error(Expression expression) {
     throw new StateError("Unknow expression type: ${expression.type}");
+  }
+
+  String _getName(String name) {
+    if (nameMap == null) {
+      return name;
+    }
+
+    return nameMap[name];
   }
 
   void _printAction(String action) {
@@ -370,6 +452,38 @@ commands:
     aliases: [rec]
     description: Removes direct left recursion in PEG grammar.
     options:      
+      output:
+        help: The output file name.
+        abbr: o
+      sort:       
+        help: Sort order of nonterminals.
+        allowed: [call, name, none]
+        defaultsTo: call
+        abbr: s
+    rest:
+      allowMultiple: false
+      help: PEG grammar file
+      name: pegfile
+      required: true
+  stylize:
+    aliases: [style]
+    description: Stylize the word compound of production rules.
+    options:
+      lexeme:
+        help: Word compound of lexemes.
+        abbr: l
+        allowed: [camel_case, lower_camel_case, none, underscore, upper_case, upper_camel_case]
+        defaultsTo: none
+      morpheme:
+        help: Word compound of morhemes.
+        abbr: m
+        allowed: [camel_case, lower_camel_case, none, underscore, upper_case, upper_camel_case]
+        defaultsTo: none
+      nonterminal:
+        help: Word compound of nonterminals.
+        abbr: n
+        allowed: [camel_case, lower_camel_case, none, underscore, upper_case, upper_camel_case]
+        defaultsTo: none
       output:
         help: The output file name.
         abbr: o
