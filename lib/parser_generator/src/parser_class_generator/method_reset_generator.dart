@@ -7,10 +7,6 @@ class MethodResetGenerator extends DeclarationGenerator {
 
   static const String _CACHE_POS = ParserClassGenerator.CACHE_POS;
 
-  static const String _CACHE_RULE = ParserClassGenerator.CACHE_RULE;
-
-  static const String _CACHE_STATE = ParserClassGenerator.CACHE_STATE;
-
   static const String _CACHEABLE = ParserClassGenerator.CACHEABLE;
 
   static const String _CH = ParserClassGenerator.CH;
@@ -41,8 +37,6 @@ class MethodResetGenerator extends DeclarationGenerator {
 
   static const String _TOKEN_START = ParserClassGenerator.TOKEN_START;
 
-  static const String _TRACK_POS = ParserClassGenerator.TRACK_POS;
-
   static const String _TEMPLATE = "TEMPLATE";
 
   static final String _template = '''
@@ -54,10 +48,8 @@ void $NAME(int pos) {
     throw new RangeError('pos');
   }      
   $_CURSOR = pos;
-  $_CACHE = new List($_INPUT_LEN + 1);
-  $_CACHE_POS = -1;
-  $_CACHE_RULE = new List($_INPUT_LEN + 1);
-  $_CACHE_STATE = new List.filled((($_INPUT_LEN + 1) >> 5) + 1, 0);
+  $_CACHE = new List<Map<int, List>>({{RULE_COUNT}});
+  $_CACHE_POS = new List<int>.filled({{RULE_COUNT}}, -1);  
   $_CACHEABLE = new List<bool>.filled({{RULE_COUNT}}, false);
   $_CH = $_EOF;
   $_ERRORS = <{{ERROR_CLASS}}>[];   
@@ -67,8 +59,7 @@ void $NAME(int pos) {
   $_TESTING = -1;
   $_TOKEN = null;
   $_TOKEN_LEVEL = 0;
-  $_TOKEN_START = null;
-  $_TRACK_POS = new List<int>.filled({{RULE_COUNT}}, 0);
+  $_TOKEN_START = null;  
   if ($_CURSOR < $_INPUT_LEN) {
     $_CH = $_INPUT[$_CURSOR];
   }

@@ -49,3 +49,4 @@
 0.0.38 Changed algorithm of determining the lexical production rules. This was required to provide correct support of results of direct recursion elimination (via `pegfmt`). From now results of these transformations fully supported by the front-end recognizer (`TerminalRulesFinder`)
 0.0.39 Added semantic variable `$start` which point out to the beginning of the current sequence of expressions
 0.0.39 Experimental feature. Changing word compound of production rule name via the grammar formatter `pegfmt`. Eg. `pegfmt stylize -morpheme upper_case grammar.peg`
+0.0.40 Minor changes in caching mechanics.

@@ -55,8 +55,10 @@ dynamic {{NAME}}() {
   {{#ENTER}}
   {{#VARIABLES}}          
   var pos = $_CURSOR;    
-  if(pos <= $_CACHE_POS) {
+  if($_CACHE_POS[{{RULE_ID}}] >= pos) {
     $_RESULT = $_GET_FROM_CACHE({{RULE_ID}});
+  } else {
+    $_CACHE_POS[{{RULE_ID}}] = pos;
   }
   if($_RESULT != null) {
     {{#LEAVE_CACHED}}

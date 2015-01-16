@@ -1,0 +1,14 @@
+%{
+void main() {
+  var parser = new PParser("abab");
+  parser.parse_A();
+}
+
+}%
+
+
+A <-
+  (a "bcd" / a "bc" / a "b")*
+
+a <-
+  "a"

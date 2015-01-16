@@ -69,13 +69,9 @@ class ArithmeticParser {
   
   static final List<List<int>> _transitions4 = [[9, 10, 32, 32], [13, 13]];
   
-  List _cache;
+  List<Map<int, List>> _cache;
   
-  int _cachePos;
-  
-  List<int> _cacheRule;
-  
-  List<int> _cacheState;
+  List<int> _cachePos;
   
   List<bool> _cacheable;
   
@@ -103,8 +99,6 @@ class ArithmeticParser {
   
   int _tokenStart;
   
-  List<int> _trackPos;
-  
   bool success;
   
   final String text;
@@ -114,36 +108,17 @@ class ArithmeticParser {
       throw new ArgumentError('text: $text');
     }    
     _input = _toCodePoints(text);
-    _inputLen = _input.length;
-    if (_inputLen >= 0x3fffffe8 / 32) {
-      throw new StateError('File size to big: $_inputLen');
-    }  
+    _inputLen = _input.length;    
     reset(0);    
   }
   
-  void _addToCache(dynamic result, int start, int id) {  
-    var cached = _cache[start];
-    if (cached == null) {
-      _cacheRule[start] = id;
-      _cache[start] = [result, _cursor, success];
-    } else {    
-      var slot = start >> 5;
-      var r1 = (slot << 5) & 0x3fffffff;    
-      var mask = 1 << (start - r1);    
-      if ((_cacheState[slot] & mask) == 0) {
-        _cacheState[slot] |= mask;   
-        cached = [new List.filled(2, 0), new Map<int, List>()];
-        _cache[start] = cached;                                      
-      }
-      slot = id >> 5;
-      r1 = (slot << 5) & 0x3fffffff;    
-      mask = 1 << (id - r1);    
-      cached[0][slot] |= mask;
-      cached[1][id] = [result, _cursor, success];      
+  void _addToCache(dynamic result, int start, int id) {
+    var map = _cache[id];
+    if (map == null) {
+      map = <int, List>{};
+      _cache[id] = map;
     }
-    if (_cachePos < start) {
-      _cachePos = start;
-    }    
+    map[start] = [result, _cursor, success];    
   }
   
   void _beginToken(int tokenId) {
@@ -216,49 +191,22 @@ class ArithmeticParser {
   }
   
   dynamic _getFromCache(int id) {  
-    if (!_cacheable[id]) {
-      if (_trackPos[id] < _cursor) {
-        _trackPos[id] = _cursor;
-        return null;
-      } else {
-        _cacheable[id] = true;            
-      }
-    }  
-    var result = _cache[_cursor];
-    if (result == null) {
-      return null;
-    }    
-    var slot = _cursor >> 5;
-    var r1 = (slot << 5) & 0x3fffffff;  
-    var mask = 1 << (_cursor - r1);
-    if ((_cacheState[slot] & mask) == 0) {
-      if (_cacheRule[_cursor] == id) {      
-        _cursor = result[1];
-        success = result[2];      
-        if (_cursor < _inputLen) {
-          _ch = _input[_cursor];
-        } else {
-          _ch = -1;
-        }      
-        return result;
-      } else {
-        return null;
-      }    
-    }
-    slot = id >> 5;
-    r1 = (slot << 5) & 0x3fffffff;  
-    mask = 1 << (id - r1);
-    if ((result[0][slot] & mask) == 0) {
+    if (!_cacheable[id]) {  
+      _cacheable[id] = true;  
       return null;
     }
-    var data = result[1][id];  
+    var map = _cache[id];
+    if (map == null) {
+      return null;
+    }
+    var data = map[_cursor];
     _cursor = data[1];
     success = data[2];
     if (_cursor < _inputLen) {
       _ch = _input[_cursor];
     } else {
       _ch = -1;
-    }   
+    }
     return data;  
   }
   
@@ -453,8 +401,10 @@ class ArithmeticParser {
     // Atom <- NUMBER / OPEN Sentence CLOSE
     var $$;          
     var pos = _cursor;    
-    if(pos <= _cachePos) {
+    if(_cachePos[3] >= pos) {
       $$ = _getFromCache(3);
+    } else {
+      _cachePos[3] = pos;
     }
     if($$ != null) {
       return $$[0];       
@@ -1007,8 +957,10 @@ class ArithmeticParser {
     // SPACES <- WS*
     var $$;          
     var pos = _cursor;    
-    if(pos <= _cachePos) {
+    if(_cachePos[12] >= pos) {
       $$ = _getFromCache(12);
+    } else {
+      _cachePos[12] = pos;
     }
     if($$ != null) {
       return $$[0];       
@@ -1063,8 +1015,10 @@ class ArithmeticParser {
     // Sentence <- Term (PLUS / MINUS) Sentence / Term
     var $$;          
     var pos = _cursor;    
-    if(pos <= _cachePos) {
+    if(_cachePos[1] >= pos) {
       $$ = _getFromCache(1);
+    } else {
+      _cachePos[1] = pos;
     }
     if($$ != null) {
       return $$[0];       
@@ -1173,8 +1127,10 @@ class ArithmeticParser {
     // Term <- Atom (MUL / DIV) Term / Atom
     var $$;          
     var pos = _cursor;    
-    if(pos <= _cachePos) {
+    if(_cachePos[2] >= pos) {
       $$ = _getFromCache(2);
+    } else {
+      _cachePos[2] = pos;
     }
     if($$ != null) {
       return $$[0];       
@@ -1535,10 +1491,8 @@ class ArithmeticParser {
       throw new RangeError('pos');
     }      
     _cursor = pos;
-    _cache = new List(_inputLen + 1);
-    _cachePos = -1;
-    _cacheRule = new List(_inputLen + 1);
-    _cacheState = new List.filled(((_inputLen + 1) >> 5) + 1, 0);
+    _cache = new List<Map<int, List>>(15);
+    _cachePos = new List<int>.filled(15, -1);  
     _cacheable = new List<bool>.filled(15, false);
     _ch = -1;
     _errors = <ArithmeticParserError>[];   
@@ -1548,8 +1502,7 @@ class ArithmeticParser {
     _testing = -1;
     _token = null;
     _tokenLevel = 0;
-    _tokenStart = null;
-    _trackPos = new List<int>.filled(15, 0);
+    _tokenStart = null;  
     if (_cursor < _inputLen) {
       _ch = _input[_cursor];
     }

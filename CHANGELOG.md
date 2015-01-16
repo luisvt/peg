@@ -1,3 +1,7 @@
+## 0.0.40
+
+- Minor changes in caching mechanics.
+
 ## 0.0.39
 
 - Added semantic variable `$start` which point out to the beginning of the current sequence of expressions

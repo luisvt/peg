@@ -19,10 +19,7 @@ class ClassContructorGenerator extends DeclarationGenerator {
     throw new ArgumentError('$_TEXT: \$text');
   }    
   $_INPUT = $_TO_CODE_POINTS($_TEXT);
-  $_INPUT_LEN = $_INPUT.length;
-  if ($_INPUT_LEN >= 0x3fffffe8 / 32) {
-    throw new StateError('File size to big: \$$_INPUT_LEN');
-  }  
+  $_INPUT_LEN = $_INPUT.length;    
   $_RESET(0);    
 }
 ''';

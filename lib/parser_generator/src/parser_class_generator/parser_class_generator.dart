@@ -9,10 +9,6 @@ abstract class ParserClassGenerator extends ClassGenerator {
 
   static const String CACHE_POS = "_cachePos";
 
-  static const String CACHE_RULE = "_cacheRule";
-
-  static const String CACHE_STATE = "_cacheState";
-
   static const String CACHEABLE = "_cacheable";
 
   static const String CH = "_ch";
@@ -46,8 +42,6 @@ abstract class ParserClassGenerator extends ClassGenerator {
   static const String TOKEN_NAMES = "_tokenNames";
 
   static const String TOKEN_START = "_tokenStart";
-
-  static const String TRACK_POS = "_trackPos";
 
   static const String TEXT = "text";
 
@@ -85,10 +79,8 @@ abstract class ParserClassGenerator extends ClassGenerator {
     var errorClass = ParserErrorClassGenerator.getName(name);
     var value = "new List<String>.generate(128, (c) => new String.fromCharCode(c))";
     addVariable(new VariableGenerator(ASCII, "static final List<String>", value: value), true);
-    addVariable(new VariableGenerator(CACHE, "List"));
-    addVariable(new VariableGenerator(CACHE_POS, "int"));
-    addVariable(new VariableGenerator(CACHE_RULE, "List<int>"));
-    addVariable(new VariableGenerator(CACHE_STATE, "List<int>"));
+    addVariable(new VariableGenerator(CACHE, "List<Map<int, List>>"));
+    addVariable(new VariableGenerator(CACHE_POS, "List<int>"));
     addVariable(new VariableGenerator(CACHEABLE, "List<bool>"));
     addVariable(new VariableGenerator(CH, "int"));
     addVariable(new VariableGenerator(CURSOR, "int"));
@@ -103,7 +95,6 @@ abstract class ParserClassGenerator extends ClassGenerator {
     addVariable(new VariableGenerator(TOKEN, "int"));
     addVariable(new VariableGenerator(TOKEN_LEVEL, "int"));
     addVariable(new VariableGenerator(TOKEN_START, "int"));
-    addVariable(new VariableGenerator(TRACK_POS, "List<int>"));
     addVariable(new VariableGenerator(TEXT, "final String"));
     // Generate tokens
     var tokenFlags = <int, int>{};
