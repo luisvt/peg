@@ -176,10 +176,17 @@ class Program {
 
   void _sortByOccurence(List<ProductionRule> productionRules, List<ProductionRule> nonterminals, List<ProductionRule> lexemes, List<ProductionRule> morphemes) {
     var processed = new Set<ProductionRule>();
+    var foundStartingRules = false;
     for (var productionRule in productionRules) {
       if (productionRule.isStartingRule) {
         _sortByOccurence2(productionRule, nonterminals, lexemes, morphemes, processed);
+        foundStartingRules = true;
       }
+    }
+
+    // When production rules are cyclic in this case use the first rule
+    if (!foundStartingRules && productionRules.length > 0) {
+      _sortByOccurence2(productionRules.first, nonterminals, lexemes, morphemes, processed);
     }
   }
 

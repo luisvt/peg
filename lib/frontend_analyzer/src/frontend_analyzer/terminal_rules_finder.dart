@@ -11,7 +11,7 @@ class TerminalRulesFinder {
     var id = 0;
     for (var rule in rules) {
       if (rule.isMorpheme) {
-      //if (rule.isLexical) {
+        //if (rule.isLexical) {
         rule.tokenId = id++;
       }
     }
@@ -74,7 +74,19 @@ class TerminalRulesFinder {
         }
 
         return true;
-      } else if (rule.allCallees.length == 1) {
+      } else {
+        if (rule.allCallees.length == 1) {
+          return true;
+        }
+
+        for (var caller in rule.directCallers) {
+          if (rule != caller) {
+            if (caller.allCallers.contains(rule)) {
+              return false;
+            }
+          }
+        }
+
         return true;
       }
     }

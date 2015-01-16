@@ -91,7 +91,7 @@ void main(List<String> args) {
   });
 
   rule("%_parser.dart", ["%.peg"], (Target t, Map args) {
-    return Process.run("dart", ["bin/peg.dart", "general", "-c", "-l", "-m", "-o", t.name, t.sources.first]).then((result) {
+    return Process.run("dart", ["bin/peg.dart", "general", "-c", "-o", t.name, t.sources.first]).then((result) {
       if (result.exitCode != 0) {
         print(result.stdout);
         return result.exitCode;

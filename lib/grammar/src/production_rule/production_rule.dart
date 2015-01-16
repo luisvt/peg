@@ -7,6 +7,8 @@ class ProductionRule {
 
   Set<ProductionRule> allCallers = new Set<ProductionRule>();
 
+  Set<ProductionRule> circle = new Set<ProductionRule>();
+
   Set<ProductionRule> directCallees = new Set<ProductionRule>();
 
   Set<ProductionRule> directCallers = new Set<ProductionRule>();

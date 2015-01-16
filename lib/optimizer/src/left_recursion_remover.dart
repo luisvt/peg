@@ -171,6 +171,7 @@ class LeftRecursionRemover {
             if (i != 0) {
               // Not allowed: More than one of recursion in a single option
               // Eg. A <- A a A
+              // TODO:
               if (_findRuleInExpression(expression, ruleName)) {
                 return result;
               }

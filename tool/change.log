@@ -46,4 +46,4 @@
 0.0.35 Fixed minor bugs with error messages
 0.0.36 Changes in `MethodFailureGenerator`. Improves the handling errors in method `_failure`. Error messages now more informative
 0.0.37 Experimental feature. Elimination of the direct left recursion via the grammar formatter `pegfmt`. Eg. `pub global run peg:pegfmt recursion grammar.peg`
-    
+0.0.38 Changed algorithm of determining the lexical production rules. This was required to provide correct support of results of direct recursion elimination (via `pegfmt`). From now results of these transformations fully supported by the front-end recognizer (`TerminalRulesFinder`)

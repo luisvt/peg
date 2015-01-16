@@ -1,6 +1,6 @@
-## 
+## 0.0.38
 
-- 
+- Changed algorithm of determining the lexical production rules. This was required to provide correct support of results of direct recursion elimination (via `pegfmt`). From now results of these transformations fully supported by the front-end recognizer (`TerminalRulesFinder`)
 
 ## 0.0.37
 
