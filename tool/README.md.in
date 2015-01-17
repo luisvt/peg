@@ -20,6 +20,7 @@ The generated parsers intended for embedding into programs with the time-critica
 - Grammar reporting
 - Grammar statistics
 - High quality generated source code
+- Lazy memoization (individually for each rule)
 - Lookahead mapping tables
 - Memoization
 - Possibility to trace parsing 
@@ -27,6 +28,42 @@ The generated parsers intended for embedding into programs with the time-critica
 - Printing grammar
 - Symbols transitions (upcomming)
 - Terminal and nonterminal symbol recognition
+
+**Analysis of internal characteristic of grammar**
+
+In-depth analysis of the most important characteristics of the grammar allows generate the high quality, high performance PEG parsers.  
+List of expression analyzers:
+
+- Resolver of expected lexemes
+- Resolver of expressions that are able not consume input
+- Resolver of expression callers
+- Resolver of expression hierarchy
+- Resolver of expression length
+- Resolver of expression level
+- Resolver of expression that are matches eof
+- Resolver of expression ownership
+- Resolver of expression with actions
+- Resolver of invocations
+- Resolver of left expressions
+- Resolver of optional expressions
+- Resolver of repetition expressions
+- Resolver of right expressions
+- Resolver of rule expressions
+- Resolver of starting rules
+- Resolver of start characters
+- Resolver of terminal rules
+
+Generators used such collected data very intensively for generating the highly optimized, high performance parsers.
+
+Also for providing statistical information used the following grammar analyzers.
+
+- Finder of choices with optional expression
+- Finder of duplicate rules
+- Finder of infinite loops
+- Finder of left recursions
+- Finder of nonterminals with lexemes
+- Finder of starting rules
+- Finder of unresolved rules
 
 **Elimination of direct left recursion (experimental)**
 

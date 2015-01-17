@@ -202,7 +202,7 @@ dynamic {{NAME}}() {
 
   List<String> _generateTokenEpilog() {
     if (!productionRule.isMorpheme) {
-    //if (!productionRule.isLexical) {
+      //if (!productionRule.isLexical) {
       return const <String>[];
     }
 
@@ -212,7 +212,7 @@ dynamic {{NAME}}() {
 
   List<String> _generateTokenProlog() {
     if (!productionRule.isMorpheme) {
-    //if (!productionRule.isLexical) {
+      //if (!productionRule.isLexical) {
       return const <String>[];
     }
 
@@ -247,7 +247,7 @@ dynamic {{NAME}}() {
     }
 
     if (productionRule.isMorpheme) {
-    //if (productionRule.isLexical) {
+      //if (productionRule.isLexical) {
       block.assign('#TOKEN_EPILOG', _generateTokenEpilog());
       block.assign('#TOKEN_PROLOG', _generateTokenProlog());
     }
@@ -276,7 +276,7 @@ dynamic {{NAME}}() {
     }
 
     if (productionRule.isMorpheme) {
-    //if (productionRule.isLexical) {
+      //if (productionRule.isLexical) {
       block.assign('#TOKEN_EPILOG', _generateTokenEpilog());
       block.assign('#TOKEN_PROLOG', _generateTokenProlog());
     }

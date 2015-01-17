@@ -101,7 +101,7 @@ abstract class ParserClassGenerator extends ClassGenerator {
     var tokenNames = <int, String>{};
     for (var productionRule in grammar.productionRules) {
       if (productionRule.isMorpheme) {
-      //if (productionRule.isLexical) {
+        //if (productionRule.isLexical) {
         var flag = 0;
         var tokenId = productionRule.tokenId;
         if (productionRule.expression.maxLength == null) {

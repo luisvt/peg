@@ -1,3 +1,7 @@
+## 0.0.42
+
+- Experimental feature. Lazy memoization. Production rules that are marked by the generator as a "can be memorized" rules are turned off by default by the parser in runtime. Only on demand, when parser detects the real requirement of caching, they will be turned on. This feature allows do not perform necessarily caching of results if they was requested only once at some position. Behavior of each rule at runtime is tracked individually  
+
 ## 0.0.40
 
 - Minor changes in caching mechanics.
