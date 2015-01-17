@@ -32,6 +32,9 @@ dynamic $NAME(int id) {
     return null;
   }
   var data = map[$_CURSOR];
+  if (data == null) {
+    return null;
+  }
   $_CURSOR = data[1];
   $_SUCCESS = data[2];
   if ($_CURSOR < $_INPUT_LEN) {

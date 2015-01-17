@@ -200,6 +200,9 @@ class ArithmeticParser {
       return null;
     }
     var data = map[_cursor];
+    if (data == null) {
+      return null;
+    }
     _cursor = data[1];
     success = data[2];
     if (_cursor < _inputLen) {
@@ -955,17 +958,8 @@ class ArithmeticParser {
   dynamic _parse_SPACES() {
     // LEXEME & MORPHEME
     // SPACES <- WS*
-    var $$;          
-    var pos = _cursor;    
-    if(_cachePos[12] >= pos) {
-      $$ = _getFromCache(12);
-    } else {
-      _cachePos[12] = pos;
-    }
-    if($$ != null) {
-      return $$[0];       
-    }  
-    _beginToken(0);    
+    var $$;
+    _beginToken(0);  
     // => WS* # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
       // [\u0000-\u0010ffff]
@@ -1003,9 +997,6 @@ class ArithmeticParser {
       _failure(_expect11);
     }
     // <= WS* # Choice
-    if (_cacheable[12]) {
-      _addToCache($$, pos, 12);
-    }  
     _endToken();
     return $$;
   }

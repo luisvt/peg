@@ -173,6 +173,10 @@ dynamic {{NAME}}() {
       useCache = false;
     }
 
+    if (productionRule.expression.isOptional) {
+      useCache = false;
+    }
+
     if (useCache) {
       return _generateWithCache();
     } else {
