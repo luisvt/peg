@@ -472,17 +472,17 @@ commands:
       lexeme:
         help: Word compound of lexemes.
         abbr: l
-        allowed: [camel_case, lower_camel_case, none, underscore, upper_case, upper_camel_case]
+        allowed: [camel_case, lower_camel_case, lower_case, none, underscore, upper_case, upper_camel_case]
         defaultsTo: none
       morpheme:
         help: Word compound of morhemes.
         abbr: m
-        allowed: [camel_case, lower_camel_case, none, underscore, upper_case, upper_camel_case]
+        allowed: [camel_case, lower_camel_case, lower_case, none, underscore, upper_case, upper_camel_case]
         defaultsTo: none
       nonterminal:
         help: Word compound of nonterminals.
         abbr: n
-        allowed: [camel_case, lower_camel_case, none, underscore, upper_case, upper_camel_case]
+        allowed: [camel_case, lower_camel_case, lower_case, none, underscore, upper_case, upper_camel_case]
         defaultsTo: none
       output:
         help: The output file name.
