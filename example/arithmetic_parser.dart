@@ -458,6 +458,7 @@ class ArithmeticParser {
       // [0-9]
       case 1:
         var startPos1 = _startPos;
+        _startPos = _cursor;
         // => NUMBER
         $$ = _parse_NUMBER();
         // <= NUMBER
@@ -609,6 +610,7 @@ class ArithmeticParser {
       case 0:
       case 2:
         var startPos0 = _startPos;
+        _startPos = _cursor;
         // => !.
         var ch0 = _ch, pos0 = _cursor, testing0 = _testing; 
         _testing = _inputLen + 1;
@@ -967,6 +969,7 @@ class ArithmeticParser {
       case 0:
       case 2:
         var startPos0 = _startPos;
+        _startPos = _cursor;
         // => WS*
         var testing0 = _testing; 
         for (var reps = []; ; ) {
@@ -1033,6 +1036,7 @@ class ArithmeticParser {
               // [+]
               case 0:
                 var startPos1 = _startPos;
+                _startPos = _cursor;
                 // => PLUS
                 $$ = _parse_PLUS();
                 // <= PLUS
@@ -1041,6 +1045,7 @@ class ArithmeticParser {
               // [-]
               case 1:
                 var startPos2 = _startPos;
+                _startPos = _cursor;
                 // => MINUS
                 $$ = _parse_MINUS();
                 // <= MINUS
@@ -1087,6 +1092,7 @@ class ArithmeticParser {
           // <= Term (PLUS / MINUS) Sentence # Sequence
           if (success) break;
           var startPos3 = _startPos;
+          _startPos = _cursor;
           // => Term
           $$ = _parse_Term();
           // <= Term
@@ -1145,6 +1151,7 @@ class ArithmeticParser {
               // [*]
               case 0:
                 var startPos1 = _startPos;
+                _startPos = _cursor;
                 // => MUL
                 $$ = _parse_MUL();
                 // <= MUL
@@ -1153,6 +1160,7 @@ class ArithmeticParser {
               // [/]
               case 1:
                 var startPos2 = _startPos;
+                _startPos = _cursor;
                 // => DIV
                 $$ = _parse_DIV();
                 // <= DIV
@@ -1199,6 +1207,7 @@ class ArithmeticParser {
           // <= Atom (MUL / DIV) Term # Sequence
           if (success) break;
           var startPos3 = _startPos;
+          _startPos = _cursor;
           // => Atom
           $$ = _parse_Atom();
           // <= Atom
@@ -1235,6 +1244,7 @@ class ArithmeticParser {
       // [\t-\n] [ ]
       case 0:
         var startPos0 = _startPos;
+        _startPos = _cursor;
         // => [\t-\n\r ]
         $$ = _matchMapping(9, 32, _mapping0);
         // <= [\t-\n\r ]
@@ -1244,12 +1254,14 @@ class ArithmeticParser {
       case 1:
         while (true) {
           var startPos1 = _startPos;
+          _startPos = _cursor;
           // => [\t-\n\r ]
           $$ = _matchMapping(9, 32, _mapping0);
           // <= [\t-\n\r ]
           _startPos = startPos1;
           if (success) break;
           var startPos2 = _startPos;
+          _startPos = _cursor;
           // => '\r\n'
           $$ = _matchString(_strings0, '\r\n');
           // <= '\r\n'
@@ -1274,8 +1286,8 @@ class ArithmeticParser {
     return $$;
   }
   
-  String _text() {
-    return new String.fromCharCodes(_input.sublist(_startPos, _cursor));
+  String _text([int offset = 0]) {
+    return new String.fromCharCodes(_input.sublist(_startPos + offset, _cursor));
   }
   
   int _toCodePoint(String string) {

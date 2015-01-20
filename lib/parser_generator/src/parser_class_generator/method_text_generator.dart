@@ -14,8 +14,8 @@ class MethodTextGenerator extends DeclarationGenerator {
   static const String _TEMPLATE = "TEMPLATE";
 
   static final String _template = '''
-String $NAME() {
-  return new String.fromCharCodes($_INPUT.sublist($_START_POS, $_CURSOR));
+String $NAME([int offset = 0]) {
+  return new String.fromCharCodes($_INPUT.sublist($_START_POS + offset, $_CURSOR));
 }
 ''';
 

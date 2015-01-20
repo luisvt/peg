@@ -66,6 +66,7 @@ $_START_POS = {{START_POS}};
   static final String _templateSingle = '''
 {{#COMMENT_IN}}
 var {{START_POS}} = $_START_POS;
+$_START_POS = $_CURSOR;
 {{#EXPRESSION}}
 {{#ACTION}}
 $_START_POS = {{START_POS}};

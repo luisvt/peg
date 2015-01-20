@@ -1,6 +1,11 @@
+## 0.0.44
+
+- Added optional parameter `offset` in method `_text()`
+- Fixed bug in `SequenceExpressionGenerator` with assigning the variable `_startPos` in sequences with single expression
+
 ## 0.0.43
 
-- Added missign option values `lower_case` for formatter command `stylize`   
+- Added missign option values `lower_case` for formatter command `stylize`
 
 ## 0.0.42
 
