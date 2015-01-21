@@ -1,3 +1,7 @@
+## 0.0.45
+
+- Disabled memoization for morphemes
+
 ## 0.0.44
 
 - Added optional parameter `offset` in method `_text()`

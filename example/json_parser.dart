@@ -581,6 +581,7 @@ class JsonParser {
       // [ -!] [#-[] []-\u0010ffff]
       case 0:
         var startPos0 = _startPos;
+        _startPos = _cursor;
         // => UNESCAPED
         $$ = _parse_UNESCAPED();
         // <= UNESCAPED
@@ -818,22 +819,14 @@ class JsonParser {
   dynamic _parse_DIGIT() {
     // MORPHEME
     // DIGIT <- [0-9]
-    var $$;          
-    var pos = _cursor;    
-    if(_cachePos[23] >= pos) {
-      $$ = _getFromCache(23);
-    } else {
-      _cachePos[23] = pos;
-    }
-    if($$ != null) {
-      return $$[0];       
-    }  
-    _beginToken(4);    
+    var $$;
+    _beginToken(4);  
     // => [0-9] # Choice
     switch (_ch >= 48 && _ch <= 57 ? 0 : _ch == -1 ? 2 : 1) {
       // [0-9]
       case 0:
         var startPos0 = _startPos;
+        _startPos = _cursor;
         // => [0-9]
         $$ = _matchRange(48, 57);
         // <= [0-9]
@@ -852,9 +845,6 @@ class JsonParser {
       _failure(_expect17);
     }
     // <= [0-9] # Choice
-    if (_cacheable[23]) {
-      _addToCache($$, pos, 23);
-    }  
     _endToken();
     return $$;
   }
@@ -978,6 +968,7 @@ class JsonParser {
       case 0:
       case 2:
         var startPos0 = _startPos;
+        _startPos = _cursor;
         // => !.
         var ch0 = _ch, pos0 = _cursor, testing0 = _testing; 
         _testing = _inputLen + 1;
@@ -1009,22 +1000,14 @@ class JsonParser {
   dynamic _parse_ESCAPE() {
     // MORPHEME
     // ESCAPE <- '\\'
-    var $$;          
-    var pos = _cursor;    
-    if(_cachePos[24] >= pos) {
-      $$ = _getFromCache(24);
-    } else {
-      _cachePos[24] = pos;
-    }
-    if($$ != null) {
-      return $$[0];       
-    }  
-    _beginToken(5);    
+    var $$;
+    _beginToken(5);  
     // => '\\' # Choice
     switch (_ch == 92 ? 0 : _ch == -1 ? 2 : 1) {
       // [\\]
       case 0:
         var startPos0 = _startPos;
+        _startPos = _cursor;
         // => '\\'
         $$ = '\\';
         success = true;
@@ -1049,9 +1032,6 @@ class JsonParser {
       _failure(_expect18);
     }
     // <= '\\' # Choice
-    if (_cacheable[24]) {
-      _addToCache($$, pos, 24);
-    }  
     _endToken();
     return $$;
   }
@@ -1074,6 +1054,7 @@ class JsonParser {
             // [E]
             case 0:
               var startPos1 = _startPos;
+              _startPos = _cursor;
               // => 'E'
               $$ = 'E';
               success = true;
@@ -1088,6 +1069,7 @@ class JsonParser {
             // [e]
             case 1:
               var startPos2 = _startPos;
+              _startPos = _cursor;
               // => 'e'
               $$ = 'e';
               success = true;
@@ -1122,6 +1104,7 @@ class JsonParser {
             // [+]
             case 0:
               var startPos3 = _startPos;
+              _startPos = _cursor;
               // => '+'
               $$ = '+';
               success = true;
@@ -1136,6 +1119,7 @@ class JsonParser {
             // [-]
             case 1:
               var startPos4 = _startPos;
+              _startPos = _cursor;
               // => '-'
               $$ = '-';
               success = true;
@@ -1350,22 +1334,14 @@ class JsonParser {
   dynamic _parse_HEXDIG() {
     // MORPHEME
     // HEXDIG <- DIGIT / [a-f] / [A-F]
-    var $$;          
-    var pos = _cursor;    
-    if(_cachePos[27] >= pos) {
-      $$ = _getFromCache(27);
-    } else {
-      _cachePos[27] = pos;
-    }
-    if($$ != null) {
-      return $$[0];       
-    }  
-    _beginToken(8);    
+    var $$;
+    _beginToken(8);  
     // => DIGIT / [a-f] / [A-F] # Choice
     switch (_getState(_transitions8)) {
       // [0-9]
       case 0:
         var startPos0 = _startPos;
+        _startPos = _cursor;
         // => DIGIT
         $$ = _parse_DIGIT();
         // <= DIGIT
@@ -1374,6 +1350,7 @@ class JsonParser {
       // [A-F]
       case 1:
         var startPos1 = _startPos;
+        _startPos = _cursor;
         // => [A-F]
         $$ = _matchRange(65, 70);
         // <= [A-F]
@@ -1382,6 +1359,7 @@ class JsonParser {
       // [a-f]
       case 2:
         var startPos2 = _startPos;
+        _startPos = _cursor;
         // => [a-f]
         $$ = _matchRange(97, 102);
         // <= [a-f]
@@ -1400,9 +1378,6 @@ class JsonParser {
       _failure(_expect22);
     }
     // <= DIGIT / [a-f] / [A-F] # Choice
-    if (_cacheable[27]) {
-      _addToCache($$, pos, 27);
-    }  
     _endToken();
     return $$;
   }
@@ -1417,6 +1392,7 @@ class JsonParser {
       // [0-9]
       case 0:
         var startPos0 = _startPos;
+        _startPos = _cursor;
         // => DIGIT+
         var testing0;
         for (var first = true, reps; ;) {  
@@ -1720,22 +1696,14 @@ class JsonParser {
   dynamic _parse_QUOTATION_MARK() {
     // MORPHEME
     // QUOTATION_MARK <- '"'
-    var $$;          
-    var pos = _cursor;    
-    if(_cachePos[30] >= pos) {
-      $$ = _getFromCache(30);
-    } else {
-      _cachePos[30] = pos;
-    }
-    if($$ != null) {
-      return $$[0];       
-    }  
-    _beginToken(11);    
+    var $$;
+    _beginToken(11);  
     // => '"' # Choice
     switch (_ch == 34 ? 0 : _ch == -1 ? 2 : 1) {
       // [\"]
       case 0:
         var startPos0 = _startPos;
+        _startPos = _cursor;
         // => '"'
         $$ = '\"';
         success = true;
@@ -1760,9 +1728,6 @@ class JsonParser {
       _failure(_expect2);
     }
     // <= '"' # Choice
-    if (_cacheable[30]) {
-      _addToCache($$, pos, 30);
-    }  
     _endToken();
     return $$;
   }
@@ -1861,6 +1826,7 @@ class JsonParser {
       case 0:
       case 2:
         var startPos0 = _startPos;
+        _startPos = _cursor;
         // => CHAR*
         var testing0 = _testing; 
         for (var reps = []; ; ) {
@@ -1967,6 +1933,7 @@ class JsonParser {
       // [ -!]
       case 0:
         var startPos0 = _startPos;
+        _startPos = _cursor;
         // => [ -!]
         $$ = _matchRange(32, 33);
         // <= [ -!]
@@ -1975,6 +1942,7 @@ class JsonParser {
       // [#-[]
       case 1:
         var startPos1 = _startPos;
+        _startPos = _cursor;
         // => [#-\[]
         $$ = _matchRange(35, 91);
         // <= [#-\[]
@@ -1984,12 +1952,14 @@ class JsonParser {
       case 2:
         while (true) {
           var startPos2 = _startPos;
+          _startPos = _cursor;
           // => [\]-~]
           $$ = _matchRange(93, 126);
           // <= [\]-~]
           _startPos = startPos2;
           if (success) break;
           var startPos3 = _startPos;
+          _startPos = _cursor;
           // => [\]-\u10ffff]
           $$ = _matchRange(93, 1114111);
           // <= [\]-\u10ffff]
@@ -2000,6 +1970,7 @@ class JsonParser {
       // [\u007f-\u0010ffff]
       case 3:
         var startPos4 = _startPos;
+        _startPos = _cursor;
         // => [\]-\u10ffff]
         $$ = _matchRange(93, 1114111);
         // <= [\]-\u10ffff]
@@ -2100,6 +2071,7 @@ class JsonParser {
       case 0:
       case 2:
         var startPos0 = _startPos;
+        _startPos = _cursor;
         // => [\t-\n\r ]*
         var testing0 = _testing; 
         for (var reps = []; ; ) {
@@ -2473,6 +2445,7 @@ class JsonParser {
       // [\"]
       case 0:
         var startPos0 = _startPos;
+        _startPos = _cursor;
         // => STRING
         $$ = _parse_STRING();
         // <= STRING
@@ -2481,6 +2454,7 @@ class JsonParser {
       // [-] [0-9]
       case 1:
         var startPos1 = _startPos;
+        _startPos = _cursor;
         // => NUMBER
         $$ = _parse_NUMBER();
         // <= NUMBER
@@ -2489,6 +2463,7 @@ class JsonParser {
       // [[]
       case 2:
         var startPos2 = _startPos;
+        _startPos = _cursor;
         // => array
         $$ = _parse_array();
         // <= array
@@ -2497,6 +2472,7 @@ class JsonParser {
       // [f]
       case 3:
         var startPos3 = _startPos;
+        _startPos = _cursor;
         // => FALSE
         $$ = _parse_FALSE();
         // <= FALSE
@@ -2505,6 +2481,7 @@ class JsonParser {
       // [n]
       case 4:
         var startPos4 = _startPos;
+        _startPos = _cursor;
         // => NULL
         $$ = _parse_NULL();
         // <= NULL
@@ -2513,6 +2490,7 @@ class JsonParser {
       // [t]
       case 5:
         var startPos5 = _startPos;
+        _startPos = _cursor;
         // => TRUE
         $$ = _parse_TRUE();
         // <= TRUE
@@ -2521,6 +2499,7 @@ class JsonParser {
       // [{]
       case 6:
         var startPos6 = _startPos;
+        _startPos = _cursor;
         // => object
         $$ = _parse_object();
         // <= object
@@ -2653,8 +2632,8 @@ class JsonParser {
     return $$;
   }
   
-  String _text() {
-    return new String.fromCharCodes(_input.sublist(_startPos, _cursor));
+  String _text([int offset = 0]) {
+    return new String.fromCharCodes(_input.sublist(_startPos + offset, _cursor));
   }
   
   int _toCodePoint(String string) {

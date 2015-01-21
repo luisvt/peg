@@ -177,6 +177,10 @@ dynamic {{NAME}}() {
       useCache = false;
     }
 
+    if (productionRule.isMorpheme) {
+      useCache = false;
+    }
+
     if (useCache) {
       return _generateWithCache();
     } else {
