@@ -439,8 +439,7 @@ class ArithmeticParser {
     reset(0);    
   }
   
-  void _addToCache(dynamic result, int start, int id) {
-    _caching = true; 
+  void _addToCache(dynamic result, int start, int id) {   
     var map = _cache[id];
     if (map == null) {
       map = <int, List>{};
@@ -518,8 +517,7 @@ class ArithmeticParser {
     return [value];
   }
   
-  dynamic _getFromCache(int id) {
-    _caching = false;  
+  dynamic _getFromCache(int id) {  
     if (!_cacheable[id]) {  
       _cacheable[id] = true;  
       return null;
@@ -539,7 +537,6 @@ class ArithmeticParser {
     } else {
       _ch = -1;
     }
-    _caching = true;
     return data;  
   }
   
@@ -734,7 +731,8 @@ class ArithmeticParser {
     // Atom <- NUMBER / OPEN Sentence CLOSE
     var $$;          
     var pos = _cursor;
-    var caching = _caching;     
+    var caching = _caching;
+    _caching = _cacheable[3] ? false : _caching;         
     if(_cachePos[3] >= pos) {
       $$ = _getFromCache(3);
       if($$ != null) {
@@ -810,14 +808,26 @@ class ArithmeticParser {
     // <= NUMBER / OPEN Sentence CLOSE # Choice
     if (caching && _cacheable[3]) {
       _addToCache($$, pos, 3);
-    }  
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_CLOSE() {
     // LEXEME
     // CLOSE <- ')' SPACES
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[4] ? false : _caching;         
+    if(_cachePos[4] >= pos) {
+      $$ = _getFromCache(4);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[4] = pos;
+    }  
     // => ')' SPACES # Choice
     switch (_ch == 41 ? 0 : _ch == -1 ? 2 : 1) {
       // [)]
@@ -865,13 +875,28 @@ class ArithmeticParser {
       _failure(_expect3);
     }
     // <= ')' SPACES # Choice
+    if (caching && _cacheable[4]) {
+      _addToCache($$, pos, 4);
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_DIV() {
     // LEXEME
     // DIV <- '/' SPACES
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[5] ? false : _caching;         
+    if(_cachePos[5] >= pos) {
+      $$ = _getFromCache(5);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[5] = pos;
+    }  
     // => '/' SPACES # Choice
     switch (_ch == 47 ? 0 : _ch == -1 ? 2 : 1) {
       // [/]
@@ -927,13 +952,28 @@ class ArithmeticParser {
       _failure(_expect4);
     }
     // <= '/' SPACES # Choice
+    if (caching && _cacheable[5]) {
+      _addToCache($$, pos, 5);
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_EOF() {
     // LEXEME
     // EOF <- !.
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[6] ? false : _caching;         
+    if(_cachePos[6] >= pos) {
+      $$ = _getFromCache(6);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[6] = pos;
+    }  
     // => !. # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
       // [\u0000-\u0010ffff]
@@ -967,13 +1007,28 @@ class ArithmeticParser {
       _failure(_expect5);
     }
     // <= !. # Choice
+    if (caching && _cacheable[6]) {
+      _addToCache($$, pos, 6);
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_MINUS() {
     // LEXEME
     // MINUS <- '-' SPACES
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[7] ? false : _caching;         
+    if(_cachePos[7] >= pos) {
+      $$ = _getFromCache(7);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[7] = pos;
+    }  
     // => '-' SPACES # Choice
     switch (_ch == 45 ? 0 : _ch == -1 ? 2 : 1) {
       // [-]
@@ -1029,13 +1084,28 @@ class ArithmeticParser {
       _failure(_expect6);
     }
     // <= '-' SPACES # Choice
+    if (caching && _cacheable[7]) {
+      _addToCache($$, pos, 7);
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_MUL() {
     // LEXEME
     // MUL <- '*' SPACES
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[8] ? false : _caching;         
+    if(_cachePos[8] >= pos) {
+      $$ = _getFromCache(8);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[8] = pos;
+    }  
     // => '*' SPACES # Choice
     switch (_ch == 42 ? 0 : _ch == -1 ? 2 : 1) {
       // [*]
@@ -1091,13 +1161,28 @@ class ArithmeticParser {
       _failure(_expect7);
     }
     // <= '*' SPACES # Choice
+    if (caching && _cacheable[8]) {
+      _addToCache($$, pos, 8);
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_NUMBER() {
     // LEXEME
     // NUMBER <- [0-9]+ SPACES
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[9] ? false : _caching;         
+    if(_cachePos[9] >= pos) {
+      $$ = _getFromCache(9);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[9] = pos;
+    }  
     // => [0-9]+ SPACES # Choice
     switch (_ch >= 48 && _ch <= 57 ? 0 : _ch == -1 ? 2 : 1) {
       // [0-9]
@@ -1169,13 +1254,28 @@ class ArithmeticParser {
       _failure(_expect8);
     }
     // <= [0-9]+ SPACES # Choice
+    if (caching && _cacheable[9]) {
+      _addToCache($$, pos, 9);
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_OPEN() {
     // LEXEME
     // OPEN <- '(' SPACES
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[10] ? false : _caching;         
+    if(_cachePos[10] >= pos) {
+      $$ = _getFromCache(10);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[10] = pos;
+    }  
     // => '(' SPACES # Choice
     switch (_ch == 40 ? 0 : _ch == -1 ? 2 : 1) {
       // [(]
@@ -1223,13 +1323,28 @@ class ArithmeticParser {
       _failure(_expect9);
     }
     // <= '(' SPACES # Choice
+    if (caching && _cacheable[10]) {
+      _addToCache($$, pos, 10);
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_PLUS() {
     // LEXEME
     // PLUS <- '+' SPACES
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[11] ? false : _caching;         
+    if(_cachePos[11] >= pos) {
+      $$ = _getFromCache(11);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[11] = pos;
+    }  
     // => '+' SPACES # Choice
     switch (_ch == 43 ? 0 : _ch == -1 ? 2 : 1) {
       // [+]
@@ -1285,6 +1400,10 @@ class ArithmeticParser {
       _failure(_expect10);
     }
     // <= '+' SPACES # Choice
+    if (caching && _cacheable[11]) {
+      _addToCache($$, pos, 11);
+    }
+    _caching = caching;  
     return $$;
   }
   
@@ -1340,7 +1459,8 @@ class ArithmeticParser {
     // Sentence <- Term (PLUS / MINUS) Sentence / Term
     var $$;          
     var pos = _cursor;
-    var caching = _caching;     
+    var caching = _caching;
+    _caching = _cacheable[1] ? false : _caching;         
     if(_cachePos[1] >= pos) {
       $$ = _getFromCache(1);
       if($$ != null) {
@@ -1447,7 +1567,8 @@ class ArithmeticParser {
     // <= Term (PLUS / MINUS) Sentence / Term # Choice
     if (caching && _cacheable[1]) {
       _addToCache($$, pos, 1);
-    }  
+    }
+    _caching = caching;  
     return $$;
   }
   
@@ -1456,7 +1577,8 @@ class ArithmeticParser {
     // Term <- Atom (MUL / DIV) Term / Atom
     var $$;          
     var pos = _cursor;
-    var caching = _caching;     
+    var caching = _caching;
+    _caching = _cacheable[2] ? false : _caching;         
     if(_cachePos[2] >= pos) {
       $$ = _getFromCache(2);
       if($$ != null) {
@@ -1563,15 +1685,27 @@ class ArithmeticParser {
     // <= Atom (MUL / DIV) Term / Atom # Choice
     if (caching && _cacheable[2]) {
       _addToCache($$, pos, 2);
-    }  
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_WS() {
     // MORPHEME
     // WS <- [\t-\n\r ] / '\r\n'
-    var $$;
-    _beginToken(1);  
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[13] ? false : _caching;         
+    if(_cachePos[13] >= pos) {
+      $$ = _getFromCache(13);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[13] = pos;
+    }  
+    _beginToken(1);    
     // => [\t-\n\r ] / '\r\n' # Choice
     switch (_getState(_transitions4)) {
       // [\t-\n] [ ]
@@ -1615,6 +1749,10 @@ class ArithmeticParser {
       _failure(_expect12);
     }
     // <= [\t-\n\r ] / '\r\n' # Choice
+    if (caching && _cacheable[13]) {
+      _addToCache($$, pos, 13);
+    }
+    _caching = caching;  
     _endToken();
     return $$;
   }
@@ -1753,7 +1891,18 @@ class ArithmeticParser {
   dynamic parse_Expr() {
     // NONTERMINAL
     // Expr <- SPACES? Sentence EOF
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[0] ? false : _caching;         
+    if(_cachePos[0] >= pos) {
+      $$ = _getFromCache(0);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[0] = pos;
+    }  
     // => SPACES? Sentence EOF # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
       // [\u0000-\u0010ffff]
@@ -1816,6 +1965,10 @@ class ArithmeticParser {
       _failure(_expect0);
     }
     // <= SPACES? Sentence EOF # Choice
+    if (caching && _cacheable[0]) {
+      _addToCache($$, pos, 0);
+    }
+    _caching = caching;  
     return $$;
   }
   

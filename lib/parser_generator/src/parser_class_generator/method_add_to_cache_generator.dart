@@ -5,8 +5,6 @@ class MethodAddToCacheGenerator extends DeclarationGenerator {
 
   static const String _CACHE = ParserClassGenerator.CACHE;
 
-  static const String _CACHING = ParserClassGenerator.CACHING;
-
   static const String _CURSOR = ParserClassGenerator.CURSOR;
 
   static const String _SUCCESS = ParserClassGenerator.SUCCESS;
@@ -14,8 +12,7 @@ class MethodAddToCacheGenerator extends DeclarationGenerator {
   static const String _TEMPLATE = "TEMPLATE";
 
   static final String _template = '''
-void $NAME(dynamic result, int start, int id) {
-  $_CACHING = true; 
+void $NAME(dynamic result, int start, int id) {   
   var map = $_CACHE[id];
   if (map == null) {
     map = <int, List>{};

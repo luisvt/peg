@@ -109,11 +109,31 @@ switch ({{STATE}}) {
   List<String> _generate() {
     var block = getTemplateBlock(_TEMPLATE);
     var expected = _expression.expectedLexemes;
-    block.assign('EXPECTED', productionRuleGenerator.parserClassGenerator.addExpected(expected));
+    var expectedList = expected.toList();
+    var length = expectedList.length;
+    var printableExpected = [];
+    var hasNull = false;
+    for (var i = 0; i < length; i++) {
+      var element = expectedList[i];
+      if (element != null) {
+        printableExpected.add(toPrintable(element));
+      } else {
+        printableExpected = [];
+        hasNull = true;
+        break;
+      }
+    }
+
+    if (hasNull) {
+      block.assign('EXPECTED', 'null');
+    } else {
+      block.assign('EXPECTED', productionRuleGenerator.parserClassGenerator.addExpected(expected));
+    }
+
     if (options.comment) {
       block.assign('#COMMENT_IN', '// => $_expression # Choice');
       block.assign('#COMMENT_OUT', '// <= $_expression # Choice');
-      block.assign('#COMMENT_EXPECTED', '// Expected: ${expected.join(", ")}');
+      block.assign('#COMMENT_EXPECTED', '// Expected: ${printableExpected.join(", ")}');
     }
 
     var states = _generateStates();

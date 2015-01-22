@@ -81,21 +81,19 @@ class PegParser {
   
   static final List<String> _expect24 = <String>["\'#\'"];
   
-  static final List<String> _expect25 = <String>[null];
+  static final List<String> _expect25 = <String>["EOL"];
   
-  static final List<String> _expect26 = <String>["EOL"];
+  static final List<String> _expect26 = <String>["GLOBALS_BODY"];
   
-  static final List<String> _expect27 = <String>["GLOBALS_BODY"];
+  static final List<String> _expect27 = <String>["HEX_NUMBER"];
   
-  static final List<String> _expect28 = <String>["HEX_NUMBER"];
+  static final List<String> _expect28 = <String>["IDENT_CONT"];
   
-  static final List<String> _expect29 = <String>["IDENT_CONT"];
+  static final List<String> _expect29 = <String>["IDENT_START"];
   
   static final List<String> _expect3 = <String>["\'!\'", "\'&\'"];
   
-  static final List<String> _expect30 = <String>["IDENT_START"];
-  
-  static final List<String> _expect31 = <String>["SPACE"];
+  static final List<String> _expect30 = <String>["SPACE"];
   
   static final List<String> _expect4 = <String>["\'*\'", "\'+\'", "\'?\'"];
   
@@ -213,8 +211,7 @@ class PegParser {
     reset(0);    
   }
   
-  void _addToCache(dynamic result, int start, int id) {
-    _caching = true; 
+  void _addToCache(dynamic result, int start, int id) {   
     var map = _cache[id];
     if (map == null) {
       map = <int, List>{};
@@ -292,8 +289,7 @@ class PegParser {
     return [value];
   }
   
-  dynamic _getFromCache(int id) {
-    _caching = false;  
+  dynamic _getFromCache(int id) {  
     if (!_cacheable[id]) {  
       _cacheable[id] = true;  
       return null;
@@ -313,7 +309,6 @@ class PegParser {
     } else {
       _ch = -1;
     }
-    _caching = true;
     return data;  
   }
   
@@ -506,7 +501,18 @@ class PegParser {
   dynamic _parse_ACTION() {
     // LEXEME
     // ACTION <- '{' ACTION_BODY* '}' SPACING
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[7] ? false : _caching;         
+    if(_cachePos[7] >= pos) {
+      $$ = _getFromCache(7);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[7] = pos;
+    }  
     // => '{' ACTION_BODY* '}' SPACING # Choice
     switch (_ch == 123 ? 0 : _ch == -1 ? 2 : 1) {
       // [{]
@@ -590,6 +596,10 @@ class PegParser {
       _failure(_expect5);
     }
     // <= '{' ACTION_BODY* '}' SPACING # Choice
+    if (caching && _cacheable[7]) {
+      _addToCache($$, pos, 7);
+    }
+    _caching = caching;  
     return $$;
   }
   
@@ -598,7 +608,8 @@ class PegParser {
     // ACTION_BODY <- '{' ACTION_BODY* '}' / !'}' .
     var $$;          
     var pos = _cursor;
-    var caching = _caching;     
+    var caching = _caching;
+    _caching = _cacheable[25] ? false : _caching;         
     if(_cachePos[25] >= pos) {
       $$ = _getFromCache(25);
       if($$ != null) {
@@ -773,7 +784,8 @@ class PegParser {
     // <= '{' ACTION_BODY* '}' / !'}' . # Choice
     if (caching && _cacheable[25]) {
       _addToCache($$, pos, 25);
-    }  
+    }
+    _caching = caching;  
     _endToken();
     return $$;
   }
@@ -781,7 +793,18 @@ class PegParser {
   dynamic _parse_AND() {
     // LEXEME
     // AND <- '&' SPACING
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[8] ? false : _caching;         
+    if(_cachePos[8] >= pos) {
+      $$ = _getFromCache(8);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[8] = pos;
+    }  
     // => '&' SPACING # Choice
     switch (_ch == 38 ? 0 : _ch == -1 ? 2 : 1) {
       // [&]
@@ -837,6 +860,10 @@ class PegParser {
       _failure(_expect6);
     }
     // <= '&' SPACING # Choice
+    if (caching && _cacheable[8]) {
+      _addToCache($$, pos, 8);
+    }
+    _caching = caching;  
     return $$;
   }
   
@@ -845,7 +872,8 @@ class PegParser {
     // CHAR <- '\\' ["'\-\[-\]nrt] / HEX_NUMBER / !'\\' !EOL .
     var $$;          
     var pos = _cursor;
-    var caching = _caching;     
+    var caching = _caching;
+    _caching = _cacheable[26] ? false : _caching;         
     if(_cachePos[26] >= pos) {
       $$ = _getFromCache(26);
       if($$ != null) {
@@ -1038,7 +1066,8 @@ class PegParser {
     // <= '\\' ["'\-\[-\]nrt] / HEX_NUMBER / !'\\' !EOL . # Choice
     if (caching && _cacheable[26]) {
       _addToCache($$, pos, 26);
-    }  
+    }
+    _caching = caching;  
     _endToken();
     return $$;
   }
@@ -1046,7 +1075,18 @@ class PegParser {
   dynamic _parse_CLASS() {
     // LEXEME
     // CLASS <- '[' (!']' RANGE)* ']' SPACING
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[9] ? false : _caching;         
+    if(_cachePos[9] >= pos) {
+      $$ = _getFromCache(9);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[9] = pos;
+    }  
     // => '[' (!']' RANGE)* ']' SPACING # Choice
     switch (_ch == 91 ? 0 : _ch == -1 ? 2 : 1) {
       // [[]
@@ -1185,13 +1225,28 @@ class PegParser {
       _failure(_expect7);
     }
     // <= '[' (!']' RANGE)* ']' SPACING # Choice
+    if (caching && _cacheable[9]) {
+      _addToCache($$, pos, 9);
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_CLOSE() {
     // LEXEME
     // CLOSE <- ')' SPACING
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[10] ? false : _caching;         
+    if(_cachePos[10] >= pos) {
+      $$ = _getFromCache(10);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[10] = pos;
+    }  
     // => ')' SPACING # Choice
     switch (_ch == 41 ? 0 : _ch == -1 ? 2 : 1) {
       // [)]
@@ -1239,14 +1294,29 @@ class PegParser {
       _failure(_expect9);
     }
     // <= ')' SPACING # Choice
+    if (caching && _cacheable[10]) {
+      _addToCache($$, pos, 10);
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_COMMENT() {
     // MORPHEME
     // COMMENT <- '#' (!EOL .)* EOL?
-    var $$;
-    _beginToken(3);  
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[27] ? false : _caching;         
+    if(_cachePos[27] >= pos) {
+      $$ = _getFromCache(27);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[27] = pos;
+    }  
+    _beginToken(3);    
     // => '#' (!EOL .)* EOL? # Choice
     switch (_ch == 35 ? 0 : _ch == -1 ? 2 : 1) {
       // [#]
@@ -1316,8 +1386,8 @@ class PegParser {
                 break;
             }
             if (!success && _cursor > _testing) {
-              // Expected: null
-              _failure(_expect25);
+              // Expected: 
+              _failure(null);
             }
             // <= (!EOL .) # Choice
             if (success) {  
@@ -1366,6 +1436,10 @@ class PegParser {
       _failure(_expect24);
     }
     // <= '#' (!EOL .)* EOL? # Choice
+    if (caching && _cacheable[27]) {
+      _addToCache($$, pos, 27);
+    }
+    _caching = caching;  
     _endToken();
     return $$;
   }
@@ -1373,7 +1447,18 @@ class PegParser {
   dynamic _parse_DOT() {
     // LEXEME
     // DOT <- '.' SPACING
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[11] ? false : _caching;         
+    if(_cachePos[11] >= pos) {
+      $$ = _getFromCache(11);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[11] = pos;
+    }  
     // => '.' SPACING # Choice
     switch (_ch == 46 ? 0 : _ch == -1 ? 2 : 1) {
       // [.]
@@ -1421,13 +1506,28 @@ class PegParser {
       _failure(_expect10);
     }
     // <= '.' SPACING # Choice
+    if (caching && _cacheable[11]) {
+      _addToCache($$, pos, 11);
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_Definition() {
     // NONTERMINAL
     // Definition <- IDENTIFIER LEFTARROW Expression
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[1] ? false : _caching;         
+    if(_cachePos[1] >= pos) {
+      $$ = _getFromCache(1);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[1] = pos;
+    }  
     // => IDENTIFIER LEFTARROW Expression # Choice
     switch (_getState(_transitions0)) {
       // [A-Z] [_] [a-z]
@@ -1484,13 +1584,28 @@ class PegParser {
       _failure(_expect0);
     }
     // <= IDENTIFIER LEFTARROW Expression # Choice
+    if (caching && _cacheable[1]) {
+      _addToCache($$, pos, 1);
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_EOF() {
     // LEXEME
     // EOF <- !.
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[12] ? false : _caching;         
+    if(_cachePos[12] >= pos) {
+      $$ = _getFromCache(12);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[12] = pos;
+    }  
     // => !. # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
       // [\u0000-\u0010ffff]
@@ -1524,6 +1639,10 @@ class PegParser {
       _failure(_expect11);
     }
     // <= !. # Choice
+    if (caching && _cacheable[12]) {
+      _addToCache($$, pos, 12);
+    }
+    _caching = caching;  
     return $$;
   }
   
@@ -1532,7 +1651,8 @@ class PegParser {
     // EOL <- '\r\n' / [\n\r]
     var $$;          
     var pos = _cursor;
-    var caching = _caching;     
+    var caching = _caching;
+    _caching = _cacheable[28] ? false : _caching;         
     if(_cachePos[28] >= pos) {
       $$ = _getFromCache(28);
       if($$ != null) {
@@ -1582,12 +1702,13 @@ class PegParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: EOL
-      _failure(_expect26);
+      _failure(_expect25);
     }
     // <= '\r\n' / [\n\r] # Choice
     if (caching && _cacheable[28]) {
       _addToCache($$, pos, 28);
-    }  
+    }
+    _caching = caching;  
     _endToken();
     return $$;
   }
@@ -1597,7 +1718,8 @@ class PegParser {
     // Expression <- Sequence (SLASH Sequence)*
     var $$;          
     var pos = _cursor;
-    var caching = _caching;     
+    var caching = _caching;
+    _caching = _cacheable[2] ? false : _caching;         
     if(_cachePos[2] >= pos) {
       $$ = _getFromCache(2);
       if($$ != null) {
@@ -1709,14 +1831,26 @@ class PegParser {
     // <= Sequence (SLASH Sequence)* # Choice
     if (caching && _cacheable[2]) {
       _addToCache($$, pos, 2);
-    }  
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_GLOBALS() {
     // LEXEME
     // GLOBALS <- '%{' GLOBALS_BODY* '}%' SPACING
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[13] ? false : _caching;         
+    if(_cachePos[13] >= pos) {
+      $$ = _getFromCache(13);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[13] = pos;
+    }  
     // => '%{' GLOBALS_BODY* '}%' SPACING # Choice
     switch (_ch == 37 ? 0 : _ch == -1 ? 2 : 1) {
       // [%]
@@ -1794,14 +1928,29 @@ class PegParser {
       _failure(_expect12);
     }
     // <= '%{' GLOBALS_BODY* '}%' SPACING # Choice
+    if (caching && _cacheable[13]) {
+      _addToCache($$, pos, 13);
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_GLOBALS_BODY() {
     // MORPHEME
     // GLOBALS_BODY <- !'}%' .
-    var $$;
-    _beginToken(5);  
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[29] ? false : _caching;         
+    if(_cachePos[29] >= pos) {
+      $$ = _getFromCache(29);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[29] = pos;
+    }  
+    _beginToken(5);    
     // => !'}%' . # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
       // [\u0000-\u0010ffff]
@@ -1857,9 +2006,13 @@ class PegParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: GLOBALS_BODY
-      _failure(_expect27);
+      _failure(_expect26);
     }
     // <= !'}%' . # Choice
+    if (caching && _cacheable[29]) {
+      _addToCache($$, pos, 29);
+    }
+    _caching = caching;  
     _endToken();
     return $$;
   }
@@ -1867,8 +2020,19 @@ class PegParser {
   dynamic _parse_HEX_NUMBER() {
     // MORPHEME
     // HEX_NUMBER <- [\\] 'u' [0-9A-Fa-f]+
-    var $$;
-    _beginToken(6);  
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[30] ? false : _caching;         
+    if(_cachePos[30] >= pos) {
+      $$ = _getFromCache(30);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[30] = pos;
+    }  
+    _beginToken(6);    
     // => [\\] 'u' [0-9A-Fa-f]+ # Choice
     switch (_ch == 92 ? 0 : _ch == -1 ? 2 : 1) {
       // [\\]
@@ -1950,9 +2114,13 @@ class PegParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: HEX_NUMBER
-      _failure(_expect28);
+      _failure(_expect27);
     }
     // <= [\\] 'u' [0-9A-Fa-f]+ # Choice
+    if (caching && _cacheable[30]) {
+      _addToCache($$, pos, 30);
+    }
+    _caching = caching;  
     _endToken();
     return $$;
   }
@@ -1962,7 +2130,8 @@ class PegParser {
     // IDENTIFIER <- IDENT_START IDENT_CONT* SPACING
     var $$;          
     var pos = _cursor;
-    var caching = _caching;     
+    var caching = _caching;
+    _caching = _cacheable[14] ? false : _caching;         
     if(_cachePos[14] >= pos) {
       $$ = _getFromCache(14);
       if($$ != null) {
@@ -2043,15 +2212,27 @@ class PegParser {
     // <= IDENT_START IDENT_CONT* SPACING # Choice
     if (caching && _cacheable[14]) {
       _addToCache($$, pos, 14);
-    }  
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_IDENT_CONT() {
     // MORPHEME
     // IDENT_CONT <- IDENT_START / [0-9]
-    var $$;
-    _beginToken(7);  
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[31] ? false : _caching;         
+    if(_cachePos[31] >= pos) {
+      $$ = _getFromCache(31);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[31] = pos;
+    }  
+    _beginToken(7);    
     // => IDENT_START / [0-9] # Choice
     switch (_getState(_transitions11)) {
       // [0-9]
@@ -2082,9 +2263,13 @@ class PegParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: IDENT_CONT
-      _failure(_expect29);
+      _failure(_expect28);
     }
     // <= IDENT_START / [0-9] # Choice
+    if (caching && _cacheable[31]) {
+      _addToCache($$, pos, 31);
+    }
+    _caching = caching;  
     _endToken();
     return $$;
   }
@@ -2094,7 +2279,8 @@ class PegParser {
     // IDENT_START <- [A-Z_a-z]
     var $$;          
     var pos = _cursor;
-    var caching = _caching;     
+    var caching = _caching;
+    _caching = _cacheable[32] ? false : _caching;         
     if(_cachePos[32] >= pos) {
       $$ = _getFromCache(32);
       if($$ != null) {
@@ -2125,12 +2311,13 @@ class PegParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: IDENT_START
-      _failure(_expect30);
+      _failure(_expect29);
     }
     // <= [A-Z_a-z] # Choice
     if (caching && _cacheable[32]) {
       _addToCache($$, pos, 32);
-    }  
+    }
+    _caching = caching;  
     _endToken();
     return $$;
   }
@@ -2140,7 +2327,8 @@ class PegParser {
     // LEFTARROW <- '<-' SPACING
     var $$;          
     var pos = _cursor;
-    var caching = _caching;     
+    var caching = _caching;
+    _caching = _cacheable[15] ? false : _caching;         
     if(_cachePos[15] >= pos) {
       $$ = _getFromCache(15);
       if($$ != null) {
@@ -2192,14 +2380,26 @@ class PegParser {
     // <= '<-' SPACING # Choice
     if (caching && _cacheable[15]) {
       _addToCache($$, pos, 15);
-    }  
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_LITERAL() {
     // LEXEME
     // LITERAL <- '\'' (!'\'' CHAR)* '\'' SPACING / '"' (!'"' CHAR)* '"' SPACING
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[16] ? false : _caching;         
+    if(_cachePos[16] >= pos) {
+      $$ = _getFromCache(16);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[16] = pos;
+    }  
     // => '\'' (!'\'' CHAR)* '\'' SPACING / '"' (!'"' CHAR)* '"' SPACING # Choice
     switch (_getState(_transitions6)) {
       // [\"]
@@ -2461,13 +2661,28 @@ class PegParser {
       _failure(_expect14);
     }
     // <= '\'' (!'\'' CHAR)* '\'' SPACING / '"' (!'"' CHAR)* '"' SPACING # Choice
+    if (caching && _cacheable[16]) {
+      _addToCache($$, pos, 16);
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_MEMBERS() {
     // LEXEME
     // MEMBERS <- '{' ACTION_BODY* '}' SPACING
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[17] ? false : _caching;         
+    if(_cachePos[17] >= pos) {
+      $$ = _getFromCache(17);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[17] = pos;
+    }  
     // => '{' ACTION_BODY* '}' SPACING # Choice
     switch (_ch == 123 ? 0 : _ch == -1 ? 2 : 1) {
       // [{]
@@ -2551,13 +2766,28 @@ class PegParser {
       _failure(_expect5);
     }
     // <= '{' ACTION_BODY* '}' SPACING # Choice
+    if (caching && _cacheable[17]) {
+      _addToCache($$, pos, 17);
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_NOT() {
     // LEXEME
     // NOT <- '!' SPACING
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[18] ? false : _caching;         
+    if(_cachePos[18] >= pos) {
+      $$ = _getFromCache(18);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[18] = pos;
+    }  
     // => '!' SPACING # Choice
     switch (_ch == 33 ? 0 : _ch == -1 ? 2 : 1) {
       // [!]
@@ -2613,13 +2843,28 @@ class PegParser {
       _failure(_expect16);
     }
     // <= '!' SPACING # Choice
+    if (caching && _cacheable[18]) {
+      _addToCache($$, pos, 18);
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_OPEN() {
     // LEXEME
     // OPEN <- '(' SPACING
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[19] ? false : _caching;         
+    if(_cachePos[19] >= pos) {
+      $$ = _getFromCache(19);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[19] = pos;
+    }  
     // => '(' SPACING # Choice
     switch (_ch == 40 ? 0 : _ch == -1 ? 2 : 1) {
       // [(]
@@ -2667,13 +2912,28 @@ class PegParser {
       _failure(_expect17);
     }
     // <= '(' SPACING # Choice
+    if (caching && _cacheable[19]) {
+      _addToCache($$, pos, 19);
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_PLUS() {
     // LEXEME
     // PLUS <- '+' SPACING
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[20] ? false : _caching;         
+    if(_cachePos[20] >= pos) {
+      $$ = _getFromCache(20);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[20] = pos;
+    }  
     // => '+' SPACING # Choice
     switch (_ch == 43 ? 0 : _ch == -1 ? 2 : 1) {
       // [+]
@@ -2729,13 +2989,28 @@ class PegParser {
       _failure(_expect18);
     }
     // <= '+' SPACING # Choice
+    if (caching && _cacheable[20]) {
+      _addToCache($$, pos, 20);
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_Prefix() {
     // NONTERMINAL
     // Prefix <- (AND / NOT)? Suffix ACTION?
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[4] ? false : _caching;         
+    if(_cachePos[4] >= pos) {
+      $$ = _getFromCache(4);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[4] = pos;
+    }  
     // => (AND / NOT)? Suffix ACTION? # Choice
     switch (_getState(_transitions1)) {
       // [!-\"] [&-(] [.] [A-[] [_] [a-z]
@@ -2834,13 +3109,28 @@ class PegParser {
       _failure(_expect1);
     }
     // <= (AND / NOT)? Suffix ACTION? # Choice
+    if (caching && _cacheable[4]) {
+      _addToCache($$, pos, 4);
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_Primary() {
     // NONTERMINAL
     // Primary <- IDENTIFIER !LEFTARROW / OPEN Expression CLOSE / LITERAL / CLASS / DOT
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[6] ? false : _caching;         
+    if(_cachePos[6] >= pos) {
+      $$ = _getFromCache(6);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[6] = pos;
+    }  
     // => IDENTIFIER !LEFTARROW / OPEN Expression CLOSE / LITERAL / CLASS / DOT # Choice
     switch (_getState(_transitions5)) {
       // [\"] [\']
@@ -2973,13 +3263,28 @@ class PegParser {
       _failure(_expect1);
     }
     // <= IDENTIFIER !LEFTARROW / OPEN Expression CLOSE / LITERAL / CLASS / DOT # Choice
+    if (caching && _cacheable[6]) {
+      _addToCache($$, pos, 6);
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_QUESTION() {
     // LEXEME
     // QUESTION <- '?' SPACING
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[21] ? false : _caching;         
+    if(_cachePos[21] >= pos) {
+      $$ = _getFromCache(21);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[21] = pos;
+    }  
     // => '?' SPACING # Choice
     switch (_ch == 63 ? 0 : _ch == -1 ? 2 : 1) {
       // [?]
@@ -3035,14 +3340,29 @@ class PegParser {
       _failure(_expect19);
     }
     // <= '?' SPACING # Choice
+    if (caching && _cacheable[21]) {
+      _addToCache($$, pos, 21);
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_RANGE() {
     // MORPHEME
     // RANGE <- CHAR '-' CHAR / CHAR
-    var $$;
-    _beginToken(9);  
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[33] ? false : _caching;         
+    if(_cachePos[33] >= pos) {
+      $$ = _getFromCache(33);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[33] = pos;
+    }  
+    _beginToken(9);    
     // => CHAR '-' CHAR / CHAR # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
       // [\u0000-\u0010ffff]
@@ -3115,6 +3435,10 @@ class PegParser {
       _failure(_expect8);
     }
     // <= CHAR '-' CHAR / CHAR # Choice
+    if (caching && _cacheable[33]) {
+      _addToCache($$, pos, 33);
+    }
+    _caching = caching;  
     _endToken();
     return $$;
   }
@@ -3122,7 +3446,18 @@ class PegParser {
   dynamic _parse_SLASH() {
     // LEXEME
     // SLASH <- '/' SPACING
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[22] ? false : _caching;         
+    if(_cachePos[22] >= pos) {
+      $$ = _getFromCache(22);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[22] = pos;
+    }  
     // => '/' SPACING # Choice
     switch (_ch == 47 ? 0 : _ch == -1 ? 2 : 1) {
       // [/]
@@ -3170,14 +3505,29 @@ class PegParser {
       _failure(_expect2);
     }
     // <= '/' SPACING # Choice
+    if (caching && _cacheable[22]) {
+      _addToCache($$, pos, 22);
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_SPACE() {
     // MORPHEME
     // SPACE <- [\t ] / EOL
-    var $$;
-    _beginToken(10);  
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[34] ? false : _caching;         
+    if(_cachePos[34] >= pos) {
+      $$ = _getFromCache(34);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[34] = pos;
+    }  
+    _beginToken(10);    
     // => [\t ] / EOL # Choice
     switch (_getState(_transitions12)) {
       // [\t] [ ]
@@ -3208,9 +3558,13 @@ class PegParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: SPACE
-      _failure(_expect31);
+      _failure(_expect30);
     }
     // <= [\t ] / EOL # Choice
+    if (caching && _cacheable[34]) {
+      _addToCache($$, pos, 34);
+    }
+    _caching = caching;  
     _endToken();
     return $$;
   }
@@ -3295,7 +3649,18 @@ class PegParser {
   dynamic _parse_STAR() {
     // LEXEME
     // STAR <- '*' SPACING
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[24] ? false : _caching;         
+    if(_cachePos[24] >= pos) {
+      $$ = _getFromCache(24);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[24] = pos;
+    }  
     // => '*' SPACING # Choice
     switch (_ch == 42 ? 0 : _ch == -1 ? 2 : 1) {
       // [*]
@@ -3351,6 +3716,10 @@ class PegParser {
       _failure(_expect22);
     }
     // <= '*' SPACING # Choice
+    if (caching && _cacheable[24]) {
+      _addToCache($$, pos, 24);
+    }
+    _caching = caching;  
     return $$;
   }
   
@@ -3359,7 +3728,8 @@ class PegParser {
     // Sequence <- Prefix+
     var $$;          
     var pos = _cursor;
-    var caching = _caching;     
+    var caching = _caching;
+    _caching = _cacheable[3] ? false : _caching;         
     if(_cachePos[3] >= pos) {
       $$ = _getFromCache(3);
       if($$ != null) {
@@ -3422,14 +3792,26 @@ class PegParser {
     // <= Prefix+ # Choice
     if (caching && _cacheable[3]) {
       _addToCache($$, pos, 3);
-    }  
+    }
+    _caching = caching;  
     return $$;
   }
   
   dynamic _parse_Suffix() {
     // NONTERMINAL
     // Suffix <- Primary (QUESTION / STAR / PLUS)?
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[5] ? false : _caching;         
+    if(_cachePos[5] >= pos) {
+      $$ = _getFromCache(5);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[5] = pos;
+    }  
     // => Primary (QUESTION / STAR / PLUS)? # Choice
     switch (_getState(_transitions3)) {
       // [\"] [\'-(] [.] [A-[] [_] [a-z]
@@ -3524,6 +3906,10 @@ class PegParser {
       _failure(_expect1);
     }
     // <= Primary (QUESTION / STAR / PLUS)? # Choice
+    if (caching && _cacheable[5]) {
+      _addToCache($$, pos, 5);
+    }
+    _caching = caching;  
     return $$;
   }
   
@@ -3661,7 +4047,18 @@ class PegParser {
   dynamic parse_Grammar() {
     // NONTERMINAL
     // Grammar <- SPACING? GLOBALS? MEMBERS? Definition+ EOF
-    var $$;
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    _caching = _cacheable[0] ? false : _caching;         
+    if(_cachePos[0] >= pos) {
+      $$ = _getFromCache(0);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[0] = pos;
+    }  
     // => SPACING? GLOBALS? MEMBERS? Definition+ EOF # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
       // [\u0000-\u0010ffff]
@@ -3772,6 +4169,10 @@ class PegParser {
       _failure(_expect0);
     }
     // <= SPACING? GLOBALS? MEMBERS? Definition+ EOF # Choice
+    if (caching && _cacheable[0]) {
+      _addToCache($$, pos, 0);
+    }
+    _caching = caching;  
     return $$;
   }
   

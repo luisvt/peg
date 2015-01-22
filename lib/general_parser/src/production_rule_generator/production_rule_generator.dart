@@ -57,7 +57,8 @@ dynamic {{NAME}}() {
   {{#ENTER}}
   {{#VARIABLES}}          
   var pos = $_CURSOR;
-  var caching = $_CACHING;     
+  var caching = $_CACHING;
+  $_CACHING = $_CACHEABLE[{{RULE_ID}}] ? false : $_CACHING;         
   if($_CACHE_POS[{{RULE_ID}}] >= pos) {
     $_RESULT = $_GET_FROM_CACHE({{RULE_ID}});
     if($_RESULT != null) {
@@ -71,7 +72,8 @@ dynamic {{NAME}}() {
   {{#EXPRESSION}}
   if (caching && $_CACHEABLE[{{RULE_ID}}]) {
     $_ADD_TO_CACHE($_RESULT, pos, {{RULE_ID}});
-  }  
+  }
+  $_CACHING = caching;  
   {{#TOKEN_EPILOG}}
   {{#LEAVE}}        
   return $_RESULT;
@@ -173,7 +175,7 @@ dynamic {{NAME}}() {
   List<String> generate() {
     var useCache = options.memoize;
     if (productionRule.numberOfCalls < 2) {
-      useCache = false;
+      //useCache = false;
     }
 
     if (productionRule.expression.isOptional) {
