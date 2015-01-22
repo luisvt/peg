@@ -174,6 +174,8 @@ class PegParser {
   
   List<bool> _cacheable;
   
+  bool _caching;
+  
   int _ch;
   
   int _cursor;
@@ -217,7 +219,8 @@ class PegParser {
       map = <int, List>{};
       _cache[id] = map;
     }
-    map[start] = [result, _cursor, success];    
+    map[start] = [result, _cursor, success];
+    _caching = true;    
   }
   
   void _beginToken(int tokenId) {
@@ -289,7 +292,8 @@ class PegParser {
     return [value];
   }
   
-  dynamic _getFromCache(int id) {  
+  dynamic _getFromCache(int id) {
+    _caching = false;  
     if (!_cacheable[id]) {  
       _cacheable[id] = true;  
       return null;
@@ -309,6 +313,7 @@ class PegParser {
     } else {
       _ch = -1;
     }
+    _caching = true;
     return data;  
   }
   
@@ -591,8 +596,20 @@ class PegParser {
   dynamic _parse_ACTION_BODY() {
     // MORPHEME
     // ACTION_BODY <- '{' ACTION_BODY* '}' / !'}' .
-    var $$;
-    _beginToken(1);  
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    // TODO:
+    _caching = !_cacheable[25];   
+    if(_cachePos[25] >= pos) {
+      $$ = _getFromCache(25);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[25] = pos;
+    }  
+    _beginToken(1);    
     // => '{' ACTION_BODY* '}' / !'}' . # Choice
     switch (_getState(_transitions8)) {
       // [\u0000-z] [|-\u0010ffff]
@@ -756,6 +773,9 @@ class PegParser {
       _failure(_expect23);
     }
     // <= '{' ACTION_BODY* '}' / !'}' . # Choice
+    if (caching && _cacheable[25]) {
+      _addToCache($$, pos, 25);
+    }  
     _endToken();
     return $$;
   }
@@ -825,8 +845,20 @@ class PegParser {
   dynamic _parse_CHAR() {
     // MORPHEME
     // CHAR <- '\\' ["'\-\[-\]nrt] / HEX_NUMBER / !'\\' !EOL .
-    var $$;
-    _beginToken(2);  
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    // TODO:
+    _caching = !_cacheable[26];   
+    if(_cachePos[26] >= pos) {
+      $$ = _getFromCache(26);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[26] = pos;
+    }  
+    _beginToken(2);    
     // => '\\' ["'\-\[-\]nrt] / HEX_NUMBER / !'\\' !EOL . # Choice
     switch (_getState(_transitions9)) {
       // [\u0000-[] []-\u0010ffff]
@@ -1008,6 +1040,9 @@ class PegParser {
       _failure(_expect15);
     }
     // <= '\\' ["'\-\[-\]nrt] / HEX_NUMBER / !'\\' !EOL . # Choice
+    if (caching && _cacheable[26]) {
+      _addToCache($$, pos, 26);
+    }  
     _endToken();
     return $$;
   }
@@ -1499,8 +1534,20 @@ class PegParser {
   dynamic _parse_EOL() {
     // MORPHEME
     // EOL <- '\r\n' / [\n\r]
-    var $$;
-    _beginToken(4);  
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    // TODO:
+    _caching = !_cacheable[28];   
+    if(_cachePos[28] >= pos) {
+      $$ = _getFromCache(28);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[28] = pos;
+    }  
+    _beginToken(4);    
     // => '\r\n' / [\n\r] # Choice
     switch (_getState(_transitions10)) {
       // [\n]
@@ -1544,6 +1591,9 @@ class PegParser {
       _failure(_expect26);
     }
     // <= '\r\n' / [\n\r] # Choice
+    if (caching && _cacheable[28]) {
+      _addToCache($$, pos, 28);
+    }  
     _endToken();
     return $$;
   }
@@ -1552,14 +1602,17 @@ class PegParser {
     // NONTERMINAL
     // Expression <- Sequence (SLASH Sequence)*
     var $$;          
-    var pos = _cursor;    
+    var pos = _cursor;
+    var caching = _caching;
+    // TODO:
+    _caching = !_cacheable[2];   
     if(_cachePos[2] >= pos) {
       $$ = _getFromCache(2);
+      if($$ != null) {
+        return $$[0];       
+      }
     } else {
       _cachePos[2] = pos;
-    }
-    if($$ != null) {
-      return $$[0];       
     }  
     // => Sequence (SLASH Sequence)* # Choice
     switch (_getState(_transitions1)) {
@@ -1662,7 +1715,7 @@ class PegParser {
       _failure(_expect1);
     }
     // <= Sequence (SLASH Sequence)* # Choice
-    if (_cacheable[2]) {
+    if (caching && _cacheable[2]) {
       _addToCache($$, pos, 2);
     }  
     return $$;
@@ -1916,14 +1969,17 @@ class PegParser {
     // LEXEME
     // IDENTIFIER <- IDENT_START IDENT_CONT* SPACING
     var $$;          
-    var pos = _cursor;    
+    var pos = _cursor;
+    var caching = _caching;
+    // TODO:
+    _caching = !_cacheable[14];   
     if(_cachePos[14] >= pos) {
       $$ = _getFromCache(14);
+      if($$ != null) {
+        return $$[0];       
+      }
     } else {
       _cachePos[14] = pos;
-    }
-    if($$ != null) {
-      return $$[0];       
     }  
     // => IDENT_START IDENT_CONT* SPACING # Choice
     switch (_getState(_transitions0)) {
@@ -1995,7 +2051,7 @@ class PegParser {
       _failure(_expect0);
     }
     // <= IDENT_START IDENT_CONT* SPACING # Choice
-    if (_cacheable[14]) {
+    if (caching && _cacheable[14]) {
       _addToCache($$, pos, 14);
     }  
     return $$;
@@ -2046,8 +2102,20 @@ class PegParser {
   dynamic _parse_IDENT_START() {
     // MORPHEME
     // IDENT_START <- [A-Z_a-z]
-    var $$;
-    _beginToken(8);  
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    // TODO:
+    _caching = !_cacheable[32];   
+    if(_cachePos[32] >= pos) {
+      $$ = _getFromCache(32);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[32] = pos;
+    }  
+    _beginToken(8);    
     // => [A-Z_a-z] # Choice
     switch (_getState(_transitions0)) {
       // [A-Z] [_] [a-z]
@@ -2072,6 +2140,9 @@ class PegParser {
       _failure(_expect30);
     }
     // <= [A-Z_a-z] # Choice
+    if (caching && _cacheable[32]) {
+      _addToCache($$, pos, 32);
+    }  
     _endToken();
     return $$;
   }
@@ -2080,14 +2151,17 @@ class PegParser {
     // LEXEME
     // LEFTARROW <- '<-' SPACING
     var $$;          
-    var pos = _cursor;    
+    var pos = _cursor;
+    var caching = _caching;
+    // TODO:
+    _caching = !_cacheable[15];   
     if(_cachePos[15] >= pos) {
       $$ = _getFromCache(15);
+      if($$ != null) {
+        return $$[0];       
+      }
     } else {
       _cachePos[15] = pos;
-    }
-    if($$ != null) {
-      return $$[0];       
     }  
     // => '<-' SPACING # Choice
     switch (_ch == 60 ? 0 : _ch == -1 ? 2 : 1) {
@@ -2130,7 +2204,7 @@ class PegParser {
       _failure(_expect13);
     }
     // <= '<-' SPACING # Choice
-    if (_cacheable[15]) {
+    if (caching && _cacheable[15]) {
       _addToCache($$, pos, 15);
     }  
     return $$;
@@ -3298,14 +3372,17 @@ class PegParser {
     // NONTERMINAL
     // Sequence <- Prefix+
     var $$;          
-    var pos = _cursor;    
+    var pos = _cursor;
+    var caching = _caching;
+    // TODO:
+    _caching = !_cacheable[3];   
     if(_cachePos[3] >= pos) {
       $$ = _getFromCache(3);
+      if($$ != null) {
+        return $$[0];       
+      }
     } else {
       _cachePos[3] = pos;
-    }
-    if($$ != null) {
-      return $$[0];       
     }  
     // => Prefix+ # Choice
     switch (_getState(_transitions1)) {
@@ -3359,7 +3436,7 @@ class PegParser {
       _failure(_expect1);
     }
     // <= Prefix+ # Choice
-    if (_cacheable[3]) {
+    if (caching && _cacheable[3]) {
       _addToCache($$, pos, 3);
     }  
     return $$;
@@ -3725,6 +3802,7 @@ class PegParser {
     _cache = new List<Map<int, List>>(36);
     _cachePos = new List<int>.filled(36, -1);  
     _cacheable = new List<bool>.filled(36, false);
+    _caching = true;
     _ch = -1;
     _errors = <PegParserError>[];   
     _expected = <String>[];

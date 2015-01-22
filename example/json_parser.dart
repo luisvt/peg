@@ -139,6 +139,8 @@ class JsonParser {
   
   List<bool> _cacheable;
   
+  bool _caching;
+  
   int _ch;
   
   int _cursor;
@@ -182,7 +184,8 @@ class JsonParser {
       map = <int, List>{};
       _cache[id] = map;
     }
-    map[start] = [result, _cursor, success];    
+    map[start] = [result, _cursor, success];
+    _caching = true;    
   }
   
   void _beginToken(int tokenId) {
@@ -254,7 +257,8 @@ class JsonParser {
     return [value];
   }
   
-  dynamic _getFromCache(int id) {  
+  dynamic _getFromCache(int id) {
+    _caching = false;  
     if (!_cacheable[id]) {  
       _cacheable[id] = true;  
       return null;
@@ -274,6 +278,7 @@ class JsonParser {
     } else {
       _ch = -1;
     }
+    _caching = true;
     return data;  
   }
   
@@ -819,8 +824,20 @@ class JsonParser {
   dynamic _parse_DIGIT() {
     // MORPHEME
     // DIGIT <- [0-9]
-    var $$;
-    _beginToken(4);  
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    // TODO:
+    _caching = !_cacheable[23];   
+    if(_cachePos[23] >= pos) {
+      $$ = _getFromCache(23);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[23] = pos;
+    }  
+    _beginToken(4);    
     // => [0-9] # Choice
     switch (_ch >= 48 && _ch <= 57 ? 0 : _ch == -1 ? 2 : 1) {
       // [0-9]
@@ -845,6 +862,9 @@ class JsonParser {
       _failure(_expect17);
     }
     // <= [0-9] # Choice
+    if (caching && _cacheable[23]) {
+      _addToCache($$, pos, 23);
+    }  
     _endToken();
     return $$;
   }
@@ -1000,8 +1020,20 @@ class JsonParser {
   dynamic _parse_ESCAPE() {
     // MORPHEME
     // ESCAPE <- '\\'
-    var $$;
-    _beginToken(5);  
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    // TODO:
+    _caching = !_cacheable[24];   
+    if(_cachePos[24] >= pos) {
+      $$ = _getFromCache(24);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[24] = pos;
+    }  
+    _beginToken(5);    
     // => '\\' # Choice
     switch (_ch == 92 ? 0 : _ch == -1 ? 2 : 1) {
       // [\\]
@@ -1032,6 +1064,9 @@ class JsonParser {
       _failure(_expect18);
     }
     // <= '\\' # Choice
+    if (caching && _cacheable[24]) {
+      _addToCache($$, pos, 24);
+    }  
     _endToken();
     return $$;
   }
@@ -1334,8 +1369,20 @@ class JsonParser {
   dynamic _parse_HEXDIG() {
     // MORPHEME
     // HEXDIG <- DIGIT / [a-f] / [A-F]
-    var $$;
-    _beginToken(8);  
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    // TODO:
+    _caching = !_cacheable[27];   
+    if(_cachePos[27] >= pos) {
+      $$ = _getFromCache(27);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[27] = pos;
+    }  
+    _beginToken(8);    
     // => DIGIT / [a-f] / [A-F] # Choice
     switch (_getState(_transitions8)) {
       // [0-9]
@@ -1378,6 +1425,9 @@ class JsonParser {
       _failure(_expect22);
     }
     // <= DIGIT / [a-f] / [A-F] # Choice
+    if (caching && _cacheable[27]) {
+      _addToCache($$, pos, 27);
+    }  
     _endToken();
     return $$;
   }
@@ -1696,8 +1746,20 @@ class JsonParser {
   dynamic _parse_QUOTATION_MARK() {
     // MORPHEME
     // QUOTATION_MARK <- '"'
-    var $$;
-    _beginToken(11);  
+    var $$;          
+    var pos = _cursor;
+    var caching = _caching;
+    // TODO:
+    _caching = !_cacheable[30];   
+    if(_cachePos[30] >= pos) {
+      $$ = _getFromCache(30);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[30] = pos;
+    }  
+    _beginToken(11);    
     // => '"' # Choice
     switch (_ch == 34 ? 0 : _ch == -1 ? 2 : 1) {
       // [\"]
@@ -1728,6 +1790,9 @@ class JsonParser {
       _failure(_expect2);
     }
     // <= '"' # Choice
+    if (caching && _cacheable[30]) {
+      _addToCache($$, pos, 30);
+    }  
     _endToken();
     return $$;
   }
@@ -1736,14 +1801,17 @@ class JsonParser {
     // LEXEME
     // STRING <- QUOTATION_MARK STRING_CHARS QUOTATION_MARK WS
     var $$;          
-    var pos = _cursor;    
+    var pos = _cursor;
+    var caching = _caching;
+    // TODO:
+    _caching = !_cacheable[16];   
     if(_cachePos[16] >= pos) {
       $$ = _getFromCache(16);
+      if($$ != null) {
+        return $$[0];       
+      }
     } else {
       _cachePos[16] = pos;
-    }
-    if($$ != null) {
-      return $$[0];       
     }  
     // => QUOTATION_MARK STRING_CHARS QUOTATION_MARK WS # Choice
     switch (_ch == 34 ? 0 : _ch == -1 ? 2 : 1) {
@@ -1808,7 +1876,7 @@ class JsonParser {
       _failure(_expect2);
     }
     // <= QUOTATION_MARK STRING_CHARS QUOTATION_MARK WS # Choice
-    if (_cacheable[16]) {
+    if (caching && _cacheable[16]) {
       _addToCache($$, pos, 16);
     }  
     return $$;
@@ -1997,14 +2065,17 @@ class JsonParser {
     // LEXEME
     // VALUE_SEPARATOR <- ',' WS
     var $$;          
-    var pos = _cursor;    
+    var pos = _cursor;
+    var caching = _caching;
+    // TODO:
+    _caching = !_cacheable[18];   
     if(_cachePos[18] >= pos) {
       $$ = _getFromCache(18);
+      if($$ != null) {
+        return $$[0];       
+      }
     } else {
       _cachePos[18] = pos;
-    }
-    if($$ != null) {
-      return $$[0];       
     }  
     // => ',' WS # Choice
     switch (_ch == 44 ? 0 : _ch == -1 ? 2 : 1) {
@@ -2053,7 +2124,7 @@ class JsonParser {
       _failure(_expect3);
     }
     // <= ',' WS # Choice
-    if (_cacheable[18]) {
+    if (caching && _cacheable[18]) {
       _addToCache($$, pos, 18);
     }  
     return $$;
@@ -2179,14 +2250,17 @@ class JsonParser {
     // NONTERMINAL
     // member <- STRING NAME_SEPARATOR value
     var $$;          
-    var pos = _cursor;    
+    var pos = _cursor;
+    var caching = _caching;
+    // TODO:
+    _caching = !_cacheable[4];   
     if(_cachePos[4] >= pos) {
       $$ = _getFromCache(4);
+      if($$ != null) {
+        return $$[0];       
+      }
     } else {
       _cachePos[4] = pos;
-    }
-    if($$ != null) {
-      return $$[0];       
     }  
     // => STRING NAME_SEPARATOR value # Choice
     switch (_ch == 34 ? 0 : _ch == -1 ? 2 : 1) {
@@ -2244,7 +2318,7 @@ class JsonParser {
       _failure(_expect2);
     }
     // <= STRING NAME_SEPARATOR value # Choice
-    if (_cacheable[4]) {
+    if (caching && _cacheable[4]) {
       _addToCache($$, pos, 4);
     }  
     return $$;
@@ -2431,14 +2505,17 @@ class JsonParser {
     // NONTERMINAL
     // value <- FALSE / NULL / TRUE / object / array / NUMBER / STRING
     var $$;          
-    var pos = _cursor;    
+    var pos = _cursor;
+    var caching = _caching;
+    // TODO:
+    _caching = !_cacheable[1];   
     if(_cachePos[1] >= pos) {
       $$ = _getFromCache(1);
+      if($$ != null) {
+        return $$[0];       
+      }
     } else {
       _cachePos[1] = pos;
-    }
-    if($$ != null) {
-      return $$[0];       
     }  
     // => FALSE / NULL / TRUE / object / array / NUMBER / STRING # Choice
     switch (_getState(_transitions0)) {
@@ -2518,7 +2595,7 @@ class JsonParser {
       _failure(_expect0);
     }
     // <= FALSE / NULL / TRUE / object / array / NUMBER / STRING # Choice
-    if (_cacheable[1]) {
+    if (caching && _cacheable[1]) {
       _addToCache($$, pos, 1);
     }  
     return $$;
@@ -2843,6 +2920,7 @@ class JsonParser {
     _cache = new List<Map<int, List>>(34);
     _cachePos = new List<int>.filled(34, -1);  
     _cacheable = new List<bool>.filled(34, false);
+    _caching = true;
     _ch = -1;
     _errors = <JsonParserError>[];   
     _expected = <String>[];
