@@ -75,6 +75,8 @@ class ArithmeticParser {
   
   List<bool> _cacheable;
   
+  bool _caching;
+  
   int _ch;
   
   int _cursor;
@@ -118,7 +120,8 @@ class ArithmeticParser {
       map = <int, List>{};
       _cache[id] = map;
     }
-    map[start] = [result, _cursor, success];    
+    map[start] = [result, _cursor, success];
+    _caching = true;    
   }
   
   void _beginToken(int tokenId) {
@@ -190,7 +193,8 @@ class ArithmeticParser {
     return [value];
   }
   
-  dynamic _getFromCache(int id) {  
+  dynamic _getFromCache(int id) {
+    _caching = false;  
     if (!_cacheable[id]) {  
       _cacheable[id] = true;  
       return null;
@@ -210,6 +214,7 @@ class ArithmeticParser {
     } else {
       _ch = -1;
     }
+    _caching = true;
     return data;  
   }
   
@@ -403,14 +408,17 @@ class ArithmeticParser {
     // NONTERMINAL
     // Atom <- NUMBER / OPEN Sentence CLOSE
     var $$;          
-    var pos = _cursor;    
+    var pos = _cursor;
+    var caching = _caching;
+    // TODO:
+    _caching = !_cacheable[3];   
     if(_cachePos[3] >= pos) {
       $$ = _getFromCache(3);
+      if($$ != null) {
+        return $$[0];       
+      }
     } else {
       _cachePos[3] = pos;
-    }
-    if($$ != null) {
-      return $$[0];       
     }  
     // => NUMBER / OPEN Sentence CLOSE # Choice
     switch (_getState(_transitions3)) {
@@ -477,7 +485,7 @@ class ArithmeticParser {
       _failure(_expect0);
     }
     // <= NUMBER / OPEN Sentence CLOSE # Choice
-    if (_cacheable[3]) {
+    if (caching && _cacheable[3]) {
       _addToCache($$, pos, 3);
     }  
     return $$;
@@ -1008,14 +1016,17 @@ class ArithmeticParser {
     // NONTERMINAL
     // Sentence <- Term (PLUS / MINUS) Sentence / Term
     var $$;          
-    var pos = _cursor;    
+    var pos = _cursor;
+    var caching = _caching;
+    // TODO:
+    _caching = !_cacheable[1];   
     if(_cachePos[1] >= pos) {
       $$ = _getFromCache(1);
+      if($$ != null) {
+        return $$[0];       
+      }
     } else {
       _cachePos[1] = pos;
-    }
-    if($$ != null) {
-      return $$[0];       
     }  
     // => Term (PLUS / MINUS) Sentence / Term # Choice
     switch (_getState(_transitions0)) {
@@ -1113,7 +1124,7 @@ class ArithmeticParser {
       _failure(_expect0);
     }
     // <= Term (PLUS / MINUS) Sentence / Term # Choice
-    if (_cacheable[1]) {
+    if (caching && _cacheable[1]) {
       _addToCache($$, pos, 1);
     }  
     return $$;
@@ -1123,14 +1134,17 @@ class ArithmeticParser {
     // NONTERMINAL
     // Term <- Atom (MUL / DIV) Term / Atom
     var $$;          
-    var pos = _cursor;    
+    var pos = _cursor;
+    var caching = _caching;
+    // TODO:
+    _caching = !_cacheable[2];   
     if(_cachePos[2] >= pos) {
       $$ = _getFromCache(2);
+      if($$ != null) {
+        return $$[0];       
+      }
     } else {
       _cachePos[2] = pos;
-    }
-    if($$ != null) {
-      return $$[0];       
     }  
     // => Atom (MUL / DIV) Term / Atom # Choice
     switch (_getState(_transitions0)) {
@@ -1228,7 +1242,7 @@ class ArithmeticParser {
       _failure(_expect0);
     }
     // <= Atom (MUL / DIV) Term / Atom # Choice
-    if (_cacheable[2]) {
+    if (caching && _cacheable[2]) {
       _addToCache($$, pos, 2);
     }  
     return $$;
@@ -1497,6 +1511,7 @@ class ArithmeticParser {
     _cache = new List<Map<int, List>>(15);
     _cachePos = new List<int>.filled(15, -1);  
     _cacheable = new List<bool>.filled(15, false);
+    _caching = true;
     _ch = -1;
     _errors = <ArithmeticParserError>[];   
     _expected = <String>[];

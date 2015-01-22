@@ -7,6 +7,8 @@ class MethodGetFromCacheGenerator extends DeclarationGenerator {
 
   static const String _CACHEABLE = ParserClassGenerator.CACHEABLE;
 
+  static const String _CACHING = ParserClassGenerator.CACHING;
+
   static const String _CH = ParserClassGenerator.CH;
 
   static const String _CURSOR = ParserClassGenerator.CURSOR;
@@ -22,7 +24,8 @@ class MethodGetFromCacheGenerator extends DeclarationGenerator {
   static const String _TEMPLATE = "TEMPLATE";
 
   static final String _template = '''
-dynamic $NAME(int id) {  
+dynamic $NAME(int id) {
+  $_CACHING = false;  
   if (!$_CACHEABLE[id]) {  
     $_CACHEABLE[id] = true;  
     return null;
@@ -42,6 +45,7 @@ dynamic $NAME(int id) {
   } else {
     $_CH = -1;
   }
+  $_CACHING = true;
   return data;  
 }
 ''';

@@ -11,6 +11,8 @@ class ProductionRuleGenerator extends DeclarationGenerator {
 
   static const String _CACHEABLE = ParserClassGenerator.CACHEABLE;
 
+  static const String _CACHING = ParserClassGenerator.CACHING;
+
   static const String _CURSOR = ParserClassGenerator.CURSOR;
 
   static const String _END_TOKEN = MethodEndTokenGenerator.NAME;
@@ -54,19 +56,22 @@ dynamic {{NAME}}() {
   {{#COMMENTS}}
   {{#ENTER}}
   {{#VARIABLES}}          
-  var pos = $_CURSOR;    
+  var pos = $_CURSOR;
+  var caching = $_CACHING;
+  // TODO:
+  $_CACHING = !$_CACHEABLE[{{RULE_ID}}];   
   if($_CACHE_POS[{{RULE_ID}}] >= pos) {
     $_RESULT = $_GET_FROM_CACHE({{RULE_ID}});
+    if($_RESULT != null) {
+      {{#LEAVE_CACHE}}
+      return $_RESULT[0];       
+    }
   } else {
     $_CACHE_POS[{{RULE_ID}}] = pos;
-  }
-  if($_RESULT != null) {
-    {{#LEAVE_CACHED}}
-    return $_RESULT[0];       
   }  
   {{#TOKEN_PROLOG}}    
   {{#EXPRESSION}}
-  if ($_CACHEABLE[{{RULE_ID}}]) {
+  if (caching && $_CACHEABLE[{{RULE_ID}}]) {
     $_ADD_TO_CACHE($_RESULT, pos, {{RULE_ID}});
   }  
   {{#TOKEN_EPILOG}}
@@ -178,7 +183,7 @@ dynamic {{NAME}}() {
     }
 
     if (productionRule.isMorpheme) {
-      useCache = false;
+      //useCache = false;
     }
 
     if (useCache) {

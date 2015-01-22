@@ -11,6 +11,8 @@ abstract class ParserClassGenerator extends ClassGenerator {
 
   static const String CACHEABLE = "_cacheable";
 
+  static const String CACHING = "_caching";
+
   static const String CH = "_ch";
 
   static const String CURSOR = "_cursor";
@@ -82,6 +84,7 @@ abstract class ParserClassGenerator extends ClassGenerator {
     addVariable(new VariableGenerator(CACHE, "List<Map<int, List>>"));
     addVariable(new VariableGenerator(CACHE_POS, "List<int>"));
     addVariable(new VariableGenerator(CACHEABLE, "List<bool>"));
+    addVariable(new VariableGenerator(CACHING, "bool"));
     addVariable(new VariableGenerator(CH, "int"));
     addVariable(new VariableGenerator(CURSOR, "int"));
     addVariable(new VariableGenerator(ERRORS, "List<$errorClass>"));

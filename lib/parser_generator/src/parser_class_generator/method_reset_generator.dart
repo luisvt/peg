@@ -9,6 +9,8 @@ class MethodResetGenerator extends DeclarationGenerator {
 
   static const String _CACHEABLE = ParserClassGenerator.CACHEABLE;
 
+  static const String _CACHING = ParserClassGenerator.CACHING;
+
   static const String _CH = ParserClassGenerator.CH;
 
   static const String _CURSOR = ParserClassGenerator.CURSOR;
@@ -51,6 +53,7 @@ void $NAME(int pos) {
   $_CACHE = new List<Map<int, List>>({{RULE_COUNT}});
   $_CACHE_POS = new List<int>.filled({{RULE_COUNT}}, -1);  
   $_CACHEABLE = new List<bool>.filled({{RULE_COUNT}}, false);
+  $_CACHING = true;
   $_CH = $_EOF;
   $_ERRORS = <{{ERROR_CLASS}}>[];   
   $_EXPECTED = <String>[];
