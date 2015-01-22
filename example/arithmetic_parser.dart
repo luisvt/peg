@@ -115,13 +115,13 @@ class ArithmeticParser {
   }
   
   void _addToCache(dynamic result, int start, int id) {
+    _caching = true; 
     var map = _cache[id];
     if (map == null) {
       map = <int, List>{};
       _cache[id] = map;
     }
-    map[start] = [result, _cursor, success];
-    _caching = true;    
+    map[start] = [result, _cursor, success];      
   }
   
   void _beginToken(int tokenId) {
@@ -409,9 +409,7 @@ class ArithmeticParser {
     // Atom <- NUMBER / OPEN Sentence CLOSE
     var $$;          
     var pos = _cursor;
-    var caching = _caching;
-    // TODO:
-    _caching = !_cacheable[3];   
+    var caching = _caching;     
     if(_cachePos[3] >= pos) {
       $$ = _getFromCache(3);
       if($$ != null) {
@@ -1017,9 +1015,7 @@ class ArithmeticParser {
     // Sentence <- Term (PLUS / MINUS) Sentence / Term
     var $$;          
     var pos = _cursor;
-    var caching = _caching;
-    // TODO:
-    _caching = !_cacheable[1];   
+    var caching = _caching;     
     if(_cachePos[1] >= pos) {
       $$ = _getFromCache(1);
       if($$ != null) {
@@ -1135,9 +1131,7 @@ class ArithmeticParser {
     // Term <- Atom (MUL / DIV) Term / Atom
     var $$;          
     var pos = _cursor;
-    var caching = _caching;
-    // TODO:
-    _caching = !_cacheable[2];   
+    var caching = _caching;     
     if(_cachePos[2] >= pos) {
       $$ = _getFromCache(2);
       if($$ != null) {

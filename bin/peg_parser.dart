@@ -214,13 +214,13 @@ class PegParser {
   }
   
   void _addToCache(dynamic result, int start, int id) {
+    _caching = true; 
     var map = _cache[id];
     if (map == null) {
       map = <int, List>{};
       _cache[id] = map;
     }
-    map[start] = [result, _cursor, success];
-    _caching = true;    
+    map[start] = [result, _cursor, success];      
   }
   
   void _beginToken(int tokenId) {
@@ -598,9 +598,7 @@ class PegParser {
     // ACTION_BODY <- '{' ACTION_BODY* '}' / !'}' .
     var $$;          
     var pos = _cursor;
-    var caching = _caching;
-    // TODO:
-    _caching = !_cacheable[25];   
+    var caching = _caching;     
     if(_cachePos[25] >= pos) {
       $$ = _getFromCache(25);
       if($$ != null) {
@@ -847,9 +845,7 @@ class PegParser {
     // CHAR <- '\\' ["'\-\[-\]nrt] / HEX_NUMBER / !'\\' !EOL .
     var $$;          
     var pos = _cursor;
-    var caching = _caching;
-    // TODO:
-    _caching = !_cacheable[26];   
+    var caching = _caching;     
     if(_cachePos[26] >= pos) {
       $$ = _getFromCache(26);
       if($$ != null) {
@@ -1536,9 +1532,7 @@ class PegParser {
     // EOL <- '\r\n' / [\n\r]
     var $$;          
     var pos = _cursor;
-    var caching = _caching;
-    // TODO:
-    _caching = !_cacheable[28];   
+    var caching = _caching;     
     if(_cachePos[28] >= pos) {
       $$ = _getFromCache(28);
       if($$ != null) {
@@ -1603,9 +1597,7 @@ class PegParser {
     // Expression <- Sequence (SLASH Sequence)*
     var $$;          
     var pos = _cursor;
-    var caching = _caching;
-    // TODO:
-    _caching = !_cacheable[2];   
+    var caching = _caching;     
     if(_cachePos[2] >= pos) {
       $$ = _getFromCache(2);
       if($$ != null) {
@@ -1970,9 +1962,7 @@ class PegParser {
     // IDENTIFIER <- IDENT_START IDENT_CONT* SPACING
     var $$;          
     var pos = _cursor;
-    var caching = _caching;
-    // TODO:
-    _caching = !_cacheable[14];   
+    var caching = _caching;     
     if(_cachePos[14] >= pos) {
       $$ = _getFromCache(14);
       if($$ != null) {
@@ -2104,9 +2094,7 @@ class PegParser {
     // IDENT_START <- [A-Z_a-z]
     var $$;          
     var pos = _cursor;
-    var caching = _caching;
-    // TODO:
-    _caching = !_cacheable[32];   
+    var caching = _caching;     
     if(_cachePos[32] >= pos) {
       $$ = _getFromCache(32);
       if($$ != null) {
@@ -2152,9 +2140,7 @@ class PegParser {
     // LEFTARROW <- '<-' SPACING
     var $$;          
     var pos = _cursor;
-    var caching = _caching;
-    // TODO:
-    _caching = !_cacheable[15];   
+    var caching = _caching;     
     if(_cachePos[15] >= pos) {
       $$ = _getFromCache(15);
       if($$ != null) {
@@ -3373,9 +3359,7 @@ class PegParser {
     // Sequence <- Prefix+
     var $$;          
     var pos = _cursor;
-    var caching = _caching;
-    // TODO:
-    _caching = !_cacheable[3];   
+    var caching = _caching;     
     if(_cachePos[3] >= pos) {
       $$ = _getFromCache(3);
       if($$ != null) {

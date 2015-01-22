@@ -1,6 +1,10 @@
+## 0.0.47
+
+- Removed `TODO` remarks in the generated parsers 
+
 ## 0.0.46
 
-- Improving the mechanism for determining at runtime the ways of the elimination of the double memoization for the rules in the lowest layers. Previous way was a restriction (at the parser generation stage but not at runtime)  on the memoization for all morphemes. Now it is more adaptive and  can optimize the caching strategies at runtime for all kins of rules that allows memoization 
+- Improving the mechanism for determining at runtime the ways of the elimination of the double memoization for the rules in the lowest layers. Previous way was a restriction (at the parser generation stage but not at runtime)  on the memoization for all morphemes. Now it is more adaptive and  can optimize the caching strategies at runtime for all kins of rules that allows memoization
 
 ## 0.0.45
 

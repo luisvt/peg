@@ -57,9 +57,7 @@ dynamic {{NAME}}() {
   {{#ENTER}}
   {{#VARIABLES}}          
   var pos = $_CURSOR;
-  var caching = $_CACHING;
-  // TODO:
-  $_CACHING = !$_CACHEABLE[{{RULE_ID}}];   
+  var caching = $_CACHING;     
   if($_CACHE_POS[{{RULE_ID}}] >= pos) {
     $_RESULT = $_GET_FROM_CACHE({{RULE_ID}});
     if($_RESULT != null) {

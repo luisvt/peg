@@ -826,8 +826,7 @@ class JsonParser {
     // DIGIT <- [0-9]
     var $$;          
     var pos = _cursor;
-    var caching = _caching;
-    // TODO:
+    var caching = _caching; 
     _caching = !_cacheable[23];   
     if(_cachePos[23] >= pos) {
       $$ = _getFromCache(23);
@@ -1022,8 +1021,7 @@ class JsonParser {
     // ESCAPE <- '\\'
     var $$;          
     var pos = _cursor;
-    var caching = _caching;
-    // TODO:
+    var caching = _caching; 
     _caching = !_cacheable[24];   
     if(_cachePos[24] >= pos) {
       $$ = _getFromCache(24);
@@ -1371,8 +1369,7 @@ class JsonParser {
     // HEXDIG <- DIGIT / [a-f] / [A-F]
     var $$;          
     var pos = _cursor;
-    var caching = _caching;
-    // TODO:
+    var caching = _caching; 
     _caching = !_cacheable[27];   
     if(_cachePos[27] >= pos) {
       $$ = _getFromCache(27);
@@ -1748,8 +1745,7 @@ class JsonParser {
     // QUOTATION_MARK <- '"'
     var $$;          
     var pos = _cursor;
-    var caching = _caching;
-    // TODO:
+    var caching = _caching; 
     _caching = !_cacheable[30];   
     if(_cachePos[30] >= pos) {
       $$ = _getFromCache(30);
@@ -1802,8 +1798,7 @@ class JsonParser {
     // STRING <- QUOTATION_MARK STRING_CHARS QUOTATION_MARK WS
     var $$;          
     var pos = _cursor;
-    var caching = _caching;
-    // TODO:
+    var caching = _caching; 
     _caching = !_cacheable[16];   
     if(_cachePos[16] >= pos) {
       $$ = _getFromCache(16);
@@ -2066,8 +2061,7 @@ class JsonParser {
     // VALUE_SEPARATOR <- ',' WS
     var $$;          
     var pos = _cursor;
-    var caching = _caching;
-    // TODO:
+    var caching = _caching; 
     _caching = !_cacheable[18];   
     if(_cachePos[18] >= pos) {
       $$ = _getFromCache(18);
@@ -2251,8 +2245,7 @@ class JsonParser {
     // member <- STRING NAME_SEPARATOR value
     var $$;          
     var pos = _cursor;
-    var caching = _caching;
-    // TODO:
+    var caching = _caching; 
     _caching = !_cacheable[4];   
     if(_cachePos[4] >= pos) {
       $$ = _getFromCache(4);
@@ -2506,8 +2499,7 @@ class JsonParser {
     // value <- FALSE / NULL / TRUE / object / array / NUMBER / STRING
     var $$;          
     var pos = _cursor;
-    var caching = _caching;
-    // TODO:
+    var caching = _caching; 
     _caching = !_cacheable[1];   
     if(_cachePos[1] >= pos) {
       $$ = _getFromCache(1);

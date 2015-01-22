@@ -15,13 +15,13 @@ class MethodAddToCacheGenerator extends DeclarationGenerator {
 
   static final String _template = '''
 void $NAME(dynamic result, int start, int id) {
+  $_CACHING = true; 
   var map = $_CACHE[id];
   if (map == null) {
     map = <int, List>{};
     $_CACHE[id] = map;
   }
-  map[start] = [result, $_CURSOR, $_SUCCESS];
-  $_CACHING = true;    
+  map[start] = [result, $_CURSOR, $_SUCCESS];      
 }
 ''';
 
