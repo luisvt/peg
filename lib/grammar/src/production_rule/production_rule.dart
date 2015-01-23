@@ -19,15 +19,12 @@ class ProductionRule {
 
   OrderedChoiceExpression expression;
 
-  bool isLexeme;
-
-  bool isLexical;
-
-  bool isMorpheme;
-
   bool isStartingRule;
 
-  // TODO: Remove
+  ProductionRuleKinds kind;
+
+  int numberOfOwnCalls = 0;
+
   int numberOfCalls = 0;
 
   final String name;
@@ -35,6 +32,51 @@ class ProductionRule {
   ProductionRule parent;
 
   int tokenId;
+
+  ProductionRule(this.name, this.expression) {
+    if (name == null || name.isEmpty) {
+      throw new ArgumentError('name: $name');
+    }
+
+    if (expression == null) {
+      throw new ArgumentError('expression: $expression');
+    }
+
+    expression.owner = this;
+  }
+
+  bool get isLexeme => kind == ProductionRuleKinds.LEXEME;
+
+  bool get isMorpheme => kind == ProductionRuleKinds.MORHEME;
+
+  bool get isRecursive {
+    return allCallers.contains(this);
+  }
+
+  bool get isSentence => kind == ProductionRuleKinds.SENTENCE;
+
+  bool get isUsed {
+    return allCallers.length > 0;
+  }
+
+  String getTokenName() {
+    if (!isLexeme) {
+      return null;
+    }
+
+    if (expectedLexemes.length == 1) {
+      var first = expectedLexemes.first;
+      if (first != null) {
+        return first;
+      }
+    }
+
+    return name;
+  }
+
+  String toString() {
+    return '$name <- $expression';
+  }
 
   static void addCalls(ProductionRule caller, ProductionRule callee, bool direct) {
     if (caller == null) {
@@ -73,48 +115,18 @@ class ProductionRule {
       }
     }
   }
+}
 
-  ProductionRule(this.name, this.expression) {
-    if (name == null || name.isEmpty) {
-      throw new ArgumentError('name: $name');
-    }
+class ProductionRuleKinds {
+  static const ProductionRuleKinds LEXEME = const ProductionRuleKinds("LEXEME");
 
-    if (expression == null) {
-      throw new ArgumentError('expression: $expression');
-    }
+  static const ProductionRuleKinds MORHEME = const ProductionRuleKinds("MORHEME");
 
-    expression.owner = this;
-  }
+  static const ProductionRuleKinds SENTENCE = const ProductionRuleKinds("SENTENCE");
 
-  // TODO: remove
-  bool get isIntermediateTerminal {
-    throw new UnimplementedError('isIntermediateTerminal');
-  }
+  final String _name;
 
-  bool get isRecursive {
-    return allCallers.contains(this);
-  }
+  const ProductionRuleKinds(this._name);
 
-  bool get isUsed {
-    return allCallers.length > 0;
-  }
-
-  String getTokenName() {
-    if (!isLexical) {
-      return null;
-    }
-
-    if (expectedLexemes.length == 1) {
-      var first = expectedLexemes.first;
-      if (first != null) {
-        return first;
-      }
-    }
-
-    return name;
-  }
-
-  String toString() {
-    return '$name <- $expression';
-  }
+  String toString() => _name;
 }

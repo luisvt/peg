@@ -11,8 +11,6 @@ abstract class ParserClassGenerator extends ClassGenerator {
 
   static const String CACHEABLE = "_cacheable";
 
-  static const String CACHING = "_caching";
-
   static const String CH = "_ch";
 
   static const String CURSOR = "_cursor";
@@ -37,9 +35,9 @@ abstract class ParserClassGenerator extends ClassGenerator {
 
   static const String TOKEN = "_token";
 
-  static const String TOKEN_FLAGS = "_tokenFlags";
+  static const String TOKEN_ALIASES = "_tokenAliases";
 
-  static const String TOKEN_LEVEL = "_tokenLevel";
+  static const String TOKEN_FLAGS = "_tokenFlags";
 
   static const String TOKEN_NAMES = "_tokenNames";
 
@@ -60,8 +58,6 @@ abstract class ParserClassGenerator extends ClassGenerator {
   void _addCommonMembers() {
     var grammar = parserGenerator.grammar;
     var options = parserGenerator.options;
-    addMethod(new MethodBeginTokenGenerator());
-    addMethod(new MethodEndTokenGenerator());
     addMethod(new MethodErrorsGenerator(this));
     addMethod(new MethodFailureGenerator(this));
     addMethod(new MethodFlattenGenerator());
@@ -84,7 +80,6 @@ abstract class ParserClassGenerator extends ClassGenerator {
     addVariable(new VariableGenerator(CACHE, "List<Map<int, List>>"));
     addVariable(new VariableGenerator(CACHE_POS, "List<int>"));
     addVariable(new VariableGenerator(CACHEABLE, "List<bool>"));
-    addVariable(new VariableGenerator(CACHING, "bool"));
     addVariable(new VariableGenerator(CH, "int"));
     addVariable(new VariableGenerator(CURSOR, "int"));
     addVariable(new VariableGenerator(ERRORS, "List<$errorClass>"));
@@ -96,15 +91,14 @@ abstract class ParserClassGenerator extends ClassGenerator {
     addVariable(new VariableGenerator(SUCCESS, "bool"));
     addVariable(new VariableGenerator(TESTING, "int"));
     addVariable(new VariableGenerator(TOKEN, "int"));
-    addVariable(new VariableGenerator(TOKEN_LEVEL, "int"));
     addVariable(new VariableGenerator(TOKEN_START, "int"));
     addVariable(new VariableGenerator(TEXT, "final String"));
     // Generate tokens
+    var tokenAliases = <int, String>{};
     var tokenFlags = <int, int>{};
     var tokenNames = <int, String>{};
     for (var productionRule in grammar.productionRules) {
-      if (productionRule.isMorpheme) {
-        //if (productionRule.isLexical) {
+      if (productionRule.isLexeme) {
         var flag = 0;
         var tokenId = productionRule.tokenId;
         if (productionRule.expression.maxLength == null) {
@@ -112,18 +106,38 @@ abstract class ParserClassGenerator extends ClassGenerator {
         }
 
         tokenFlags[tokenId] = flag;
-        tokenNames[tokenId] = productionRule.getTokenName();
+        // TODO: productionRule.getTokenName()
+        // tokenNames[tokenId] = productionRule.getTokenName();
+        var name = productionRule.name;
+        var alias = productionRule.getTokenName();
+        /*
+        tokenAliases[tokenId] = alias;
+        if (name == name.toUpperCase()) {
+          name = name.toLowerCase();
+        } else if (!name.contains("_")) {
+          name = underscore(name);
+        } else {
+          name = name.toLowerCase();
+        }
+
+        name = name.replaceAll("_", " ");
+        */
+        tokenAliases[tokenId] = alias;
+        tokenNames[tokenId] = name;
       }
     }
 
     var length = tokenFlags.length;
     var flags = new List<int>(length);
+    var aliases = new List<String>(length);
     var names = new List<String>(length);
     for (var id in tokenFlags.keys) {
       flags[id] = tokenFlags[id];
+      aliases[id] = "\"${Utils.toPrintable(tokenAliases[id])}\"";
       names[id] = "\"${Utils.toPrintable(tokenNames[id])}\"";
     }
 
+    addVariable(new VariableGenerator(TOKEN_ALIASES, "final List<String>", value: "[${aliases.join(", ")}]"), true);
     addVariable(new VariableGenerator(TOKEN_FLAGS, "final List<int>", value: "[${flags.join(", ")}]"), true);
     addVariable(new VariableGenerator(TOKEN_NAMES, "final List<String>", value: "[${names.join(", ")}]"), true);
 

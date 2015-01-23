@@ -111,10 +111,18 @@ class LeftRecursionRemover {
       ruleExpression.rule = rule;
     }
 
-    // TODO:
-    rule.isLexeme = parent.isLexeme;
-    rule.isLexical = parent.isLexical;
-    rule.isMorpheme = parent.isMorpheme;
+    // Temporarily
+    switch (parent.kind) {
+      case ProductionRuleKinds.MORHEME:
+      case ProductionRuleKinds.LEXEME:
+        rule.kind = ProductionRuleKinds.MORHEME;
+        rule.kind = ProductionRuleKinds.MORHEME;
+        break;
+      case ProductionRuleKinds.SENTENCE:
+        rule.kind = ProductionRuleKinds.LEXEME;
+        break;
+    }
+
     rule.isStartingRule = false;
     return rule;
   }

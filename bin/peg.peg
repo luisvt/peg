@@ -42,10 +42,10 @@ Expression _suffix(String suffix, Expression expression) {
 
 }%
 
-# Nonterminals
+### Sentences (nonterminals) ###
 
 Grammar <-
-  SPACING? GLOBALS? MEMBERS? Definition+ EOF { $$ = new Grammar($4, $2, $3); }
+  LEADING_SPACES? GLOBALS? MEMBERS? Definition+ EOF { $$ = new Grammar($4, $2, $3); }
 
 Definition <-
   IDENTIFIER LEFTARROW Expression { $$ = new ProductionRule($1, $3); }
@@ -69,7 +69,7 @@ Primary <-
   / CLASS
   / DOT { $$ = new AnyCharacterExpression(); }
 
-# Lexemes
+### Lexemes (tokens) ###
 
 ACTION <-
   '{' ACTION_BODY* '}' SPACING { $$ = $2.join(); }
@@ -94,6 +94,9 @@ GLOBALS <-
 
 IDENTIFIER <-
   IDENT_START IDENT_CONT* SPACING { $$ = _flatten([$1, $2]).join(); }
+
+LEADING_SPACES <-
+  SPACING
 
 LEFTARROW <-
   '<-' SPACING
@@ -120,13 +123,10 @@ QUESTION <-
 SLASH <-
   '/' SPACING
 
-SPACING <-
-  (SPACE / COMMENT)*
-
 STAR <-
   '*' SPACING { $$ = $1; }
 
-# Morphemes
+### Morphemes ###
 
 ACTION_BODY <-
   '{' ACTION_BODY* '}' { $$ = _text(); }
@@ -164,3 +164,7 @@ RANGE <-
 SPACE <-
   [\t ]
   / EOL
+
+SPACING <-
+  (SPACE / COMMENT)*
+

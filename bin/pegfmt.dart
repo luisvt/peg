@@ -170,21 +170,21 @@ class Program {
     }
 
     if (!nonterminals.isEmpty) {
-      sb.writeln("# Nonterminals");
+      sb.writeln("### Sentences (nonterminals) ###");
       sb.writeln("");
       _printProductionRules(nonterminals, sb, nameMap);
     }
 
     if (!lexemes.isEmpty) {
       sb.writeln("");
-      sb.writeln("# Lexemes");
+      sb.writeln("### Lexemes (tokens) ###");
       sb.writeln("");
       _printProductionRules(lexemes, sb, nameMap);
     }
 
     if (!morphemes.isEmpty) {
       sb.writeln("");
-      sb.writeln("# Morphemes");
+      sb.writeln("### Morphemes ###");
       sb.writeln("");
       _printProductionRules(morphemes, sb, nameMap);
     }

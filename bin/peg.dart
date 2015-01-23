@@ -120,17 +120,17 @@ class Program {
 
   void _report(GrammarReporter reporter, String level) {
     String ruleAndKind(ProductionRule rule) {
-      var kind = "N ";
-      if (rule.isLexical) {
-        if (rule.isLexeme && rule.isMorpheme) {
-          kind = "LM";
-        } else if (rule.isLexeme) {
-          kind = "L ";
-        } else if (rule.isMorpheme) {
-          kind = "M ";
-        } else {
-          kind = "  ";
-        }
+      var kind = " ";
+      switch (rule.kind) {
+        case ProductionRuleKinds.LEXEME:
+          kind = "L";
+          break;
+        case ProductionRuleKinds.MORHEME:
+          kind = "M";
+          break;
+        case ProductionRuleKinds.SENTENCE:
+          kind = "S";
+          break;
       }
 
       return "($kind) ${rule.name}";
@@ -138,6 +138,12 @@ class Program {
 
     var detail = level == 'high';
     if (detail) {
+      print('--------------------------------');
+      print('Log entries:');
+      for (var line in reporter.logs) {
+        print('${line}');
+      }
+
       print('--------------------------------');
       print('Starting rules:');
       for (var rule in reporter.startingRules) {
@@ -149,13 +155,17 @@ class Program {
       for (var rule in reporter.rules) {
         print('--------------------------------');
         print('${rule.name}:');
-        var type = "Nonterminal";
-        if (rule.isLexeme && rule.isMorpheme) {
-          type = "Lexeme & morpheme";
-        } else if (rule.isLexeme) {
-          type = "Lexeme";
-        } else if (rule.isMorpheme) {
-          type = "Morpheme";
+        var type = "";
+        switch (rule.kind) {
+          case ProductionRuleKinds.LEXEME:
+            type = "Lexeme (token)";
+            break;
+          case ProductionRuleKinds.MORHEME:
+            type = "Morheme";
+            break;
+          case ProductionRuleKinds.SENTENCE:
+            type = "Sentence (nonterminal)";
+            break;
         }
 
         print(' Type: $type');
@@ -215,7 +225,7 @@ class Program {
           print('  ${characters.join()}');
         }
 
-        print(' Expected lexemes:');
+        print(' Expected lexemes (tokens):');
         var expected = <String>[];
         for (var lexeme in rule.expression.expectedLexemes) {
           expected.add(lexeme);
@@ -228,13 +238,13 @@ class Program {
     }
 
     print('--------------------------------');
-    print('Nonterminals:');
+    print('Sentences (nonterminals):');
     for (var rule in reporter.nonterminals) {
       print('  ${rule.name}');
     }
 
     print('--------------------------------');
-    print('Lexemes:');
+    print('Lexemes (tokens):');
     for (var rule in reporter.terminals) {
       if (rule.isLexeme) {
         print('  ${rule.name}');
@@ -250,15 +260,7 @@ class Program {
     }
 
     print('--------------------------------');
-    print('Lexemes & morphemes:');
-    for (var rule in reporter.terminals) {
-      if (rule.isLexeme && rule.isMorpheme) {
-        print('  ${rule.name}');
-      }
-    }
-
-    print('--------------------------------');
-    print('Lexeme names:');
+    print('Lexeme (token) names:');
     for (var rule in reporter.terminals) {
       if (rule.isLexeme) {
         print('  ${rule.name} : ${rule.getTokenName()}');

@@ -1,4 +1,4 @@
-Grammar <- SPACING? GLOBALS? MEMBERS? Definition+ EOF
+Grammar <- LEADING_SPACES? GLOBALS? MEMBERS? Definition+ EOF
 
 Definition <- IDENTIFIER LEFTARROW Expression
 
@@ -28,6 +28,8 @@ GLOBALS <- '%{' GLOBALS_BODY* '}%' SPACING
 
 IDENTIFIER <- IDENT_START IDENT_CONT* SPACING
 
+LEADING_SPACES <- SPACING
+
 LEFTARROW <- '<-' SPACING
 
 LITERAL <- '\'' (!'\'' CHAR)* '\'' SPACING / '"' (!'"' CHAR)* '"' SPACING
@@ -43,8 +45,6 @@ PLUS <- '+' SPACING
 QUESTION <- '?' SPACING
 
 SLASH <- '/' SPACING
-
-SPACING <- (SPACE / COMMENT)*
 
 STAR <- '*' SPACING
 
@@ -67,3 +67,5 @@ IDENT_START <- [A-Z_a-z]
 RANGE <- CHAR '-' CHAR / CHAR
 
 SPACE <- [\t ] / EOL
+
+SPACING <- (SPACE / COMMENT)*

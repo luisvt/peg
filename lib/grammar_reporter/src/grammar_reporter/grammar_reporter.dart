@@ -3,6 +3,8 @@ part of peg.grammar_reporter.grammar_reporter;
 class GrammarReporter {
   final Grammar grammar;
 
+  List<String> logs = new List<String>();
+
   List<ProductionRule> nonterminals = new List<ProductionRule>();
 
   List<ProductionRule> recursives = new List<ProductionRule>();
@@ -24,7 +26,8 @@ class GrammarReporter {
   void _prepare() {
     for (var rule in grammar.productionRules) {
       rules.add(rule);
-      if (rule.isLexical) {
+      // TODO: reimplement
+      if (rule.isMorpheme || rule.isLexeme) {
         terminals.add(rule);
       } else {
         nonterminals.add(rule);
@@ -39,6 +42,7 @@ class GrammarReporter {
       }
     }
 
+    logs.addAll(grammar.logs);
     nonterminals.sort((a, b) => a.name.compareTo(b.name));
     recursives.sort((a, b) => a.name.compareTo(b.name));
     rules.sort((a, b) => a.name.compareTo(b.name));

@@ -5,17 +5,11 @@ class ProductionRuleGenerator extends DeclarationGenerator {
 
   static const String _ADD_TO_CACHE = MethodAddToCacheGenerator.NAME;
 
-  static const String _BEGIN_TOKEN = MethodBeginTokenGenerator.NAME;
-
   static const String _CACHE_POS = ParserClassGenerator.CACHE_POS;
 
   static const String _CACHEABLE = ParserClassGenerator.CACHEABLE;
 
-  static const String _CACHING = ParserClassGenerator.CACHING;
-
   static const String _CURSOR = ParserClassGenerator.CURSOR;
-
-  static const String _END_TOKEN = MethodEndTokenGenerator.NAME;
 
   static const String _GET_FROM_CACHE = MethodGetFromCacheGenerator.NAME;
 
@@ -24,8 +18,6 @@ class ProductionRuleGenerator extends DeclarationGenerator {
   static const String _SUCCESS = ParserClassGenerator.SUCCESS;
 
   static const String _TOKEN = ParserClassGenerator.TOKEN;
-
-  static const String _TOKEN_LEVEL = ParserClassGenerator.TOKEN_LEVEL;
 
   static const String _TOKEN_START = ParserClassGenerator.TOKEN_START;
 
@@ -46,19 +38,19 @@ class ProductionRuleGenerator extends DeclarationGenerator {
   static const String PREFIX_PARSE = 'parse_';
 
   static String _templateTokenEpilog = '''
-$_END_TOKEN();''';
+$_TOKEN = null;
+$_TOKEN_START = null;''';
 
   static String _templateTokenProlog = '''
-$_BEGIN_TOKEN({{TOKEN_ID}});''';
+$_TOKEN = {{TOKEN_ID}};
+$_TOKEN_START = $_CURSOR;''';
 
   static String _templateWithCache = '''
 dynamic {{NAME}}() {
   {{#COMMENTS}}
   {{#ENTER}}
   {{#VARIABLES}}          
-  var pos = $_CURSOR;
-  var caching = $_CACHING;
-  $_CACHING = $_CACHEABLE[{{RULE_ID}}] ? false : $_CACHING;         
+  var pos = $_CURSOR;             
   if($_CACHE_POS[{{RULE_ID}}] >= pos) {
     $_RESULT = $_GET_FROM_CACHE({{RULE_ID}});
     if($_RESULT != null) {
@@ -70,10 +62,9 @@ dynamic {{NAME}}() {
   }  
   {{#TOKEN_PROLOG}}    
   {{#EXPRESSION}}
-  if (caching && $_CACHEABLE[{{RULE_ID}}]) {
+  if ($_CACHEABLE[{{RULE_ID}}]) {
     $_ADD_TO_CACHE($_RESULT, pos, {{RULE_ID}});
-  }
-  $_CACHING = caching;  
+  }    
   {{#TOKEN_EPILOG}}
   {{#LEAVE}}        
   return $_RESULT;
@@ -174,16 +165,17 @@ dynamic {{NAME}}() {
 
   List<String> generate() {
     var useCache = options.memoize;
-    if (productionRule.numberOfCalls < 2) {
-      //useCache = false;
+    if (productionRule.numberOfCalls - productionRule.numberOfOwnCalls < 2) {
+      useCache = false;
     }
 
+    // TODO: Memoization: productionRule.expression.isOptional
     if (productionRule.expression.isOptional) {
       useCache = false;
     }
 
     if (productionRule.isMorpheme) {
-      //useCache = false;
+      useCache = false;
     }
 
     if (useCache) {
@@ -210,7 +202,7 @@ dynamic {{NAME}}() {
   }
 
   List<String> _generateTokenEpilog() {
-    if (!productionRule.isMorpheme) {
+    if (!productionRule.isLexeme) {
       //if (!productionRule.isLexical) {
       return const <String>[];
     }
@@ -220,7 +212,7 @@ dynamic {{NAME}}() {
   }
 
   List<String> _generateTokenProlog() {
-    if (!productionRule.isMorpheme) {
+    if (!productionRule.isLexeme) {
       //if (!productionRule.isLexical) {
       return const <String>[];
     }
@@ -255,8 +247,7 @@ dynamic {{NAME}}() {
       block.assign('#COMMENTS', '// $productionRule');
     }
 
-    if (productionRule.isMorpheme) {
-      //if (productionRule.isLexical) {
+    if (productionRule.isLexeme) {
       block.assign('#TOKEN_EPILOG', _generateTokenEpilog());
       block.assign('#TOKEN_PROLOG', _generateTokenProlog());
     }
@@ -284,8 +275,7 @@ dynamic {{NAME}}() {
       block.assign('#COMMENTS', '// $productionRule');
     }
 
-    if (productionRule.isMorpheme) {
-      //if (productionRule.isLexical) {
+    if (productionRule.isLexeme) {
       block.assign('#TOKEN_EPILOG', _generateTokenEpilog());
       block.assign('#TOKEN_PROLOG', _generateTokenProlog());
     }
@@ -302,22 +292,15 @@ dynamic {{NAME}}() {
   }
 
   String _getLexicalType() {
-    if (!productionRule.isLexical) {
-      return 'NONTERMINAL';
+    switch (productionRule.kind) {
+      case ProductionRuleKinds.LEXEME:
+        return 'LEXEME (TOKEN)';
+      case ProductionRuleKinds.MORHEME:
+        return 'MORHEME';
+      case ProductionRuleKinds.SENTENCE:
+        return 'SENTENCE (NONTERMINAL)';
+      default:
+        return "";
     }
-
-    if (productionRule.isLexeme && productionRule.isMorpheme) {
-      return 'LEXEME & MORPHEME';
-    }
-
-    if (productionRule.isLexeme) {
-      return 'LEXEME';
-    }
-
-    if (productionRule.isMorpheme) {
-      return 'MORPHEME';
-    }
-
-    return '';
   }
 }

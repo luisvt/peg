@@ -12,6 +12,8 @@ Version: {{VERSION}}
 
 The generated parsers intended for embedding into programs with the time-critical execution.
 
+A short ["How to write a good PEG grammar"](https://github.com/mezoni/peg/tree/master/bin/how_to_write_a_good_peg_grammar.md) available.
+
 **Features:**
 
 - Elimination of direct left recursion (via `pegfmt` tool)
@@ -31,6 +33,12 @@ The generated parsers intended for embedding into programs with the time-critica
 
 **Analysis of internal characteristic of grammar**
 
+Autodetection of the following production rule kinds:
+
+- Sentences (nonterminals)
+- Lexemes (tokens)
+- Morhemes
+
 In-depth analysis of the most important characteristics of the grammar allows generate the high quality, high performance PEG parsers.  
 List of expression analyzers:
 
@@ -46,12 +54,12 @@ List of expression analyzers:
 - Resolver of invocations
 - Resolver of left expressions
 - Resolver of optional expressions
+- Resolver of production rule kinds
 - Resolver of repetition expressions
 - Resolver of right expressions
 - Resolver of rule expressions
 - Resolver of starting rules
 - Resolver of start characters
-- Resolver of terminal rules
 
 Generators used such collected data very intensively for generating the highly optimized, high performance parsers.
 

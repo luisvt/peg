@@ -5,6 +5,8 @@ class Grammar {
 
   final String members;
 
+  List<String> logs;
+
   Map<String, ProductionRule> _map;
 
   List<ProductionRule> _productionRules;
@@ -25,6 +27,7 @@ class Grammar {
       map[rule.name] = rule;
     }
 
+    logs = <String>[];
     _productionRules = rules;
     _map = map;
     var resolver = new _RuleExpressionResolver();

@@ -32,7 +32,7 @@ class FrontendAnalyzer {
     new ExpressionMatchesEofResolver().resolve(startingRules);
 
     // TODO: Use startingRules
-    new TerminalRulesFinder().find(rules);
+    new ProductionRulesKindsResolver().find(grammar);
     // TODO: Optimize NotPredicate in ExpectedLexemesResolver
     new ExpectedLexemesResolver().resolve(rules);
     new ExpressionWithActionsResolver().resolve(startingRules);

@@ -18,10 +18,10 @@ num _binop(num left, num right, String op) {
 
 }%
 
-# Nonterminals
+### Sentences (nonterminals) ###
 
 Expr <-
-  SPACES? Sentence EOF { $$ = $2; }
+  LEADING_SPACES? Sentence EOF { $$ = $2; }
 
 Sentence <-
   Term (PLUS / MINUS) Sentence { $$ = _binop($1, $3, $2); }
@@ -35,38 +35,37 @@ Atom <-
   NUMBER
   / OPEN Sentence CLOSE { $$ = $2; }
 
-# Lexemes
+### Lexemes (tokens) ###
 
 CLOSE <-
-  ')' SPACES
+  ')' WS
 
 DIV <-
-  '/' SPACES { $$ = $1; }
+  '/' WS { $$ = $1; }
 
 EOF <-
   !.
 
+LEADING_SPACES <-
+  WS
+
 MINUS <-
-  '-' SPACES { $$ = $1; }
+  '-' WS { $$ = $1; }
 
 MUL <-
-  '*' SPACES { $$ = $1; }
+  '*' WS { $$ = $1; }
 
 NUMBER <-
-  [0-9]+ SPACES { $$ = int.parse($1.join()); }
+  [0-9]+ WS { $$ = int.parse($1.join()); }
 
 OPEN <-
-  '(' SPACES
+  '(' WS
 
 PLUS <-
-  '+' SPACES { $$ = $1; }
+  '+' WS { $$ = $1; }
 
-SPACES <-
-  WS*
-
-# Morphemes
+### Morphemes ###
 
 WS <-
-  [\t-\n\r ]
-  / '\r\n'
+  ([\t-\n\r ] / '\r\n')*
 

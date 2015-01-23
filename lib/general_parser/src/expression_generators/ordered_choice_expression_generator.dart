@@ -125,7 +125,7 @@ switch ({{STATE}}) {
     }
 
     if (hasNull) {
-      block.assign('EXPECTED', 'null');
+      block.assign('EXPECTED', 'const [null]');
     } else {
       block.assign('EXPECTED', productionRuleGenerator.parserClassGenerator.addExpected(expected));
     }

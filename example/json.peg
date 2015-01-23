@@ -35,10 +35,10 @@ String _escape(String string) {
 }
 }%
 
-# Nonterminals
+### Sentences (nonterminals) ###
 
 jsonText <-
-  WS? value EOF { $$ = $2; }
+  LEADING_WS? value EOF { $$ = $2; }
 
 value <-
   FALSE
@@ -64,7 +64,7 @@ array <-
 values <-
   value (VALUE_SEPARATOR value)* { $$ = _list($1, $2); }
 
-# Lexemes
+### Lexemes (tokens) ###
 
 BEGIN_ARRAY <-
   '[' WS
@@ -84,6 +84,9 @@ EOF <-
 FALSE <-
   'false' WS { $$ = false; }
 
+LEADING_WS <-
+  WS
+
 NAME_SEPARATOR <-
   ':' WS
 
@@ -102,10 +105,7 @@ TRUE <-
 VALUE_SEPARATOR <-
   ',' WS
 
-WS <-
-  [\t-\n\r ]*
-
-# Morphemes
+### Morphemes ###
 
 CHAR <-
   UNESCAPED
@@ -152,3 +152,7 @@ UNESCAPED <-
   / [#-\[]
   / [\]-~]
   / [\]-\u10ffff]
+
+WS <-
+  [\t-\n\r ]*
+

@@ -17,6 +17,8 @@ class MethodFailureGenerator extends DeclarationGenerator {
 
   static const String _TOKEN = ParserClassGenerator.TOKEN;
 
+  static const String _TOKEN_ALIASES = ParserClassGenerator.TOKEN_ALIASES;
+
   static const String _TOKEN_FLAGS = ParserClassGenerator.TOKEN_FLAGS;
 
   static const String _TOKEN_NAMES = ParserClassGenerator.TOKEN_NAMES;
@@ -39,18 +41,19 @@ void $NAME([List<String> expected]) {
    $_FAILURE_POS = $_CURSOR;
   }
   if ($_TOKEN != null) {
+    var alias = $_TOKEN_ALIASES[$_TOKEN];
     var flag = $_TOKEN_FLAGS[$_TOKEN];
     var name = $_TOKEN_NAMES[$_TOKEN];
     if ($_FAILURE_POS == $_INPUT_LEN && (flag & $_FLAG_TOKEN_VALUE) != 0) {             
-      var message = "Unterminated \$name";
+      var message = "Unterminated '\$name'";
       $_ERRORS.add(new {{ERROR_CLASS}}({{ERROR_CLASS}}.$_TYPE_UNTERMINATED, $_FAILURE_POS, $_TOKEN_START, message));
       $_EXPECTED.addAll(expected);            
     } else if ($_FAILURE_POS > $_TOKEN_START && (flag & $_FLAG_TOKEN_VALUE) != 0) {             
-      var message = "Malformed \$name";
+      var message = "Malformed '\$name'";
       $_ERRORS.add(new {{ERROR_CLASS}}({{ERROR_CLASS}}.$_TYPE_MALFORMED, $_FAILURE_POS, $_TOKEN_START, message));
       $_EXPECTED.addAll(expected);            
     } else {
-      $_EXPECTED.add(name);
+      $_EXPECTED.add(alias);
     }            
   } else if (expected == null) {
     $_EXPECTED.add(null);

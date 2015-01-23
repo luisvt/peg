@@ -57,3 +57,6 @@
 0.0.45 Disabled memoization for morphemes
 0.0.46 Improving the mechanism for determining at runtime the ways of the elimination of the double memoization for the rules in the lowest layers. Previous way was a restriction (at the parser generation stage but not at runtime)  on the memoization for all morphemes. Now it is more adaptive and  can optimize the caching strategies at runtime for all kins of rules that allows memoization
 0.0.47 Removed `TODO` remarks in the generated parsers 
+0.0.48 Significant improvements in the recognition of the production rule kinds: sentences (nonterminals), lexemes (tokens) and morphemes (100% recognition)
+0.0.48 Add `How to write a good PEG grammar` recommendation `how_to_write_a_good_peg_grammar.md`
+0.0.48 Added a trace statistic about how and why the generator determines the kind of the production rules. Can help a lot for writing good grammar. Command line `peg stat -d high grammar.peg` 

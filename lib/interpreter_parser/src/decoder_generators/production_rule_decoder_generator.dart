@@ -3,13 +3,9 @@ part of peg.interpreter_parser.decoder_generators;
 class ProductionRuleDecoderGenerator extends DecoderGenerator {
   static const String NAME = "_productionRule";
 
-  static const String _BEGIN_TOKEN = MethodBeginTokenGenerator.NAME;
-
   static const String _DATA = InterpreterClassGenerator.DATA;
 
   static const String _DECODE = MethodDecodeGenerator.NAME;
-
-  static const String _END_TOKEN = MethodEndTokenGenerator.NAME;
 
   static const String _RESULT = InterpreterClassGenerator.RESULT;
 
@@ -29,12 +25,12 @@ void $NAME(int cp) {
   // TODO: If memoized expectation errors goes here
   var offset = {{OFFSET}};
   var tokenId = $_DATA[offset + $_OFFSET_TOKEN_ID];
-  if (tokenId != -1) {
-    $_BEGIN_TOKEN(tokenId);
+  if (tokenId != null) {
+    // TODO: Begin token
   }  
   $_DECODE($_DATA[offset + $_OFFSET_INSTRUCTION]);
-  if (tokenId != -1) {
-    $_END_TOKEN();
+  if (tokenId != null) {
+    // TODO: End token
   }
   // TODO: Memoization goes here
 }

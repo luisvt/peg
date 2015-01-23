@@ -9,8 +9,6 @@ class MethodGetStateGenerator extends DeclarationGenerator {
 
   static const String _TOKEN = ParserClassGenerator.TOKEN;
 
-  static const String _TOKEN_LEVEL = ParserClassGenerator.TOKEN_LEVEL;
-
   static const String _TOKEN_START = ParserClassGenerator.TOKEN_START;
 
   static const String _TEMPLATE = "TEMPLATE";

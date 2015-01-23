@@ -1,371 +1,363 @@
 --------------------------------
+Log entries:
+Expr           SENTENCE <= MORHEME : callerAll == 0
+Sentence       LEXEME   <= MORHEME : callerSentence > 0 (Expr)
+Term           LEXEME   <= MORHEME : isRecursive && MORPHEME (Atom)
+Atom           SENTENCE <= MORHEME : calleeLexeme > 0 (Sentence)
+CLOSE          LEXEME   <= MORHEME : callerSentence > 0 (Atom)
+EOF            LEXEME   <= MORHEME : callerSentence > 0 (Expr)
+LEADING_SPACES LEXEME   <= MORHEME : callerSentence > 0 (Expr)
+NUMBER         LEXEME   <= MORHEME : callerSentence > 0 (Atom)
+OPEN           LEXEME   <= MORHEME : callerSentence > 0 (Atom)
+Sentence       SENTENCE <= LEXEME  : calleeLexeme > 0 (Term, Sentence)
+Term           SENTENCE <= LEXEME  : calleeSentence > 0 (Atom)
+DIV            LEXEME   <= MORHEME : callerSentence > 0 (Term)
+MINUS          LEXEME   <= MORHEME : callerSentence > 0 (Sentence)
+MUL            LEXEME   <= MORHEME : callerSentence > 0 (Term)
+PLUS           LEXEME   <= MORHEME : callerSentence > 0 (Sentence)
+--------------------------------
 Starting rules:
 Expr
 --------------------------------
 Rules:
 --------------------------------
 Atom:
- Type: Nonterminal
+ Type: Sentence (nonterminal)
  Direct callees:
-  (L ) CLOSE
-  (L ) NUMBER
-  (L ) OPEN
-  (N ) Sentence
+  (L) CLOSE
+  (L) NUMBER
+  (L) OPEN
+  (S) Sentence
  All callees:
-  (N ) Atom
-  (L ) CLOSE
-  (L ) DIV
-  (L ) MINUS
-  (L ) MUL
-  (L ) NUMBER
-  (L ) OPEN
-  (L ) PLUS
-  (LM) SPACES
-  (N ) Sentence
-  (N ) Term
-  (M ) WS
+  (S) Atom
+  (L) CLOSE
+  (L) DIV
+  (L) MINUS
+  (L) MUL
+  (L) NUMBER
+  (L) OPEN
+  (L) PLUS
+  (S) Sentence
+  (S) Term
+  (M) WS
  Direct callers:
-  (N ) Term
+  (S) Term
  All callers:
-  (N ) Atom
-  (N ) Expr
-  (N ) Sentence
-  (N ) Term
+  (S) Atom
+  (S) Expr
+  (S) Sentence
+  (S) Term
  Start characters:
   [(][0-9]
- Expected lexemes:
+ Expected lexemes (tokens):
   NUMBER '('
 --------------------------------
 CLOSE:
- Type: Lexeme
+ Type: Lexeme (token)
  Direct callees:
-  (LM) SPACES
+  (M) WS
  All callees:
-  (LM) SPACES
-  (M ) WS
+  (M) WS
  Direct callers:
-  (N ) Atom
+  (S) Atom
  All callers:
-  (N ) Atom
-  (N ) Expr
-  (N ) Sentence
-  (N ) Term
+  (S) Atom
+  (S) Expr
+  (S) Sentence
+  (S) Term
  Start characters:
   [)]
- Expected lexemes:
+ Expected lexemes (tokens):
   ')'
 --------------------------------
 DIV:
- Type: Lexeme
+ Type: Lexeme (token)
  Direct callees:
-  (LM) SPACES
+  (M) WS
  All callees:
-  (LM) SPACES
-  (M ) WS
+  (M) WS
  Direct callers:
-  (N ) Term
+  (S) Term
  All callers:
-  (N ) Atom
-  (N ) Expr
-  (N ) Sentence
-  (N ) Term
+  (S) Atom
+  (S) Expr
+  (S) Sentence
+  (S) Term
  Start characters:
   [/]
- Expected lexemes:
+ Expected lexemes (tokens):
   '/'
 --------------------------------
 EOF:
- Type: Lexeme
+ Type: Lexeme (token)
  Direct callees:
  All callees:
  Direct callers:
-  (N ) Expr
+  (S) Expr
  All callers:
-  (N ) Expr
+  (S) Expr
  Start characters:
   [\u0000-\u10ffff]
- Expected lexemes:
+ Expected lexemes (tokens):
   EOF
 --------------------------------
 Expr:
- Type: Nonterminal
+ Type: Sentence (nonterminal)
  Direct callees:
-  (L ) EOF
-  (LM) SPACES
-  (N ) Sentence
+  (L) EOF
+  (L) LEADING_SPACES
+  (S) Sentence
  All callees:
-  (N ) Atom
-  (L ) CLOSE
-  (L ) DIV
-  (L ) EOF
-  (L ) MINUS
-  (L ) MUL
-  (L ) NUMBER
-  (L ) OPEN
-  (L ) PLUS
-  (LM) SPACES
-  (N ) Sentence
-  (N ) Term
-  (M ) WS
+  (S) Atom
+  (L) CLOSE
+  (L) DIV
+  (L) EOF
+  (L) LEADING_SPACES
+  (L) MINUS
+  (L) MUL
+  (L) NUMBER
+  (L) OPEN
+  (L) PLUS
+  (S) Sentence
+  (S) Term
+  (M) WS
  Direct callers:
  All callers:
  Start characters:
   [\u0000-\u10ffff]
- Expected lexemes:
+ Expected lexemes (tokens):
   NUMBER '('
 --------------------------------
-MINUS:
- Type: Lexeme
+LEADING_SPACES:
+ Type: Lexeme (token)
  Direct callees:
-  (LM) SPACES
+  (M) WS
  All callees:
-  (LM) SPACES
-  (M ) WS
+  (M) WS
  Direct callers:
-  (N ) Sentence
+  (S) Expr
  All callers:
-  (N ) Atom
-  (N ) Expr
-  (N ) Sentence
-  (N ) Term
+  (S) Expr
+ Start characters:
+  [\u0000-\u10ffff]
+ Expected lexemes (tokens):
+  LEADING_SPACES
+--------------------------------
+MINUS:
+ Type: Lexeme (token)
+ Direct callees:
+  (M) WS
+ All callees:
+  (M) WS
+ Direct callers:
+  (S) Sentence
+ All callers:
+  (S) Atom
+  (S) Expr
+  (S) Sentence
+  (S) Term
  Start characters:
   [-]
- Expected lexemes:
+ Expected lexemes (tokens):
   '-'
 --------------------------------
 MUL:
- Type: Lexeme
+ Type: Lexeme (token)
  Direct callees:
-  (LM) SPACES
+  (M) WS
  All callees:
-  (LM) SPACES
-  (M ) WS
+  (M) WS
  Direct callers:
-  (N ) Term
+  (S) Term
  All callers:
-  (N ) Atom
-  (N ) Expr
-  (N ) Sentence
-  (N ) Term
+  (S) Atom
+  (S) Expr
+  (S) Sentence
+  (S) Term
  Start characters:
   [*]
- Expected lexemes:
+ Expected lexemes (tokens):
   '*'
 --------------------------------
 NUMBER:
- Type: Lexeme
+ Type: Lexeme (token)
  Direct callees:
-  (LM) SPACES
+  (M) WS
  All callees:
-  (LM) SPACES
-  (M ) WS
+  (M) WS
  Direct callers:
-  (N ) Atom
+  (S) Atom
  All callers:
-  (N ) Atom
-  (N ) Expr
-  (N ) Sentence
-  (N ) Term
+  (S) Atom
+  (S) Expr
+  (S) Sentence
+  (S) Term
  Start characters:
   [0-9]
- Expected lexemes:
+ Expected lexemes (tokens):
   NUMBER
 --------------------------------
 OPEN:
- Type: Lexeme
+ Type: Lexeme (token)
  Direct callees:
-  (LM) SPACES
+  (M) WS
  All callees:
-  (LM) SPACES
-  (M ) WS
+  (M) WS
  Direct callers:
-  (N ) Atom
+  (S) Atom
  All callers:
-  (N ) Atom
-  (N ) Expr
-  (N ) Sentence
-  (N ) Term
+  (S) Atom
+  (S) Expr
+  (S) Sentence
+  (S) Term
  Start characters:
   [(]
- Expected lexemes:
+ Expected lexemes (tokens):
   '('
 --------------------------------
 PLUS:
- Type: Lexeme
+ Type: Lexeme (token)
  Direct callees:
-  (LM) SPACES
+  (M) WS
  All callees:
-  (LM) SPACES
-  (M ) WS
+  (M) WS
  Direct callers:
-  (N ) Sentence
+  (S) Sentence
  All callers:
-  (N ) Atom
-  (N ) Expr
-  (N ) Sentence
-  (N ) Term
+  (S) Atom
+  (S) Expr
+  (S) Sentence
+  (S) Term
  Start characters:
   [+]
- Expected lexemes:
+ Expected lexemes (tokens):
   '+'
 --------------------------------
-SPACES:
- Type: Lexeme & morpheme
- Direct callees:
-  (M ) WS
- All callees:
-  (M ) WS
- Direct callers:
-  (L ) CLOSE
-  (L ) DIV
-  (N ) Expr
-  (L ) MINUS
-  (L ) MUL
-  (L ) NUMBER
-  (L ) OPEN
-  (L ) PLUS
- All callers:
-  (N ) Atom
-  (L ) CLOSE
-  (L ) DIV
-  (N ) Expr
-  (L ) MINUS
-  (L ) MUL
-  (L ) NUMBER
-  (L ) OPEN
-  (L ) PLUS
-  (N ) Sentence
-  (N ) Term
- Start characters:
-  [\u0000-\u10ffff]
- Expected lexemes:
-  SPACES
---------------------------------
 Sentence:
- Type: Nonterminal
+ Type: Sentence (nonterminal)
  Direct callees:
-  (L ) MINUS
-  (L ) PLUS
-  (N ) Sentence
-  (N ) Term
+  (L) MINUS
+  (L) PLUS
+  (S) Sentence
+  (S) Term
  All callees:
-  (N ) Atom
-  (L ) CLOSE
-  (L ) DIV
-  (L ) MINUS
-  (L ) MUL
-  (L ) NUMBER
-  (L ) OPEN
-  (L ) PLUS
-  (LM) SPACES
-  (N ) Sentence
-  (N ) Term
-  (M ) WS
+  (S) Atom
+  (L) CLOSE
+  (L) DIV
+  (L) MINUS
+  (L) MUL
+  (L) NUMBER
+  (L) OPEN
+  (L) PLUS
+  (S) Sentence
+  (S) Term
+  (M) WS
  Direct callers:
-  (N ) Atom
-  (N ) Expr
-  (N ) Sentence
+  (S) Atom
+  (S) Expr
+  (S) Sentence
  All callers:
-  (N ) Atom
-  (N ) Expr
-  (N ) Sentence
-  (N ) Term
+  (S) Atom
+  (S) Expr
+  (S) Sentence
+  (S) Term
  Start characters:
   [(][0-9]
- Expected lexemes:
+ Expected lexemes (tokens):
   NUMBER '('
 --------------------------------
 Term:
- Type: Nonterminal
+ Type: Sentence (nonterminal)
  Direct callees:
-  (N ) Atom
-  (L ) DIV
-  (L ) MUL
-  (N ) Term
+  (S) Atom
+  (L) DIV
+  (L) MUL
+  (S) Term
  All callees:
-  (N ) Atom
-  (L ) CLOSE
-  (L ) DIV
-  (L ) MINUS
-  (L ) MUL
-  (L ) NUMBER
-  (L ) OPEN
-  (L ) PLUS
-  (LM) SPACES
-  (N ) Sentence
-  (N ) Term
-  (M ) WS
+  (S) Atom
+  (L) CLOSE
+  (L) DIV
+  (L) MINUS
+  (L) MUL
+  (L) NUMBER
+  (L) OPEN
+  (L) PLUS
+  (S) Sentence
+  (S) Term
+  (M) WS
  Direct callers:
-  (N ) Sentence
-  (N ) Term
+  (S) Sentence
+  (S) Term
  All callers:
-  (N ) Atom
-  (N ) Expr
-  (N ) Sentence
-  (N ) Term
+  (S) Atom
+  (S) Expr
+  (S) Sentence
+  (S) Term
  Start characters:
   [(][0-9]
- Expected lexemes:
+ Expected lexemes (tokens):
   NUMBER '('
 --------------------------------
 WS:
- Type: Morpheme
+ Type: Morheme
  Direct callees:
  All callees:
  Direct callers:
-  (LM) SPACES
+  (L) CLOSE
+  (L) DIV
+  (L) LEADING_SPACES
+  (L) MINUS
+  (L) MUL
+  (L) NUMBER
+  (L) OPEN
+  (L) PLUS
  All callers:
-  (N ) Atom
-  (L ) CLOSE
-  (L ) DIV
-  (N ) Expr
-  (L ) MINUS
-  (L ) MUL
-  (L ) NUMBER
-  (L ) OPEN
-  (L ) PLUS
-  (LM) SPACES
-  (N ) Sentence
-  (N ) Term
+  (S) Atom
+  (L) CLOSE
+  (L) DIV
+  (S) Expr
+  (L) LEADING_SPACES
+  (L) MINUS
+  (L) MUL
+  (L) NUMBER
+  (L) OPEN
+  (L) PLUS
+  (S) Sentence
+  (S) Term
  Start characters:
-  [\t-\n][\r][ ]
- Expected lexemes:
-  WS
+  [\u0000-\u10ffff]
+ Expected lexemes (tokens):
 --------------------------------
-Nonterminals:
+Sentences (nonterminals):
   Atom
   Expr
   Sentence
   Term
 --------------------------------
-Lexemes:
+Lexemes (tokens):
   CLOSE
   DIV
   EOF
+  LEADING_SPACES
   MINUS
   MUL
   NUMBER
   OPEN
   PLUS
-  SPACES
 --------------------------------
 Morphemes:
-  SPACES
   WS
 --------------------------------
-Lexemes & morphemes:
-  SPACES
---------------------------------
-Lexeme names:
+Lexeme (token) names:
   CLOSE : ')'
   DIV : '/'
   EOF : EOF
+  LEADING_SPACES : LEADING_SPACES
   MINUS : '-'
   MUL : '*'
   NUMBER : NUMBER
   OPEN : '('
   PLUS : '+'
-  SPACES : SPACES
 --------------------------------
 Recursives:
   Atom

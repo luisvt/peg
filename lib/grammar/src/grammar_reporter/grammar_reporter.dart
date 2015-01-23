@@ -24,7 +24,8 @@ class GrammarReporter {
   void _prepare() {
     for (var rule in grammar.productionRules) {
       rules.add(rule);
-      if (rule.isLexical) {
+      // TODO: Reimplement
+      if (rule.isMorpheme || rule.isLexeme) {
         terminals.add(rule);
       } else {
         nonterminals.add(rule);
