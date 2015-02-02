@@ -1,7 +1,11 @@
+## 0.0.49
+
+- In function` _failure` corrected the conditions of the detection of `unterminated` tokens 
+
 ## 0.0.48
 
-- Add `How to write a good PEG grammar` recommendation `how_to_write_a_good_peg_grammar.md`
-- Added a trace statistic about how and why the generator determines the kind of the production rules. Can help a lot for writing good grammar. Command line `peg stat -d high grammar.peg` 
+- Added "How to write a good PEG grammar" recommendation 'how_to_write_a_good_peg_grammar.md'
+- Added a trace statistic about how and why the generator determines the kind of the production rules. Can help a lot for writing good grammar. Command line `peg stat -d high grammar.peg`
 - Significant improvements in the recognition of the production rule kinds: sentences (nonterminals), lexemes (tokens) and morphemes (100% recognition)
 
 ## 0.0.47

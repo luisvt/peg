@@ -44,7 +44,7 @@ void $NAME([List<String> expected]) {
     var alias = $_TOKEN_ALIASES[$_TOKEN];
     var flag = $_TOKEN_FLAGS[$_TOKEN];
     var name = $_TOKEN_NAMES[$_TOKEN];
-    if ($_FAILURE_POS == $_INPUT_LEN && (flag & $_FLAG_TOKEN_VALUE) != 0) {             
+    if ($_FAILURE_POS > $_TOKEN_START && $_FAILURE_POS == $_INPUT_LEN && (flag & $_FLAG_TOKEN_VALUE) != 0) {             
       var message = "Unterminated '\$name'";
       $_ERRORS.add(new {{ERROR_CLASS}}({{ERROR_CLASS}}.$_TYPE_UNTERMINATED, $_FAILURE_POS, $_TOKEN_START, message));
       $_EXPECTED.addAll(expected);            
