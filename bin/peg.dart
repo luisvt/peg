@@ -1,5 +1,7 @@
 import "dart:io";
+
 import "package:args_helper/args_helper.dart";
+import 'package:parser_error/parser_error.dart';
 import 'package:path/path.dart' as path;
 import 'package:peg/grammar/grammar.dart';
 import 'package:peg/grammar/production_rule.dart';
@@ -46,7 +48,7 @@ class Program {
 
   void interpretCommand(String filename, {bool memoize, String name, String output}) {
     print("Not implemented yet.");
-    //exit(-1);
+    exit(-1);
     var basename = path.basenameWithoutExtension(filename);
     if (output == null || output.isEmpty) {
       output = underscore(basename) + '_parser.dart';
@@ -97,14 +99,14 @@ class Program {
   Grammar _parseGrammar(PegParser parser) {
     var grammar = parser.parse_Grammar();
     if (!parser.success) {
-      var text = new Text(parser.text);
+      var messages = [];
       for (var error in parser.errors()) {
-        var location = text.locationAt(error.position);
-        var message = "Parser error at $location. ${error.message}";
-        print(message);
+        messages.add(new ParserErrorMessage(error.message, error.start, error.position));
       }
 
-      exit(-1);
+      var strings = ParserErrorFormatter.format(parser.text, messages);
+      print(strings.join("\n"));
+      throw new FormatException();
     }
 
     var grammarAnalyzer = new GrammarAnalyzer();

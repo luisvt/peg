@@ -1,3 +1,7 @@
+## 0.0.50
+
+- For the better error reporting used the package `parser_error` in some parsers
+
 ## 0.0.49
 
 - In function` _failure` corrected the conditions of the detection of `unterminated` tokens 

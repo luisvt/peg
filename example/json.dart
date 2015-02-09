@@ -1,7 +1,7 @@
 library peg.example.json;
 
-import "package:text/text.dart";
 import "json_parser.dart";
+import "package:parser_error/parser_error.dart";
 
 void main() {
   var result = parse(json);
@@ -12,13 +12,13 @@ dynamic parse(String string) {
   var parser = new JsonParser(string);
   var result = parser.parse_jsonText();
   if (!parser.success) {
-    var text = new Text(parser.text);
+    var messages = [];
     for (var error in parser.errors()) {
-      var location = text.locationAt(error.position);
-      var message = "Parser error at $location. ${error.message}";
-      print(message);
+      messages.add(new ParserErrorMessage(error.message, error.start, error.position));
     }
 
+    var strings = ParserErrorFormatter.format(parser.text, messages);
+    print(strings.join("\n"));
     throw new FormatException();
   }
 
