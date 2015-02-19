@@ -1,3 +1,7 @@
+## 0.0.51
+
+- Fixed minor bug in `InfiniteLoopFinder`
+
 ## 0.0.50
 
 - For the better error reporting used the package `parser_error` in some parsers

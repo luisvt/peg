@@ -24,12 +24,16 @@ class InfiniteLoopFinder extends UnifyingExpressionVisitor {
     var map = result[expression.owner];
     if (map == null) {
       map = <Expression, List<Expression>>{};
-      map[expression] = <Expression>[];
       result[expression.owner] = map;
     }
 
-    var endPoints = new Set<Expression>();
     var list = map[expression];
+    if (list == null) {
+      list = <Expression>[];
+      map[expression] = list;
+    }
+
+    var endPoints = new Set<Expression>();
     _findEndPoints(expression, endPoints);
     for (var expression in endPoints) {
       list.add(expression);

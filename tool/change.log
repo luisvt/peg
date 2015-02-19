@@ -62,3 +62,4 @@
 0.0.48 Added a trace statistic about how and why the generator determines the kind of the production rules. Can help a lot for writing good grammar. Command line `peg stat -d high grammar.peg`
 0.0.49 In function` _failure` corrected the conditions of the detection of `unterminated` tokens 
 0.0.50 For the better error reporting used the package `parser_error` in some parsers
+0.0.51 Fixed minor bug in `InfiniteLoopFinder`
