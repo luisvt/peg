@@ -11,7 +11,6 @@ import 'package:peg/general_parser/parser_generator.dart';
 import 'package:peg/interpreter_parser/parser_generator.dart';
 import 'package:peg/parser_generator/parser_generator_options.dart';
 import 'package:strings/strings.dart';
-import 'package:text/text.dart';
 import "package:yaml/yaml.dart" as yaml;
 import 'peg_parser.dart';
 

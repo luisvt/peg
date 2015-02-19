@@ -2173,13 +2173,7 @@ class PegParser {
         _startPos = _cursor;
         while (true) {  
           // => '"'
-          $$ = '\"';
-          success = true;
-          if (++_cursor < _inputLen) {
-            _ch = _input[_cursor];
-          } else {
-            _ch = -1;
-          }
+          $$ = _matchChar(34, '\"');
           // <= '"'
           if (!success) break;
           var seq = new List(4)..[0] = $$;

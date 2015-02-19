@@ -65,7 +65,8 @@ abstract class ExpressionGenerator extends TemplateGenerator {
       case ExpressionTypes.SEQUENCE:
         return isFirstBarrage(parent);
       case ExpressionTypes.ORDERED_CHOICE:
-        return true;
+        var choice = parent as OrderedChoiceExpression;
+        return expression == choice.expressions[0];
     }
 
     return false;

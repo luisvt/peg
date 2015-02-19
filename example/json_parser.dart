@@ -1038,13 +1038,7 @@ class JsonParser {
               var startPos1 = _startPos;
               _startPos = _cursor;
               // => 'E'
-              $$ = 'E';
-              success = true;
-              if (++_cursor < _inputLen) {
-                _ch = _input[_cursor];
-              } else {
-                _ch = -1;
-              }
+              $$ = _matchChar(69, 'E');
               // <= 'E'
               _startPos = startPos1;
               break;
@@ -1088,13 +1082,7 @@ class JsonParser {
               var startPos3 = _startPos;
               _startPos = _cursor;
               // => '+'
-              $$ = '+';
-              success = true;
-              if (++_cursor < _inputLen) {
-                _ch = _input[_cursor];
-              } else {
-                _ch = -1;
-              }
+              $$ = _matchChar(43, '+');
               // <= '+'
               _startPos = startPos3;
               break;

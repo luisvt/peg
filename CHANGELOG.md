@@ -1,3 +1,7 @@
+## 0.0.52
+
+- Fixed bug in `ExpressionGenerator`
+
 ## 0.0.51
 
 - Fixed minor bug in `InfiniteLoopFinder`
