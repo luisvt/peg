@@ -83,44 +83,6 @@ class StartCharactersResolver extends ExpressionResolver {
     return null;
   }
 
-  Object visitSequence2(SequenceExpression expression) {
-    var passes = 1;
-    Expression prev;
-    for (var i = 0; i < passes; i++) {
-      prev = null;
-      var skip = false;
-      for (var child in expression.expressions) {
-        child.accept(this);
-        if (prev != null) {
-          var type = prev.type;
-          switch (type) {
-            case ExpressionTypes.NOT_PREDICATE:
-            case ExpressionTypes.OPTIONAL:
-            case ExpressionTypes.ZERO_OR_MORE:
-              if (type == ExpressionTypes.NOT_PREDICATE) {
-                prev.startCharacters.clear();
-              }
-
-              _applyData(child, prev);
-              passes = 2;
-              break;
-          }
-        }
-
-        if (!skip) {
-          _applyData(child, expression);
-          if (!child.isOptional) {
-            skip = true;
-          }
-        }
-
-        prev = child;
-      }
-    }
-
-    return null;
-  }
-
   Object visitSequence(SequenceExpression expression) {
     var expressions = expression.expressions;
     var length = expressions.length;

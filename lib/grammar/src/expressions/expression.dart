@@ -53,10 +53,12 @@ abstract class Expression {
 
   int positionInSequence = 0;
 
+  Expression previous;
+
+  Set<Expression> startExpressions = new Set<Expression>();
+
   // TODO: rename
   SparseBoolList startCharacters = new SparseBoolList();
-
-  Expression previous;
 
   bool get canMatchEof {
     return (flag & FLAG_CAN_MATCH_EOF) != 0;

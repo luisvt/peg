@@ -81,7 +81,9 @@ switch ({{STATE}}) {
 
   OrderedChoiceExpression _expression;
 
-  OrderedChoiceExpressionGenerator(Expression expression, ProductionRuleGenerator productionRuleGenerator) : super(expression, productionRuleGenerator) {
+  OrderedChoiceExpressionGenerator(
+      Expression expression, ProductionRuleGenerator productionRuleGenerator)
+      : super(expression, productionRuleGenerator) {
     if (expression is! OrderedChoiceExpression) {
       throw new StateError('Expression must be OrderedChoiceExpression');
     }
@@ -127,13 +129,15 @@ switch ({{STATE}}) {
     if (hasNull) {
       block.assign('EXPECTED', 'const [null]');
     } else {
-      block.assign('EXPECTED', productionRuleGenerator.parserClassGenerator.addExpected(expected));
+      block.assign('EXPECTED',
+          productionRuleGenerator.parserClassGenerator.addExpected(expected));
     }
 
     if (options.comment) {
       block.assign('#COMMENT_IN', '// => $_expression # Choice');
       block.assign('#COMMENT_OUT', '// <= $_expression # Choice');
-      block.assign('#COMMENT_EXPECTED', '// Expected: ${printableExpected.join(", ")}');
+      block.assign(
+          '#COMMENT_EXPECTED', '// Expected: ${printableExpected.join(", ")}');
     }
 
     var states = _generateStates();
@@ -145,7 +149,8 @@ switch ({{STATE}}) {
     var length = expressions.length;
     if (length == 1) {
       var block = getTemplateBlock(_TEMPLATE_SINGLE);
-      var generator = createGenerator(expressions.first, productionRuleGenerator);
+      var generator =
+          createGenerator(expressions.first, productionRuleGenerator);
       block.assign("#EXPRESSION", generator.generate());
       return block.process();
     }
@@ -190,7 +195,8 @@ switch ({{STATE}}) {
             key.add(expression);
           }
 
-          transitions.addGroup(new GroupedRangeList(group.start, group.end, key));
+          transitions
+              .addGroup(new GroupedRangeList(group.start, group.end, key));
         }
       }
     }
@@ -231,12 +237,14 @@ switch ({{STATE}}) {
     }
 
     if (singleCharacter != null) {
-      var state = "$_CH == $singleCharacter ? 0 : $_CH == -1 ? $eofState : $failState";
+      var state =
+          "$_CH == $singleCharacter ? 0 : $_CH == -1 ? $eofState : $failState";
       blockSwitch.assign("STATE", state);
     } else if (singleRange != null) {
       var start = singleRange.start;
       var end = singleRange.end;
-      var state = "$_CH >= $start && $_CH <= $end ? 0 : $_CH == -1 ? $eofState : $failState";
+      var state =
+          "$_CH >= $start && $_CH <= $end ? 0 : $_CH == -1 ? $eofState : $failState";
       blockSwitch.assign("STATE", state);
     } else {
       var variableName = parserClassGenerator.addTransition(ranges);
@@ -270,15 +278,16 @@ switch ({{STATE}}) {
     // EOF list
     var eof = new _List<Expression>();
     Expression optional;
+    var skip = false;
     for (var expression in _expression.expressions) {
-      if (expression.canMatchEof) {
+      if (expression.canMatchEof || expression.isOptional) {
         eof.add(expression);
-      }
-
-      if (expression.isOptional) {
-        eof.add(expression);
-        optional = expression;
-        break;
+        if (!skip) {
+          if (expression.isOptional) {
+            skip = true;
+            optional = expression;
+          }
+        }
       }
     }
 
@@ -290,7 +299,6 @@ switch ({{STATE}}) {
       } else {
         cases[failState] = _generatePredefined("null", true);
       }
-
     } else {
       cases[failState] = _generatePredefined("null", false);
     }

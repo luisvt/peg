@@ -1,0 +1,6 @@
+start <- lws? a b c
+a <- c
+b <- 'b' ws 
+c <- 'c' ws
+lws <- ws
+ws <- [ ]*

@@ -27,7 +27,9 @@ class ExpressionMatchesEofResolver extends ExpressionResolver {
   }
 
   Object visitOptional(OptionalExpression expression) {
-    _visitChild(expression);
+    var child = expression.expression;
+    child.accept(this);
+    expression.flag |= Expression.FLAG_CAN_MATCH_EOF;
     return null;
   }
 
@@ -64,7 +66,7 @@ class ExpressionMatchesEofResolver extends ExpressionResolver {
       child.accept(this);
       if (!skip) {
         _applyData(child, expression);
-        if (!child.isOptional) {
+        if (child.canMatchEof) {
           skip = true;
         }
       }
@@ -74,7 +76,9 @@ class ExpressionMatchesEofResolver extends ExpressionResolver {
   }
 
   Object visitZeroOrMore(ZeroOrMoreExpression expression) {
-    _visitChild(expression);
+    var child = expression.expression;
+    child.accept(this);
+    expression.flag |= Expression.FLAG_CAN_MATCH_EOF;
     return null;
   }
 

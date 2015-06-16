@@ -54,8 +54,16 @@ class LeftExpressionsResolver extends ExpressionResolver {
     for (var child in expression.expressions) {
       child.accept(this);
       if (!skip) {
+        var isPredicate = false;
+        switch (child.type) {
+          case ExpressionTypes.AND_PREDICATE:
+          case ExpressionTypes.NOT_PREDICATE:
+            isPredicate = true;
+            break;
+        }
+
         _applyData(child, expression);
-        if (!child.isOptional) {
+        if (!(child.isOptional || isPredicate)) {
           skip = true;
         }
       }

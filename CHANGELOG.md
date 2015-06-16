@@ -1,3 +1,8 @@
+## 0.0.53
+
+- Added grammar analyser `PredicatesWithEmptyExpressionsFinder`
+- Added grammar analyser `PredicatesWithOptionalExpressionsFinder`
+
 ## 0.0.52
 
 - Fixed bug in `ExpressionGenerator`

@@ -67,9 +67,11 @@ Also for providing statistical information used the following grammar analyzers.
 
 - Finder of choices with optional expression
 - Finder of duplicate rules
+- Finder of empty expression in predicates
 - Finder of infinite loops
 - Finder of left recursions
 - Finder of nonterminals with lexemes
+- Finder of optional expression in predicates
 - Finder of starting rules
 - Finder of unresolved rules
 

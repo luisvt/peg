@@ -121,9 +121,17 @@ class ExpectedLexemesResolver extends ExpressionResolver {
     var skip = false;
     for (var child in expression.expressions) {
       child.accept(this);
+      var isPredicate = false;
+      switch (child.type) {
+        case ExpressionTypes.AND_PREDICATE:
+        case ExpressionTypes.NOT_PREDICATE:
+          isPredicate = true;
+          break;
+      }
+
       if (!skip) {
         _addExpected(child, expression, false);
-        if (!child.isOptional) {
+        if (!(child.isOptional || isPredicate)) {
           skip = true;
         }
       }

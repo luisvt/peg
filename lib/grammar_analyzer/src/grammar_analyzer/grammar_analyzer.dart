@@ -66,6 +66,30 @@ class GrammarAnalyzer {
       warnings.add('Warning: Found optional expression in choice in "${rule.name}": $expression');
     }
 
+    var predicatesWithOtionals = new PredicatesWithOptionalExpressionsFinder().find(rules);
+    for (var rule in predicatesWithOtionals.keys) {
+      var expression = predicatesWithOtionals[rule].join(", ");
+      warnings.add('Warning: Found optional expression in predicate in "${rule.name}": $expression');
+    }
+
+    var predicatesWithEmpty = new PredicatesWithEmptylExpressionsFinder().find(rules);
+    for (var rule in predicatesWithEmpty.keys) {
+      var expression = predicatesWithEmpty[rule].join(", ");
+      warnings.add('Warning: Found empty expression in predicate in "${rule.name}": $expression');
+    }
+
+    //var conflictingFollow = new ConflictingFollowFinder();
+    //conflictingFollow.find(rules);
+
+    var temp = rules.toList();
+    temp.sort((a, b) => b.directCallers.length.compareTo(a.directCallers.length));
+    if (unresolvedRules.isEmpty && !temp.isEmpty) {
+      var rule = temp.first;
+      if (!rule.isMorpheme) {
+        warnings.add('Warning: Most used rule is not a morpheme": ${rule.name}');
+      }
+    }
+
     return warnings;
   }
 }
