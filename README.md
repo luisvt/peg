@@ -8,9 +8,7 @@ Version: 0.0.53
 
 To install this program you could do it by mean of:
 
-```
-pub global activate peg
-```
+    pub global activate peg
 
 To run the program you only need to do:
 
