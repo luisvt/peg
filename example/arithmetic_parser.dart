@@ -20,7 +20,7 @@ num _binop(num left, List right) {
           left /= r[1];
           break;
         default:
-          throw "Unsupported operation $op";
+          throw "Unsupported operation $r[0]";
       }
     }
   }
@@ -58,8 +58,10 @@ class ArithmeticParser {
   
   static final List<bool> _lookahead = _unmap([0x3ff01]);
   
+  // '\t', '\n', '\r', ' '
   static final List<bool> _mapping0 = _unmap([0x800013]);
   
+  // '\r\n'
   static final List<int> _strings0 = <int>[13, 10];
   
   final List<String> _tokenAliases = ["\')\'", "\'/\'", "EOF", "LEADING_SPACES", "\'-\'", "\'*\'", "NUMBER", "\'(\'", "\'+\'"];
@@ -398,6 +400,8 @@ class ArithmeticParser {
   }
   
   dynamic _parse_Additive() {
+    // SENTENCE (NONTERMINAL)
+    // Additive <- Multiplicative ((PLUS / MINUS) Multiplicative)* / Multiplicative
     var $$;          
     var pos = _cursor;             
     if(_cachePos[1] >= pos) {
@@ -408,36 +412,54 @@ class ArithmeticParser {
     } else {
       _cachePos[1] = pos;
     }  
+    // => Multiplicative ((PLUS / MINUS) Multiplicative)* / Multiplicative # Choice
     switch (_getState(_transitions0)) {
+      // [(] [0-9]
       case 0:
         while (true) {
+          // => Multiplicative ((PLUS / MINUS) Multiplicative)* # Sequence
           var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
           _startPos = _cursor;
           while (true) {  
+            // => Multiplicative
             $$ = _parse_Multiplicative();
+            // <= Multiplicative
             if (!success) break;
             var seq = new List(2)..[0] = $$;
+            // => ((PLUS / MINUS) Multiplicative)*
             var testing0 = _testing; 
             for (var reps = []; ; ) {
               _testing = _cursor;
+              // => ((PLUS / MINUS) Multiplicative) # Choice
               switch (_getState(_transitions1)) {
+                // [+] [-]
                 case 0:
+                  // => (PLUS / MINUS) Multiplicative # Sequence
                   var ch1 = _ch, pos1 = _cursor, startPos1 = _startPos;
                   _startPos = _cursor;
                   while (true) {  
+                    // => (PLUS / MINUS) # Choice
                     switch (_getState(_transitions2)) {
+                      // [+]
                       case 0:
                         var startPos2 = _startPos;
                         _startPos = _cursor;
+                        // => PLUS
                         $$ = _parse_PLUS();
+                        // <= PLUS
                         _startPos = startPos2;
                         break;
+                      // [-]
                       case 1:
                         var startPos3 = _startPos;
                         _startPos = _cursor;
+                        // => MINUS
                         $$ = _parse_MINUS();
+                        // <= MINUS
                         _startPos = startPos3;
                         break;
+                      // No matches
+                      // EOF
                       case 2:
                       case 3:
                         $$ = null;
@@ -445,11 +467,15 @@ class ArithmeticParser {
                         break;
                     }
                     if (!success && _cursor > _testing) {
+                      // Expected: '+', '-'
                       _failure(_expect1);
                     }
+                    // <= (PLUS / MINUS) # Choice
                     if (!success) break;
                     var seq = new List(2)..[0] = $$;
+                    // => Multiplicative
                     $$ = _parse_Multiplicative();
+                    // <= Multiplicative
                     if (!success) break;
                     seq[1] = $$;
                     $$ = seq;
@@ -460,7 +486,10 @@ class ArithmeticParser {
                     _cursor = pos1;
                   }
                   _startPos = startPos1;
+                  // <= (PLUS / MINUS) Multiplicative # Sequence
                   break;
+                // No matches
+                // EOF
                 case 1:
                 case 2:
                   $$ = null;
@@ -468,8 +497,10 @@ class ArithmeticParser {
                   break;
               }
               if (!success && _cursor > _testing) {
+                // Expected: '+', '-'
                 _failure(_expect1);
               }
+              // <= ((PLUS / MINUS) Multiplicative) # Choice
               if (success) {  
                 reps.add($$);
               } else {
@@ -479,11 +510,14 @@ class ArithmeticParser {
                 break; 
               }
             }
+            // <= ((PLUS / MINUS) Multiplicative)*
             if (!success) break;
             seq[1] = $$;
             $$ = seq;
             if (success) {    
+              // Multiplicative
               final $1 = seq[0];
+              // ((PLUS / MINUS) Multiplicative)*
               final $2 = seq[1];
               final $start = startPos0;
               $$ = _binop($1, $2);
@@ -495,14 +529,19 @@ class ArithmeticParser {
             _cursor = pos0;
           }
           _startPos = startPos0;
+          // <= Multiplicative ((PLUS / MINUS) Multiplicative)* # Sequence
           if (success) break;
           var startPos4 = _startPos;
           _startPos = _cursor;
+          // => Multiplicative
           $$ = _parse_Multiplicative();
+          // <= Multiplicative
           _startPos = startPos4;
           break;
         }
         break;
+      // No matches
+      // EOF
       case 1:
       case 2:
         $$ = null;
@@ -510,8 +549,10 @@ class ArithmeticParser {
         break;
     }
     if (!success && _cursor > _testing) {
+      // Expected: NUMBER, '('
       _failure(_expect0);
     }
+    // <= Multiplicative ((PLUS / MINUS) Multiplicative)* / Multiplicative # Choice
     if (_cacheable[1]) {
       _addToCache($$, pos, 1);
     }    
@@ -519,6 +560,8 @@ class ArithmeticParser {
   }
   
   dynamic _parse_Atom() {
+    // SENTENCE (NONTERMINAL)
+    // Atom <- NUMBER / OPEN Additive CLOSE
     var $$;          
     var pos = _cursor;             
     if(_cachePos[3] >= pos) {
@@ -529,24 +572,36 @@ class ArithmeticParser {
     } else {
       _cachePos[3] = pos;
     }  
+    // => NUMBER / OPEN Additive CLOSE # Choice
     switch (_getState(_transitions5)) {
+      // [(]
       case 0:
+        // => OPEN Additive CLOSE # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
         _startPos = _cursor;
         while (true) {  
+          // => OPEN
           $$ = _parse_OPEN();
+          // <= OPEN
           if (!success) break;
           var seq = new List(3)..[0] = $$;
+          // => Additive
           $$ = _parse_Additive();
+          // <= Additive
           if (!success) break;
           seq[1] = $$;
+          // => CLOSE
           $$ = _parse_CLOSE();
+          // <= CLOSE
           if (!success) break;
           seq[2] = $$;
           $$ = seq;
           if (success) {    
+            // OPEN
             final $1 = seq[0];
+            // Additive
             final $2 = seq[1];
+            // CLOSE
             final $3 = seq[2];
             final $start = startPos0;
             $$ = $2;
@@ -558,13 +613,19 @@ class ArithmeticParser {
           _cursor = pos0;
         }
         _startPos = startPos0;
+        // <= OPEN Additive CLOSE # Sequence
         break;
+      // [0-9]
       case 1:
         var startPos1 = _startPos;
         _startPos = _cursor;
+        // => NUMBER
         $$ = _parse_NUMBER();
+        // <= NUMBER
         _startPos = startPos1;
         break;
+      // No matches
+      // EOF
       case 2:
       case 3:
         $$ = null;
@@ -572,8 +633,10 @@ class ArithmeticParser {
         break;
     }
     if (!success && _cursor > _testing) {
+      // Expected: NUMBER, '('
       _failure(_expect0);
     }
+    // <= NUMBER / OPEN Additive CLOSE # Choice
     if (_cacheable[3]) {
       _addToCache($$, pos, 3);
     }    
@@ -581,14 +644,20 @@ class ArithmeticParser {
   }
   
   dynamic _parse_CLOSE() {
+    // LEXEME (TOKEN)
+    // CLOSE <- ')' WS
     var $$;
     _token = 0;  
     _tokenStart = _cursor;  
+    // => ')' WS # Choice
     switch (_ch == 41 ? 0 : _ch == -1 ? 2 : 1) {
+      // [)]
       case 0:
+        // => ')' WS # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
         _startPos = _cursor;
         while (true) {  
+          // => ')'
           $$ = ')';
           success = true;
           if (++_cursor < _inputLen) {
@@ -596,9 +665,12 @@ class ArithmeticParser {
           } else {
             _ch = -1;
           }
+          // <= ')'
           if (!success) break;
           var seq = new List(2)..[0] = $$;
+          // => WS
           $$ = _parse_WS();
+          // <= WS
           if (!success) break;
           seq[1] = $$;
           $$ = seq;
@@ -609,7 +681,10 @@ class ArithmeticParser {
           _cursor = pos0;
         }
         _startPos = startPos0;
+        // <= ')' WS # Sequence
         break;
+      // No matches
+      // EOF
       case 1:
       case 2:
         $$ = null;
@@ -617,22 +692,30 @@ class ArithmeticParser {
         break;
     }
     if (!success && _cursor > _testing) {
+      // Expected: ')'
       _failure(_expect3);
     }
+    // <= ')' WS # Choice
     _token = null;
     _tokenStart = null;
     return $$;
   }
   
   dynamic _parse_DIV() {
+    // LEXEME (TOKEN)
+    // DIV <- '/' WS
     var $$;
     _token = 1;  
     _tokenStart = _cursor;  
+    // => '/' WS # Choice
     switch (_ch == 47 ? 0 : _ch == -1 ? 2 : 1) {
+      // [/]
       case 0:
+        // => '/' WS # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
         _startPos = _cursor;
         while (true) {  
+          // => '/'
           $$ = '/';
           success = true;
           if (++_cursor < _inputLen) {
@@ -640,14 +723,19 @@ class ArithmeticParser {
           } else {
             _ch = -1;
           }
+          // <= '/'
           if (!success) break;
           var seq = new List(2)..[0] = $$;
+          // => WS
           $$ = _parse_WS();
+          // <= WS
           if (!success) break;
           seq[1] = $$;
           $$ = seq;
           if (success) {    
+            // '/'
             final $1 = seq[0];
+            // WS
             final $2 = seq[1];
             final $start = startPos0;
             $$ = $1;
@@ -659,7 +747,10 @@ class ArithmeticParser {
           _cursor = pos0;
         }
         _startPos = startPos0;
+        // <= '/' WS # Sequence
         break;
+      // No matches
+      // EOF
       case 1:
       case 2:
         $$ = null;
@@ -667,79 +758,109 @@ class ArithmeticParser {
         break;
     }
     if (!success && _cursor > _testing) {
+      // Expected: '/'
       _failure(_expect4);
     }
+    // <= '/' WS # Choice
     _token = null;
     _tokenStart = null;
     return $$;
   }
   
   dynamic _parse_EOF() {
+    // LEXEME (TOKEN)
+    // EOF <- !.
     var $$;
     _token = 2;  
     _tokenStart = _cursor;  
+    // => !. # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
+      // [\u0000-\u0010ffff]
+      // EOF
       case 0:
       case 2:
         var startPos0 = _startPos;
         _startPos = _cursor;
+        // => !.
         var ch0 = _ch, pos0 = _cursor, testing0 = _testing; 
         _testing = _inputLen + 1;
+        // => .
         $$ = _matchAny();
+        // <= .
         _ch = ch0;
         _cursor = pos0; 
         _testing = testing0;
         $$ = null;
         success = !success;
+        // <= !.
         _startPos = startPos0;
         break;
+      // No matches
       case 1:
         $$ = null;
         success = false;
         break;
     }
     if (!success && _cursor > _testing) {
+      // Expected: EOF
       _failure(_expect5);
     }
+    // <= !. # Choice
     _token = null;
     _tokenStart = null;
     return $$;
   }
   
   dynamic _parse_LEADING_SPACES() {
+    // LEXEME (TOKEN)
+    // LEADING_SPACES <- WS
     var $$;
     _token = 3;  
     _tokenStart = _cursor;  
+    // => WS # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
+      // [\u0000-\u0010ffff]
+      // EOF
       case 0:
       case 2:
         var startPos0 = _startPos;
         _startPos = _cursor;
+        // => WS
         $$ = _parse_WS();
+        // <= WS
         _startPos = startPos0;
         break;
+      // No matches
       case 1:
         $$ = null;
         success = true;
         break;
     }
     if (!success && _cursor > _testing) {
+      // Expected: LEADING_SPACES
       _failure(_expect6);
     }
+    // <= WS # Choice
     _token = null;
     _tokenStart = null;
     return $$;
   }
   
   dynamic _parse_MINUS() {
+    // LEXEME (TOKEN)
+    // MINUS <- '-' WS
     var $$;
     _token = 4;  
     _tokenStart = _cursor;  
+    // => '-' WS # Choice
     switch (_ch == 45 ? 0 : _ch == -1 ? 2 : 1) {
+      // [-]
       case 0:
+        // => '-' WS # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
         _startPos = _cursor;
         while (true) {  
+          // => '-'
           $$ = '-';
           success = true;
           if (++_cursor < _inputLen) {
@@ -747,14 +868,19 @@ class ArithmeticParser {
           } else {
             _ch = -1;
           }
+          // <= '-'
           if (!success) break;
           var seq = new List(2)..[0] = $$;
+          // => WS
           $$ = _parse_WS();
+          // <= WS
           if (!success) break;
           seq[1] = $$;
           $$ = seq;
           if (success) {    
+            // '-'
             final $1 = seq[0];
+            // WS
             final $2 = seq[1];
             final $start = startPos0;
             $$ = $1;
@@ -766,7 +892,10 @@ class ArithmeticParser {
           _cursor = pos0;
         }
         _startPos = startPos0;
+        // <= '-' WS # Sequence
         break;
+      // No matches
+      // EOF
       case 1:
       case 2:
         $$ = null;
@@ -774,22 +903,30 @@ class ArithmeticParser {
         break;
     }
     if (!success && _cursor > _testing) {
+      // Expected: '-'
       _failure(_expect7);
     }
+    // <= '-' WS # Choice
     _token = null;
     _tokenStart = null;
     return $$;
   }
   
   dynamic _parse_MUL() {
+    // LEXEME (TOKEN)
+    // MUL <- '*' WS
     var $$;
     _token = 5;  
     _tokenStart = _cursor;  
+    // => '*' WS # Choice
     switch (_ch == 42 ? 0 : _ch == -1 ? 2 : 1) {
+      // [*]
       case 0:
+        // => '*' WS # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
         _startPos = _cursor;
         while (true) {  
+          // => '*'
           $$ = '*';
           success = true;
           if (++_cursor < _inputLen) {
@@ -797,14 +934,19 @@ class ArithmeticParser {
           } else {
             _ch = -1;
           }
+          // <= '*'
           if (!success) break;
           var seq = new List(2)..[0] = $$;
+          // => WS
           $$ = _parse_WS();
+          // <= WS
           if (!success) break;
           seq[1] = $$;
           $$ = seq;
           if (success) {    
+            // '*'
             final $1 = seq[0];
+            // WS
             final $2 = seq[1];
             final $start = startPos0;
             $$ = $1;
@@ -816,7 +958,10 @@ class ArithmeticParser {
           _cursor = pos0;
         }
         _startPos = startPos0;
+        // <= '*' WS # Sequence
         break;
+      // No matches
+      // EOF
       case 1:
       case 2:
         $$ = null;
@@ -824,14 +969,18 @@ class ArithmeticParser {
         break;
     }
     if (!success && _cursor > _testing) {
+      // Expected: '*'
       _failure(_expect8);
     }
+    // <= '*' WS # Choice
     _token = null;
     _tokenStart = null;
     return $$;
   }
   
   dynamic _parse_Multiplicative() {
+    // SENTENCE (NONTERMINAL)
+    // Multiplicative <- Atom ((MUL / DIV) Atom)* / Atom
     var $$;          
     var pos = _cursor;             
     if(_cachePos[2] >= pos) {
@@ -842,36 +991,54 @@ class ArithmeticParser {
     } else {
       _cachePos[2] = pos;
     }  
+    // => Atom ((MUL / DIV) Atom)* / Atom # Choice
     switch (_getState(_transitions0)) {
+      // [(] [0-9]
       case 0:
         while (true) {
+          // => Atom ((MUL / DIV) Atom)* # Sequence
           var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
           _startPos = _cursor;
           while (true) {  
+            // => Atom
             $$ = _parse_Atom();
+            // <= Atom
             if (!success) break;
             var seq = new List(2)..[0] = $$;
+            // => ((MUL / DIV) Atom)*
             var testing0 = _testing; 
             for (var reps = []; ; ) {
               _testing = _cursor;
+              // => ((MUL / DIV) Atom) # Choice
               switch (_getState(_transitions3)) {
+                // [*] [/]
                 case 0:
+                  // => (MUL / DIV) Atom # Sequence
                   var ch1 = _ch, pos1 = _cursor, startPos1 = _startPos;
                   _startPos = _cursor;
                   while (true) {  
+                    // => (MUL / DIV) # Choice
                     switch (_getState(_transitions4)) {
+                      // [*]
                       case 0:
                         var startPos2 = _startPos;
                         _startPos = _cursor;
+                        // => MUL
                         $$ = _parse_MUL();
+                        // <= MUL
                         _startPos = startPos2;
                         break;
+                      // [/]
                       case 1:
                         var startPos3 = _startPos;
                         _startPos = _cursor;
+                        // => DIV
                         $$ = _parse_DIV();
+                        // <= DIV
                         _startPos = startPos3;
                         break;
+                      // No matches
+                      // EOF
                       case 2:
                       case 3:
                         $$ = null;
@@ -879,11 +1046,15 @@ class ArithmeticParser {
                         break;
                     }
                     if (!success && _cursor > _testing) {
+                      // Expected: '*', '/'
                       _failure(_expect2);
                     }
+                    // <= (MUL / DIV) # Choice
                     if (!success) break;
                     var seq = new List(2)..[0] = $$;
+                    // => Atom
                     $$ = _parse_Atom();
+                    // <= Atom
                     if (!success) break;
                     seq[1] = $$;
                     $$ = seq;
@@ -894,7 +1065,10 @@ class ArithmeticParser {
                     _cursor = pos1;
                   }
                   _startPos = startPos1;
+                  // <= (MUL / DIV) Atom # Sequence
                   break;
+                // No matches
+                // EOF
                 case 1:
                 case 2:
                   $$ = null;
@@ -902,8 +1076,10 @@ class ArithmeticParser {
                   break;
               }
               if (!success && _cursor > _testing) {
+                // Expected: '*', '/'
                 _failure(_expect2);
               }
+              // <= ((MUL / DIV) Atom) # Choice
               if (success) {  
                 reps.add($$);
               } else {
@@ -913,11 +1089,14 @@ class ArithmeticParser {
                 break; 
               }
             }
+            // <= ((MUL / DIV) Atom)*
             if (!success) break;
             seq[1] = $$;
             $$ = seq;
             if (success) {    
+              // Atom
               final $1 = seq[0];
+              // ((MUL / DIV) Atom)*
               final $2 = seq[1];
               final $start = startPos0;
               $$ = _binop($1, $2);
@@ -929,14 +1108,19 @@ class ArithmeticParser {
             _cursor = pos0;
           }
           _startPos = startPos0;
+          // <= Atom ((MUL / DIV) Atom)* # Sequence
           if (success) break;
           var startPos4 = _startPos;
           _startPos = _cursor;
+          // => Atom
           $$ = _parse_Atom();
+          // <= Atom
           _startPos = startPos4;
           break;
         }
         break;
+      // No matches
+      // EOF
       case 1:
       case 2:
         $$ = null;
@@ -944,8 +1128,10 @@ class ArithmeticParser {
         break;
     }
     if (!success && _cursor > _testing) {
+      // Expected: NUMBER, '('
       _failure(_expect0);
     }
+    // <= Atom ((MUL / DIV) Atom)* / Atom # Choice
     if (_cacheable[2]) {
       _addToCache($$, pos, 2);
     }    
@@ -953,17 +1139,25 @@ class ArithmeticParser {
   }
   
   dynamic _parse_NUMBER() {
+    // LEXEME (TOKEN)
+    // NUMBER <- [0-9]+ WS
     var $$;
     _token = 6;  
     _tokenStart = _cursor;  
+    // => [0-9]+ WS # Choice
     switch (_ch >= 48 && _ch <= 57 ? 0 : _ch == -1 ? 2 : 1) {
+      // [0-9]
       case 0:
+        // => [0-9]+ WS # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
         _startPos = _cursor;
         while (true) {  
+          // => [0-9]+
           var testing0;
           for (var first = true, reps; ;) {  
+            // => [0-9]  
             $$ = _matchRange(48, 57);  
+            // <= [0-9]  
             if (success) {
              if (first) {      
                 first = false;
@@ -982,14 +1176,19 @@ class ArithmeticParser {
               break;
             }  
           }
+          // <= [0-9]+
           if (!success) break;
           var seq = new List(2)..[0] = $$;
+          // => WS
           $$ = _parse_WS();
+          // <= WS
           if (!success) break;
           seq[1] = $$;
           $$ = seq;
           if (success) {    
+            // [0-9]+
             final $1 = seq[0];
+            // WS
             final $2 = seq[1];
             final $start = startPos0;
             $$ = int.parse($1.join());
@@ -1001,7 +1200,10 @@ class ArithmeticParser {
           _cursor = pos0;
         }
         _startPos = startPos0;
+        // <= [0-9]+ WS # Sequence
         break;
+      // No matches
+      // EOF
       case 1:
       case 2:
         $$ = null;
@@ -1009,22 +1211,30 @@ class ArithmeticParser {
         break;
     }
     if (!success && _cursor > _testing) {
+      // Expected: NUMBER
       _failure(_expect9);
     }
+    // <= [0-9]+ WS # Choice
     _token = null;
     _tokenStart = null;
     return $$;
   }
   
   dynamic _parse_OPEN() {
+    // LEXEME (TOKEN)
+    // OPEN <- '(' WS
     var $$;
     _token = 7;  
     _tokenStart = _cursor;  
+    // => '(' WS # Choice
     switch (_ch == 40 ? 0 : _ch == -1 ? 2 : 1) {
+      // [(]
       case 0:
+        // => '(' WS # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
         _startPos = _cursor;
         while (true) {  
+          // => '('
           $$ = '(';
           success = true;
           if (++_cursor < _inputLen) {
@@ -1032,9 +1242,12 @@ class ArithmeticParser {
           } else {
             _ch = -1;
           }
+          // <= '('
           if (!success) break;
           var seq = new List(2)..[0] = $$;
+          // => WS
           $$ = _parse_WS();
+          // <= WS
           if (!success) break;
           seq[1] = $$;
           $$ = seq;
@@ -1045,7 +1258,10 @@ class ArithmeticParser {
           _cursor = pos0;
         }
         _startPos = startPos0;
+        // <= '(' WS # Sequence
         break;
+      // No matches
+      // EOF
       case 1:
       case 2:
         $$ = null;
@@ -1053,22 +1269,30 @@ class ArithmeticParser {
         break;
     }
     if (!success && _cursor > _testing) {
+      // Expected: '('
       _failure(_expect10);
     }
+    // <= '(' WS # Choice
     _token = null;
     _tokenStart = null;
     return $$;
   }
   
   dynamic _parse_PLUS() {
+    // LEXEME (TOKEN)
+    // PLUS <- '+' WS
     var $$;
     _token = 8;  
     _tokenStart = _cursor;  
+    // => '+' WS # Choice
     switch (_ch == 43 ? 0 : _ch == -1 ? 2 : 1) {
+      // [+]
       case 0:
+        // => '+' WS # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
         _startPos = _cursor;
         while (true) {  
+          // => '+'
           $$ = '+';
           success = true;
           if (++_cursor < _inputLen) {
@@ -1076,14 +1300,19 @@ class ArithmeticParser {
           } else {
             _ch = -1;
           }
+          // <= '+'
           if (!success) break;
           var seq = new List(2)..[0] = $$;
+          // => WS
           $$ = _parse_WS();
+          // <= WS
           if (!success) break;
           seq[1] = $$;
           $$ = seq;
           if (success) {    
+            // '+'
             final $1 = seq[0];
+            // WS
             final $2 = seq[1];
             final $start = startPos0;
             $$ = $1;
@@ -1095,7 +1324,10 @@ class ArithmeticParser {
           _cursor = pos0;
         }
         _startPos = startPos0;
+        // <= '+' WS # Sequence
         break;
+      // No matches
+      // EOF
       case 1:
       case 2:
         $$ = null;
@@ -1103,44 +1335,63 @@ class ArithmeticParser {
         break;
     }
     if (!success && _cursor > _testing) {
+      // Expected: '+'
       _failure(_expect11);
     }
+    // <= '+' WS # Choice
     _token = null;
     _tokenStart = null;
     return $$;
   }
   
   dynamic _parse_WS() {
+    // MORHEME
+    // WS <- ([\t-\n\r ] / '\r\n')*
     var $$;
+    // => ([\t-\n\r ] / '\r\n')* # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
+      // [\u0000-\u0010ffff]
+      // EOF
       case 0:
       case 2:
         var startPos0 = _startPos;
         _startPos = _cursor;
+        // => ([\t-\n\r ] / '\r\n')*
         var testing0 = _testing; 
         for (var reps = []; ; ) {
           _testing = _cursor;
+          // => ([\t-\n\r ] / '\r\n') # Choice
           switch (_getState(_transitions6)) {
+            // [\t-\n] [ ]
             case 0:
               var startPos1 = _startPos;
               _startPos = _cursor;
+              // => [\t-\n\r ]
               $$ = _matchMapping(9, 32, _mapping0);
+              // <= [\t-\n\r ]
               _startPos = startPos1;
               break;
+            // [\r]
             case 1:
               while (true) {
                 var startPos2 = _startPos;
                 _startPos = _cursor;
+                // => [\t-\n\r ]
                 $$ = _matchMapping(9, 32, _mapping0);
+                // <= [\t-\n\r ]
                 _startPos = startPos2;
                 if (success) break;
                 var startPos3 = _startPos;
                 _startPos = _cursor;
+                // => '\r\n'
                 $$ = _matchString(_strings0, '\r\n');
+                // <= '\r\n'
                 _startPos = startPos3;
                 break;
               }
               break;
+            // No matches
+            // EOF
             case 2:
             case 3:
               $$ = null;
@@ -1148,8 +1399,10 @@ class ArithmeticParser {
               break;
           }
           if (!success && _cursor > _testing) {
+            // Expected: 
             _failure(const [null]);
           }
+          // <= ([\t-\n\r ] / '\r\n') # Choice
           if (success) {  
             reps.add($$);
           } else {
@@ -1159,16 +1412,20 @@ class ArithmeticParser {
             break; 
           }
         }
+        // <= ([\t-\n\r ] / '\r\n')*
         _startPos = startPos0;
         break;
+      // No matches
       case 1:
         $$ = null;
         success = true;
         break;
     }
     if (!success && _cursor > _testing) {
+      // Expected: 
       _failure(_expect12);
     }
+    // <= ([\t-\n\r ] / '\r\n')* # Choice
     return $$;
   }
   
@@ -1304,29 +1561,45 @@ class ArithmeticParser {
   }
   
   dynamic parse_Expr() {
+    // SENTENCE (NONTERMINAL)
+    // Expr <- LEADING_SPACES? Additive EOF
     var $$;
+    // => LEADING_SPACES? Additive EOF # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
+      // [\u0000-\u0010ffff]
       case 0:
+        // => LEADING_SPACES? Additive EOF # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
         _startPos = _cursor;
         while (true) {  
+          // => LEADING_SPACES?
           var testing0 = _testing;
           _testing = _cursor;
+          // => LEADING_SPACES
           $$ = _parse_LEADING_SPACES();
+          // <= LEADING_SPACES
           success = true; 
           _testing = testing0;
+          // <= LEADING_SPACES?
           if (!success) break;
           var seq = new List(3)..[0] = $$;
+          // => Additive
           $$ = _parse_Additive();
+          // <= Additive
           if (!success) break;
           seq[1] = $$;
+          // => EOF
           $$ = _parse_EOF();
+          // <= EOF
           if (!success) break;
           seq[2] = $$;
           $$ = seq;
           if (success) {    
+            // LEADING_SPACES?
             final $1 = seq[0];
+            // Additive
             final $2 = seq[1];
+            // EOF
             final $3 = seq[2];
             final $start = startPos0;
             $$ = $2;
@@ -1338,7 +1611,10 @@ class ArithmeticParser {
           _cursor = pos0;
         }
         _startPos = startPos0;
+        // <= LEADING_SPACES? Additive EOF # Sequence
         break;
+      // No matches
+      // EOF
       case 1:
       case 2:
         $$ = null;
@@ -1346,8 +1622,10 @@ class ArithmeticParser {
         break;
     }
     if (!success && _cursor > _testing) {
+      // Expected: NUMBER, '('
       _failure(_expect0);
     }
+    // <= LEADING_SPACES? Additive EOF # Choice
     return $$;
   }
   
