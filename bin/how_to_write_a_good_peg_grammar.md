@@ -6,7 +6,7 @@ The following production rule kinds can be automatically recognized by the parse
 
 - Sentences (nonterminals)
 - Lexemes (tokens)
-- Morhemes
+- Morphemes
 
 Sentences (nonterminals):
 
@@ -18,10 +18,10 @@ Lexemes (tokens):
 - Callers: sentences (nonterminals)
 - Callees: morhemes
 
-Morhemes:
+Morphemes:
 
 - Callers: lexemes (tokens)
-- Callees: morhemes, none
+- Callees: morphemes, none
 
 Good grammar is a grammar with correctly logically specified rules by their kinds.
 
