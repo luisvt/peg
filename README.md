@@ -1,22 +1,9 @@
-# peg
+#peg
+==========
 
 PEG (Parsing expression grammar) parsers generator.
 
 Version: 0.0.53
-
-## Instalation and Usage
-
-To install this program you could do it by mean of:
-
-    pub global activate peg
-
-To run the program you only need to do:
-
-    pub global run peg general <file>.peg
-
-or you can also add the `.pub-cache/bin` directory to your path and run it directly
-
-    peg general <file>.peg
 
 **Main advantages:**
 
