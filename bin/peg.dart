@@ -12,7 +12,7 @@ import 'package:peg/interpreter_parser/parser_generator.dart';
 import 'package:peg/parser_generator/parser_generator_options.dart';
 import 'package:strings/strings.dart';
 import "package:yaml/yaml.dart" as yaml;
-import 'peg_parser.dart';
+import 'package:peg/peg_parser.dart';
 
 void main(List<String> arguments) {
   var configuration = yaml.loadYaml(_configuration);
@@ -22,6 +22,7 @@ void main(List<String> arguments) {
 class Program {
   void generalCommand(String filename, {bool comment, bool lookahead, bool memoize, String name, String output, bool trace}) {
     var basename = path.basenameWithoutExtension(filename);
+    var ouputDir = path.dirname(filename);
     if (output == null || output.isEmpty) {
       output = underscore(basename) + '_parser.dart';
     }
@@ -42,7 +43,7 @@ class Program {
     options.trace = trace;
     var generator = new GeneralParserGenerator(name, grammar, options);
     var genarated = generator.generate();
-    new File(output).writeAsStringSync(genarated.join('\n'));
+    new File(ouputDir + '/' + output).writeAsStringSync(genarated.join('\n'));
   }
 
   void interpretCommand(String filename, {bool memoize, String name, String output}) {
