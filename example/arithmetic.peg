@@ -18,7 +18,7 @@ num _binop(num left, List right) {
           left /= r[1];
           break;
         default:
-          throw "Unsupported operation $op";
+          throw "Unsupported operation $r[0]";
       }
     }
   }
