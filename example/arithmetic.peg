@@ -5,20 +5,20 @@ num _binop(num left, List right) {
   for(var r in right) {
     if(r[0] != null && r[0].isNotEmpty) {
       switch(r[0]) {
-        case "+":
+        case '+':
           left += r[1];
           break;
-        case "-":
+        case '-':
           left -= r[1];
           break;
-        case "*":
+        case '*':
           left *= r[1];
           break;
-        case "/":
+        case '/':
           left /= r[1];
           break;
         default:
-          throw "Unsupported operation $r[0]";
+          throw 'Unsupported operation $r[0]';
       }
     }
   }
