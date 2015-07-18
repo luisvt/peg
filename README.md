@@ -312,5 +312,5 @@ Rest of the code ommited, please view [arithmetic.peg](./example/arithmetic.peg)
 
 The generated code can be foudn at [arithmetic_parser.dart](./example/arithmetic_parser.dart).
 
-The generated grammar statistics cand be found at [arithmetic_parser.dart](./example/arithmetic_statisticts.txt)
+The generated grammar statistics cand be found at [arithmetic.peg.stat.txt](https://github.com/luisvt/peg/blob/add_transformer/example/arithmetic.peg.stat.txt)
 
