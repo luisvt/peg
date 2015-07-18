@@ -43,7 +43,7 @@ class PegTransformer extends Transformer {
     var grammar = _parseGrammar(parser);
     var options = new ParserGeneratorOptions.fromMap(_settings.configuration);
 
-    var name = camelize(basename) + 'Parser';
+    var name = camelize(basename);
 
     var generated = new GeneralParserGenerator(name, grammar, options).generate().join('\n');
 
