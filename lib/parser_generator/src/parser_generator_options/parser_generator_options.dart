@@ -5,7 +5,7 @@ class ParserGeneratorOptions {
   ParserGeneratorOptions();
 
   ParserGeneratorOptions.fromMap(Map options) {
-    comment = _defaultIfNull(options['coments'], false);
+    comment = _defaultIfNull(options['coments'], true);
     // TODO: Temporarily disable lookahead
     // lookahead = _defaultIfNull(options['lookahead'], false);
     lookahead = false;
