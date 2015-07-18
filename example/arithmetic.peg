@@ -50,24 +50,20 @@ Expression <-
   AdditiveExpression
 
 AdditiveExpression <-
-  MultiplicativeExpression (ADDITIVE_OPERATOR MultiplicativeExpression)* { $$ = _buildBinary($1, $2); }
+  MultiplicativeExpression ((PLUS / MINUS) MultiplicativeExpression)* { $$ = _buildBinary($1, $2); }
 
 MultiplicativeExpression <-
-  UnaryExpression (MULTIPLICATIVE_OPERATOR UnaryExpression)* { $$ = _buildBinary($1, $2); }
+  UnaryExpression ((DIV / MUL) UnaryExpression)* { $$ = _buildBinary($1, $2); }
 
 UnaryExpression <-
   PrimaryExpression
-  / UNARY_OPERATOR UnaryExpression { $$ = _unary($1, $2); }
+  / MINUS UnaryExpression { $$ = _unary($1, $2); }
 
 PrimaryExpression <-
   CONSTANT
   / LPAREN Expression RPAREN { $$ = $2; }
 
 ### Lexemes (tokens) ###
-
-ADDITIVE_OPERATOR <-
-  PLUS
-  / MINUS
 
 CONSTANT <-
   NUMBER
@@ -81,15 +77,8 @@ LEADING_SPACES <-
 LPAREN <-
   '(' WS { $$ = $1; }
 
-MULTIPLICATIVE_OPERATOR <-
-  MUL
-  / DIV
-
 RPAREN <-
   ')' WS { $$ = $1; }
-
-UNARY_OPERATOR <-
-  MINUS
 
 ### Morphemes ###
 

@@ -321,24 +321,20 @@ Expression <-
   AdditiveExpression
 
 AdditiveExpression <-
-  MultiplicativeExpression (ADDITIVE_OPERATOR MultiplicativeExpression)* { $$ = _buildBinary($1, $2); }
+  MultiplicativeExpression ((PLUS / MINUS) MultiplicativeExpression)* { $$ = _buildBinary($1, $2); }
 
 MultiplicativeExpression <-
-  UnaryExpression (MULTIPLICATIVE_OPERATOR UnaryExpression)* { $$ = _buildBinary($1, $2); }
+  UnaryExpression ((DIV / MUL) UnaryExpression)* { $$ = _buildBinary($1, $2); }
 
 UnaryExpression <-
   PrimaryExpression
-  / UNARY_OPERATOR UnaryExpression { $$ = _unary($1, $2); }
+  / MINUS UnaryExpression { $$ = _unary($1, $2); }
 
 PrimaryExpression <-
   CONSTANT
   / LPAREN Expression RPAREN { $$ = $2; }
 
 ### Lexemes (tokens) ###
-
-ADDITIVE_OPERATOR <-
-  PLUS
-  / MINUS
 
 CONSTANT <-
   NUMBER
@@ -352,15 +348,8 @@ LEADING_SPACES <-
 LPAREN <-
   '(' WS { $$ = $1; }
 
-MULTIPLICATIVE_OPERATOR <-
-  MUL
-  / DIV
-
 RPAREN <-
   ')' WS { $$ = $1; }
-
-UNARY_OPERATOR <-
-  MINUS
 
 ### Morphemes ###
 
@@ -438,19 +427,17 @@ class ArithmeticParser {
   
   static final List<String> _expect0 = <String>["\'(\'", "\'-\'", "CONSTANT"];
   
-  static final List<String> _expect1 = <String>["ADDITIVE_OPERATOR"];
+  static final List<String> _expect1 = <String>["\'+\'", "\'-\'"];
   
-  static final List<String> _expect10 = <String>["/"];
+  static final List<String> _expect10 = <String>["\'-\'"];
   
-  static final List<String> _expect11 = <String>["-"];
+  static final List<String> _expect11 = <String>["\'*\'"];
   
-  static final List<String> _expect12 = <String>["*"];
+  static final List<String> _expect12 = <String>["\'+\'"];
   
-  static final List<String> _expect13 = <String>["+"];
+  static final List<String> _expect13 = <String>[];
   
-  static final List<String> _expect14 = <String>[];
-  
-  static final List<String> _expect2 = <String>["MULTIPLICATIVE_OPERATOR"];
+  static final List<String> _expect2 = <String>["\'*\'", "\'/\'"];
   
   static final List<String> _expect3 = <String>["\'(\'", "CONSTANT"];
   
@@ -464,9 +451,9 @@ class ArithmeticParser {
   
   static final List<String> _expect8 = <String>["\')\'"];
   
-  static final List<String> _expect9 = <String>["\'-\'"];
+  static final List<String> _expect9 = <String>["\'/\'"];
   
-  static final List<bool> _lookahead = _unmap([0x7c07ff21, 0xbf]);
+  static final List<bool> _lookahead = _unmap([0x7c07ff21, 0x1f]);
   
   // '\t', '\n', '\r', ' '
   static final List<bool> _mapping0 = _unmap([0x800013]);
@@ -474,25 +461,25 @@ class ArithmeticParser {
   // '\r\n'
   static final List<int> _strings0 = <int>[13, 10];
   
-  final List<String> _tokenAliases = ["ADDITIVE_OPERATOR", "CONSTANT", "EOF", "LEADING_SPACES", "\'(\'", "MULTIPLICATIVE_OPERATOR", "\')\'", "\'-\'"];
+  final List<String> _tokenAliases = ["CONSTANT", "EOF", "LEADING_SPACES", "\'(\'", "\')\'", "\'/\'", "\'-\'", "\'*\'", "\'+\'"];
   
-  final List<int> _tokenFlags = [1, 1, 0, 1, 1, 1, 1, 1];
+  final List<int> _tokenFlags = [1, 0, 1, 1, 1, 1, 1, 1, 1];
   
-  final List<String> _tokenNames = ["ADDITIVE_OPERATOR", "CONSTANT", "EOF", "LEADING_SPACES", "LPAREN", "MULTIPLICATIVE_OPERATOR", "RPAREN", "UNARY_OPERATOR"];
+  final List<String> _tokenNames = ["CONSTANT", "EOF", "LEADING_SPACES", "LPAREN", "RPAREN", "DIV", "MINUS", "MUL", "PLUS"];
   
   static final List<List<int>> _transitions0 = [[40, 40, 45, 45, 48, 57]];
   
   static final List<List<int>> _transitions1 = [[43, 43, 45, 45]];
   
-  static final List<List<int>> _transitions2 = [[42, 42, 47, 47]];
+  static final List<List<int>> _transitions2 = [[43, 43], [45, 45]];
   
-  static final List<List<int>> _transitions3 = [[40, 40, 48, 57], [45, 45]];
+  static final List<List<int>> _transitions3 = [[42, 42, 47, 47]];
   
-  static final List<List<int>> _transitions4 = [[40, 40], [48, 57]];
+  static final List<List<int>> _transitions4 = [[42, 42], [47, 47]];
   
-  static final List<List<int>> _transitions5 = [[43, 43], [45, 45]];
+  static final List<List<int>> _transitions5 = [[40, 40, 48, 57], [45, 45]];
   
-  static final List<List<int>> _transitions6 = [[42, 42], [47, 47]];
+  static final List<List<int>> _transitions6 = [[40, 40], [48, 57]];
   
   static final List<List<int>> _transitions7 = [[9, 10, 32, 32], [13, 13]];
   
@@ -811,78 +798,17 @@ class ArithmeticParser {
     }  
   }
   
-  dynamic _parse_ADDITIVE_OPERATOR() {
-    // LEXEME (TOKEN)
-    // ADDITIVE_OPERATOR <- PLUS / MINUS
-    var $$;
-    _token = 0;  
-    _tokenStart = _cursor;  
-    // => PLUS / MINUS # Choice
-    switch (_getState(_transitions5)) {
-      // [+]
-      case 0:
-        var startPos0 = _startPos;
-        _startPos = _cursor;
-        // => PLUS
-        $$ = _parse_PLUS();
-        // <= PLUS
-        _startPos = startPos0;
-        break;
-      // [-]
-      case 1:
-        var startPos1 = _startPos;
-        _startPos = _cursor;
-        // => MINUS
-        $$ = _parse_MINUS();
-        // <= MINUS
-        _startPos = startPos1;
-        break;
-      // No matches
-      case 2:
-        $$ = null;
-        success = false;
-        break;
-      // EOF
-      case 3:
-        while (true) {
-          var startPos2 = _startPos;
-          _startPos = _cursor;
-          // => PLUS
-          $$ = _parse_PLUS();
-          // <= PLUS
-          _startPos = startPos2;
-          if (success) break;
-          var startPos3 = _startPos;
-          _startPos = _cursor;
-          // => MINUS
-          $$ = _parse_MINUS();
-          // <= MINUS
-          _startPos = startPos3;
-          break;
-        }
-        break;
-    }
-    if (!success && _cursor > _testing) {
-      // Expected: ADDITIVE_OPERATOR
-      _failure(_expect1);
-    }
-    // <= PLUS / MINUS # Choice
-    _token = null;
-    _tokenStart = null;
-    return $$;
-  }
-  
   dynamic _parse_AdditiveExpression() {
     // SENTENCE (NONTERMINAL)
-    // AdditiveExpression <- MultiplicativeExpression (ADDITIVE_OPERATOR MultiplicativeExpression)*
+    // AdditiveExpression <- MultiplicativeExpression ((PLUS / MINUS) MultiplicativeExpression)*
     var $$;
-    // => MultiplicativeExpression (ADDITIVE_OPERATOR MultiplicativeExpression)* # Choice
+    // => MultiplicativeExpression ((PLUS / MINUS) MultiplicativeExpression)* # Choice
     switch (_getState(_transitions0)) {
       // [(] [-] [0-9]
       // EOF
       case 0:
       case 2:
-        // => MultiplicativeExpression (ADDITIVE_OPERATOR MultiplicativeExpression)* # Sequence
+        // => MultiplicativeExpression ((PLUS / MINUS) MultiplicativeExpression)* # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
         _startPos = _cursor;
         while (true) {  
@@ -891,23 +817,70 @@ class ArithmeticParser {
           // <= MultiplicativeExpression
           if (!success) break;
           var seq = new List(2)..[0] = $$;
-          // => (ADDITIVE_OPERATOR MultiplicativeExpression)*
+          // => ((PLUS / MINUS) MultiplicativeExpression)*
           var testing0 = _testing; 
           for (var reps = []; ; ) {
             _testing = _cursor;
-            // => (ADDITIVE_OPERATOR MultiplicativeExpression) # Choice
+            // => ((PLUS / MINUS) MultiplicativeExpression) # Choice
             switch (_getState(_transitions1)) {
               // [+] [-]
               // EOF
               case 0:
               case 2:
-                // => ADDITIVE_OPERATOR MultiplicativeExpression # Sequence
+                // => (PLUS / MINUS) MultiplicativeExpression # Sequence
                 var ch1 = _ch, pos1 = _cursor, startPos1 = _startPos;
                 _startPos = _cursor;
                 while (true) {  
-                  // => ADDITIVE_OPERATOR
-                  $$ = _parse_ADDITIVE_OPERATOR();
-                  // <= ADDITIVE_OPERATOR
+                  // => (PLUS / MINUS) # Choice
+                  switch (_getState(_transitions2)) {
+                    // [+]
+                    case 0:
+                      var startPos2 = _startPos;
+                      _startPos = _cursor;
+                      // => PLUS
+                      $$ = _parse_PLUS();
+                      // <= PLUS
+                      _startPos = startPos2;
+                      break;
+                    // [-]
+                    case 1:
+                      var startPos3 = _startPos;
+                      _startPos = _cursor;
+                      // => MINUS
+                      $$ = _parse_MINUS();
+                      // <= MINUS
+                      _startPos = startPos3;
+                      break;
+                    // No matches
+                    case 2:
+                      $$ = null;
+                      success = false;
+                      break;
+                    // EOF
+                    case 3:
+                      while (true) {
+                        var startPos4 = _startPos;
+                        _startPos = _cursor;
+                        // => PLUS
+                        $$ = _parse_PLUS();
+                        // <= PLUS
+                        _startPos = startPos4;
+                        if (success) break;
+                        var startPos5 = _startPos;
+                        _startPos = _cursor;
+                        // => MINUS
+                        $$ = _parse_MINUS();
+                        // <= MINUS
+                        _startPos = startPos5;
+                        break;
+                      }
+                      break;
+                  }
+                  if (!success && _cursor > _testing) {
+                    // Expected: '+', '-'
+                    _failure(_expect1);
+                  }
+                  // <= (PLUS / MINUS) # Choice
                   if (!success) break;
                   var seq = new List(2)..[0] = $$;
                   // => MultiplicativeExpression
@@ -923,7 +896,7 @@ class ArithmeticParser {
                   _cursor = pos1;
                 }
                 _startPos = startPos1;
-                // <= ADDITIVE_OPERATOR MultiplicativeExpression # Sequence
+                // <= (PLUS / MINUS) MultiplicativeExpression # Sequence
                 break;
               // No matches
               case 1:
@@ -932,10 +905,10 @@ class ArithmeticParser {
                 break;
             }
             if (!success && _cursor > _testing) {
-              // Expected: ADDITIVE_OPERATOR
+              // Expected: '+', '-'
               _failure(_expect1);
             }
-            // <= (ADDITIVE_OPERATOR MultiplicativeExpression) # Choice
+            // <= ((PLUS / MINUS) MultiplicativeExpression) # Choice
             if (success) {  
               reps.add($$);
             } else {
@@ -945,14 +918,14 @@ class ArithmeticParser {
               break; 
             }
           }
-          // <= (ADDITIVE_OPERATOR MultiplicativeExpression)*
+          // <= ((PLUS / MINUS) MultiplicativeExpression)*
           if (!success) break;
           seq[1] = $$;
           $$ = seq;
           if (success) {    
             // MultiplicativeExpression
             final $1 = seq[0];
-            // (ADDITIVE_OPERATOR MultiplicativeExpression)*
+            // ((PLUS / MINUS) MultiplicativeExpression)*
             final $2 = seq[1];
             final $start = startPos0;
             $$ = _buildBinary($1, $2);
@@ -964,7 +937,7 @@ class ArithmeticParser {
           _cursor = pos0;
         }
         _startPos = startPos0;
-        // <= MultiplicativeExpression (ADDITIVE_OPERATOR MultiplicativeExpression)* # Sequence
+        // <= MultiplicativeExpression ((PLUS / MINUS) MultiplicativeExpression)* # Sequence
         break;
       // No matches
       case 1:
@@ -976,7 +949,7 @@ class ArithmeticParser {
       // Expected: CONSTANT, '(', '-'
       _failure(_expect0);
     }
-    // <= MultiplicativeExpression (ADDITIVE_OPERATOR MultiplicativeExpression)* # Choice
+    // <= MultiplicativeExpression ((PLUS / MINUS) MultiplicativeExpression)* # Choice
     return $$;
   }
   
@@ -984,7 +957,7 @@ class ArithmeticParser {
     // LEXEME (TOKEN)
     // CONSTANT <- NUMBER
     var $$;
-    _token = 1;  
+    _token = 0;  
     _tokenStart = _cursor;  
     // => NUMBER # Choice
     switch (_ch >= 48 && _ch <= 57 ? 0 : _ch == -1 ? 2 : 1) {
@@ -1016,9 +989,11 @@ class ArithmeticParser {
   }
   
   dynamic _parse_DIV() {
-    // MORHEME
+    // LEXEME (TOKEN)
     // DIV <- '/' WS
     var $$;
+    _token = 5;  
+    _tokenStart = _cursor;  
     // => '/' WS # Choice
     switch (_ch == 47 ? 0 : _ch == -1 ? 2 : 1) {
       // [/]
@@ -1070,10 +1045,12 @@ class ArithmeticParser {
         break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: /
-      _failure(_expect10);
+      // Expected: '/'
+      _failure(_expect9);
     }
     // <= '/' WS # Choice
+    _token = null;
+    _tokenStart = null;
     return $$;
   }
   
@@ -1081,7 +1058,7 @@ class ArithmeticParser {
     // LEXEME (TOKEN)
     // EOF <- !.
     var $$;
-    _token = 2;  
+    _token = 1;  
     _tokenStart = _cursor;  
     // => !. # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
@@ -1168,7 +1145,7 @@ class ArithmeticParser {
     // LEXEME (TOKEN)
     // LEADING_SPACES <- WS
     var $$;
-    _token = 3;  
+    _token = 2;  
     _tokenStart = _cursor;  
     // => WS # Choice
     switch (_ch >= 0 && _ch <= 1114111 ? 0 : _ch == -1 ? 2 : 1) {
@@ -1203,7 +1180,7 @@ class ArithmeticParser {
     // LEXEME (TOKEN)
     // LPAREN <- '(' WS
     var $$;
-    _token = 4;  
+    _token = 3;  
     _tokenStart = _cursor;  
     // => '(' WS # Choice
     switch (_ch == 40 ? 0 : _ch == -1 ? 2 : 1) {
@@ -1266,9 +1243,20 @@ class ArithmeticParser {
   }
   
   dynamic _parse_MINUS() {
-    // MORHEME
+    // LEXEME (TOKEN)
     // MINUS <- '-' WS
-    var $$;
+    var $$;          
+    var pos = _cursor;             
+    if(_cachePos[12] >= pos) {
+      $$ = _getFromCache(12);
+      if($$ != null) {
+        return $$[0];       
+      }
+    } else {
+      _cachePos[12] = pos;
+    }  
+    _token = 6;    
+    _tokenStart = _cursor;    
     // => '-' WS # Choice
     switch (_ch == 45 ? 0 : _ch == -1 ? 2 : 1) {
       // [-]
@@ -1320,17 +1308,24 @@ class ArithmeticParser {
         break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: -
-      _failure(_expect11);
+      // Expected: '-'
+      _failure(_expect10);
     }
     // <= '-' WS # Choice
+    if (_cacheable[12]) {
+      _addToCache($$, pos, 12);
+    }    
+    _token = null;
+    _tokenStart = null;
     return $$;
   }
   
   dynamic _parse_MUL() {
-    // MORHEME
+    // LEXEME (TOKEN)
     // MUL <- '*' WS
     var $$;
+    _token = 7;  
+    _tokenStart = _cursor;  
     // => '*' WS # Choice
     switch (_ch == 42 ? 0 : _ch == -1 ? 2 : 1) {
       // [*]
@@ -1382,69 +1377,10 @@ class ArithmeticParser {
         break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: *
-      _failure(_expect12);
+      // Expected: '*'
+      _failure(_expect11);
     }
     // <= '*' WS # Choice
-    return $$;
-  }
-  
-  dynamic _parse_MULTIPLICATIVE_OPERATOR() {
-    // LEXEME (TOKEN)
-    // MULTIPLICATIVE_OPERATOR <- MUL / DIV
-    var $$;
-    _token = 5;  
-    _tokenStart = _cursor;  
-    // => MUL / DIV # Choice
-    switch (_getState(_transitions6)) {
-      // [*]
-      case 0:
-        var startPos0 = _startPos;
-        _startPos = _cursor;
-        // => MUL
-        $$ = _parse_MUL();
-        // <= MUL
-        _startPos = startPos0;
-        break;
-      // [/]
-      case 1:
-        var startPos1 = _startPos;
-        _startPos = _cursor;
-        // => DIV
-        $$ = _parse_DIV();
-        // <= DIV
-        _startPos = startPos1;
-        break;
-      // No matches
-      case 2:
-        $$ = null;
-        success = false;
-        break;
-      // EOF
-      case 3:
-        while (true) {
-          var startPos2 = _startPos;
-          _startPos = _cursor;
-          // => MUL
-          $$ = _parse_MUL();
-          // <= MUL
-          _startPos = startPos2;
-          if (success) break;
-          var startPos3 = _startPos;
-          _startPos = _cursor;
-          // => DIV
-          $$ = _parse_DIV();
-          // <= DIV
-          _startPos = startPos3;
-          break;
-        }
-        break;
-    }
-    if (!success && _cursor > _testing) {
-      // Expected: MULTIPLICATIVE_OPERATOR
-      _failure(_expect2);
-    }
-    // <= MUL / DIV # Choice
     _token = null;
     _tokenStart = null;
     return $$;
@@ -1452,7 +1388,7 @@ class ArithmeticParser {
   
   dynamic _parse_MultiplicativeExpression() {
     // SENTENCE (NONTERMINAL)
-    // MultiplicativeExpression <- UnaryExpression (MULTIPLICATIVE_OPERATOR UnaryExpression)*
+    // MultiplicativeExpression <- UnaryExpression ((DIV / MUL) UnaryExpression)*
     var $$;          
     var pos = _cursor;             
     if(_cachePos[3] >= pos) {
@@ -1463,13 +1399,13 @@ class ArithmeticParser {
     } else {
       _cachePos[3] = pos;
     }  
-    // => UnaryExpression (MULTIPLICATIVE_OPERATOR UnaryExpression)* # Choice
+    // => UnaryExpression ((DIV / MUL) UnaryExpression)* # Choice
     switch (_getState(_transitions0)) {
       // [(] [-] [0-9]
       // EOF
       case 0:
       case 2:
-        // => UnaryExpression (MULTIPLICATIVE_OPERATOR UnaryExpression)* # Sequence
+        // => UnaryExpression ((DIV / MUL) UnaryExpression)* # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos0 = _startPos;
         _startPos = _cursor;
         while (true) {  
@@ -1478,23 +1414,70 @@ class ArithmeticParser {
           // <= UnaryExpression
           if (!success) break;
           var seq = new List(2)..[0] = $$;
-          // => (MULTIPLICATIVE_OPERATOR UnaryExpression)*
+          // => ((DIV / MUL) UnaryExpression)*
           var testing0 = _testing; 
           for (var reps = []; ; ) {
             _testing = _cursor;
-            // => (MULTIPLICATIVE_OPERATOR UnaryExpression) # Choice
-            switch (_getState(_transitions2)) {
+            // => ((DIV / MUL) UnaryExpression) # Choice
+            switch (_getState(_transitions3)) {
               // [*] [/]
               // EOF
               case 0:
               case 2:
-                // => MULTIPLICATIVE_OPERATOR UnaryExpression # Sequence
+                // => (DIV / MUL) UnaryExpression # Sequence
                 var ch1 = _ch, pos1 = _cursor, startPos1 = _startPos;
                 _startPos = _cursor;
                 while (true) {  
-                  // => MULTIPLICATIVE_OPERATOR
-                  $$ = _parse_MULTIPLICATIVE_OPERATOR();
-                  // <= MULTIPLICATIVE_OPERATOR
+                  // => (DIV / MUL) # Choice
+                  switch (_getState(_transitions4)) {
+                    // [*]
+                    case 0:
+                      var startPos2 = _startPos;
+                      _startPos = _cursor;
+                      // => MUL
+                      $$ = _parse_MUL();
+                      // <= MUL
+                      _startPos = startPos2;
+                      break;
+                    // [/]
+                    case 1:
+                      var startPos3 = _startPos;
+                      _startPos = _cursor;
+                      // => DIV
+                      $$ = _parse_DIV();
+                      // <= DIV
+                      _startPos = startPos3;
+                      break;
+                    // No matches
+                    case 2:
+                      $$ = null;
+                      success = false;
+                      break;
+                    // EOF
+                    case 3:
+                      while (true) {
+                        var startPos4 = _startPos;
+                        _startPos = _cursor;
+                        // => DIV
+                        $$ = _parse_DIV();
+                        // <= DIV
+                        _startPos = startPos4;
+                        if (success) break;
+                        var startPos5 = _startPos;
+                        _startPos = _cursor;
+                        // => MUL
+                        $$ = _parse_MUL();
+                        // <= MUL
+                        _startPos = startPos5;
+                        break;
+                      }
+                      break;
+                  }
+                  if (!success && _cursor > _testing) {
+                    // Expected: '/', '*'
+                    _failure(_expect2);
+                  }
+                  // <= (DIV / MUL) # Choice
                   if (!success) break;
                   var seq = new List(2)..[0] = $$;
                   // => UnaryExpression
@@ -1510,7 +1493,7 @@ class ArithmeticParser {
                   _cursor = pos1;
                 }
                 _startPos = startPos1;
-                // <= MULTIPLICATIVE_OPERATOR UnaryExpression # Sequence
+                // <= (DIV / MUL) UnaryExpression # Sequence
                 break;
               // No matches
               case 1:
@@ -1519,10 +1502,10 @@ class ArithmeticParser {
                 break;
             }
             if (!success && _cursor > _testing) {
-              // Expected: MULTIPLICATIVE_OPERATOR
+              // Expected: '/', '*'
               _failure(_expect2);
             }
-            // <= (MULTIPLICATIVE_OPERATOR UnaryExpression) # Choice
+            // <= ((DIV / MUL) UnaryExpression) # Choice
             if (success) {  
               reps.add($$);
             } else {
@@ -1532,14 +1515,14 @@ class ArithmeticParser {
               break; 
             }
           }
-          // <= (MULTIPLICATIVE_OPERATOR UnaryExpression)*
+          // <= ((DIV / MUL) UnaryExpression)*
           if (!success) break;
           seq[1] = $$;
           $$ = seq;
           if (success) {    
             // UnaryExpression
             final $1 = seq[0];
-            // (MULTIPLICATIVE_OPERATOR UnaryExpression)*
+            // ((DIV / MUL) UnaryExpression)*
             final $2 = seq[1];
             final $start = startPos0;
             $$ = _buildBinary($1, $2);
@@ -1551,7 +1534,7 @@ class ArithmeticParser {
           _cursor = pos0;
         }
         _startPos = startPos0;
-        // <= UnaryExpression (MULTIPLICATIVE_OPERATOR UnaryExpression)* # Sequence
+        // <= UnaryExpression ((DIV / MUL) UnaryExpression)* # Sequence
         break;
       // No matches
       case 1:
@@ -1563,7 +1546,7 @@ class ArithmeticParser {
       // Expected: CONSTANT, '(', '-'
       _failure(_expect0);
     }
-    // <= UnaryExpression (MULTIPLICATIVE_OPERATOR UnaryExpression)* # Choice
+    // <= UnaryExpression ((DIV / MUL) UnaryExpression)* # Choice
     if (_cacheable[3]) {
       _addToCache($$, pos, 3);
     }    
@@ -1649,9 +1632,11 @@ class ArithmeticParser {
   }
   
   dynamic _parse_PLUS() {
-    // MORHEME
+    // LEXEME (TOKEN)
     // PLUS <- '+' WS
     var $$;
+    _token = 8;  
+    _tokenStart = _cursor;  
     // => '+' WS # Choice
     switch (_ch == 43 ? 0 : _ch == -1 ? 2 : 1) {
       // [+]
@@ -1703,10 +1688,12 @@ class ArithmeticParser {
         break;
     }
     if (!success && _cursor > _testing) {
-      // Expected: +
-      _failure(_expect13);
+      // Expected: '+'
+      _failure(_expect12);
     }
     // <= '+' WS # Choice
+    _token = null;
+    _tokenStart = null;
     return $$;
   }
   
@@ -1715,7 +1702,7 @@ class ArithmeticParser {
     // PrimaryExpression <- CONSTANT / LPAREN Expression RPAREN
     var $$;
     // => CONSTANT / LPAREN Expression RPAREN # Choice
-    switch (_getState(_transitions4)) {
+    switch (_getState(_transitions6)) {
       // [(]
       case 0:
         // => LPAREN Expression RPAREN # Sequence
@@ -1835,7 +1822,7 @@ class ArithmeticParser {
     // LEXEME (TOKEN)
     // RPAREN <- ')' WS
     var $$;
-    _token = 6;  
+    _token = 4;  
     _tokenStart = _cursor;  
     // => ')' WS # Choice
     switch (_ch == 41 ? 0 : _ch == -1 ? 2 : 1) {
@@ -1897,44 +1884,9 @@ class ArithmeticParser {
     return $$;
   }
   
-  dynamic _parse_UNARY_OPERATOR() {
-    // LEXEME (TOKEN)
-    // UNARY_OPERATOR <- MINUS
-    var $$;
-    _token = 7;  
-    _tokenStart = _cursor;  
-    // => MINUS # Choice
-    switch (_ch == 45 ? 0 : _ch == -1 ? 2 : 1) {
-      // [-]
-      // EOF
-      case 0:
-      case 2:
-        var startPos0 = _startPos;
-        _startPos = _cursor;
-        // => MINUS
-        $$ = _parse_MINUS();
-        // <= MINUS
-        _startPos = startPos0;
-        break;
-      // No matches
-      case 1:
-        $$ = null;
-        success = false;
-        break;
-    }
-    if (!success && _cursor > _testing) {
-      // Expected: '-'
-      _failure(_expect9);
-    }
-    // <= MINUS # Choice
-    _token = null;
-    _tokenStart = null;
-    return $$;
-  }
-  
   dynamic _parse_UnaryExpression() {
     // SENTENCE (NONTERMINAL)
-    // UnaryExpression <- PrimaryExpression / UNARY_OPERATOR UnaryExpression
+    // UnaryExpression <- PrimaryExpression / MINUS UnaryExpression
     var $$;          
     var pos = _cursor;             
     if(_cachePos[4] >= pos) {
@@ -1945,8 +1897,8 @@ class ArithmeticParser {
     } else {
       _cachePos[4] = pos;
     }  
-    // => PrimaryExpression / UNARY_OPERATOR UnaryExpression # Choice
-    switch (_getState(_transitions3)) {
+    // => PrimaryExpression / MINUS UnaryExpression # Choice
+    switch (_getState(_transitions5)) {
       // [(] [0-9]
       case 0:
         var startPos0 = _startPos;
@@ -1958,13 +1910,13 @@ class ArithmeticParser {
         break;
       // [-]
       case 1:
-        // => UNARY_OPERATOR UnaryExpression # Sequence
+        // => MINUS UnaryExpression # Sequence
         var ch0 = _ch, pos0 = _cursor, startPos1 = _startPos;
         _startPos = _cursor;
         while (true) {  
-          // => UNARY_OPERATOR
-          $$ = _parse_UNARY_OPERATOR();
-          // <= UNARY_OPERATOR
+          // => MINUS
+          $$ = _parse_MINUS();
+          // <= MINUS
           if (!success) break;
           var seq = new List(2)..[0] = $$;
           // => UnaryExpression
@@ -1974,7 +1926,7 @@ class ArithmeticParser {
           seq[1] = $$;
           $$ = seq;
           if (success) {    
-            // UNARY_OPERATOR
+            // MINUS
             final $1 = seq[0];
             // UnaryExpression
             final $2 = seq[1];
@@ -1988,7 +1940,7 @@ class ArithmeticParser {
           _cursor = pos0;
         }
         _startPos = startPos1;
-        // <= UNARY_OPERATOR UnaryExpression # Sequence
+        // <= MINUS UnaryExpression # Sequence
         break;
       // No matches
       case 2:
@@ -2005,13 +1957,13 @@ class ArithmeticParser {
           // <= PrimaryExpression
           _startPos = startPos2;
           if (success) break;
-          // => UNARY_OPERATOR UnaryExpression # Sequence
+          // => MINUS UnaryExpression # Sequence
           var ch1 = _ch, pos1 = _cursor, startPos3 = _startPos;
           _startPos = _cursor;
           while (true) {  
-            // => UNARY_OPERATOR
-            $$ = _parse_UNARY_OPERATOR();
-            // <= UNARY_OPERATOR
+            // => MINUS
+            $$ = _parse_MINUS();
+            // <= MINUS
             if (!success) break;
             var seq = new List(2)..[0] = $$;
             // => UnaryExpression
@@ -2021,7 +1973,7 @@ class ArithmeticParser {
             seq[1] = $$;
             $$ = seq;
             if (success) {    
-              // UNARY_OPERATOR
+              // MINUS
               final $1 = seq[0];
               // UnaryExpression
               final $2 = seq[1];
@@ -2035,7 +1987,7 @@ class ArithmeticParser {
             _cursor = pos1;
           }
           _startPos = startPos3;
-          // <= UNARY_OPERATOR UnaryExpression # Sequence
+          // <= MINUS UnaryExpression # Sequence
           break;
         }
         break;
@@ -2044,7 +1996,7 @@ class ArithmeticParser {
       // Expected: CONSTANT, '(', '-'
       _failure(_expect0);
     }
-    // <= PrimaryExpression / UNARY_OPERATOR UnaryExpression # Choice
+    // <= PrimaryExpression / MINUS UnaryExpression # Choice
     if (_cacheable[4]) {
       _addToCache($$, pos, 4);
     }    
@@ -2130,7 +2082,7 @@ class ArithmeticParser {
     }
     if (!success && _cursor > _testing) {
       // Expected: 
-      _failure(_expect14);
+      _failure(_expect13);
     }
     // <= ([\t-\n\r ] / '\r\n')* # Choice
     return $$;
@@ -2344,9 +2296,9 @@ class ArithmeticParser {
       throw new RangeError('pos');
     }      
     _cursor = pos;
-    _cache = new List<Map<int, List>>(21);
-    _cachePos = new List<int>.filled(21, -1);  
-    _cacheable = new List<bool>.filled(21, false);
+    _cache = new List<Map<int, List>>(18);
+    _cachePos = new List<int>.filled(18, -1);  
+    _cacheable = new List<bool>.filled(18, false);
     _ch = -1;
     _errors = <ArithmeticParserError>[];   
     _expected = <String>[];
@@ -2419,59 +2371,35 @@ Expression               SENTENCE <= LEXEME  : calleeLexeme > 0 (AdditiveExpress
 AdditiveExpression       SENTENCE <= LEXEME  : calleeLexeme > 0 (MultiplicativeExpression)
 MultiplicativeExpression SENTENCE <= LEXEME  : calleeLexeme > 0 (UnaryExpression)
 UnaryExpression          SENTENCE <= LEXEME  : calleeSentence > 0 (PrimaryExpression)
-ADDITIVE_OPERATOR        LEXEME   <= MORHEME : callerSentence > 0 (AdditiveExpression)
-MULTIPLICATIVE_OPERATOR  LEXEME   <= MORHEME : callerSentence > 0 (MultiplicativeExpression)
-UNARY_OPERATOR           LEXEME   <= MORHEME : callerSentence > 0 (UnaryExpression)
+DIV                      LEXEME   <= MORHEME : callerSentence > 0 (MultiplicativeExpression)
+MINUS                    LEXEME   <= MORHEME : callerSentence > 0 (AdditiveExpression, UnaryExpression)
+MUL                      LEXEME   <= MORHEME : callerSentence > 0 (MultiplicativeExpression)
+PLUS                     LEXEME   <= MORHEME : callerSentence > 0 (AdditiveExpression)
 --------------------------------
 Starting rules:
 Start
 --------------------------------
 Rules:
 --------------------------------
-ADDITIVE_OPERATOR:
- Type: Lexeme (token)
- Direct callees:
-  (M) MINUS
-  (M) PLUS
- All callees:
-  (M) MINUS
-  (M) PLUS
-  (M) WS
- Direct callers:
-  (S) AdditiveExpression
- All callers:
-  (S) AdditiveExpression
-  (S) Expression
-  (S) MultiplicativeExpression
-  (S) PrimaryExpression
-  (S) Start
-  (S) UnaryExpression
- Start characters:
-  [+][-]
- Expected lexemes (tokens):
-  ADDITIVE_OPERATOR
---------------------------------
 AdditiveExpression:
  Type: Sentence (nonterminal)
  Direct callees:
-  (L) ADDITIVE_OPERATOR
+  (L) MINUS
   (S) MultiplicativeExpression
+  (L) PLUS
  All callees:
-  (L) ADDITIVE_OPERATOR
   (S) AdditiveExpression
   (L) CONSTANT
-  (M) DIV
+  (L) DIV
   (S) Expression
   (L) LPAREN
-  (M) MINUS
-  (M) MUL
-  (L) MULTIPLICATIVE_OPERATOR
+  (L) MINUS
+  (L) MUL
   (S) MultiplicativeExpression
   (M) NUMBER
-  (M) PLUS
+  (L) PLUS
   (S) PrimaryExpression
   (L) RPAREN
-  (L) UNARY_OPERATOR
   (S) UnaryExpression
   (M) WS
  Direct callers:
@@ -2510,17 +2438,16 @@ CONSTANT:
   CONSTANT
 --------------------------------
 DIV:
- Type: Morheme
+ Type: Lexeme (token)
  Direct callees:
   (M) WS
  All callees:
   (M) WS
  Direct callers:
-  (L) MULTIPLICATIVE_OPERATOR
+  (S) MultiplicativeExpression
  All callers:
   (S) AdditiveExpression
   (S) Expression
-  (L) MULTIPLICATIVE_OPERATOR
   (S) MultiplicativeExpression
   (S) PrimaryExpression
   (S) Start
@@ -2528,7 +2455,7 @@ DIV:
  Start characters:
   [/]
  Expected lexemes (tokens):
-  /
+  '/'
 --------------------------------
 EOF:
  Type: Lexeme (token)
@@ -2548,21 +2475,18 @@ Expression:
  Direct callees:
   (S) AdditiveExpression
  All callees:
-  (L) ADDITIVE_OPERATOR
   (S) AdditiveExpression
   (L) CONSTANT
-  (M) DIV
+  (L) DIV
   (S) Expression
   (L) LPAREN
-  (M) MINUS
-  (M) MUL
-  (L) MULTIPLICATIVE_OPERATOR
+  (L) MINUS
+  (L) MUL
   (S) MultiplicativeExpression
   (M) NUMBER
-  (M) PLUS
+  (L) PLUS
   (S) PrimaryExpression
   (L) RPAREN
-  (L) UNARY_OPERATOR
   (S) UnaryExpression
   (M) WS
  Direct callers:
@@ -2616,40 +2540,37 @@ LPAREN:
   '('
 --------------------------------
 MINUS:
- Type: Morheme
+ Type: Lexeme (token)
  Direct callees:
   (M) WS
  All callees:
   (M) WS
  Direct callers:
-  (L) ADDITIVE_OPERATOR
-  (L) UNARY_OPERATOR
+  (S) AdditiveExpression
+  (S) UnaryExpression
  All callers:
-  (L) ADDITIVE_OPERATOR
   (S) AdditiveExpression
   (S) Expression
   (S) MultiplicativeExpression
   (S) PrimaryExpression
   (S) Start
-  (L) UNARY_OPERATOR
   (S) UnaryExpression
  Start characters:
   [-]
  Expected lexemes (tokens):
-  -
+  '-'
 --------------------------------
 MUL:
- Type: Morheme
+ Type: Lexeme (token)
  Direct callees:
   (M) WS
  All callees:
   (M) WS
  Direct callers:
-  (L) MULTIPLICATIVE_OPERATOR
+  (S) MultiplicativeExpression
  All callers:
   (S) AdditiveExpression
   (S) Expression
-  (L) MULTIPLICATIVE_OPERATOR
   (S) MultiplicativeExpression
   (S) PrimaryExpression
   (S) Start
@@ -2657,52 +2578,27 @@ MUL:
  Start characters:
   [*]
  Expected lexemes (tokens):
-  *
---------------------------------
-MULTIPLICATIVE_OPERATOR:
- Type: Lexeme (token)
- Direct callees:
-  (M) DIV
-  (M) MUL
- All callees:
-  (M) DIV
-  (M) MUL
-  (M) WS
- Direct callers:
-  (S) MultiplicativeExpression
- All callers:
-  (S) AdditiveExpression
-  (S) Expression
-  (S) MultiplicativeExpression
-  (S) PrimaryExpression
-  (S) Start
-  (S) UnaryExpression
- Start characters:
-  [*][/]
- Expected lexemes (tokens):
-  MULTIPLICATIVE_OPERATOR
+  '*'
 --------------------------------
 MultiplicativeExpression:
  Type: Sentence (nonterminal)
  Direct callees:
-  (L) MULTIPLICATIVE_OPERATOR
+  (L) DIV
+  (L) MUL
   (S) UnaryExpression
  All callees:
-  (L) ADDITIVE_OPERATOR
   (S) AdditiveExpression
   (L) CONSTANT
-  (M) DIV
+  (L) DIV
   (S) Expression
   (L) LPAREN
-  (M) MINUS
-  (M) MUL
-  (L) MULTIPLICATIVE_OPERATOR
+  (L) MINUS
+  (L) MUL
   (S) MultiplicativeExpression
   (M) NUMBER
-  (M) PLUS
+  (L) PLUS
   (S) PrimaryExpression
   (L) RPAREN
-  (L) UNARY_OPERATOR
   (S) UnaryExpression
   (M) WS
  Direct callers:
@@ -2741,15 +2637,14 @@ NUMBER:
   null
 --------------------------------
 PLUS:
- Type: Morheme
+ Type: Lexeme (token)
  Direct callees:
   (M) WS
  All callees:
   (M) WS
  Direct callers:
-  (L) ADDITIVE_OPERATOR
+  (S) AdditiveExpression
  All callers:
-  (L) ADDITIVE_OPERATOR
   (S) AdditiveExpression
   (S) Expression
   (S) MultiplicativeExpression
@@ -2759,7 +2654,7 @@ PLUS:
  Start characters:
   [+]
  Expected lexemes (tokens):
-  +
+  '+'
 --------------------------------
 PrimaryExpression:
  Type: Sentence (nonterminal)
@@ -2769,21 +2664,18 @@ PrimaryExpression:
   (L) LPAREN
   (L) RPAREN
  All callees:
-  (L) ADDITIVE_OPERATOR
   (S) AdditiveExpression
   (L) CONSTANT
-  (M) DIV
+  (L) DIV
   (S) Expression
   (L) LPAREN
-  (M) MINUS
-  (M) MUL
-  (L) MULTIPLICATIVE_OPERATOR
+  (L) MINUS
+  (L) MUL
   (S) MultiplicativeExpression
   (M) NUMBER
-  (M) PLUS
+  (L) PLUS
   (S) PrimaryExpression
   (L) RPAREN
-  (L) UNARY_OPERATOR
   (S) UnaryExpression
   (M) WS
  Direct callers:
@@ -2827,23 +2719,20 @@ Start:
   (S) Expression
   (L) LEADING_SPACES
  All callees:
-  (L) ADDITIVE_OPERATOR
   (S) AdditiveExpression
   (L) CONSTANT
-  (M) DIV
+  (L) DIV
   (L) EOF
   (S) Expression
   (L) LEADING_SPACES
   (L) LPAREN
-  (M) MINUS
-  (M) MUL
-  (L) MULTIPLICATIVE_OPERATOR
+  (L) MINUS
+  (L) MUL
   (S) MultiplicativeExpression
   (M) NUMBER
-  (M) PLUS
+  (L) PLUS
   (S) PrimaryExpression
   (L) RPAREN
-  (L) UNARY_OPERATOR
   (S) UnaryExpression
   (M) WS
  Direct callers:
@@ -2853,49 +2742,25 @@ Start:
  Expected lexemes (tokens):
   CONSTANT '(' '-'
 --------------------------------
-UNARY_OPERATOR:
- Type: Lexeme (token)
- Direct callees:
-  (M) MINUS
- All callees:
-  (M) MINUS
-  (M) WS
- Direct callers:
-  (S) UnaryExpression
- All callers:
-  (S) AdditiveExpression
-  (S) Expression
-  (S) MultiplicativeExpression
-  (S) PrimaryExpression
-  (S) Start
-  (S) UnaryExpression
- Start characters:
-  [-]
- Expected lexemes (tokens):
-  '-'
---------------------------------
 UnaryExpression:
  Type: Sentence (nonterminal)
  Direct callees:
+  (L) MINUS
   (S) PrimaryExpression
-  (L) UNARY_OPERATOR
   (S) UnaryExpression
  All callees:
-  (L) ADDITIVE_OPERATOR
   (S) AdditiveExpression
   (L) CONSTANT
-  (M) DIV
+  (L) DIV
   (S) Expression
   (L) LPAREN
-  (M) MINUS
-  (M) MUL
-  (L) MULTIPLICATIVE_OPERATOR
+  (L) MINUS
+  (L) MUL
   (S) MultiplicativeExpression
   (M) NUMBER
-  (M) PLUS
+  (L) PLUS
   (S) PrimaryExpression
   (L) RPAREN
-  (L) UNARY_OPERATOR
   (S) UnaryExpression
   (M) WS
  Direct callers:
@@ -2918,32 +2783,29 @@ WS:
  Direct callees:
  All callees:
  Direct callers:
-  (M) DIV
+  (L) DIV
   (L) LEADING_SPACES
   (L) LPAREN
-  (M) MINUS
-  (M) MUL
+  (L) MINUS
+  (L) MUL
   (M) NUMBER
-  (M) PLUS
+  (L) PLUS
   (L) RPAREN
  All callers:
-  (L) ADDITIVE_OPERATOR
   (S) AdditiveExpression
   (L) CONSTANT
-  (M) DIV
+  (L) DIV
   (S) Expression
   (L) LEADING_SPACES
   (L) LPAREN
-  (M) MINUS
-  (M) MUL
-  (L) MULTIPLICATIVE_OPERATOR
+  (L) MINUS
+  (L) MUL
   (S) MultiplicativeExpression
   (M) NUMBER
-  (M) PLUS
+  (L) PLUS
   (S) PrimaryExpression
   (L) RPAREN
   (S) Start
-  (L) UNARY_OPERATOR
   (S) UnaryExpression
  Start characters:
   [\u0000-\u10ffff]
@@ -2958,32 +2820,30 @@ Sentences (nonterminals):
   UnaryExpression
 --------------------------------
 Lexemes (tokens):
-  ADDITIVE_OPERATOR
   CONSTANT
+  DIV
   EOF
   LEADING_SPACES
   LPAREN
-  MULTIPLICATIVE_OPERATOR
-  RPAREN
-  UNARY_OPERATOR
---------------------------------
-Morphemes:
-  DIV
   MINUS
   MUL
-  NUMBER
   PLUS
+  RPAREN
+--------------------------------
+Morphemes:
+  NUMBER
   WS
 --------------------------------
 Lexeme (token) names:
-  ADDITIVE_OPERATOR : ADDITIVE_OPERATOR
   CONSTANT : CONSTANT
+  DIV : '/'
   EOF : EOF
   LEADING_SPACES : LEADING_SPACES
   LPAREN : '('
-  MULTIPLICATIVE_OPERATOR : MULTIPLICATIVE_OPERATOR
+  MINUS : '-'
+  MUL : '*'
+  PLUS : '+'
   RPAREN : ')'
-  UNARY_OPERATOR : '-'
 --------------------------------
 Recursives:
   AdditiveExpression
