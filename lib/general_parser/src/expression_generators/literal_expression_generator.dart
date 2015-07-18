@@ -21,8 +21,6 @@ class LiteralExpressionGenerator extends ExpressionGenerator {
 
   static const String _TEMPLATE_CHARACTER = 'TEMPLATE_CHARACTER';
 
-  static const String _TEMPLATE_CHARACTER_INLINE = 'TEMPLATE_CHARACTER_INLINE';
-
   static const String _TEMPLATE_EMPTY = 'TEMPLATE_EMPTY';
 
   static const String _TEMPLATE_STRING = 'TEMPLATE_STRING';
@@ -43,17 +41,6 @@ $_RESULT = $_MATCH_STRING({{CODE_POINTS}}, '{{STRING}}');
 $_RESULT = $_MATCH_CHAR({{CODE_POINT}}, '{{STRING}}');
 {{#COMMENT_OUT}}''';
 
-  static final String _templateCharacterInline = '''
-{{#COMMENT_IN}}
-$_RESULT = '{{STRING}}';
-$_SUCCESS = true;
-if (++$_CURSOR < $_INPUT_LEN) {
-  $_CH = $_INPUT[$_CURSOR];
-} else {
-  $_CH = $_EOF;
-}
-{{#COMMENT_OUT}}''';
-
   LiteralExpression _expression;
 
   LiteralExpressionGenerator(Expression expression, ProductionRuleGenerator productionRuleGenerator) : super(expression, productionRuleGenerator) {
@@ -62,7 +49,6 @@ if (++$_CURSOR < $_INPUT_LEN) {
     }
 
     addTemplate(_TEMPLATE_CHARACTER, _templateCharacter);
-    addTemplate(_TEMPLATE_CHARACTER_INLINE, _templateCharacterInline);
     addTemplate(_TEMPLATE_EMPTY, _templateEmpty);
     addTemplate(_TEMPLATE_STRING, _templateString);
   }
@@ -89,10 +75,6 @@ if (++$_CURSOR < $_INPUT_LEN) {
   }
 
   List<String> _generateCharacter() {
-    if (isFirstBarrage(_expression)) {
-      return _generateCharacterInline();
-    }
-
     var block = getTemplateBlock(_TEMPLATE_CHARACTER);
     var text = _expression.text;
     var character = text.runes.toList()[0];
@@ -103,20 +85,6 @@ if (++$_CURSOR < $_INPUT_LEN) {
     }
 
     block.assign('CODE_POINT', character);
-    block.assign('STRING', string);
-    return block.process();
-  }
-
-  List<String> _generateCharacterInline() {
-    var block = getTemplateBlock(_TEMPLATE_CHARACTER_INLINE);
-    var text = _expression.text;
-    var character = text.runes.toList()[0];
-    var string = Utils.charToString(character);
-    if (options.comment) {
-      block.assign('#COMMENT_IN', '// => $_expression');
-      block.assign('#COMMENT_OUT', '// <= $_expression');
-    }
-
     block.assign('STRING', string);
     return block.process();
   }

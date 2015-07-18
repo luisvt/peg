@@ -1,62 +1,89 @@
 %{
 part of peg.example.arithmetic;
 
-num _binop(num left, List right) {
-  for(var r in right) {
-    if(r[0] != null && r[0].isNotEmpty) {
-      switch(r[0]) {
-        case '+':
-          left += r[1];
-          break;
-        case '-':
-          left -= r[1];
-          break;
-        case '*':
-          left *= r[1];
-          break;
-        case '/':
-          left /= r[1];
-          break;
-        default:
-          throw 'Unsupported operation $r[0]';
-      }
+num _buildBinary(num first, List rest) {
+  num builder(num result, List element) {
+    var left = result;
+    var right = element[1];
+    var operator = element[0];
+    switch(operator) {
+      case "+":
+        return left + right;
+      case "-":
+        return left - right;
+      case "*":
+        return left * right;
+      case "/":
+        return left / right;
+      default:
+        throw "Unsupported binary operation '$operator'";
     }
+  };
+  return _buildTree(first, rest, builder);
+}
+
+num _buildTree(num first, List rest, builder(num result, List rest)) {
+  var result = first;    
+  for (var i = 0; i < rest.length; i++) {
+    result = builder(result, rest[i]);
   }
-  return left;
+  return result;
+}
+
+num _unary(String operator, num operand) {  
+  switch (operator) {   
+    case "-":
+      return - operand;    
+    default:
+      throw "Unsupported unary operation '$operator'";
+  }
 }
 
 }%
 
 ### Sentences (nonterminals) ###
 
-Expr <-
-  LEADING_SPACES? Additive EOF { $$ = $2; }
+Start <-
+  LEADING_SPACES? Expression EOF { $$ = $2; }
 
-Additive <-
-  Multiplicative ((PLUS / MINUS) Multiplicative)* { $$ = _binop($1, $2); }
-  / Multiplicative
+Expression <-
+  AdditiveExpression
 
-Multiplicative <-
-  Atom ((MUL / DIV) Atom)* { $$ = _binop($1, $2); }
-  / Atom
+AdditiveExpression <-
+  MultiplicativeExpression ((PLUS / MINUS) MultiplicativeExpression)* { $$ = _buildBinary($1, $2); }
 
-Atom <-
-  NUMBER
-  / OPEN Additive CLOSE { $$ = $2; }
+MultiplicativeExpression <-
+  UnaryExpression ((DIV / MUL) UnaryExpression)* { $$ = _buildBinary($1, $2); }
+
+UnaryExpression <-
+  PrimaryExpression
+  / MINUS UnaryExpression { $$ = _unary($1, $2); }
+
+PrimaryExpression <-
+  CONSTANT
+  / LPAREN Expression RPAREN { $$ = $2; }
 
 ### Lexemes (tokens) ###
 
-CLOSE <-
-  ')' WS
-
-DIV <-
-  '/' WS { $$ = $1; }
+CONSTANT <-
+  NUMBER
 
 EOF <-
   !.
 
 LEADING_SPACES <-
   WS
+
+LPAREN <-
+  '(' WS { $$ = $1; }
+
+RPAREN <-
+  ')' WS { $$ = $1; }
+
+### Morphemes ###
+
+DIV <-
+  '/' WS { $$ = $1; }
 
 MINUS <-
   '-' WS { $$ = $1; }
@@ -67,13 +94,8 @@ MUL <-
 NUMBER <-
   [0-9]+ WS { $$ = int.parse($1.join()); }
 
-OPEN <-
-  '(' WS
-
 PLUS <-
   '+' WS { $$ = $1; }
-
-### Morphemes ###
 
 WS <-
   ([\t-\n\r ] / '\r\n')*

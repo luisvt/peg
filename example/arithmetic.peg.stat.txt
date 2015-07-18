@@ -1,74 +1,85 @@
 --------------------------------
 Log entries:
-Expr           SENTENCE <= MORHEME : callerAll == 0
-Sentence       LEXEME   <= MORHEME : callerSentence > 0 (Expr)
-Term           LEXEME   <= MORHEME : isRecursive && MORPHEME (Atom)
-Atom           SENTENCE <= MORHEME : calleeLexeme > 0 (Sentence)
-CLOSE          LEXEME   <= MORHEME : callerSentence > 0 (Atom)
-EOF            LEXEME   <= MORHEME : callerSentence > 0 (Expr)
-LEADING_SPACES LEXEME   <= MORHEME : callerSentence > 0 (Expr)
-NUMBER         LEXEME   <= MORHEME : callerSentence > 0 (Atom)
-OPEN           LEXEME   <= MORHEME : callerSentence > 0 (Atom)
-Sentence       SENTENCE <= LEXEME  : calleeLexeme > 0 (Term, Sentence)
-Term           SENTENCE <= LEXEME  : calleeSentence > 0 (Atom)
-DIV            LEXEME   <= MORHEME : callerSentence > 0 (Term)
-MINUS          LEXEME   <= MORHEME : callerSentence > 0 (Sentence)
-MUL            LEXEME   <= MORHEME : callerSentence > 0 (Term)
-PLUS           LEXEME   <= MORHEME : callerSentence > 0 (Sentence)
+Start                    SENTENCE <= MORHEME : callerAll == 0
+Expression               LEXEME   <= MORHEME : callerSentence > 0 (Start)
+AdditiveExpression       LEXEME   <= MORHEME : isRecursive && MORPHEME (MultiplicativeExpression)
+MultiplicativeExpression LEXEME   <= MORHEME : isRecursive && MORPHEME (UnaryExpression)
+UnaryExpression          LEXEME   <= MORHEME : isRecursive && MORPHEME (PrimaryExpression)
+PrimaryExpression        SENTENCE <= MORHEME : calleeLexeme > 0 (Expression)
+CONSTANT                 LEXEME   <= MORHEME : callerSentence > 0 (PrimaryExpression)
+EOF                      LEXEME   <= MORHEME : callerSentence > 0 (Start)
+LEADING_SPACES           LEXEME   <= MORHEME : callerSentence > 0 (Start)
+LPAREN                   LEXEME   <= MORHEME : callerSentence > 0 (PrimaryExpression)
+RPAREN                   LEXEME   <= MORHEME : callerSentence > 0 (PrimaryExpression)
+Expression               SENTENCE <= LEXEME  : calleeLexeme > 0 (AdditiveExpression)
+AdditiveExpression       SENTENCE <= LEXEME  : calleeLexeme > 0 (MultiplicativeExpression)
+MultiplicativeExpression SENTENCE <= LEXEME  : calleeLexeme > 0 (UnaryExpression)
+UnaryExpression          SENTENCE <= LEXEME  : calleeSentence > 0 (PrimaryExpression)
+DIV                      LEXEME   <= MORHEME : callerSentence > 0 (MultiplicativeExpression)
+MINUS                    LEXEME   <= MORHEME : callerSentence > 0 (AdditiveExpression, UnaryExpression)
+MUL                      LEXEME   <= MORHEME : callerSentence > 0 (MultiplicativeExpression)
+PLUS                     LEXEME   <= MORHEME : callerSentence > 0 (AdditiveExpression)
 --------------------------------
 Starting rules:
-Expr
+Start
 --------------------------------
 Rules:
 --------------------------------
-Atom:
+AdditiveExpression:
  Type: Sentence (nonterminal)
  Direct callees:
-  (L) CLOSE
-  (L) NUMBER
-  (L) OPEN
-  (S) Sentence
+  (L) MINUS
+  (S) MultiplicativeExpression
+  (L) PLUS
  All callees:
-  (S) Atom
-  (L) CLOSE
+  (S) AdditiveExpression
+  (L) CONSTANT
   (L) DIV
+  (S) Expression
+  (L) LPAREN
   (L) MINUS
   (L) MUL
-  (L) NUMBER
-  (L) OPEN
+  (S) MultiplicativeExpression
+  (M) NUMBER
   (L) PLUS
-  (S) Sentence
-  (S) Term
+  (S) PrimaryExpression
+  (L) RPAREN
+  (S) UnaryExpression
   (M) WS
  Direct callers:
-  (S) Term
+  (S) Expression
  All callers:
-  (S) Atom
-  (S) Expr
-  (S) Sentence
-  (S) Term
+  (S) AdditiveExpression
+  (S) Expression
+  (S) MultiplicativeExpression
+  (S) PrimaryExpression
+  (S) Start
+  (S) UnaryExpression
  Start characters:
-  [(][0-9]
+  [(][-][0-9]
  Expected lexemes (tokens):
-  NUMBER '('
+  CONSTANT '(' '-'
 --------------------------------
-CLOSE:
+CONSTANT:
  Type: Lexeme (token)
  Direct callees:
-  (M) WS
+  (M) NUMBER
  All callees:
+  (M) NUMBER
   (M) WS
  Direct callers:
-  (S) Atom
+  (S) PrimaryExpression
  All callers:
-  (S) Atom
-  (S) Expr
-  (S) Sentence
-  (S) Term
+  (S) AdditiveExpression
+  (S) Expression
+  (S) MultiplicativeExpression
+  (S) PrimaryExpression
+  (S) Start
+  (S) UnaryExpression
  Start characters:
-  [)]
+  [0-9]
  Expected lexemes (tokens):
-  ')'
+  CONSTANT
 --------------------------------
 DIV:
  Type: Lexeme (token)
@@ -77,12 +88,14 @@ DIV:
  All callees:
   (M) WS
  Direct callers:
-  (S) Term
+  (S) MultiplicativeExpression
  All callers:
-  (S) Atom
-  (S) Expr
-  (S) Sentence
-  (S) Term
+  (S) AdditiveExpression
+  (S) Expression
+  (S) MultiplicativeExpression
+  (S) PrimaryExpression
+  (S) Start
+  (S) UnaryExpression
  Start characters:
   [/]
  Expected lexemes (tokens):
@@ -93,40 +106,47 @@ EOF:
  Direct callees:
  All callees:
  Direct callers:
-  (S) Expr
+  (S) Start
  All callers:
-  (S) Expr
+  (S) Start
  Start characters:
   [\u0000-\u10ffff]
  Expected lexemes (tokens):
   EOF
 --------------------------------
-Expr:
+Expression:
  Type: Sentence (nonterminal)
  Direct callees:
-  (L) EOF
-  (L) LEADING_SPACES
-  (S) Sentence
+  (S) AdditiveExpression
  All callees:
-  (S) Atom
-  (L) CLOSE
+  (S) AdditiveExpression
+  (L) CONSTANT
   (L) DIV
-  (L) EOF
-  (L) LEADING_SPACES
+  (S) Expression
+  (L) LPAREN
   (L) MINUS
   (L) MUL
-  (L) NUMBER
-  (L) OPEN
+  (S) MultiplicativeExpression
+  (M) NUMBER
   (L) PLUS
-  (S) Sentence
-  (S) Term
+  (S) PrimaryExpression
+  (L) RPAREN
+  (S) UnaryExpression
   (M) WS
  Direct callers:
+  (S) PrimaryExpression
+  (S) Start
  All callers:
+  (S) AdditiveExpression
+  (S) Expression
+  (S) MultiplicativeExpression
+  (S) PrimaryExpression
+  (S) Start
+  (S) UnaryExpression
  Start characters:
-  [\u0000-\u10ffff]
+  [(][-][0-9]
  Expected lexemes (tokens):
-  NUMBER '('
+  CONSTANT '(' '-'
 --------------------------------
 LEADING_SPACES:
  Type: Lexeme (token)
@@ -135,13 +155,33 @@ LEADING_SPACES:
  All callees:
   (M) WS
  Direct callers:
-  (S) Expr
+  (S) Start
  All callers:
-  (S) Expr
+  (S) Start
  Start characters:
   [\u0000-\u10ffff]
  Expected lexemes (tokens):
   LEADING_SPACES
+--------------------------------
+LPAREN:
+ Type: Lexeme (token)
+ Direct callees:
+  (M) WS
+ All callees:
+  (M) WS
+ Direct callers:
+  (S) PrimaryExpression
+ All callers:
+  (S) AdditiveExpression
+  (S) Expression
+  (S) MultiplicativeExpression
+  (S) PrimaryExpression
+  (S) Start
+  (S) UnaryExpression
+ Start characters:
+  [(]
+ Expected lexemes (tokens):
+  '('
 --------------------------------
 MINUS:
  Type: Lexeme (token)
@@ -150,12 +190,15 @@ MINUS:
  All callees:
   (M) WS
  Direct callers:
-  (S) Sentence
+  (S) AdditiveExpression
+  (S) UnaryExpression
  All callers:
-  (S) Atom
-  (S) Expr
-  (S) Sentence
-  (S) Term
+  (S) AdditiveExpression
+  (S) Expression
+  (S) MultiplicativeExpression
+  (S) PrimaryExpression
+  (S) Start
+  (S) UnaryExpression
  Start characters:
   [-]
  Expected lexemes (tokens):
@@ -168,52 +211,74 @@ MUL:
  All callees:
   (M) WS
  Direct callers:
-  (S) Term
+  (S) MultiplicativeExpression
  All callers:
-  (S) Atom
-  (S) Expr
-  (S) Sentence
-  (S) Term
+  (S) AdditiveExpression
+  (S) Expression
+  (S) MultiplicativeExpression
+  (S) PrimaryExpression
+  (S) Start
+  (S) UnaryExpression
  Start characters:
   [*]
  Expected lexemes (tokens):
   '*'
 --------------------------------
+MultiplicativeExpression:
+ Type: Sentence (nonterminal)
+ Direct callees:
+  (L) DIV
+  (L) MUL
+  (S) UnaryExpression
+ All callees:
+  (S) AdditiveExpression
+  (L) CONSTANT
+  (L) DIV
+  (S) Expression
+  (L) LPAREN
+  (L) MINUS
+  (L) MUL
+  (S) MultiplicativeExpression
+  (M) NUMBER
+  (L) PLUS
+  (S) PrimaryExpression
+  (L) RPAREN
+  (S) UnaryExpression
+  (M) WS
+ Direct callers:
+  (S) AdditiveExpression
+ All callers:
+  (S) AdditiveExpression
+  (S) Expression
+  (S) MultiplicativeExpression
+  (S) PrimaryExpression
+  (S) Start
+  (S) UnaryExpression
+ Start characters:
+  [(][-][0-9]
+ Expected lexemes (tokens):
+  CONSTANT '(' '-'
+--------------------------------
 NUMBER:
- Type: Lexeme (token)
+ Type: Morheme
  Direct callees:
   (M) WS
  All callees:
   (M) WS
  Direct callers:
-  (S) Atom
+  (L) CONSTANT
  All callers:
-  (S) Atom
-  (S) Expr
-  (S) Sentence
-  (S) Term
+  (S) AdditiveExpression
+  (L) CONSTANT
+  (S) Expression
+  (S) MultiplicativeExpression
+  (S) PrimaryExpression
+  (S) Start
+  (S) UnaryExpression
  Start characters:
   [0-9]
  Expected lexemes (tokens):
-  NUMBER
---------------------------------
-OPEN:
- Type: Lexeme (token)
- Direct callees:
-  (M) WS
- All callees:
-  (M) WS
- Direct callers:
-  (S) Atom
- All callers:
-  (S) Atom
-  (S) Expr
-  (S) Sentence
-  (S) Term
- Start characters:
-  [(]
- Expected lexemes (tokens):
-  '('
+  null
 --------------------------------
 PLUS:
  Type: Lexeme (token)
@@ -222,144 +287,211 @@ PLUS:
  All callees:
   (M) WS
  Direct callers:
-  (S) Sentence
+  (S) AdditiveExpression
  All callers:
-  (S) Atom
-  (S) Expr
-  (S) Sentence
-  (S) Term
+  (S) AdditiveExpression
+  (S) Expression
+  (S) MultiplicativeExpression
+  (S) PrimaryExpression
+  (S) Start
+  (S) UnaryExpression
  Start characters:
   [+]
  Expected lexemes (tokens):
   '+'
 --------------------------------
-Sentence:
+PrimaryExpression:
  Type: Sentence (nonterminal)
  Direct callees:
-  (L) MINUS
-  (L) PLUS
-  (S) Sentence
-  (S) Term
+  (L) CONSTANT
+  (S) Expression
+  (L) LPAREN
+  (L) RPAREN
  All callees:
-  (S) Atom
-  (L) CLOSE
+  (S) AdditiveExpression
+  (L) CONSTANT
   (L) DIV
+  (S) Expression
+  (L) LPAREN
   (L) MINUS
   (L) MUL
-  (L) NUMBER
-  (L) OPEN
+  (S) MultiplicativeExpression
+  (M) NUMBER
   (L) PLUS
-  (S) Sentence
-  (S) Term
+  (S) PrimaryExpression
+  (L) RPAREN
+  (S) UnaryExpression
   (M) WS
  Direct callers:
-  (S) Atom
-  (S) Expr
-  (S) Sentence
+  (S) UnaryExpression
  All callers:
-  (S) Atom
-  (S) Expr
-  (S) Sentence
-  (S) Term
+  (S) AdditiveExpression
+  (S) Expression
+  (S) MultiplicativeExpression
+  (S) PrimaryExpression
+  (S) Start
+  (S) UnaryExpression
  Start characters:
   [(][0-9]
  Expected lexemes (tokens):
-  NUMBER '('
+  CONSTANT '('
 --------------------------------
-Term:
- Type: Sentence (nonterminal)
+RPAREN:
+ Type: Lexeme (token)
  Direct callees:
-  (S) Atom
-  (L) DIV
-  (L) MUL
-  (S) Term
+  (M) WS
  All callees:
-  (S) Atom
-  (L) CLOSE
-  (L) DIV
-  (L) MINUS
-  (L) MUL
-  (L) NUMBER
-  (L) OPEN
-  (L) PLUS
-  (S) Sentence
-  (S) Term
   (M) WS
  Direct callers:
-  (S) Sentence
-  (S) Term
+  (S) PrimaryExpression
  All callers:
-  (S) Atom
-  (S) Expr
-  (S) Sentence
-  (S) Term
+  (S) AdditiveExpression
+  (S) Expression
+  (S) MultiplicativeExpression
+  (S) PrimaryExpression
+  (S) Start
+  (S) UnaryExpression
  Start characters:
-  [(][0-9]
+  [)]
  Expected lexemes (tokens):
-  NUMBER '('
+  ')'
+--------------------------------
+Start:
+ Type: Sentence (nonterminal)
+ Direct callees:
+  (L) EOF
+  (S) Expression
+  (L) LEADING_SPACES
+ All callees:
+  (S) AdditiveExpression
+  (L) CONSTANT
+  (L) DIV
+  (L) EOF
+  (S) Expression
+  (L) LEADING_SPACES
+  (L) LPAREN
+  (L) MINUS
+  (L) MUL
+  (S) MultiplicativeExpression
+  (M) NUMBER
+  (L) PLUS
+  (S) PrimaryExpression
+  (L) RPAREN
+  (S) UnaryExpression
+  (M) WS
+ Direct callers:
+ All callers:
+ Start characters:
+  [\u0000-\u10ffff]
+ Expected lexemes (tokens):
+  CONSTANT '(' '-'
+--------------------------------
+UnaryExpression:
+ Type: Sentence (nonterminal)
+ Direct callees:
+  (L) MINUS
+  (S) PrimaryExpression
+  (S) UnaryExpression
+ All callees:
+  (S) AdditiveExpression
+  (L) CONSTANT
+  (L) DIV
+  (S) Expression
+  (L) LPAREN
+  (L) MINUS
+  (L) MUL
+  (S) MultiplicativeExpression
+  (M) NUMBER
+  (L) PLUS
+  (S) PrimaryExpression
+  (L) RPAREN
+  (S) UnaryExpression
+  (M) WS
+ Direct callers:
+  (S) MultiplicativeExpression
+  (S) UnaryExpression
+ All callers:
+  (S) AdditiveExpression
+  (S) Expression
+  (S) MultiplicativeExpression
+  (S) PrimaryExpression
+  (S) Start
+  (S) UnaryExpression
+ Start characters:
+  [(][-][0-9]
+ Expected lexemes (tokens):
+  CONSTANT '(' '-'
 --------------------------------
 WS:
  Type: Morheme
  Direct callees:
  All callees:
  Direct callers:
-  (L) CLOSE
   (L) DIV
   (L) LEADING_SPACES
+  (L) LPAREN
   (L) MINUS
   (L) MUL
-  (L) NUMBER
-  (L) OPEN
+  (M) NUMBER
   (L) PLUS
+  (L) RPAREN
  All callers:
-  (S) Atom
-  (L) CLOSE
+  (S) AdditiveExpression
+  (L) CONSTANT
   (L) DIV
-  (S) Expr
+  (S) Expression
   (L) LEADING_SPACES
+  (L) LPAREN
   (L) MINUS
   (L) MUL
-  (L) NUMBER
-  (L) OPEN
+  (S) MultiplicativeExpression
+  (M) NUMBER
   (L) PLUS
-  (S) Sentence
-  (S) Term
+  (S) PrimaryExpression
+  (L) RPAREN
+  (S) Start
+  (S) UnaryExpression
  Start characters:
   [\u0000-\u10ffff]
  Expected lexemes (tokens):
 --------------------------------
 Sentences (nonterminals):
-  Atom
-  Expr
-  Sentence
-  Term
+  AdditiveExpression
+  Expression
+  MultiplicativeExpression
+  PrimaryExpression
+  Start
+  UnaryExpression
 --------------------------------
 Lexemes (tokens):
-  CLOSE
+  CONSTANT
   DIV
   EOF
   LEADING_SPACES
+  LPAREN
   MINUS
   MUL
-  NUMBER
-  OPEN
   PLUS
+  RPAREN
 --------------------------------
 Morphemes:
+  NUMBER
   WS
 --------------------------------
 Lexeme (token) names:
-  CLOSE : ')'
+  CONSTANT : CONSTANT
   DIV : '/'
   EOF : EOF
   LEADING_SPACES : LEADING_SPACES
+  LPAREN : '('
   MINUS : '-'
   MUL : '*'
-  NUMBER : NUMBER
-  OPEN : '('
   PLUS : '+'
+  RPAREN : ')'
 --------------------------------
 Recursives:
-  Atom
-  Sentence
-  Term
+  AdditiveExpression
+  Expression
+  MultiplicativeExpression
+  PrimaryExpression
+  UnaryExpression

@@ -44,34 +44,6 @@ abstract class ExpressionGenerator extends TemplateGenerator {
 
   GeneralParserClassGenerator get parserClassGenerator => _parserClassGenerator;
 
-  bool isFirstBarrage(Expression expression) {
-    if (expression == null) {
-      throw new ArgumentError("expression: $expression");
-    }
-
-    if (_expression.positionInSequence != 0) {
-      return false;
-    }
-
-    var parent = expression.parent;
-    if (parent == null) {
-      return false;
-    }
-
-    switch (parent.type) {
-      // TODO: Test and optimize
-      //case ExpressionTypes.AND_PREDICATE:
-      //case ExpressionTypes.NOT_PREDICATE:
-      case ExpressionTypes.SEQUENCE:
-        return isFirstBarrage(parent);
-      case ExpressionTypes.ORDERED_CHOICE:
-        var choice = parent as OrderedChoiceExpression;
-        return expression == choice.expressions[0];
-    }
-
-    return false;
-  }
-
   ExpressionGenerator createGenerator(Expression expression, ProductionRuleGenerator productionRuleGenerator) {
     if (expression == null) {
       throw new ArgumentError('expression: $expression');

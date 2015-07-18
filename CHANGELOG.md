@@ -1,3 +1,9 @@
+## 0.0.54
+
+- Fixed bug in `CharacterClassExpressionGenerator`
+- Fixed bug in `LiteralExpressionGenerator`
+- Modified example grammar `arithmetic.peg`
+
 ## 0.0.53
 
 - Added grammar analyser `PredicatesWithEmptyExpressionsFinder`
