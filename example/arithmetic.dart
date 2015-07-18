@@ -11,7 +11,7 @@ void main() {
 
 num parse(String string) {
   var parser = new ArithmeticParser(string);
-  var result = parser.parse_Expr();
+  var result = parser.parse_Start();
   if (!parser.success) {
     var messages = [];
     for (var error in parser.errors()) {

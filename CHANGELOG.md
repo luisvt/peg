@@ -1,3 +1,7 @@
+## 0.0.54
+
+- Modified example grammar `arithmetic.peg`
+
 ## 0.0.53
 
 - Added grammar analyser `PredicatesWithEmptyExpressionsFinder`
