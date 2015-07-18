@@ -66,4 +66,6 @@
 0.0.52 Fixed bug in `ExpressionGenerator`
 0.0.53 Added grammar analyser `PredicatesWithOptionalExpressionsFinder`
 0.0.53 Added grammar analyser `PredicatesWithEmptyExpressionsFinder`
+0.0.54 Fixed bug in `CharacterClassExpressionGenerator`
+0.0.54 Fixed bug in `LiteralExpressionGenerator`
 0.0.54 Modified example grammar `arithmetic.peg`

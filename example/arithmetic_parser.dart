@@ -624,13 +624,7 @@ class ArithmeticParser {
         _startPos = _cursor;
         while (true) {  
           // => '/'
-          $$ = '/';
-          success = true;
-          if (++_cursor < _inputLen) {
-            _ch = _input[_cursor];
-          } else {
-            _ch = -1;
-          }
+          $$ = _matchChar(47, '/');
           // <= '/'
           if (!success) break;
           var seq = new List(2)..[0] = $$;
@@ -812,13 +806,7 @@ class ArithmeticParser {
         _startPos = _cursor;
         while (true) {  
           // => '('
-          $$ = '(';
-          success = true;
-          if (++_cursor < _inputLen) {
-            _ch = _input[_cursor];
-          } else {
-            _ch = -1;
-          }
+          $$ = _matchChar(40, '(');
           // <= '('
           if (!success) break;
           var seq = new List(2)..[0] = $$;
@@ -887,13 +875,7 @@ class ArithmeticParser {
         _startPos = _cursor;
         while (true) {  
           // => '-'
-          $$ = '-';
-          success = true;
-          if (++_cursor < _inputLen) {
-            _ch = _input[_cursor];
-          } else {
-            _ch = -1;
-          }
+          $$ = _matchChar(45, '-');
           // <= '-'
           if (!success) break;
           var seq = new List(2)..[0] = $$;
@@ -956,13 +938,7 @@ class ArithmeticParser {
         _startPos = _cursor;
         while (true) {  
           // => '*'
-          $$ = '*';
-          success = true;
-          if (++_cursor < _inputLen) {
-            _ch = _input[_cursor];
-          } else {
-            _ch = -1;
-          }
+          $$ = _matchChar(42, '*');
           // <= '*'
           if (!success) break;
           var seq = new List(2)..[0] = $$;
@@ -1267,13 +1243,7 @@ class ArithmeticParser {
         _startPos = _cursor;
         while (true) {  
           // => '+'
-          $$ = '+';
-          success = true;
-          if (++_cursor < _inputLen) {
-            _ch = _input[_cursor];
-          } else {
-            _ch = -1;
-          }
+          $$ = _matchChar(43, '+');
           // <= '+'
           if (!success) break;
           var seq = new List(2)..[0] = $$;
@@ -1454,13 +1424,7 @@ class ArithmeticParser {
         _startPos = _cursor;
         while (true) {  
           // => ')'
-          $$ = ')';
-          success = true;
-          if (++_cursor < _inputLen) {
-            _ch = _input[_cursor];
-          } else {
-            _ch = -1;
-          }
+          $$ = _matchChar(41, ')');
           // <= ')'
           if (!success) break;
           var seq = new List(2)..[0] = $$;

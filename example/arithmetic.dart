@@ -5,7 +5,8 @@ import "package:parser_error/parser_error.dart";
 part "arithmetic_parser.dart";
 
 void main() {
-  var result = parse("1 + 2 * (3 + 4) * 5");
+  //var result = parse("1 + 2 * (3 + 4) * 5");
+  var result = parse("1");
   print(result);
 }
 
