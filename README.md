@@ -7,7 +7,8 @@ Version: 0.0.54
 ## Instalation and Usage
 
 ### As transformer
-1. In your pubspec.yaml file add the peg transformer:
+
+* First, in your pubspec.yaml file add the peg transformer:
 
 ```yaml
 ...
@@ -29,8 +30,8 @@ transformers:
 ...
 ```
 
-2. Create a dart file which contains the parser, for example: [arithmetic_parser.dart](https://github.com/luisvt/peg_transformer_sample/blob/master/bin/arithmetic_parser.dart).
-3. Create a peg file which contains the grammar, for example: [arithmetic_parser.peg](https://github.com/luisvt/peg_transformer_sample/blob/master/bin/arithmetic_parser.peg).
+* Then, create a dart file which contains the parser, for example: [arithmetic_parser.dart](https://github.com/luisvt/peg_transformer_sample/blob/master/bin/arithmetic_parser.dart).
+* Finally, create a peg file which contains the grammar, for example: [arithmetic_parser.peg](https://github.com/luisvt/peg_transformer_sample/blob/master/bin/arithmetic_parser.peg).
 
 Both dart and peg files should have the same name to be picked by the transformer.
 
