@@ -20,23 +20,36 @@ class PegTransformer extends Transformer {
 
   /// Since we are not able to modify the output of an asset, the only allowed extension is '.dart'.
   /// We are not able to use a '.peg' extension.
-  String get allowedExtensions => ".dart";
+  String get allowedExtensions => ".peg .dart";
 
   @override
   Future apply(Transform transform) async {
     var pId = transform.primaryInput.id;
-    var id = pId.changeExtension('.peg');
-    var pegAsset;
 
-    try {
-      pegAsset = await transform.getInput(id);
-    } catch(e) {
-      // if the peg asset is not found do nothing
+    if(pId.extension == '.dart') {
+      // change asset extension to .peg
+      var id = pId.changeExtension('.peg');
+
+      try {
+        // try to get the asset with the same name but with extension .peg
+        await transform.getInput(id);
+        // if peg asset exist we consume primary dart asset to be able to override it later
+        transform.consumePrimary();
+      } catch(e) {
+        // if the peg asset is not found do nothing
+      }
+      // then return
       return;
     }
 
-    var content = await pegAsset.readAsString();
+    print('Transforming $pId');
 
+    // if asset extension is '.peg' we change the extension to '.dart'
+    var id = pId.changeExtension('.dart');
+    // get the content of the peg asset
+    var content = await transform.primaryInput.readAsString();
+
+    // get the basename without the extension of the asset
     var basename = path.basenameWithoutExtension(id.path);
 
     var parser = new PegParser(content);
@@ -47,7 +60,7 @@ class PegTransformer extends Transformer {
 
     var generated = new GeneralParserGenerator(name, grammar, options).generate().join('\n');
 
-    transform.addOutput(new Asset.fromString(pId, generated));
+    transform.addOutput(new Asset.fromString(id, generated));
   }
 
   Grammar _parseGrammar(PegParser parser) {
