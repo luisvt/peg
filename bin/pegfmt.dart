@@ -1,5 +1,5 @@
 import "dart:io";
-import 'peg_parser.dart';
+#import 'peg_parser.dart';
 import "package:args_helper/args_helper.dart";
 import "package:strings/strings.dart" as strings;
 import 'package:peg/grammar/grammar.dart';
